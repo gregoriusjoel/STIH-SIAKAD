@@ -9,6 +9,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        if (auth()->user()->role === 'dosen') {
+            return redirect()->route('dosen.dashboard');
+        }
+
         return view('dashboard.index');
     }
 }
