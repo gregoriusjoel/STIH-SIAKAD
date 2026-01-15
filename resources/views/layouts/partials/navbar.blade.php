@@ -1,55 +1,37 @@
-<nav class="modern-navbar fixed top-0 left-0 right-0 z-50 shadow-lg">
-    <div class="w-full px-4 py-3">
-        <div class="flex items-center justify-between">
-            <!-- Left: Brand -->
-            <a class="flex items-center space-x-3 text-white no-underline" href="{{ url('/') }}">
-                <div class="bg-white/10 p-2 rounded-xl">
-                    <img src="{{ asset('images/logo_stih_white.png') }}" alt="STIH Logo" width="40" height="40" class="filter drop-shadow-lg">
+<header class="h-16 bg-white dark:bg-[#1f1616] border-b border-[#e6dbdb] dark:border-slate-800 px-8 flex items-center justify-between sticky top-0 z-40">
+    <div class="flex items-center gap-4">
+        <nav class="flex items-center gap-2 text-sm text-[#616889] dark:text-slate-400">
+            <a class="hover:text-primary transition-colors" href="#">Home</a>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-[#111218] dark:text-white font-medium">Dashboard</span>
+        </nav>
+        <div class="h-4 w-[1px] bg-gray-300 dark:bg-slate-700 mx-2"></div>
+        <div class="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-semibold">
+            <span class="material-symbols-outlined text-sm">event_repeat</span>
+            Semester Ganjil 2023/2024
+        </div>
+    </div>
+    <div class="flex items-center gap-6">
+        <div class="relative hidden md:block">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#616889] text-xl">search</span>
+            <input class="bg-background-light dark:bg-slate-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary/50 transition-all" placeholder="Cari data..." type="text"/>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="size-10 flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 text-[#616889] dark:text-slate-300 relative">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full border-2 border-white dark:border-[#1a1d2e]"></span>
+            </button>
+            <button class="size-10 flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 text-[#616889] dark:text-slate-300">
+                <span class="material-symbols-outlined">settings</span>
+            </button>
+            <div class="h-8 w-[1px] bg-gray-200 dark:bg-slate-700 mx-1"></div>
+            <div class="flex items-center gap-3 pl-2">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-bold leading-none mt-2">{{ session('user.name', 'Dosen User') }}</p>
+                    <p class="text-[10px] text-[#616889] dark:text-slate-400 mt-1">NIDN: 0423018201</p>
                 </div>
-                <div>
-                    <span class="block text-xl font-bold leading-5">STIH Adhyaksa</span>
-                    <small class="block text-xs text-white/80">Pemetaan</small>
-                </div>
-            </a>
-
-            <!-- Right: User Profile -->
-            <div class="flex items-center space-x-2">
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="flex items-center px-3 py-2 rounded-lg text-white bg-white/10 hover:bg-white/20 transition-all duration-200">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm mr-2">
-                            @php
-                                $userName = session('user.name', 'User');
-                                $initials = collect(explode(' ', $userName))->map(fn($word) => strtoupper(substr($word, 0, 1)))->take(2)->join('');
-                            @endphp
-                            {{ $initials }}
-                        </div>
-                        <span class="hidden md:block text-sm font-medium">{{ session('user.name', 'User') }}</span>
-                        <i class="fas fa-chevron-down ml-2 text-xs opacity-70"></i>
-                    </button>
-                    
-                    <div x-show="open" x-cloak @click.away="open = false" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 transform scale-95"
-                         x-transition:enter-end="opacity-100 transform scale-100"
-                         x-transition:leave="transition ease-in duration-75"
-                         x-transition:leave-start="opacity-100 transform scale-100"
-                         x-transition:leave-end="opacity-0 transform scale-95"
-                         class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2">
-                        
-                        <div class="px-4 py-2 border-b border-gray-100">
-                            <div class="font-semibold text-gray-900">{{ session('user.name', 'User') }}</div>
-                            <div class="text-sm text-gray-500">{{ session('user.email', 'user@example.com') }}</div>
-                        </div>
-                        
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <div class="size-10 rounded-full bg-cover bg-center border-2 border-primary/20" style="background-image: url('https://ui-avatars.com/api/?name={{ urlencode(session('user.name', 'Dosen User')) }}&background=800000&color=fff')"></div>
             </div>
         </div>
     </div>
-</nav>
+</header>

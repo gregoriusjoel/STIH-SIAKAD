@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('parents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('mahasiswa_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('mahasiswa_id')->constrained('mahasiswas')->onDelete('cascade');
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->timestamps();
