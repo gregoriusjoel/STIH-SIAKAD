@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('krs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('mahasiswa_id')->constrained()->onDelete('cascade');
-            $table->foreignId('kelas_mata_kuliah_id')->constrained()->onDelete('cascade');
+            $table->foreignId('mahasiswa_id')->constrained('mahasiswas')->onDelete('cascade');
+            $table->foreignId('kelas_mata_kuliah_id')->constrained('kelas_mata_kuliahs')->onDelete('cascade');
             $table->enum('status', ['pending', 'disetujui', 'ditolak'])->default('pending');
             $table->text('keterangan')->nullable();
             $table->timestamps();

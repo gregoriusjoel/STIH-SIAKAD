@@ -87,4 +87,27 @@ class User extends Authenticatable
     {
         return $this->role === 'parent';
     }
+
+    /**
+     * Get all classes taught by this dosen
+     */
+    public function kelas()
+    {
+        return $this->hasMany(\App\Models\Kelas::class, 'dosen_id');
+    }
+
+    /**
+     * Get all active schedules for this dosen
+     */
+    public function jadwals()
+    {
+        return $this->hasManyThrough(
+            \App\Models\Jadwal::class,
+            \App\Models\Kelas::class,
+            'dosen_id', // Foreign key on kelas table
+            'kelas_id', // Foreign key on jadwals table
+            'id',       // Local key on users table
+            'id'        // Local key on kelas table
+        );
+    }
 }

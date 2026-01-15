@@ -16,34 +16,7 @@
 @endpush
 
 @section('content')
-<div class="flex bg-background-light dark:bg-background-dark">
-    
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white dark:bg-[#1f1616] border-r border-[#e6dbdb] dark:border-slate-800 hidden lg:flex flex-col">
-        <div class="p-6 flex flex-col gap-8 h-full overflow-y-auto">
-            
-            <!-- Navigation -->
-            <nav class="flex flex-col gap-1 grow">
-                <a class="active-nav flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors" href="#">
-                    <span class="material-symbols-outlined text-[22px]">dashboard</span>
-                    <p class="text-sm font-medium">Dashboard</p>
-                </a>
-                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#616889] dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-primary transition-colors" href="#">
-                    <span class="material-symbols-outlined text-[22px]">groups</span>
-                    <p class="text-sm font-medium">Kelas</p>
-                </a>
-                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#616889] dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-primary transition-colors" href="#">
-                    <span class="material-symbols-outlined text-[22px]">calendar_today</span>
-                    <p class="text-sm font-medium">Jadwal</p>
-                </a>
-            </nav>
-        </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        
-        <div class="p-4 md:p-8 flex flex-col gap-8 max-w-[1200px] mx-auto w-full">
+    <div class="flex flex-col gap-8 max-w-[1200px] mx-auto w-full">
             
              <!-- Welcome Section -->
             <div class="flex flex-col gap-1">
@@ -238,8 +211,5 @@
                 </div>
             </div>
 
-        </div>
-        @include('layouts.partials.footer')
     </div>
-</div>
 @endsection

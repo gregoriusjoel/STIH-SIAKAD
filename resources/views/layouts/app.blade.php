@@ -57,21 +57,26 @@
 <body id="page-top" class="bg-gray-100 font-nunito">
 
     <!-- Page Wrapper -->
-    <div id="page-wrapper" class="min-h-screen flex flex-col">
+    <div id="page-wrapper" class="flex h-screen overflow-hidden">
 
-        <!-- Navigation -->
-        @include('layouts.partials.navbar')
+        <!-- Sidebar -->
+        @include('layouts.partials.sidebar')
 
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col pt-[90px]">
-            @yield('content')
-        </main>
+        <!-- Content Wrapper -->
+        <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
 
-        <!-- Footer -->
-        @unless(Request::routeIs('dashboard'))
+            <!-- Topbar -->
+            @include('layouts.partials.navbar')
+
+            <!-- Main Content -->
+            <main class="w-full flex-grow p-6">
+                @yield('content')
+            </main>
+
+            <!-- Footer -->
             @include('layouts.partials.footer')
-        @endunless
 
+        </div>
     </div>
 
     <!-- Global Modal Container -->

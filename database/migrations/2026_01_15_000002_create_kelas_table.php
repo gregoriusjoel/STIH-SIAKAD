@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kelas_mata_kuliahs', function (Blueprint $table) {
+        Schema::create('kelas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('mata_kuliah_id')->constrained('mata_kuliahs')->onDelete('cascade');
-            $table->foreignId('dosen_id')->constrained('dosens')->onDelete('cascade');
-            $table->foreignId('semester_id')->constrained('semesters')->onDelete('cascade');
-            $table->string('kode_kelas');
-            $table->integer('kapasitas');
-            $table->string('ruang');
+            $table->foreignId('dosen_id')->constrained('users')->onDelete('cascade');
+            $table->string('section', 10); // IF-A, IF-B, SI-A, etc
+            $table->integer('kapasitas')->default(40);
+            $table->string('tahun_ajaran', 20); // 2023/2024
+            $table->enum('semester_type', ['Ganjil', 'Genap'])->default('Ganjil');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kelas_mata_kuliahs');
+        Schema::dropIfExists('kelas');
     }
 };
