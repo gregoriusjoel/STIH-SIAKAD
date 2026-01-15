@@ -30,3 +30,41 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/input-nilai', [App\Http\Controllers\Dosen\LecturerController::class, 'inputNilai'])->name('input-nilai');
     Route::get('/mahasiswa', [App\Http\Controllers\Dosen\LecturerController::class, 'students'])->name('mahasiswa');
 });
+
+// Admin Routes
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    
+    // User Management
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    
+    // Mahasiswa Management
+    Route::resource('mahasiswa', App\Http\Controllers\Admin\MahasiswaController::class);
+    
+    // Dosen Management
+    Route::resource('dosen', App\Http\Controllers\Admin\DosenController::class);
+    
+    // Parent Management
+    Route::resource('parents', App\Http\Controllers\Admin\ParentController::class);
+    
+    // Mata Kuliah Management
+    Route::resource('mata-kuliah', App\Http\Controllers\Admin\MataKuliahController::class);
+    
+    // Kelas Mata Kuliah Management
+    Route::resource('kelas-mata-kuliah', App\Http\Controllers\Admin\KelasMataKuliahController::class);
+    
+    // Jadwal Management
+    Route::resource('jadwal', App\Http\Controllers\Admin\JadwalController::class);
+    
+    // Semester Management
+    Route::resource('semester', App\Http\Controllers\Admin\SemesterController::class);
+    // Global search
+    Route::get('search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
+    
+    // KRS Management
+    Route::get('krs', [App\Http\Controllers\Admin\KrsController::class, 'index'])->name('krs.index');
+    Route::get('krs/{kr}', [App\Http\Controllers\Admin\KrsController::class, 'show'])->name('krs.show');
+    Route::put('krs/{kr}/status', [App\Http\Controllers\Admin\KrsController::class, 'updateStatus'])->name('krs.updateStatus');
+    Route::delete('krs/{kr}', [App\Http\Controllers\Admin\KrsController::class, 'destroy'])->name('krs.destroy');
+});

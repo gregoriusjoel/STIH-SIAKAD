@@ -1,0 +1,55 @@
+@extends('layouts.admin')
+@section('title', 'Manajemen User')
+@section('page-title', 'Manajemen User')
+@section('content')
+<div class="bg-white rounded-xl shadow-lg border-t-4 border-indigo-600 overflow-hidden">
+    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+        <h3 class="text-xl font-bold text-gray-800"><i class="fas fa-users-cog text-indigo-600 mr-2"></i>Manajemen User</h3>
+        <a href="{{ route('admin.users.create') }}" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition shadow-md transform hover:scale-105 flex items-center"><i class="fas fa-user-plus mr-2"></i>Tambah User</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white">
+                <tr><th class="px-6 py-4 text-left text-sm font-semibold">User</th><th class="px-6 py-4 text-left text-sm font-semibold">Email</th><th class="px-6 py-4 text-center text-sm font-semibold">Role</th><th class="px-6 py-4 text-center text-sm font-semibold">Aksi</th></tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                @forelse($users as $u)
+                <tr class="hover:bg-indigo-50 transition duration-200">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">{{ strtoupper(substr($u->name, 0, 1)) }}</div>
+                            <div class="ml-4"><div class="font-semibold text-gray-900">{{ $u->name }}</div><div class="text-sm text-gray-500">ID: {{ $u->id }}</div></div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><i class="fas fa-envelope text-indigo-600 mr-2"></i>{{ $u->email }}</td>
+                    <td class="px-6 py-4 text-center">
+                        @if($u->role == 'admin')
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"><i class="fas fa-user-shield mr-1"></i>Admin</span>
+                        @elseif($u->role == 'dosen')
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"><i class="fas fa-chalkboard-teacher mr-1"></i>Dosen</span>
+                        @elseif($u->role == 'mahasiswa')
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"><i class="fas fa-user-graduate mr-1"></i>Mahasiswa</span>
+                        @else
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800"><i class="fas fa-user mr-1"></i>Parent</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex justify-center space-x-2">
+                            <a href="{{ route('admin.users.edit', $u) }}" class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition" title="Edit"><i class="fas fa-edit"></i></a>
+                            @if($u->id != auth()->id())
+                            <form action="{{ route('admin.users.destroy', $u) }}" method="POST" onsubmit="return confirm('Hapus user ini?')">@csrf @method('DELETE')<button type="submit" class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition" title="Hapus"><i class="fas fa-trash"></i></button></form>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="4" class="px-6 py-12 text-center text-gray-500"><i class="fas fa-inbox text-4xl mb-3"></i><p class="text-lg font-semibold">Belum ada user</p></td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($users->hasPages())
+    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">{{ $users->links() }}</div>
+    @endif
+</div>
+@endsection

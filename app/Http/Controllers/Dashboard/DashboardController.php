@@ -9,10 +9,20 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->role === 'dosen') {
-            return redirect()->route('dosen.dashboard');
-        }
+        $user = auth()->user();
 
-        return view('dashboard.index');
+        // Redirect berdasarkan role
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->route('admin.dashboard');
+            case 'dosen':
+                return redirect()->route('dosen.dashboard');
+            case 'mahasiswa':
+                return view('dashboard.index'); // Dashboard mahasiswa
+            case 'parent':
+                return view('dashboard.index'); // Dashboard parent
+            default:
+                return view('dashboard.index');
+        }
     }
 }
