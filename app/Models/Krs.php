@@ -10,10 +10,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Krs extends Model
 {
     protected $table = 'krs';
-    
+
     protected $fillable = [
         'mahasiswa_id',
-        'kelas_mata_kuliah_id',
+        'kelas_id',
         'status',
         'keterangan',
     ];
@@ -23,9 +23,9 @@ class Krs extends Model
         return $this->belongsTo(Mahasiswa::class);
     }
 
-    public function kelasMataKuliah(): BelongsTo
+    public function kelas(): BelongsTo
     {
-        return $this->belongsTo(KelasMataKuliah::class);
+        return $this->belongsTo(Kelas::class);
     }
 
     public function nilai(): HasOne
