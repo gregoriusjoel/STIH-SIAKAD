@@ -11,7 +11,53 @@ class SemesterController extends Controller
     public function index()
     {
         $semesters = Semester::orderBy('tahun_ajaran', 'desc')->orderBy('tanggal_mulai', 'desc')->paginate(10);
-        return view('admin.semester.index', compact('semesters'));
+        $semesterAktif = Semester::where('status', 'aktif')->first();
+        $allSemesters = Semester::orderBy('tahun_ajaran', 'desc')->orderBy('tanggal_mulai', 'desc')->get();
+        return view('admin.semester.index', compact('semesters', 'semesterAktif', 'allSemesters'));
+    }
+
+    public function manage()
+    {
+        $semesterAktif = Semester::where('status', 'aktif')->first();
+        $allSemesters = Semester::orderBy('tahun_ajaran', 'desc')->orderBy('tanggal_mulai', 'desc')->get();
+        return view('admin.semester.manage', compact('semesterAktif', 'allSemesters'));
+    }
+
+    public function setActive(Request $request)
+    {
+        $request->validate([
+            'semester_id' => 'required|exists:semesters,id',
+        ]);
+
+        // Mark all semesters as non-aktif
+        Semester::where('status', 'aktif')->update(['status' => 'non-aktif', 'is_active' => false]);
+
+        // Set the selected semester as aktif
+        $semester = Semester::findOrFail($request->semester_id);
+        $semester->update(['status' => 'aktif', 'is_active' => true]);
+
+        return redirect()->route('admin.semester.manage')->with('success', 'Semester aktif berhasil diubah');
+    }
+
+    public function updateKrsSettings(Request $request, Semester $semester)
+    {
+        $request->validate([
+            'krs_dapat_diisi' => 'nullable|boolean',
+            'max_sks_rendah' => 'required|integer|min:1',
+            'max_sks_tinggi' => 'required|integer|min:1',
+            'krs_mulai' => 'nullable|date',
+            'krs_selesai' => 'nullable|date|after_or_equal:krs_mulai',
+        ]);
+
+        $semester->update([
+            'krs_dapat_diisi' => $request->has('krs_dapat_diisi') ? true : false,
+            'max_sks_rendah' => $request->max_sks_rendah,
+            'max_sks_tinggi' => $request->max_sks_tinggi,
+            'krs_mulai' => $request->krs_mulai,
+            'krs_selesai' => $request->krs_selesai,
+        ]);
+
+        return redirect()->route('admin.krs.index')->with('success', 'Pengaturan KRS berhasil diperbarui');
     }
 
     public function create()

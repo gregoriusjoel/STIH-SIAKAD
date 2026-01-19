@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Krs;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 
 class KrsController extends Controller
@@ -17,7 +18,9 @@ class KrsController extends Controller
         }
 
         $krsData = $query->orderBy('created_at', 'desc')->paginate(10);
-        return view('admin.krs.index', compact('krsData'));
+        // determine active semester for KRS settings card
+        $semesterAktif = Semester::where('status', 'aktif')->first() ?? Semester::where('is_active', true)->first() ?? Semester::latest()->first();
+        return view('admin.krs.index', compact('krsData', 'semesterAktif'));
     }
 
     public function show(Krs $kr)

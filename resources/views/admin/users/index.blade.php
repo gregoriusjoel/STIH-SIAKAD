@@ -2,26 +2,30 @@
 @section('title', 'Manajemen User')
 @section('page-title', 'Manajemen User')
 @section('content')
-<div class="bg-white rounded-xl shadow-lg border-t-4 border-indigo-600 overflow-hidden">
-    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h3 class="text-xl font-bold text-gray-800"><i class="fas fa-users-cog text-indigo-600 mr-2"></i>Manajemen User</h3>
-        <a href="{{ route('admin.users.create') }}" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition shadow-md transform hover:scale-105 flex items-center"><i class="fas fa-user-plus mr-2"></i>Tambah User</a>
+<div class="mb-6 flex items-start justify-between">
+    <div>
+        <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-users-cog text-maroon mr-2"></i>Manajemen User</h3>
+        <p class="text-sm text-gray-600 mt-1">Kelola akses dan peran pengguna sistem</p>
     </div>
+    <a href="{{ route('admin.users.create') }}" class="btn-maroon px-6 py-3 rounded-lg transition shadow-md transform hover:scale-105 flex items-center"><i class="fas fa-user-plus mr-2"></i>Tambah User</a>
+</div>
+
+<div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full">
-            <thead class="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white">
+            <thead class="bg-maroon text-white">
                 <tr><th class="px-6 py-4 text-left text-sm font-semibold">User</th><th class="px-6 py-4 text-left text-sm font-semibold">Email</th><th class="px-6 py-4 text-center text-sm font-semibold">Role</th><th class="px-6 py-4 text-center text-sm font-semibold">Aksi</th></tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
                 @forelse($users as $u)
-                <tr class="hover:bg-indigo-50 transition duration-200">
+                <tr class="hover:bg-gray-50 transition duration-200">
                     <td class="px-6 py-4">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">{{ strtoupper(substr($u->name, 0, 1)) }}</div>
                             <div class="ml-4"><div class="font-semibold text-gray-900">{{ $u->name }}</div><div class="text-sm text-gray-500">ID: {{ $u->id }}</div></div>
                         </div>
                     </td>
-                    <td class="px-6 py-4"><i class="fas fa-envelope text-indigo-600 mr-2"></i>{{ $u->email }}</td>
+                    <td class="px-6 py-4"><i class="fas fa-envelope text-maroon mr-2"></i>{{ $u->email }}</td>
                     <td class="px-6 py-4 text-center">
                         @if($u->role == 'admin')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"><i class="fas fa-user-shield mr-1"></i>Admin</span>

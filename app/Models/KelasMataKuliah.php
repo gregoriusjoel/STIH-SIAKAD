@@ -35,11 +35,18 @@ class KelasMataKuliah extends Model
 
     public function jadwal(): HasOne
     {
-        return $this->hasOne(Jadwal::class);
+        // jadwals table uses `kelas_id` as foreign key; map it here
+        return $this->hasOne(Jadwal::class, 'kelas_id', 'id');
     }
 
     public function krs(): HasMany
     {
         return $this->hasMany(Krs::class);
+    }
+    
+    // Accessor for backward compatibility
+    public function getNamaKelasAttribute()
+    {
+        return $this->kode_kelas;
     }
 }

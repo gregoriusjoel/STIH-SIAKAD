@@ -13,28 +13,30 @@
         
         <!-- Navigation -->
         <nav class="flex flex-col gap-1 grow">
-            <a class="{{ Request::routeIs('dosen.dashboard') ? 'active-nav' : 'text-[#616889] dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-primary transition-colors' }} flex items-center gap-3 px-3 py-2.5 rounded-lg" href="{{ route('dosen.dashboard') }}">
-                <span class="material-symbols-outlined text-[22px]">dashboard</span>
+            <a href="{{ route('dosen.dashboard') }}" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors {{ Request::routeIs('dosen.dashboard') ? 'bg-primary/10 text-primary' : 'text-[#616889] dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-red-900/10 hover:text-primary' }}">
+                <span class="material-symbols-outlined text-[20px]">dashboard</span>
                 <p class="text-sm font-medium">Dashboard</p>
             </a>
-            <a class="{{ Request::routeIs('dosen.kelas') ? 'active-nav' : 'text-[#616889] dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-primary transition-colors' }} flex items-center gap-3 px-3 py-2.5 rounded-lg" href="{{ route('dosen.kelas') }}">
-                <span class="material-symbols-outlined text-[22px]">groups</span>
+
+            <a href="{{ route('dosen.kelas') }}" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors {{ Request::routeIs('dosen.kelas') ? 'bg-primary/10 text-primary' : 'text-[#616889] dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-red-900/10 hover:text-primary' }}">
+                <span class="material-symbols-outlined text-[20px]">groups</span>
                 <p class="text-sm font-medium">Kelas</p>
             </a>
-            <a class="{{ Request::routeIs('dosen.jadwal') ? 'active-nav' : 'text-[#616889] dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-primary transition-colors' }} flex items-center gap-3 px-3 py-2.5 rounded-lg" href="{{ route('dosen.jadwal') }}">
-                <span class="material-symbols-outlined text-[22px]">calendar_today</span>
+
+            <a href="{{ route('dosen.jadwal') }}" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors {{ Request::routeIs('dosen.jadwal') ? 'bg-primary/10 text-primary' : 'text-[#616889] dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-red-900/10 hover:text-primary' }}">
+                <span class="material-symbols-outlined text-[20px]">calendar_today</span>
                 <p class="text-sm font-medium">Jadwal</p>
             </a>
-            
-            <a class="text-[#616889] dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-primary transition-colors flex items-center gap-3 px-3 py-2.5 rounded-lg mt-auto" href="#">
-                <span class="material-symbols-outlined text-[22px]">account_circle</span>
+
+            <a class="text-[#616889] dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-red-900/10 hover:text-primary transition-colors flex items-center gap-3 px-3 py-3 rounded-lg mt-auto" href="#">
+                <span class="material-symbols-outlined text-[20px]">account_circle</span>
                 <p class="text-sm font-medium">Profil</p>
             </a>
-            
+
             <form method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                    <span class="material-symbols-outlined text-[22px]">logout</span>
+                <button type="submit" class="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">logout</span>
                     <p class="text-sm font-medium">Logout</p>
                 </button>
             </form>

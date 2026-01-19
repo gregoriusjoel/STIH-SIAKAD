@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
+use App\Models\JadwalReschedule;
 use App\Models\Kelas;
 use App\Models\MataKuliah;
 use Illuminate\Http\Request;
@@ -31,7 +32,13 @@ class JadwalController extends Controller
             ->orderBy('jam_mulai')
             ->paginate(10);
 
-        return view('admin.jadwal.index', compact('pendingJadwals', 'approvedJadwals', 'activeJadwals'));
+        // Also fetch pending reschedule requests to show within the pending card
+        $pendingReschedules = JadwalReschedule::with(['jadwal.kelas.mataKuliah', 'dosen'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.jadwal.index', compact('pendingJadwals', 'approvedJadwals', 'activeJadwals', 'pendingReschedules'));
     }
 
     public function create()
@@ -163,5 +170,96 @@ class JadwalController extends Controller
 
         return redirect()->route('admin.jadwal.index')
             ->with('success', 'Ruangan dan kelas berhasil di-assign. Jadwal sekarang aktif.');
+    }
+
+    /**
+     * List pending reschedule requests for admin approval
+     */
+    public function reschedules()
+    {
+        $reschedules = JadwalReschedule::with(['jadwal.kelas.mataKuliah', 'dosen'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.jadwal.reschedules.index', compact('reschedules'));
+    }
+
+    /**
+     * Approve a reschedule request: update the jadwal and mark reschedule as approved
+     */
+    public function approveReschedule(Request $request, JadwalReschedule $reschedule)
+    {
+        if ($reschedule->status !== 'pending') {
+            return redirect()->route('admin.jadwal.index')->with('error', 'Permintaan ini sudah diproses.');
+        }
+
+        // If this reschedule is only for one week and has an apply_date,
+        // create a one-off jadwal exception for that date instead of changing the master jadwal.
+        if ($reschedule->one_week_only) {
+            $applyDate = $reschedule->apply_date;
+            if (empty($applyDate)) {
+                // compute next date for the requested new_hari by mapping Indonesian day to English
+                $dayMap = [
+                    'Senin' => 'Monday', 'Selasa' => 'Tuesday', 'Rabu' => 'Wednesday',
+                    'Kamis' => 'Thursday', 'Jumat' => 'Friday', 'Sabtu' => 'Saturday',
+                ];
+                $english = $dayMap[$reschedule->new_hari] ?? null;
+                if ($english) {
+                    try {
+                        $applyDate = \Carbon\Carbon::parse('next ' . $english)->toDateString();
+                    } catch (\Exception $e) {
+                        $applyDate = null;
+                    }
+                }
+            }
+
+            if ($applyDate) {
+                \App\Models\JadwalException::create([
+                    'jadwal_id' => $reschedule->jadwal_id,
+                    'date' => $applyDate,
+                    'hari' => $reschedule->new_hari,
+                    'jam_mulai' => $reschedule->new_jam_mulai,
+                    'jam_selesai' => $reschedule->new_jam_selesai,
+                    'catatan' => $reschedule->catatan,
+                ]);
+
+                $reschedule->update(['status' => 'approved', 'apply_date' => $applyDate]);
+
+                return redirect()->route('admin.jadwal.index')->with('success', 'Permintaan reschedule disetujui untuk minggu tersebut (satu kali).');
+            }
+        }
+
+        // Fallback: update the master jadwal (apply permanently)
+        $jadwal = $reschedule->jadwal;
+        $jadwal->update([
+            'hari' => $reschedule->new_hari,
+            'jam_mulai' => $reschedule->new_jam_mulai,
+            'jam_selesai' => $reschedule->new_jam_selesai,
+            'status' => 'approved', // Move to Menunggu Ruangan for room assignment
+        ]);
+
+        $reschedule->update(['status' => 'approved']);
+
+        return redirect()->route('admin.jadwal.index')->with('success', 'Permintaan reschedule disetujui. Silakan tetapkan ruangan.');
+    }
+
+    /**
+     * Reject a reschedule request
+     */
+    public function rejectReschedule(Request $request, JadwalReschedule $reschedule)
+    {
+        $request->validate(['catatan' => 'required|string|max:1000']);
+
+        if ($reschedule->status !== 'pending') {
+            return redirect()->route('admin.jadwal.index')->with('error', 'Permintaan ini sudah diproses.');
+        }
+
+        $reschedule->update([
+            'status' => 'rejected',
+            'catatan' => $request->catatan,
+        ]);
+
+        return redirect()->route('admin.jadwal.index')->with('success', 'Permintaan reschedule ditolak.');
     }
 }

@@ -4,6 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dosen\LecturerController;
 use App\Http\Controllers\Dosen\JadwalController;
+use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
+use App\Http\Controllers\Mahasiswa\AktivasiController;
+use App\Http\Controllers\Mahasiswa\KRSController;
+use App\Http\Controllers\Mahasiswa\NilaiController;
+use App\Http\Controllers\Mahasiswa\JadwalController as MahasiswaJadwalController;
+use App\Http\Controllers\Mahasiswa\PembayaranController;
+use App\Http\Controllers\Mahasiswa\ProfilController;
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -16,6 +23,8 @@ Route::get('/', function () {
         $user = Auth::user();
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'mahasiswa') {
+            return redirect()->route('mahasiswa.dashboard');
         }
         return redirect()->route('dosen.dashboard');
     }
@@ -27,13 +36,45 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/dashboard', [LecturerController::class, 'dashboard'])->name('dashboard');
     Route::get('/kelas', [LecturerController::class, 'classes'])->name('kelas');
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal')->middleware('auth');
-    Route::get('/jadwal/create', [JadwalController::class, 'create'])->name('jadwal.create')->middleware('auth');
-    Route::post('/jadwal', [JadwalController::class, 'store'])->name('jadwal.store')->middleware('auth');
+    Route::post('/jadwal/{jadwal}/reschedule', [JadwalController::class, 'reschedule'])->name('jadwal.reschedule')->middleware('auth');
+    Route::post('/jadwal/reschedule', [JadwalController::class, 'rescheduleGeneric'])->name('jadwal.reschedule.generic')->middleware('auth');
     Route::get('/kelas/{id}/absensi', [LecturerController::class, 'absensi'])->name('kelas.absensi');
     Route::get('/kelas/{id}/detail', [LecturerController::class, 'detail'])->name('kelas.detail');
     Route::get('/krs', [LecturerController::class, 'krs'])->name('krs');
     Route::get('/input-nilai', [LecturerController::class, 'inputNilai'])->name('input-nilai');
     Route::get('/mahasiswa', [LecturerController::class, 'students'])->name('mahasiswa');
+});
+
+// Mahasiswa Portal Routes
+Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(function () {
+    // Aktivasi (tidak perlu middleware status check)
+    Route::get('/aktivasi', [AktivasiController::class, 'index'])->name('aktivasi.index');
+    Route::post('/aktivasi', [AktivasiController::class, 'store'])->name('aktivasi.store');
+    
+    // Routes yang memerlukan status check
+    Route::middleware(['mahasiswa.status'])->group(function () {
+        Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
+        
+        // KRS
+        Route::get('/krs', [KRSController::class, 'index'])->name('krs.index');
+        Route::post('/krs', [KRSController::class, 'store'])->name('krs.store');
+        Route::post('/krs/submit', [KRSController::class, 'submit'])->name('krs.submit');
+        Route::get('/krs/print', [KRSController::class, 'print'])->name('krs.print');
+        
+        // Nilai (Akademik)
+        Route::get('/nilai', [NilaiController::class, 'index'])->name('nilai.index');
+        
+        // Jadwal Kuliah
+        Route::get('/jadwal', [MahasiswaJadwalController::class, 'index'])->name('jadwal.index');
+        
+        // Pembayaran
+        Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+        
+        // Profil
+        Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
+        Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+        Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.update-password');
+    });
 });
 
 // Admin Routes
@@ -64,9 +105,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('jadwal/{jadwal}/approve', [App\Http\Controllers\Admin\JadwalController::class, 'approve'])->name('jadwal.approve');
     Route::post('jadwal/{jadwal}/reject', [App\Http\Controllers\Admin\JadwalController::class, 'reject'])->name('jadwal.reject');
     Route::post('jadwal/{jadwal}/assign-room', [App\Http\Controllers\Admin\JadwalController::class, 'assignRoom'])->name('jadwal.assignRoom');
+    // Reschedule requests
+    Route::get('jadwal-reschedules', [App\Http\Controllers\Admin\JadwalController::class, 'reschedules'])->name('jadwal.reschedules');
+    Route::post('jadwal-reschedules/{reschedule}/approve', [App\Http\Controllers\Admin\JadwalController::class, 'approveReschedule'])->name('jadwal.reschedules.approve');
+    Route::post('jadwal-reschedules/{reschedule}/reject', [App\Http\Controllers\Admin\JadwalController::class, 'rejectReschedule'])->name('jadwal.reschedules.reject');
     
     // Semester Management
     Route::resource('semester', App\Http\Controllers\Admin\SemesterController::class);
+    Route::get('semester-manage', [App\Http\Controllers\Admin\SemesterController::class, 'manage'])->name('semester.manage');
+    Route::post('semester/set-active', [App\Http\Controllers\Admin\SemesterController::class, 'setActive'])->name('semester.set-active');
+    Route::put('semester/{semester}/krs-settings', [App\Http\Controllers\Admin\SemesterController::class, 'updateKrsSettings'])->name('semester.update-krs-settings');
     // Global search
     Route::get('search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
     

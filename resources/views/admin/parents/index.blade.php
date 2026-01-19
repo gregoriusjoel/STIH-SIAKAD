@@ -25,7 +25,7 @@
             <thead class="bg-maroon text-white">
                 <tr>
                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                        <i class="fas fa-hashtag mr-2"></i>No
+                        <i class=""></i>No
                     </th>
                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-user mr-2"></i>Nama Orang Tua

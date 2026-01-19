@@ -36,7 +36,18 @@ class KelasMataKuliahController extends Controller
             'ruangan' => 'nullable|string|max:50',
         ]);
 
-        KelasMataKuliah::create($request->all());
+        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'semester_id', 'nama_kelas', 'kuota', 'ruangan']);
+        // Map form field names to database column names
+        $mapped = [
+            'mata_kuliah_id' => $data['mata_kuliah_id'],
+            'dosen_id' => $data['dosen_id'],
+            'semester_id' => $data['semester_id'],
+            'kode_kelas' => $data['nama_kelas'],
+            'kapasitas' => $data['kuota'],
+            'ruang' => $data['ruangan'] ?? null,
+        ];
+
+        KelasMataKuliah::create($mapped);
         return redirect()->route('admin.kelas-mata-kuliah.index')->with('success', 'Kelas mata kuliah berhasil ditambahkan');
     }
 
@@ -59,7 +70,17 @@ class KelasMataKuliahController extends Controller
             'ruangan' => 'nullable|string|max:50',
         ]);
 
-        $kelasMataKuliah->update($request->all());
+        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'semester_id', 'nama_kelas', 'kuota', 'ruangan']);
+        $mapped = [
+            'mata_kuliah_id' => $data['mata_kuliah_id'],
+            'dosen_id' => $data['dosen_id'],
+            'semester_id' => $data['semester_id'],
+            'kode_kelas' => $data['nama_kelas'],
+            'kapasitas' => $data['kuota'],
+            'ruang' => $data['ruangan'] ?? null,
+        ];
+
+        $kelasMataKuliah->update($mapped);
         return redirect()->route('admin.kelas-mata-kuliah.index')->with('success', 'Kelas mata kuliah berhasil diperbarui');
     }
 

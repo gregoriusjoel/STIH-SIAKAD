@@ -16,6 +16,10 @@ class Mahasiswa extends Model
         'phone',
         'address',
         'status',
+        'status_akun',
+        'foto',
+        'no_hp',
+        'alamat',
     ];
 
     public function user(): BelongsTo
@@ -31,5 +35,20 @@ class Mahasiswa extends Model
     public function krs(): HasMany
     {
         return $this->hasMany(Krs::class);
+    }
+    
+    public function kuesionerAktivasi(): HasMany
+    {
+        return $this->hasMany(KuesionerAktivasi::class);
+    }
+    
+    public function pembayaran(): HasMany
+    {
+        return $this->hasMany(Pembayaran::class);
+    }
+    
+    public function isAktif(): bool
+    {
+        return $this->status_akun === 'aktif' || $this->status_akun === 'baru';
     }
 }

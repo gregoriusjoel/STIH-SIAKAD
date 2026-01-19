@@ -15,6 +15,58 @@
         </div>
     </div>
 
+    <!-- Pengaturan KRS Card -->
+    <div class="mt-6 bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Pengaturan KRS</h3>
+
+        @if(isset($semesterAktif))
+        <form action="{{ route('admin.semester.update-krs-settings', $semesterAktif->id) }}" method="POST">
+            @csrf
+            @method('PUT')
+
+            <div class="mb-4">
+                <label class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700">Status Pengisian KRS</span>
+                    <div class="relative">
+                        <input type="checkbox" name="krs_dapat_diisi" value="1" {{ $semesterAktif->krs_dapat_diisi ? 'checked' : '' }} class="sr-only peer" id="krsToggleAdmin">
+                        <label for="krsToggleAdmin" class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600 cursor-pointer"></label>
+                    </div>
+                </label>
+                <p class="text-xs text-gray-500 mt-1">{{ $semesterAktif->krs_dapat_diisi ? 'Mahasiswa dapat mengisi KRS' : 'Mahasiswa tidak dapat mengisi KRS' }}</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                    <label class="block text-xs text-gray-600 mb-1">Max SKS (IPK &lt; 3.0)</label>
+                    <input type="number" name="max_sks_rendah" value="{{ $semesterAktif->max_sks_rendah ?? 20 }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-600 mb-1">Max SKS (IPK ≥ 3.0)</label>
+                    <input type="number" name="max_sks_tinggi" value="{{ $semesterAktif->max_sks_tinggi ?? 24 }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" required>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-xs text-gray-600 mb-1">Mulai Periode</label>
+                <input type="date" name="krs_mulai" value="{{ $semesterAktif->krs_mulai?->format('Y-m-d') }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-xs text-gray-600 mb-1">Akhir Periode</label>
+                <input type="date" name="krs_selesai" value="{{ $semesterAktif->krs_selesai?->format('Y-m-d') }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+            </div>
+
+            <button type="submit" class="w-full px-4 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 transition flex items-center justify-center">
+                <i class="fas fa-save mr-2"></i>
+                Simpan Pengaturan
+            </button>
+        </form>
+        @else
+        <div class="text-sm text-gray-500">Belum ada semester aktif. Silakan atur semester aktif pada halaman Semester & Tahun Ajaran.</div>
+        @endif
+    </div>
+
+
     <!-- Filter Status -->
     <div class="mt-6 bg-white rounded-lg shadow-md p-4 border border-gray-200">
         <form method="GET" action="{{ route('admin.krs.index') }}" class="flex items-center space-x-4">

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>@yield('title', 'SIAKAD STIH - Mahasiswa')</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_stih_white.png') }}">
+    
+    <!-- Fonts -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Vite Assets -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .active-nav {
+            background: linear-gradient(90deg, rgba(139, 21, 56, 0.1) 0%, rgba(139, 21, 56, 0.05) 100%);
+            color: #8B1538;
+            font-weight: 600;
+            border-left: 3px solid #8B1538;
+        }
+
+        .sidebar-link {
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(139, 21, 56, 0.05);
+            transform: translateX(2px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8B1538;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6D1029;
+        }
+    </style>
+
+    @stack('styles')
+
+</head>
+
+<body class="bg-gray-50 font-inter">
+
+    <!-- Page Wrapper -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col h-full shadow-sm">
+            <div class="p-6 flex flex-col gap-6 h-full overflow-y-auto">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 border-b border-gray-100 pb-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center text-white shadow-lg">
+                        <i class="fas fa-graduation-cap text-xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-gray-800 text-lg font-bold leading-tight">SIAKAD Uni</h1>
+                        <p class="text-gray-500 text-xs font-normal">Student Portal</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="flex flex-col gap-1 grow">
+                    <a class="{{ Request::routeIs('mahasiswa.dashboard') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
+                       href="{{ route('mahasiswa.dashboard') }}">
+                        <i class="fas fa-home text-lg w-5"></i>
+                        <span class="text-sm font-medium">Dashboard</span>
+                    </a>
+                    
+                    <a class="{{ Request::routeIs('mahasiswa.krs*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
+                       href="{{ route('mahasiswa.krs.index') }}">
+                        <i class="fas fa-file-alt text-lg w-5"></i>
+                        <span class="text-sm font-medium">KRS</span>
+                    </a>
+                    
+                    <a class="{{ Request::routeIs('mahasiswa.nilai*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
+                       href="{{ route('mahasiswa.nilai.index') }}">
+                        <i class="fas fa-chart-line text-lg w-5"></i>
+                        <span class="text-sm font-medium">Akademik</span>
+                    </a>
+                    
+                    <a class="{{ Request::routeIs('mahasiswa.jadwal*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
+                       href="{{ route('mahasiswa.jadwal.index') }}">
+                        <i class="fas fa-calendar-alt text-lg w-5"></i>
+                        <span class="text-sm font-medium">Jadwal Kuliah</span>
+                    </a>
+                    
+                    <a class="{{ Request::routeIs('mahasiswa.pembayaran*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
+                       href="{{ route('mahasiswa.pembayaran.index') }}">
+                        <i class="fas fa-credit-card text-lg w-5"></i>
+                        <span class="text-sm font-medium">Pembayaran</span>
+                    </a>
+                    
+                    <!-- Bottom Section -->
+                    <a class="{{ Request::routeIs('mahasiswa.profil*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg mt-auto" 
+                       href="{{ route('mahasiswa.profil.index') }}">
+                        <i class="fas fa-user-circle text-lg w-5"></i>
+                        <span class="text-sm font-medium">Profil</span>
+                    </a>
+                    
+                    <form method="POST" action="{{ route('logout') }}" class="w-full">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all">
+                            <i class="fas fa-sign-out-alt text-lg w-5"></i>
+                            <span class="text-sm font-medium">Logout</span>
+                        </button>
+                    </form>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Wrapper -->
+        <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+
+            <!-- Topbar -->
+            <header class="bg-white border-b border-gray-200 px-6 py-4 shadow-sm sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <!-- Mobile Menu Button -->
+                    <button class="lg:hidden text-gray-600 hover:text-gray-800" id="sidebarToggle">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+
+                    <!-- Page Title - Mobile Hidden -->
+                    <div class="hidden lg:block">
+                        <h2 class="text-xl font-bold text-gray-800">@yield('page-title', 'Dashboard')</h2>
+                    </div>
+
+                    <!-- Right Side -->
+                    <div class="flex items-center gap-4 ml-auto">
+                        <!-- Search -->
+                        <div class="relative hidden md:block">
+                            <input type="text" placeholder="Search..." 
+                                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent text-sm w-64">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+
+                        <!-- Notifications -->
+                        <button class="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+
+                        <!-- Settings -->
+                        <button class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition">
+                            <i class="fas fa-cog text-lg"></i>
+                        </button>
+
+                        <!-- User Dropdown -->
+                        <div class="flex items-center gap-3 pl-4 border-l border-gray-200">
+                            <div class="text-right hidden sm:block">
+                                <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->mahasiswa->nama ?? Auth::user()->name }}</p>
+                                <p class="text-xs text-gray-500">NIDN: {{ Auth::user()->mahasiswa->npm ?? '-' }}</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center text-white font-bold shadow-md">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-6 bg-gray-50">
+                @if(session('success'))
+                <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6 animate-fade-in">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        <p class="text-green-800 font-medium">{{ session('success') }}</p>
+                    </div>
+                </div>
+                @endif
+
+                @if(session('error'))
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6 animate-fade-in">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
+                        <p class="text-red-800 font-medium">{{ session('error') }}</p>
+                    </div>
+                </div>
+                @endif
+
+                @yield('content')
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-white border-t border-gray-200 px-6 py-4">
+                <div class="text-center text-sm text-gray-600">
+                    <p>&copy; {{ date('Y') }} SIAKAD STIH. All rights reserved.</p>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    @stack('scripts')
+
+</body>
+
+</html>

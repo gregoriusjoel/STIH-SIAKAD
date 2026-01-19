@@ -69,10 +69,10 @@
                 </div>
 
                 <!-- Stat Card 4 (Urgent) -->
-                <div class="bg-white dark:bg-[#1a1d2e] p-6 rounded-xl border-2 border-primary/20 dark:border-primary/40 shadow-sm flex flex-col gap-4 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-2 opacity-10">
-                        <span class="material-symbols-outlined text-6xl text-primary">priority_high</span>
-                    </div>
+                <div class="bg-white dark:bg-[#1a1d2e] p-6 rounded-xl border-2 border-primary/20 dark:border-primary/40 shadow-sm flex flex-col gap-4 relative overflow-hidden z-0">
+                        <div class="absolute top-2 right-2 opacity-10 pointer-events-none" aria-hidden="true">
+                            <span class="material-symbols-outlined text-4xl text-primary">priority_high</span>
+                        </div>
                     <div class="flex justify-between items-start relative z-10">
                         <div class="size-12 rounded-lg bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-primary">
                             <span class="material-symbols-outlined text-2xl">assignment_late</span>

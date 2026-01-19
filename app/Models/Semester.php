@@ -13,11 +13,21 @@ class Semester extends Model
         'status',
         'tanggal_mulai',
         'tanggal_selesai',
+        'is_active',
+        'krs_dapat_diisi',
+        'max_sks_rendah',
+        'max_sks_tinggi',
+        'krs_mulai',
+        'krs_selesai',
     ];
 
     protected $casts = [
         'tanggal_mulai' => 'date',
         'tanggal_selesai' => 'date',
+        'is_active' => 'boolean',
+        'krs_dapat_diisi' => 'boolean',
+        'krs_mulai' => 'date',
+        'krs_selesai' => 'date',
     ];
 
     public function kelasMataKuliahs(): HasMany

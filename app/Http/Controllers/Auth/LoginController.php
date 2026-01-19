@@ -19,6 +19,8 @@ class LoginController extends Controller
             $user = Auth::user();
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
+            } elseif ($user->role === 'mahasiswa') {
+                return redirect()->route('mahasiswa.dashboard');
             }
             return redirect()->route('dosen.dashboard');
         }
@@ -42,14 +44,14 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
 
-            // Only allow admin and dosen roles
-            if (!in_array($user->role, ['admin', 'dosen'])) {
+            // Only allow admin, dosen, and mahasiswa roles
+            if (!in_array($user->role, ['admin', 'dosen', 'mahasiswa'])) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
                 
                 return back()
-                    ->with('error', 'Belum ada page untuk role ini')
+                    ->with('error', 'Role tidak diizinkan untuk login')
                     ->withInput($request->only('email'));
             }
 
@@ -65,6 +67,9 @@ class LoginController extends Controller
             // Redirect based on role
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard')
+                    ->with('login_success', 'Selamat datang, '.$user->name.'!');
+            } elseif ($user->role === 'mahasiswa') {
+                return redirect()->route('mahasiswa.dashboard')
                     ->with('login_success', 'Selamat datang, '.$user->name.'!');
             }
 

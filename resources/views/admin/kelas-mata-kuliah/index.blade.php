@@ -2,11 +2,15 @@
 @section('title', 'Kelas Mata Kuliah')
 @section('page-title', 'Kelas Mata Kuliah')
 @section('content')
-<div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
-    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h3 class="text-xl font-bold text-gray-800"><i class="fas fa-chalkboard-teacher text-maroon mr-2"></i>Daftar Kelas Mata Kuliah</h3>
-        <a href="{{ route('admin.kelas-mata-kuliah.create') }}" class="bg-maroon text-white px-6 py-3 rounded-lg hover:bg-maroon-dark transition shadow-md transform hover:scale-105 flex items-center"><i class="fas fa-plus mr-2"></i>Tambah Kelas</a>
+<div class="mb-6 flex items-start justify-between">
+    <div>
+        <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-chalkboard-teacher text-maroon mr-2"></i>Daftar Kelas Mata Kuliah</h3>
+        <p class="text-sm text-gray-600 mt-1">Kelola pengelompokan kelas per mata kuliah</p>
     </div>
+    <a href="{{ route('admin.kelas-mata-kuliah.create') }}" class="bg-maroon text-white px-6 py-3 rounded-lg transition shadow-md transform hover:scale-105 flex items-center"><i class="fas fa-plus mr-2"></i>Tambah Kelas</a>
+</div>
+
+<div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full">
             <thead class="bg-maroon text-white">

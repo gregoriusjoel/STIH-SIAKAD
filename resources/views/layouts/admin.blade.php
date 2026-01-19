@@ -164,12 +164,10 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full"><i class="fas fa-bell"></i></button>
-                        <button class="text-gray-500 hover:text-gray-700 p-2 rounded-full"><i class="fas fa-cog"></i></button>
                         <div class="flex items-center space-x-3">
                             <div class="text-right mr-2 hidden sm:block">
                                 <div class="text-sm font-medium text-gray-800">{{ auth()->user()->name }}</div>
-                                <div class="text-xs text-gray-500">NIDN: {{ auth()->user()->nidn ?? auth()->user()->id }}</div>
+                                
                             </div>
                             <div class="w-10 h-10 bg-maroon rounded-full flex items-center justify-center text-white font-bold">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}

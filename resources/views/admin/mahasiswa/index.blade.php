@@ -4,54 +4,59 @@
 @section('page-title', 'Data Mahasiswa')
 
 @section('content')
-<div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon">
-    <div class="p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-            <h3 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-user-graduate text-maroon mr-3 text-2xl"></i>
-                Daftar Mahasiswa STIH
-            </h3>
-            <p class="text-sm text-gray-600 mt-1">Kelola data mahasiswa kampus STIH</p>
-        </div>
-        <a href="{{ route('admin.mahasiswa.create') }}" class="btn-maroon px-6 py-3 rounded-lg hover:bg-opacity-90 transition transform hover:scale-105 shadow-md">
-            <span class="flex items-center">
-                <i class="fas fa-plus-circle mr-2"></i>
-                Tambah Mahasiswa
-            </span>
-        </a>
+<div class="mb-6 flex items-start justify-between">
+    <div>
+        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-user-graduate text-maroon mr-3 text-2xl"></i>
+            Daftar Mahasiswa STIH
+        </h3>
+        <p class="text-sm text-gray-600 mt-1">Kelola data mahasiswa kampus STIH</p>
     </div>
+    <a href="{{ route('admin.mahasiswa.create') }}" class="btn-maroon px-6 py-3 rounded-lg hover:bg-opacity-90 transition transform hover:scale-105 shadow-md">
+        <span class="flex items-center">
+            <i class="fas fa-plus-circle mr-2"></i>
+            Tambah Mahasiswa
+        </span>
+    </a>
+</div>
 
-    <div class="p-6">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-maroon text-white">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-id-card mr-2"></i>NPM
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-user mr-2"></i>Nama
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-envelope mr-2"></i>Email
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-graduation-cap mr-2"></i>Prodi
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-calendar mr-2"></i>Angkatan
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-info-circle mr-2"></i>Status
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-cog mr-2"></i>Aksi
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+<div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 border-separate" style="border-spacing: 0;">
+            <thead class="bg-maroon text-white rounded-t-xl">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tl-xl">
+                        <i class=""></i>No
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-id-card mr-2"></i>NPM
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-user mr-2"></i>Nama
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-envelope mr-2"></i>Email
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-graduation-cap mr-2"></i>Prodi
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-calendar mr-2"></i>Angkatan
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-info-circle mr-2"></i>Status
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tr-xl">
+                        <i class="fas fa-cog mr-2"></i>Aksi
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($mahasiswas as $mahasiswa)
                         <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                {{ ($mahasiswas->currentPage() - 1) * $mahasiswas->perPage() + $loop->iteration }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-maroon">
                                 {{ $mahasiswa->npm }}
                             </td>
@@ -138,7 +143,7 @@
                         </div>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <td colspan="8" class="px-6 py-8 text-center text-gray-500">
                                 <i class="fas fa-inbox text-gray-300 text-5xl mb-3"></i>
                                 <p class="text-lg">Belum ada data mahasiswa</p>
                             </td>

@@ -14,6 +14,7 @@ class Krs extends Model
     protected $fillable = [
         'mahasiswa_id',
         'kelas_mata_kuliah_id',
+        'ambil_mk',
         'status',
         'keterangan',
     ];
