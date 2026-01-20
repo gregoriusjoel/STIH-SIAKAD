@@ -137,7 +137,6 @@ class LecturerController extends Controller
         ];
 
         $students = [];
-        // TODO: Implement attendance data from database when available
 
         // Try to find a matching KelasMataKuliah (used for KRS/QR storage) by mata_kuliah_id and section/kode_kelas
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
@@ -158,6 +157,29 @@ class LecturerController extends Controller
         }
 
         // debug_absensi removed: no longer flashing debug info to the view
+
+        // Load attendance (presensi) for this kelas_mata_kuliah if available
+        if ($kelasMataKuliah) {
+            $presensis = \App\Models\Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+                ->with(['krs.mahasiswa.user'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $students = $presensis->map(function ($p, $i) {
+                $mahasiswa = $p->krs->mahasiswa ?? null;
+                $name = $p->nama ?? $mahasiswa?->user?->name ?? ($mahasiswa?->npm ?? 'Unknown');
+                $kelasKode = $p->kelas_mata_kuliah_id ? ($p->krs->kelasMataKuliah?->kode_kelas ?? '-') : '-';
+                $phone = $p->kontak ?? $mahasiswa?->phone ?? $mahasiswa?->no_hp ?? '-';
+                return [
+                    'no' => $i + 1,
+                    'nama' => $name,
+                    'kelas' => $kelasKode,
+                    'kontak' => $phone,
+                    'waktu' => $p->waktu?->format('Y-m-d H:i:s') ?? ($p->created_at?->format('Y-m-d H:i:s') ?? $p->tanggal),
+                    'aksi' => '',
+                ];
+            })->toArray();
+        }
 
         // Build a `class` array expected by the blade templates (includes QR token)
         $class = [

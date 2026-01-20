@@ -9,13 +9,19 @@ class Presensi extends Model
 {
     protected $fillable = [
         'krs_id',
+        'mahasiswa_id',
+        'kelas_mata_kuliah_id',
+        'nama',
+        'kontak',
         'tanggal',
+        'waktu',
         'status',
         'keterangan',
     ];
 
     protected $casts = [
         'tanggal' => 'date',
+        'waktu' => 'datetime',
     ];
 
     public function krs(): BelongsTo

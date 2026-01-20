@@ -9,7 +9,6 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        /* Custom Scrollbar for Daftar Pertemuan */
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
         }

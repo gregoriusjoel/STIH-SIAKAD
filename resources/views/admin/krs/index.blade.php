@@ -158,7 +158,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="text-sm text-gray-700">
                                 <i class="fas fa-calendar text-gray-400 mr-1"></i>
-                                {{ $item->semester->nama_semester }}
+                                {{ $item->semester?->nama_semester ?? '-' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -246,7 +246,7 @@
                                 <div class="grid grid-cols-1 gap-2">
                                     <div><strong>Mahasiswa:</strong> {{ $item->mahasiswa->user->name }} (NPM: {{ $item->mahasiswa->npm }})</div>
                                     <div><strong>Mata Kuliah:</strong> {{ $item->kelasMataKuliah->mataKuliah->nama_mk }}</div>
-                                    <div><strong>Semester:</strong> {{ $item->semester->nama_semester }}</div>
+                                    <div><strong>Semester:</strong> {{ $item->semester?->nama_semester ?? '-' }}</div>
                                     <div><strong>SKS:</strong> {{ $item->kelasMataKuliah->mataKuliah->sks }}</div>
                                     <div><strong>Status:</strong> {{ ucfirst($item->status) }}</div>
                                 </div>

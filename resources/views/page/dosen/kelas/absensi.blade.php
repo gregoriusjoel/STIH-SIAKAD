@@ -108,10 +108,22 @@
                                 </tr>
                             </thead>
                             <tbody class="text-gray-700">
-                                <!-- Dummy empty state -->
-                                <tr>
-                                    <td colspan="6" class="px-4 py-8 text-center text-gray-400">Belum ada peserta yang mengisi absensi.</td>
-                                </tr>
+                                @if(!empty($students) && count($students) > 0)
+                                    @foreach($students as $s)
+                                        <tr class="border-b">
+                                            <td class="px-4 py-3">{{ $s['no'] }}</td>
+                                            <td class="px-4 py-3">{{ $s['nama'] }}</td>
+                                            <td class="px-4 py-3">{{ $s['kelas'] }}</td>
+                                            <td class="px-4 py-3">{{ $s['kontak'] }}</td>
+                                            <td class="px-4 py-3">{{ $s['waktu'] }}</td>
+                                            <td class="px-4 py-3">{!! $s['aksi'] !!}</td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="6" class="px-4 py-8 text-center text-gray-400">Belum ada peserta yang mengisi absensi.</td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>

@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.blank')
 
 @section('title', 'Isi Absensi')
 
 @section('content')
-    <div class="max-w-xl mx-auto py-12">
+    <div style="width:420px;">
         <div class="bg-white rounded-lg border p-6">
             <h3 class="text-lg font-bold mb-4">Form Absensi</h3>
 
@@ -23,9 +23,17 @@
                         <input type="text" name="name" value="{{ old('name') }}" class="w-full border px-3 py-2 rounded">
                         @error('name')<div class="text-xs text-red-600 mt-1">{{ $message }}</div>@enderror
                     </div>
+                    <div class="mb-3">
+                        <label class="block text-sm text-gray-700">Kontak (HP)</label>
+                        <input type="text" name="kontak" value="{{ old('kontak') }}" class="w-full border px-3 py-2 rounded">
+                        @error('kontak')<div class="text-xs text-red-600 mt-1">{{ $message }}</div>@enderror
+                    </div>
                 @else
                     <div class="mb-3">
                         <p class="text-sm">Anda masuk sebagai: <strong>{{ auth()->user()->name }}</strong></p>
+                        <input type="hidden" name="name" value="{{ auth()->user()->name }}">
+                        @php $userPhone = auth()->user()->mahasiswa?->phone ?? auth()->user()->phone ?? null; @endphp
+                        <input type="hidden" name="kontak" value="{{ $userPhone }}">
                     </div>
                 @endif
 

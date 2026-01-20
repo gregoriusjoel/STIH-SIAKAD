@@ -43,6 +43,7 @@ class AttendanceController extends Controller
         $data = $request->validate([
             'npm' => 'nullable|string',
             'name' => 'nullable|string',
+            'kontak' => 'nullable|string',
             'keterangan' => 'nullable|string',
         ]);
 
@@ -62,20 +63,58 @@ class AttendanceController extends Controller
             $krs = Krs::where('mahasiswa_id', $mahasiswa->id)->where('kelas_mata_kuliah_id', $kelas->id)->first();
         }
 
+        // Prevent duplicate attendance: same mahasiswa can't submit twice for the same kelas
+        if (! empty($mahasiswa?->id)) {
+            $already = Presensi::where('mahasiswa_id', $mahasiswa->id)
+                ->where('kelas_mata_kuliah_id', $kelas->id)
+                ->exists();
+
+            if ($already) {
+                return redirect()->route('absensi.thanks')->with('info', 'Anda sudah mengisi absensi untuk kelas ini.');
+            }
+        }
+
         if (! $krs) {
-            \Log::warning('Absensi attempt without KRS', [
+            \Log::warning('Absensi attempt without KRS — auto-creating KRS', [
                 'token' => $token,
                 'mahasiswa_id' => $mahasiswa?->id ?? null,
                 'request' => $request->all(),
             ]);
 
-            return back()->withErrors(['krs' => 'Anda tidak terdaftar pada kelas ini (tidak ada KRS).']);
+            // Auto-create a KRS record so the presensi can be recorded.
+            try {
+                $krs = Krs::create([
+                    'mahasiswa_id' => $mahasiswa->id,
+                    'kelas_mata_kuliah_id' => $kelas->id,
+                    'status' => 'disetujui',
+                    'keterangan' => 'Auto-created via QR attendance',
+                ]);
+
+                \Log::info('Auto-created KRS for attendance', [
+                    'krs_id' => $krs->id,
+                    'mahasiswa_id' => $mahasiswa->id,
+                    'kelas_mata_kuliah_id' => $kelas->id,
+                ]);
+            } catch (\Exception $ex) {
+                \Log::error('Failed to auto-create KRS for attendance', [
+                    'error' => $ex->getMessage(),
+                    'mahasiswa_id' => $mahasiswa?->id ?? null,
+                    'kelas_id' => $kelas?->id ?? null,
+                ]);
+
+                return back()->withErrors(['krs' => 'Gagal membuat KRS otomatis. Silakan hubungi admin.']);
+            }
         }
 
-        // Create presensi entry
+        // Create presensi entry (store additional fields per DB schema)
         $presensi = Presensi::create([
             'krs_id' => $krs->id,
-            'tanggal' => Carbon::now(),
+            'mahasiswa_id' => $mahasiswa->id ?? null,
+            'kelas_mata_kuliah_id' => $kelas->id ?? null,
+            'nama' => $data['name'] ?? $mahasiswa?->user?->name ?? $mahasiswa?->npm ?? null,
+            'kontak' => $mahasiswa?->phone ?? $mahasiswa?->no_hp ?? null,
+            'tanggal' => Carbon::now()->toDateString(),
+            'waktu' => Carbon::now(),
             'status' => 'hadir',
             'keterangan' => $data['keterangan'] ?? null,
         ]);

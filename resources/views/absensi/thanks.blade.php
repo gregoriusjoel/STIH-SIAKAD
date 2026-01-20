@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.blank')
 
 @section('title', 'Terima Kasih')
 
 @section('content')
-    <div class="max-w-xl mx-auto py-12 text-center">
+    <div style="width:420px; text-align:center;">
         <div class="bg-white rounded-lg border p-6">
             <h3 class="text-lg font-bold mb-2">Terima Kasih</h3>
             <p class="text-sm text-gray-600">Absensi Anda telah tercatat.</p>
