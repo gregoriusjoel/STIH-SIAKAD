@@ -45,4 +45,15 @@ class Kelas extends Model
     {
         return $this->hasMany(Jadwal::class);
     }
+    public function krs(): HasMany
+    {
+        return $this->hasMany(Krs::class);
+    }
+
+    public function mahasiswas()
+    {
+        return $this->belongsToMany(Mahasiswa::class, 'krs', 'kelas_id', 'mahasiswa_id')
+            ->withPivot('status')
+            ->wherePivot('status', 'disetujui');
+    }
 }

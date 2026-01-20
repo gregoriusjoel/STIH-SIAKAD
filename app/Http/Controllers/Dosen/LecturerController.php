@@ -23,7 +23,7 @@ class LecturerController extends Controller
         }
 
         $user = Auth::user();
-        
+
         // Get data from database
         $kelasList = Kelas::where('dosen_id', $user->id)->with('mataKuliah')->get();
         $activeJadwals = Jadwal::whereHas('kelas', function ($q) use ($user) {
@@ -45,6 +45,7 @@ class LecturerController extends Controller
 
         return view('page.dosen.dashboard.index', [
             'total_mata_kuliah' => $kelasList->count(),
+            'total_kelas_aktif' => $kelasList->count(),
             'total_students' => 0, // TODO: implement student count
             'sks_load' => $kelasList->sum(fn($k) => $k->mataKuliah->sks ?? 0),
             'krs_approval' => 0, // TODO: implement
@@ -55,12 +56,20 @@ class LecturerController extends Controller
     public function classes()
     {
         $user = Auth::user();
-        
+
         // Get classes from database
         $kelasList = Kelas::where('dosen_id', $user->id)
-            ->with(['mataKuliah', 'jadwals' => function ($q) {
-                $q->where('status', 'active');
-            }])
+            ->with([
+                'mataKuliah',
+                'jadwals' => function ($q) {
+                    $q->where('status', 'active');
+                }
+            ])
+            ->withCount([
+                'krs' => function ($query) {
+                    $query->where('status', 'disetujui');
+                }
+            ])
             ->get();
 
         $classes = $kelasList->map(function ($kelas) {
@@ -70,7 +79,7 @@ class LecturerController extends Controller
                 'name' => $kelas->mataKuliah->nama,
                 'code' => $kelas->mataKuliah->kode,
                 'section' => $kelas->section,
-                'students' => 0, // TODO: implement student count
+                'students' => $kelas->krs_count,
                 'day' => $jadwal?->hari ?? '-',
                 'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
                 'room' => $jadwal?->ruangan ?? '-',
@@ -85,7 +94,7 @@ class LecturerController extends Controller
     public function inputNilai(Request $request)
     {
         $user = Auth::user();
-        
+
         $kelasList = Kelas::where('dosen_id', $user->id)
             ->with('mataKuliah')
             ->get();
@@ -121,9 +130,12 @@ class LecturerController extends Controller
 
     public function absensi($id)
     {
-        $kelas = Kelas::with(['mataKuliah', 'jadwals' => function ($q) {
-            $q->where('status', 'active');
-        }])->findOrFail($id);
+        $kelas = Kelas::with([
+            'mataKuliah',
+            'jadwals' => function ($q) {
+                $q->where('status', 'active');
+            }
+        ])->findOrFail($id);
 
         $jadwal = $kelas->jadwals->first();
 
@@ -133,67 +145,13 @@ class LecturerController extends Controller
             'section' => $kelas->section,
             'pertemuan' => 12, // TODO: implement from database
             'topic' => 'Pertemuan ' . 12, // TODO: implement from database
-            'date' => now()->locale('id')->isoFormat('dddd, D MMMM YYYY')
+            'date' => now()->locale('id')->isoFormat('dddd, D MMMM YYYY'),
+            'room' => $jadwal?->ruangan ?? '-',
+            'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
+            'dosen_name' => $kelas->dosen->name ?? 'Dosen Belum Ditentukan',
         ];
 
-        $students = [];
 
-        // Try to find a matching KelasMataKuliah (used for KRS/QR storage) by mata_kuliah_id and section/kode_kelas
-        $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where(function ($q) use ($kelas) {
-                $q->where('kode_kelas', $kelas->section)
-                  ->orWhere('kode_kelas', $kelas->section . '');
-            })->first();
-
-        // Fallback: pick first kelas_mata_kuliah for that mata_kuliah_id if not found
-        if (! $kelasMataKuliah) {
-            $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)->first();
-        }
-
-        // Ensure the kelas_mata_kuliah has a qr_token so QR can be displayed; generate if missing
-        if ($kelasMataKuliah && empty($kelasMataKuliah->qr_token)) {
-            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
-            $kelasMataKuliah->save();
-        }
-
-        // debug_absensi removed: no longer flashing debug info to the view
-
-        // Load attendance (presensi) for this kelas_mata_kuliah if available
-        if ($kelasMataKuliah) {
-            $presensis = \App\Models\Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
-                ->with(['krs.mahasiswa.user'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-            $students = $presensis->map(function ($p, $i) {
-                $mahasiswa = $p->krs->mahasiswa ?? null;
-                $name = $p->nama ?? $mahasiswa?->user?->name ?? ($mahasiswa?->npm ?? 'Unknown');
-                $kelasKode = $p->kelas_mata_kuliah_id ? ($p->krs->kelasMataKuliah?->kode_kelas ?? '-') : '-';
-                $phone = $p->kontak ?? $mahasiswa?->phone ?? $mahasiswa?->no_hp ?? '-';
-                return [
-                    'no' => $i + 1,
-                    'nama' => $name,
-                    'kelas' => $kelasKode,
-                    'kontak' => $phone,
-                    'waktu' => $p->waktu?->format('Y-m-d H:i:s') ?? ($p->created_at?->format('Y-m-d H:i:s') ?? $p->tanggal),
-                    'aksi' => '',
-                ];
-            })->toArray();
-        }
-
-        // Build a `class` array expected by the blade templates (includes QR token)
-        $class = [
-            'id' => $kelas->id,
-            'name' => $kelas->mataKuliah->nama,
-            'code' => $kelas->mataKuliah->kode,
-            'section' => $kelas->section,
-            'pertemuan' => 12,
-            'topic' => 'Pertemuan ' . 12,
-            'date' => now()->locale('id')->isoFormat('dddd, D MMMM YYYY'),
-            'teacher' => [
-                'name' => $kelas->dosen?->user->name ?? auth()->user()->name ?? 'Nama Dosen'
-            ],
-            'qr_token' => $kelasMataKuliah->qr_token ?? null,
         ];
 
         if (request()->ajax()) {
@@ -205,9 +163,12 @@ class LecturerController extends Controller
 
     public function detail($id)
     {
-        $kelas = Kelas::with(['mataKuliah', 'jadwals' => function ($q) {
-            $q->where('status', 'active');
-        }])->findOrFail($id);
+        $kelas = Kelas::with([
+            'mataKuliah',
+            'jadwals' => function ($q) {
+                $q->where('status', 'active');
+            }
+        ])->findOrFail($id);
 
         $jadwal = $kelas->jadwals->first();
 
