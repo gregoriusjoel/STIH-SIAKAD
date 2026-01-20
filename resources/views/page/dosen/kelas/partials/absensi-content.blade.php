@@ -51,4 +51,77 @@
             <!-- QR Card -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">QR Code Absensi</h3>
-                *** End Patch
+                <div id="qrCard" class="text-center">
+                    <div id="qrWrap" class="inline-block p-6 bg-white border rounded-lg shadow-sm">
+                        @php $token = $class['qr_token'] ?? ($class->qr_token ?? null); @endphp
+                        @if($token)
+                            <img id="generatedQr" src="{{ route('qrcode.kelas.image', $token) }}" alt="QR Kelas" width="180" height="180" />
+                        @else
+                            <div class="w-44 h-44 flex items-center justify-center border rounded bg-gray-50">
+                                <div class="text-sm text-gray-500">QR belum dibuat</div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <p class="text-xs text-gray-400 mt-3">Scan QR untuk mengisi absensi</p>
+
+                    <div class="mt-4 flex items-center justify-center gap-3">
+                        @if($token)
+                            <a id="downloadBtn" href="{{ route('qrcode.kelas.image', $token) }}" class="px-3 py-2 rounded-md bg-green-600 text-white text-sm" download>Download QR</a>
+                        @else
+                            <form action="{{ route('dosen.kelas.generate_qr', ['id' => $id]) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 rounded-md text-white text-sm bg-green-600">Buat QR</button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                <label class="text-xs text-gray-500">Link Absensi</label>
+                <div class="mt-2 flex items-center gap-2">
+                    <input id="absensiLink" type="text" readonly value="{{ $token ? route('absensi.form', ['token' => $token]) : 'N/A' }}" class="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" />
+                    <button id="copyBtn" class="px-3 py-2 bg-[#8B1538] text-white rounded-lg text-sm">Copy</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right column: Daftar Hadir -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-sm font-bold text-[#8B1538]">Daftar Hadir</h4>
+                    <div class="flex items-center gap-3">
+                        <label class="text-sm text-gray-500">Tampilkan</label>
+                        <select class="border border-gray-200 rounded px-2 py-1 text-sm">
+                            <option>25</option>
+                            <option>50</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3">No</th>
+                                <th class="px-4 py-3">Nama</th>
+                                <th class="px-4 py-3">Kelas</th>
+                                <th class="px-4 py-3">Kontak</th>
+                                <th class="px-4 py-3">Waktu</th>
+                                <th class="px-4 py-3">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                            <!-- Dummy empty state -->
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-gray-400">Belum ada peserta yang mengisi absensi.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>

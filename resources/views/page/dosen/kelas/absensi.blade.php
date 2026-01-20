@@ -5,6 +5,22 @@
 
 @section('content')
     <div class="flex flex-col gap-6 max-w-[1200px] mx-auto w-full flex-1 py-6">
+        @if(session('success'))
+            <div class="max-w-[1200px] mx-auto px-4">
+                <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded mb-4">{{ session('success') }}</div>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="max-w-[1200px] mx-auto px-4">
+                <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded mb-4">{{ session('error') }}</div>
+            </div>
+        @endif
+        @if(session('debug_info'))
+            <div class="max-w-[1200px] mx-auto px-4">
+                <pre class="text-xs bg-gray-50 border p-2 rounded text-gray-700">Debug: {{ json_encode(session('debug_info')) }}</pre>
+            </div>
+        @endif
+        {{-- debug_absensi removed --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left column: Info + QR -->
             <div class="lg:col-span-1 space-y-6">
@@ -32,36 +48,34 @@
                 <div id="qrCard" class="bg-white rounded-xl border border-gray-200 p-6 text-center">
                     <h4 class="text-sm font-bold text-[#8B1538] mb-4">QR Code Absensi</h4>
                     <div id="qrWrap" class="inline-block p-6 bg-white border rounded-lg shadow-sm">
-                        <!-- Dummy QR: simple SVG pattern -->
-                        <svg id="dummyQr" xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
-                            <rect width="180" height="180" fill="#fff" />
-                            <g fill="#111">
-                                <rect x="20" y="20" width="40" height="40" />
-                                <rect x="120" y="20" width="40" height="40" />
-                                <rect x="20" y="120" width="40" height="40" />
-                                <!-- small squares -->
-                                <rect x="75" y="75" width="10" height="10" />
-                                <rect x="90" y="75" width="10" height="10" />
-                                <rect x="105" y="75" width="10" height="10" />
-                                <rect x="75" y="90" width="10" height="10" />
-                                <rect x="90" y="90" width="10" height="10" />
-                                <rect x="105" y="90" width="10" height="10" />
-                            </g>
-                        </svg>
+                        @php $token = $class['qr_token'] ?? ($class->qr_token ?? null); @endphp
+                        @if($token)
+                            <img id="generatedQr" src="{{ route('qrcode.kelas.image', $token) }}" alt="QR Kelas" width="180" height="180" />
+                        @else
+                            <div class="w-44 h-44 flex items-center justify-center border rounded bg-gray-50">
+                                <div class="text-sm text-gray-500">QR belum dibuat</div>
+                            </div>
+                        @endif
                     </div>
 
                     <p class="text-xs text-gray-400 mt-3">Scan QR untuk mengisi absensi</p>
 
                     <div class="mt-4 flex items-center justify-center gap-3">
-                        <button id="toggleBtn" class="px-4 py-2 rounded-md text-white text-sm bg-green-600">Aktifkan QR</button>
-                        <button id="downloadBtn" class="px-3 py-2 rounded-md bg-green-600 text-white text-sm hidden">Download QR</button>
+                        @if($token)
+                            <a id="downloadBtn" href="{{ route('qrcode.kelas.image', $token) }}" class="px-3 py-2 rounded-md bg-green-600 text-white text-sm" download>Download QR</a>
+                        @else
+                            <form action="{{ route('dosen.kelas.generate_qr', ['id' => $id]) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 rounded-md text-white text-sm bg-green-600">Buat QR</button>
+                            </form>
+                        @endif
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl border border-gray-200 p-4">
                     <label class="text-xs text-gray-500">Link Absensi</label>
                     <div class="mt-2 flex items-center gap-2">
-                        <input id="absensiLink" type="text" readonly value="https://example.com/absen/ABC123" class="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" />
+                        <input id="absensiLink" type="text" readonly value="{{ $token ? route('absensi.form', ['token' => $token]) : 'N/A' }}" class="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" />
                         <button id="copyBtn" class="px-3 py-2 bg-[#8B1538] text-white rounded-lg text-sm">Copy</button>
                     </div>
                 </div>
@@ -114,53 +128,76 @@
             const downloadBtn = document.getElementById('downloadBtn');
             const qrWrap = document.getElementById('qrWrap');
             const dummyQr = document.getElementById('dummyQr');
+            const generatedQr = document.getElementById('generatedQr');
+            const copyBtn = document.getElementById('copyBtn');
+            const absensiLinkEl = document.getElementById('absensiLink');
 
             let active = localStorage.getItem(key) === '1';
 
             function updateUI(){
-                if(active){
-                    toggleBtn.textContent = 'Nonaktifkan QR';
-                    toggleBtn.classList.remove('bg-green-600');
-                    toggleBtn.classList.add('bg-red-600');
-                    downloadBtn.classList.remove('hidden');
-                    qrWrap.style.opacity = '1';
+                if (toggleBtn) {
+                    if(active){
+                        toggleBtn.textContent = 'Nonaktifkan QR';
+                        toggleBtn.classList.remove('bg-green-600');
+                        toggleBtn.classList.add('bg-red-600');
+                        if (downloadBtn) downloadBtn.classList.remove('hidden');
+                        if (qrWrap) qrWrap.style.opacity = '1';
+                    } else {
+                        toggleBtn.textContent = 'Aktifkan QR';
+                        toggleBtn.classList.remove('bg-red-600');
+                        toggleBtn.classList.add('bg-green-600');
+                        if (downloadBtn) downloadBtn.classList.add('hidden');
+                        if (qrWrap) qrWrap.style.opacity = '0.45';
+                    }
                 } else {
-                    toggleBtn.textContent = 'Aktifkan QR';
-                    toggleBtn.classList.remove('bg-red-600');
-                    toggleBtn.classList.add('bg-green-600');
-                    downloadBtn.classList.add('hidden');
-                    qrWrap.style.opacity = '0.45';
+                    if (qrWrap) qrWrap.style.opacity = (generatedQr ? '1' : '0.45');
                 }
             }
 
-            toggleBtn.addEventListener('click', function(){
-                active = !active;
-                localStorage.setItem(key, active ? '1' : '0');
-                updateUI();
-            });
-
-            downloadBtn.addEventListener('click', function(){
-                const svg = dummyQr.outerHTML;
-                const blob = new Blob([svg], {type: 'image/svg+xml'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'qr-absensi.svg';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
-            });
-
-            document.getElementById('copyBtn').addEventListener('click', function(){
-                const link = document.getElementById('absensiLink');
-                link.select();
-                navigator.clipboard.writeText(link.value).then(()=>{
-                    const prev = toggleBtn.innerText;
-                    toggleBtn.innerText = 'Disalin';
-                    setTimeout(()=> toggleBtn.innerText = prev, 900);
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function(e){
+                    e.preventDefault();
+                    active = !active;
+                    localStorage.setItem(key, active ? '1' : '0');
+                    updateUI();
                 });
-            });
+            }
+
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function(e){
+                    if (generatedQr && generatedQr.src) {
+                        return;
+                    }
+                    e.preventDefault();
+                    if (!dummyQr) return;
+                    const svg = dummyQr.outerHTML;
+                    const blob = new Blob([svg], {type: 'image/svg+xml'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'qr-absensi.svg';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                });
+            }
+
+            if (copyBtn && absensiLinkEl) {
+                copyBtn.addEventListener('click', function(){
+                    try {
+                        if (absensiLinkEl.select) absensiLinkEl.select();
+                        navigator.clipboard.writeText(absensiLinkEl.value || '').then(()=>{
+                            if (toggleBtn) {
+                                const prev = toggleBtn.innerText;
+                                toggleBtn.innerText = 'Disalin';
+                                setTimeout(()=> toggleBtn.innerText = prev, 900);
+                            }
+                        }).catch(()=>{});
+                    } catch (ex) {
+                    }
+                });
+            }
 
             updateUI();
         })();

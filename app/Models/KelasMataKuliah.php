@@ -16,6 +16,14 @@ class KelasMataKuliah extends Model
         'kode_kelas',
         'kapasitas',
         'ruang',
+        'qr_token',
+        'qr_enabled',
+        'qr_expires_at',
+    ];
+
+    protected $casts = [
+        'qr_enabled' => 'boolean',
+        'qr_expires_at' => 'datetime',
     ];
 
     public function mataKuliah(): BelongsTo

@@ -31,6 +31,15 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+// Public QR image and redirect routes
+Route::get('/qrcode/kelas/{token}/image', [App\Http\Controllers\QrController::class, 'image'])->name('qrcode.kelas.image');
+Route::get('/kelas/qr-redirect/{token}', [App\Http\Controllers\QrController::class, 'redirect'])->name('qrcode.kelas.redirect');
+
+// Public attendance form via QR
+Route::get('/absensi/kelas/{token}', [App\Http\Controllers\AttendanceController::class, 'showForm'])->name('absensi.form');
+Route::post('/absensi/kelas/{token}', [App\Http\Controllers\AttendanceController::class, 'store'])->name('absensi.submit');
+Route::get('/absensi/terima-kasih', [App\Http\Controllers\AttendanceController::class, 'thanks'])->name('absensi.thanks');
+
 // Dosen / Lecturer Portal Routes
 Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/dashboard', [LecturerController::class, 'dashboard'])->name('dashboard');
@@ -40,6 +49,7 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::post('/jadwal/reschedule', [JadwalController::class, 'rescheduleGeneric'])->name('jadwal.reschedule.generic')->middleware('auth');
     Route::get('/kelas/{id}/absensi', [LecturerController::class, 'absensi'])->name('kelas.absensi');
     Route::get('/kelas/{id}/detail', [LecturerController::class, 'detail'])->name('kelas.detail');
+    Route::post('/kelas/{id}/generate-qr', [LecturerController::class, 'generateQr'])->name('kelas.generate_qr');
     Route::get('/krs', [LecturerController::class, 'krs'])->name('krs');
     Route::get('/input-nilai', [LecturerController::class, 'inputNilai'])->name('input-nilai');
     Route::get('/mahasiswa', [LecturerController::class, 'students'])->name('mahasiswa');
@@ -123,4 +133,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('krs/{kr}', [App\Http\Controllers\Admin\KrsController::class, 'show'])->name('krs.show');
     Route::put('krs/{kr}/status', [App\Http\Controllers\Admin\KrsController::class, 'updateStatus'])->name('krs.updateStatus');
     Route::delete('krs/{kr}', [App\Http\Controllers\Admin\KrsController::class, 'destroy'])->name('krs.destroy');
+
+    // QR management (optional admin toggles could be added later)
 });

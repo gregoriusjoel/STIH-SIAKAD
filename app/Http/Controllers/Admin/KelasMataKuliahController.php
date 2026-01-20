@@ -8,6 +8,7 @@ use App\Models\MataKuliah;
 use App\Models\Dosen;
 use App\Models\Semester;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class KelasMataKuliahController extends Controller
 {
@@ -45,9 +46,17 @@ class KelasMataKuliahController extends Controller
             'kode_kelas' => $data['nama_kelas'],
             'kapasitas' => $data['kuota'],
             'ruang' => $data['ruangan'] ?? null,
+            'qr_enabled' => $request->has('qr_enabled') ? true : false,
+            'qr_expires_at' => $request->qr_expires_at ?? null,
         ];
 
-        KelasMataKuliah::create($mapped);
+        $created = KelasMataKuliah::create($mapped);
+
+        // Ensure a QR token exists for this class
+        if (empty($created->qr_token)) {
+            $created->qr_token = Str::random(40);
+            $created->save();
+        }
         return redirect()->route('admin.kelas-mata-kuliah.index')->with('success', 'Kelas mata kuliah berhasil ditambahkan');
     }
 
@@ -78,9 +87,17 @@ class KelasMataKuliahController extends Controller
             'kode_kelas' => $data['nama_kelas'],
             'kapasitas' => $data['kuota'],
             'ruang' => $data['ruangan'] ?? null,
+            'qr_enabled' => $request->has('qr_enabled') ? true : false,
+            'qr_expires_at' => $request->qr_expires_at ?? null,
         ];
 
         $kelasMataKuliah->update($mapped);
+
+        // Ensure QR token exists after update
+        if (empty($kelasMataKuliah->qr_token)) {
+            $kelasMataKuliah->qr_token = Str::random(40);
+            $kelasMataKuliah->save();
+        }
         return redirect()->route('admin.kelas-mata-kuliah.index')->with('success', 'Kelas mata kuliah berhasil diperbarui');
     }
 

@@ -40,7 +40,7 @@
         }
     @endphp
 
-    <div class="flex flex-col gap-6 max-w-[1400px] mx-auto w-full flex-1" x-data="detailKelas()">
+    <div class="flex flex-col gap-6 w-full flex-1 px-4" x-data="detailKelas()">
 
         {{-- HEADER --}}
         <div
@@ -109,10 +109,10 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
 
             {{-- LEFT: DAFTAR PERTEMUAN --}}
-            <div class="col-span-1">
+<div class="col-span-12 lg:col-span-3">
                 <div class="bg-white rounded-xl border border-gray-200 p-6 min-h-[500px]">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-sm font-bold text-[#111218]">Daftar Pertemuan</h3>
@@ -168,7 +168,8 @@
             </div>
 
             {{-- RIGHT: SEARCH + TABLE --}}
-            <div class="col-span-2 flex flex-col gap-6 w-full">
+<div class="col-span-12 lg:col-span-9 flex flex-col gap-6 w-full">
+
 
                 <div class="bg-white rounded-xl border border-gray-200 p-6">
                     <div class="flex flex-col md:flex-row gap-4">
@@ -207,8 +208,9 @@
                 </div>
 
                 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden min-h-[320px] w-full">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-[1800px] w-full text-sm text-left">
+                    <div class="w-full overflow-x-auto">
+    <table class="w-full text-sm text-left">
+
                             <thead class="bg-gray-50 text-[#616889] border-b border-gray-200">
                                 <tr>
                                     <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider">Mahasiswa</th>

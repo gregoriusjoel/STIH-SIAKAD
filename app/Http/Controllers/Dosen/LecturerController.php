@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dosen;
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use App\Models\Kelas;
+use App\Models\KelasMataKuliah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -138,11 +139,46 @@ class LecturerController extends Controller
         $students = [];
         // TODO: Implement attendance data from database when available
 
-        if (request()->ajax()) {
-            return view('page.dosen.kelas.partials.absensi-content', compact('class_info', 'students', 'id'))->with('is_modal', true);
+        // Try to find a matching KelasMataKuliah (used for KRS/QR storage) by mata_kuliah_id and section/kode_kelas
+        $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where(function ($q) use ($kelas) {
+                $q->where('kode_kelas', $kelas->section)
+                  ->orWhere('kode_kelas', $kelas->section . '');
+            })->first();
+
+        // Fallback: pick first kelas_mata_kuliah for that mata_kuliah_id if not found
+        if (! $kelasMataKuliah) {
+            $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)->first();
         }
 
-        return view('page.dosen.kelas.absensi', compact('class_info', 'students', 'id'))->with('is_modal', false);
+        // Ensure the kelas_mata_kuliah has a qr_token so QR can be displayed; generate if missing
+        if ($kelasMataKuliah && empty($kelasMataKuliah->qr_token)) {
+            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
+            $kelasMataKuliah->save();
+        }
+
+        // debug_absensi removed: no longer flashing debug info to the view
+
+        // Build a `class` array expected by the blade templates (includes QR token)
+        $class = [
+            'id' => $kelas->id,
+            'name' => $kelas->mataKuliah->nama,
+            'code' => $kelas->mataKuliah->kode,
+            'section' => $kelas->section,
+            'pertemuan' => 12,
+            'topic' => 'Pertemuan ' . 12,
+            'date' => now()->locale('id')->isoFormat('dddd, D MMMM YYYY'),
+            'teacher' => [
+                'name' => $kelas->dosen?->user->name ?? auth()->user()->name ?? 'Nama Dosen'
+            ],
+            'qr_token' => $kelasMataKuliah->qr_token ?? null,
+        ];
+
+        if (request()->ajax()) {
+            return view('page.dosen.kelas.partials.absensi-content', compact('class_info', 'students', 'id', 'class'))->with('is_modal', true);
+        }
+
+        return view('page.dosen.kelas.absensi', compact('class_info', 'students', 'id', 'class'))->with('is_modal', false);
     }
 
     public function detail($id)
@@ -175,5 +211,45 @@ class LecturerController extends Controller
         }
 
         return view('page.dosen.kelas.detail', compact('class_info', 'students', 'id'))->with('is_modal', false);
+    }
+
+    /**
+     * Generate a QR token for the kelas's KelasMataKuliah record.
+     */
+    public function generateQr($id)
+    {
+        $kelas = Kelas::with('mataKuliah')->findOrFail($id);
+
+        // Try matching by kode_kelas or nama_kelas (some records use different column names)
+        $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where(function ($q) use ($kelas) {
+                $q->where('kode_kelas', $kelas->section)
+                  ->orWhere('kode_kelas', $kelas->section . '');
+            })->first();
+
+        // Fallback: pick first kelas_mata_kuliah for that mata_kuliah_id
+        if (! $kelasMataKuliah) {
+            $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)->first();
+        }
+
+        if (! $kelasMataKuliah) {
+            return back()->with('error', 'Tidak dapat menemukan record KelasMataKuliah untuk kelas ini. Silakan buat kelas mata kuliah terlebih dahulu.');
+        }
+
+        if (empty($kelasMataKuliah->qr_token)) {
+            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
+            $kelasMataKuliah->qr_enabled = true;
+            $kelasMataKuliah->save();
+        }
+
+        // Log and return debug info in session so UI can show whether token was created
+        \Log::info('Generated QR token', ['kelas_mk_id' => $kelasMataKuliah->id, 'qr_token' => $kelasMataKuliah->qr_token]);
+
+        $debug = [
+            'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
+            'qr_token' => $kelasMataKuliah->qr_token,
+        ];
+
+        return back()->with(['success' => 'QR dibuat dan diaktifkan.', 'debug_info' => $debug]);
     }
 }
