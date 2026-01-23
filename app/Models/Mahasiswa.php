@@ -13,6 +13,7 @@ class Mahasiswa extends Model
         'npm',
         'prodi',
         'angkatan',
+        'semester',
         'phone',
         'address',
         'status',
@@ -20,6 +21,20 @@ class Mahasiswa extends Model
         'foto',
         'no_hp',
         'alamat',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'agama',
+        'status_sipil',
+        'rt',
+        'rw',
+        'kota',
+        'propinsi',
+        'negara',
+        'jenis_sekolah',
+        'jurusan_sekolah',
+        'tahun_lulus',
+        'nilai_kelulusan',
     ];
 
     public function user(): BelongsTo
@@ -50,5 +65,53 @@ class Mahasiswa extends Model
     public function isAktif(): bool
     {
         return $this->status_akun === 'aktif' || $this->status_akun === 'baru';
+    }
+
+    /**
+     * Calculate the current semester based on angkatan and current semester period
+     */
+    public function getCurrentSemester(): int
+    {
+        // If the semester is explicitly stored on the mahasiswa record, prefer it.
+        if ($this->semester && is_numeric($this->semester)) {
+            return max(1, min(8, (int) $this->semester));
+        }
+
+        if (!$this->angkatan) {
+            return 1;
+        }
+
+        // Get active semester to determine which academic year and period we're in
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+        
+        if (!$activeSemester) {
+            return 1;
+        }
+
+        // Parse tahun ajaran (format: "2025/2026")
+        $tahunParts = explode('/', $activeSemester->tahun_ajaran);
+        $currentYear = (int) ($tahunParts[0] ?? date('Y'));
+        
+        // Calculate years since enrollment
+        $angkatanYear = (int) $this->angkatan;
+        $yearsDiff = $currentYear - $angkatanYear;
+        
+        // Calculate semester: 2 semesters per year
+        $baseSemester = ($yearsDiff * 2);
+        
+        // Add 1 if currently in Genap semester, 0 if Ganjil
+        if ($activeSemester->nama_semester === 'Genap') {
+            $baseSemester += 2;
+        } else {
+            $baseSemester += 1;
+        }
+        
+        // Limit to reasonable range (1-8 for undergraduate)
+        return max(1, min(8, $baseSemester));
+    }
+
+    public function dosenPa()
+    {
+        return $this->belongsToMany(Dosen::class, 'dosen_pa', 'mahasiswa_id', 'dosen_id')->withTimestamps();
     }
 }

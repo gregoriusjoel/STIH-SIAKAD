@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class MataKuliah extends Model
 {
     protected $fillable = [
+        'kode_id',
         'kode_mk',
+        'praktikum',
         'nama_mk',
         'sks',
         'semester',

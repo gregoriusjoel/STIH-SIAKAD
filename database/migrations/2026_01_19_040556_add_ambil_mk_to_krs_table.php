@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('krs', function (Blueprint $table) {
-            $table->enum('ambil_mk', ['ya', 'tidak'])->default('ya')->after('kelas_mata_kuliah_id');
+            // Add 'ambil_mk' column if it does not exist yet. Do not rely on 'after' position
+            if (!Schema::hasColumn('krs', 'ambil_mk')) {
+                $table->enum('ambil_mk', ['ya', 'tidak'])->default('ya');
+            }
         });
     }
 
@@ -22,7 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('krs', function (Blueprint $table) {
-            //
+            if (Schema::hasColumn('krs', 'ambil_mk')) {
+                $table->dropColumn('ambil_mk');
+            }
         });
     }
 };

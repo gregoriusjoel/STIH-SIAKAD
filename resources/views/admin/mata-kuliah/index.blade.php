@@ -33,10 +33,10 @@
                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-book-open mr-2"></i>Nama Mata Kuliah
                     </th>
-                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                    <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-calculator mr-2"></i>SKS
                     </th>
-                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                    <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-tags mr-2"></i>Jenis
                     </th>
                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
@@ -72,17 +72,27 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-3 py-1 inline-flex text-sm font-bold rounded-full bg-purple-100 text-purple-800">
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-sm font-bold rounded-full bg-purple-100 text-purple-800">
                                 <i class="fas fa-calculator mr-1"></i>
                                 {{ $mk->sks }} SKS
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                {{ $mk->jenis == 'wajib' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                <i class="fas {{ $mk->jenis == 'wajib' ? 'fa-check-circle' : 'fa-star' }} mr-1"></i>
-                                {{ ucfirst($mk->jenis) }}
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            @php
+                                $jenisColors = [
+                                    'wajib_nasional' => 'bg-blue-100 text-blue-800',
+                                        'wajib_prodi' => 'bg-red-100 text-red-800',
+                                        'pilihan' => 'bg-purple-100 text-purple-800',
+                                        'peminatan' => 'bg-yellow-100 text-yellow-800',
+                                ];
+                                $jenisKey = $mk->jenis ?? null;
+                                $jenisLabel = ucwords(str_replace('_', ' ', $jenisKey));
+                                $colorClass = $jenisColors[$jenisKey] ?? 'bg-gray-100 text-gray-800';
+                            @endphp
+                            <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full {{ $colorClass }}">
+                                <i class="fas fa-star mr-1"></i>
+                                {{ $jenisLabel }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -136,7 +146,7 @@
                                     <div><strong>Kode MK:</strong> {{ $mk->kode_mk }}</div>
                                     <div><strong>SKS:</strong> {{ $mk->sks }}</div>
                                     <div><strong>Semester:</strong> {{ $mk->semester }}</div>
-                                    <div><strong>Jenis:</strong> {{ ucfirst($mk->jenis) }}</div>
+                                    <div><strong>Jenis:</strong> {{ ucwords(str_replace('_', ' ', $mk->jenis)) }}</div>
                                     <div><strong>Prodi:</strong> {{ $mk->prodi }}</div>
                                 </div>
                             </div>

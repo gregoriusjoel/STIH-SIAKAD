@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\KelasMataKuliah;
+use App\Models\Semester;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,7 +51,18 @@ class LecturerController extends Controller
             'total_students' => 0, // TODO: implement student count
             'sks_load' => $kelasList->sum(fn($k) => $k->mataKuliah->sks ?? 0),
             'krs_approval' => 0, // TODO: implement
-            'schedules' => $todaySchedules
+            'schedules' => $todaySchedules,
+            'all_schedules' => $activeJadwals->map(function ($jadwal) {
+                return [
+                    'title' => $jadwal->kelas->mataKuliah->nama,
+                    'code' => $jadwal->kelas->mataKuliah->kode,
+                    'section' => $jadwal->kelas->section,
+                    'day' => $jadwal->hari,
+                    'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
+                    'room' => $jadwal->ruangan,
+                    'color' => 'bg-blue-100 text-blue-700', // Default color, can be randomized
+                ];
+            })->values()->toArray()
         ]);
     }
 
@@ -65,26 +78,45 @@ class LecturerController extends Controller
                     $q->where('status', 'active');
                 }
             ])
-            ->withCount([
-                'krs' => function ($query) {
-                    $query->where('status', 'disetujui');
-                }
-            ])
             ->get();
 
         $classes = $kelasList->map(function ($kelas) {
             $jadwal = $kelas->jadwals->first();
+
+            // Calculate student count manually
+            $krsCount = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+                ->where('kode_kelas', $kelas->section)
+                ->where('dosen_id', $kelas->dosen_id)
+                ->first()
+                    ?->krs()
+                ->where('status', 'disetujui')
+                ->count() ?? 0;
+
+            // Calculate progress percentage
+            $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
+                ?? \App\Models\Semester::latest()->first();
+
+            $progress = 0;
+            if ($semesterAktif && $semesterAktif->tanggal_mulai) {
+                $start = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
+                $now = \Carbon\Carbon::now();
+                if ($now->gte($start)) {
+                    $weeks = $start->diffInWeeks($now);
+                    $progress = min(100, round(($weeks / 16) * 100));
+                }
+            }
+
             return [
                 'id' => $kelas->id,
                 'name' => $kelas->mataKuliah->nama,
                 'code' => $kelas->mataKuliah->kode,
                 'section' => $kelas->section,
-                'students' => $kelas->krs_count,
+                'students' => $krsCount,
                 'day' => $jadwal?->hari ?? '-',
                 'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
                 'room' => $jadwal?->ruangan ?? '-',
                 'sks' => $kelas->mataKuliah->sks,
-                'progress' => rand(40, 80), // TODO: implement real progress
+                'progress' => $progress,
             ];
         })->toArray();
 
@@ -139,19 +171,71 @@ class LecturerController extends Controller
 
         $jadwal = $kelas->jadwals->first();
 
+        // Calculate current meeting
+        $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
+            ?? \App\Models\Semester::latest()->first();
+
+        $pertemuanKe = 1;
+        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
+            $start = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
+            $now = \Carbon\Carbon::now();
+            if ($now->gte($start)) {
+                $pertemuanKe = (int) min(16, $start->diffInWeeks($now) + 1);
+            }
+        }
+
         $class_info = [
             'name' => $kelas->mataKuliah->nama,
             'code' => $kelas->mataKuliah->kode,
             'section' => $kelas->section,
-            'pertemuan' => 12, // TODO: implement from database
-            'topic' => 'Pertemuan ' . 12, // TODO: implement from database
+            'pertemuan' => $pertemuanKe,
+            'topic' => 'Pertemuan Ke-' . $pertemuanKe,
             'date' => now()->locale('id')->isoFormat('dddd, D MMMM YYYY'),
             'room' => $jadwal?->ruangan ?? '-',
             'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
             'dosen_name' => $kelas->dosen->name ?? 'Dosen Belum Ditentukan',
         ];
 
+        // Fetch students from the related KelasMataKuliah -> krs
+        $kelasMataKuliah = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('kode_kelas', $kelas->section)
+            ->where('dosen_id', $kelas->dosen_id)
+            ->first();
 
+        // Ensure the kelas_mata_kuliah has a qr_token so QR can be displayed; generate if missing
+        if ($kelasMataKuliah && empty($kelasMataKuliah->qr_token)) {
+            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
+            $kelasMataKuliah->save();
+        }
+
+        $students = $kelasMataKuliah ? $kelasMataKuliah->krs()
+            ->where('status', 'disetujui')
+            ->with('mahasiswa')
+            ->get()
+            ->map(function ($krs) {
+                return [
+                    'name' => $krs->mahasiswa->nama,
+                    'nim' => $krs->mahasiswa->nim,
+                    'prodi' => $krs->mahasiswa->prodi,
+                    'semester' => $krs->mahasiswa->semester,
+                    'ipk' => $krs->mahasiswa->ipk ?? 3.5, // Fallback if null
+                    'status' => 'Aktif', // Default status
+                ];
+            })->toArray() : [];
+
+        // Build a `class` array expected by the blade templates (includes QR token)
+        $class = [
+            'id' => $kelas->id,
+            'name' => $kelas->mataKuliah->nama,
+            'code' => $kelas->mataKuliah->kode,
+            'section' => $kelas->section,
+            'pertemuan' => $pertemuanKe,
+            'topic' => 'Pertemuan Ke-' . $pertemuanKe,
+            'date' => now()->locale('id')->isoFormat('dddd, D MMMM YYYY'),
+            'room' => $jadwal?->ruangan ?? '-',
+            'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
+            'dosen_name' => $kelas->dosen->name ?? 'Dosen Belum Ditentukan',
+            'qr_token' => $kelasMataKuliah->qr_token ?? null,
         ];
 
         if (request()->ajax()) {
@@ -172,6 +256,42 @@ class LecturerController extends Controller
 
         $jadwal = $kelas->jadwals->first();
 
+        // Fetch active semester for logic
+        $semesterAktif = Semester::where('status', 'aktif')->first()
+            ?? Semester::where('is_active', true)->first()
+            ?? Semester::latest()->first();
+
+        // Calculate progress based on weeks
+        $pertemuanKe = 1;
+        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
+            $startDate = Carbon::parse($semesterAktif->tanggal_mulai);
+            $now = Carbon::now();
+            if ($now->gte($startDate)) {
+                $pertemuanKe = (int) min(16, $startDate->diffInWeeks($now) + 1);
+            }
+        }
+
+        // Fetch students from the related KelasMataKuliah
+        $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('kode_kelas', $kelas->section)
+            ->where('dosen_id', $kelas->dosen_id)
+            ->first();
+
+        $students = $kelasMataKuliah ? $kelasMataKuliah->krs()
+            ->where('status', 'disetujui')
+            ->with('mahasiswa')
+            ->get()
+            ->map(function ($krs) {
+                return [
+                    'name' => $krs->mahasiswa->nama,
+                    'nim' => $krs->mahasiswa->nim,
+                    'prodi' => $krs->mahasiswa->prodi,
+                    'semester' => $krs->mahasiswa->semester,
+                    'ipk' => $krs->mahasiswa->ipk ?? 3.5,
+                    'status' => 'Aktif',
+                ];
+            })->toArray() : [];
+
         $class_info = [
             'name' => $kelas->mataKuliah->nama,
             'code' => $kelas->mataKuliah->kode,
@@ -181,13 +301,12 @@ class LecturerController extends Controller
             'day' => $jadwal?->hari ?? '-',
             'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
             'room' => $jadwal?->ruangan ?? '-',
-            'students_count' => 0, // TODO: implement from database
-            'progress' => 12, // TODO: implement from database
-            'total_pertemuan' => 16
+            'students_count' => count($students),
+            'progress' => $pertemuanKe,
+            'total_pertemuan' => 16,
+            'semester_start_date' => $semesterAktif?->tanggal_mulai
         ];
 
-        $students = [];
-        // TODO: Implement student data from database when available
 
         if (request()->ajax()) {
             return view('page.dosen.kelas.partials.detail-content', compact('class_info', 'students', 'id'))->with('is_modal', true);
@@ -207,15 +326,15 @@ class LecturerController extends Controller
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
             ->where(function ($q) use ($kelas) {
                 $q->where('kode_kelas', $kelas->section)
-                  ->orWhere('kode_kelas', $kelas->section . '');
+                    ->orWhere('kode_kelas', $kelas->section . '');
             })->first();
 
         // Fallback: pick first kelas_mata_kuliah for that mata_kuliah_id
-        if (! $kelasMataKuliah) {
+        if (!$kelasMataKuliah) {
             $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)->first();
         }
 
-        if (! $kelasMataKuliah) {
+        if (!$kelasMataKuliah) {
             return back()->with('error', 'Tidak dapat menemukan record KelasMataKuliah untuk kelas ini. Silakan buat kelas mata kuliah terlebih dahulu.');
         }
 
@@ -234,5 +353,90 @@ class LecturerController extends Controller
         ];
 
         return back()->with(['success' => 'QR dibuat dan diaktifkan.', 'debug_info' => $debug]);
+    }
+
+    public function meetingDetail($id, $pertemuan)
+    {
+        $kelas = Kelas::with([
+            'mataKuliah',
+            'jadwals' => function ($q) {
+                $q->where('status', 'active');
+            }
+        ])->findOrFail($id);
+
+        $jadwal = $kelas->jadwals->first();
+
+        // Re-calculate meeting date based on session number
+        $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
+            ?? \App\Models\Semester::where('is_active', true)->first()
+            ?? \App\Models\Semester::latest()->first();
+
+        $meetingDate = '-';
+        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
+            $start = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
+            $meetingDate = $start->copy()->addDays(($pertemuan - 1) * 7)->locale('id')->isoFormat('D MMMM YYYY');
+        }
+
+        $meeting = [
+            'no' => $pertemuan,
+            'label' => 'Pertemuan ' . $pertemuan,
+            'date' => $meetingDate,
+            'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
+            'room' => $jadwal?->ruangan ?? '-',
+        ];
+
+        // Fetch students
+        $kelasMataKuliah = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('kode_kelas', $kelas->section)
+            ->where('dosen_id', $kelas->dosen_id)
+            ->first();
+
+        $students = $kelasMataKuliah ? $kelasMataKuliah->krs()
+            ->where('status', 'disetujui')
+            ->with('mahasiswa')
+            ->get()
+            ->map(function ($krs) {
+                return [
+                    'name' => $krs->mahasiswa->nama,
+                    'nim' => $krs->mahasiswa->nim,
+                    'prodi' => $krs->mahasiswa->prodi,
+                    'status' => 'Aktif',
+                ];
+            })->toArray() : [];
+
+        return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students'));
+    }
+
+    public function meetingMaterials($id, $pertemuan)
+    {
+        $kelas = Kelas::with([
+            'mataKuliah',
+            'jadwals' => function ($q) {
+                $q->where('status', 'active');
+            }
+        ])->findOrFail($id);
+
+        $jadwal = $kelas->jadwals->first();
+
+        // Re-calculate meeting date based on session number
+        $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
+            ?? \App\Models\Semester::where('is_active', true)->first()
+            ?? \App\Models\Semester::latest()->first();
+
+        $meetingDate = '-';
+        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
+            $start = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
+            $meetingDate = $start->copy()->addDays(($pertemuan - 1) * 7)->locale('id')->isoFormat('D MMMM YYYY');
+        }
+
+        $meeting = [
+            'no' => $pertemuan,
+            'label' => 'Pertemuan ' . $pertemuan,
+            'date' => $meetingDate,
+            'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
+            'room' => $jadwal?->ruangan ?? '-',
+        ];
+
+        return view('page.dosen.kelas.materi', compact('kelas', 'meeting'));
     }
 }

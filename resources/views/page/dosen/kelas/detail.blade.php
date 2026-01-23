@@ -9,18 +9,22 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #f8f9fa;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #dbdde6;
+            background: #e2e8f0;
             border-radius: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #8B1538;
+            background: #cbd5e1;
         }
     </style>
 @endpush
@@ -28,251 +32,334 @@
 @section('content')
     @php
         $meetings = [];
+        $startDate = !empty($class_info['semester_start_date'])
+            ? \Carbon\Carbon::parse($class_info['semester_start_date'])
+            : now();
+
         for ($i = 1; $i <= ($class_info['total_pertemuan'] ?? 12); $i++) {
             $meetings[] = [
                 'no' => $i,
                 'label' => 'Pertemuan ' . $i,
-                'date' => now()->addDays(($i - 1) * 7)->locale('id')->isoFormat('D MMM YYYY'),
+                'date' => $startDate->copy()->addDays(($i - 1) * 7)->locale('id')->isoFormat('D MMM YYYY'),
+                'time' => $class_info['time'],
                 'present' => 0,
-                'total' => count($students)
+                'total' => count($students),
+                'status' => 'Belum Dimulai'
             ];
         }
     @endphp
 
-    <div class="flex flex-col gap-6 w-full flex-1 px-4" x-data="detailKelas()">
+    <div class="flex flex-col gap-8 w-full flex-1 px-4 max-w-[1400px] mx-auto" x-data="detailKelas()">
 
-        {{-- HEADER --}}
-        <div
-            class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('dosen.kelas') }}"
-                    class="text-gray-400 hover:text-[#8B1538] transition-colors p-2 rounded-lg hover:bg-gray-100">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </a>
-                <div>
-                    <h1 class="text-2xl font-extrabold text-[#111218] tracking-tight">Detail Kelas</h1>
-                    <p class="text-[#616889] text-sm">Manajemen kehadiran dan mahasiswa kelas</p>
-                </div>
-            </div>
+        {{-- BREADCRUMB & HEADER --}}
+        <div class="flex flex-col gap-4">
+            <nav class="flex items-center gap-2 text-sm text-gray-500">
+                <a href="{{ route('dosen.kelas') }}" class="hover:text-primary transition-colors">Kelas</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <span class="font-medium text-gray-800">Detail Kelas</span>
+            </nav>
 
-            <button class="flex items-center gap-2 px-4 py-2 bg-white border border-[#8B1538] text-[#8B1538] 
-                rounded-lg font-medium text-sm hover:bg-[#FEF2F2] transition-all shadow-sm">
-                <span class="material-symbols-outlined text-[20px]">download</span>
-                Export Data
-            </button>
-        </div>
-
-        {{-- CLASS INFO --}}
-        <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mt-4">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
-
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-start gap-4">
-                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[#8B1538] to-[#701230] 
-                        flex items-center justify-center text-white shadow-md">
-                        <span class="material-symbols-outlined text-3xl">menu_book</span>
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-pink-700 flex items-center justify-center text-white shadow-lg shadow-pink-900/10 shrink-0">
+                        <span class="material-symbols-outlined text-4xl">menu_book</span>
                     </div>
                     <div>
                         <div class="flex items-center gap-3 mb-1">
-                            <h2 class="text-xl font-bold text-[#111218]">{{ $class_info['name'] }}</h2>
-                            <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-pink-50 
-                                text-[#8B1538] border border-pink-100">
-                                {{ $class_info['section'] }}
+                            <h1 class="text-3xl font-black text-[#111218] tracking-tight">{{ $class_info['name'] }}</h1>
+                            <span
+                                class="px-2.5 py-0.5 rounded text-xs font-bold bg-green-50 text-green-700 border border-green-100 uppercase tracking-wide">
+                                Aktif
                             </span>
                         </div>
-                        <p class="text-sm text-[#616889]">
-                            {{ $class_info['code'] }} • {{ $class_info['sks'] }} SKS • Semester
-                            {{ $class_info['semester'] }}
-                        </p>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                            <div class="flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[18px]">class</span>
+                                <span class="font-medium text-gray-700">Kelas {{ $class_info['section'] }}</span>
+                            </div>
+                            <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+                                <span>{{ $class_info['code'] }}</span>
+                            </div>
+                            <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                            <div>{{ $class_info['sks'] }} SKS</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-[#616889]">
-                    @php
-                        $infos = [
-                            ['icon' => 'calendar_month', 'value' => $class_info['day'] == '-' ? 'Belum terjadwal' : $class_info['day']],
-                            ['icon' => 'schedule', 'value' => $class_info['time'] == '-' ? '--:--' : $class_info['time']],
-                            ['icon' => 'location_on', 'value' => $class_info['room'] == '-' ? 'TBA' : $class_info['room']],
-                            ['icon' => 'group', 'value' => $class_info['students_count'] . " Mahasiswa"],
-                        ];
-                    @endphp
-
-                    @foreach($infos as $info)
-                        <div class="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
-                            <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
-                                <span class="material-symbols-outlined text-gray-400 text-lg">{{ $info['icon'] }}</span>
-                            </div>
-                            <span class="font-medium text-xs">{{ $info['value'] }}</span>
-                        </div>
-                    @endforeach
+                <div class="flex gap-3">
+                    <button
+                        class="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-[20px]">share</span>
+                        Bagikan
+                    </button>
+                    <button
+                        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
+                        <span class="material-symbols-outlined text-[20px]">download</span>
+                        Export Data
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+        {{-- OVERVIEW STATISTICS --}}
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Time -->
+            <div
+                class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                <div class="size-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                    <span class="material-symbols-outlined">schedule</span>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Waktu</p>
+                    <p class="text-sm font-bold text-gray-800">{{ $class_info['day'] }}, {{ $class_info['time'] }}</p>
+                </div>
+            </div>
 
-            {{-- LEFT: DAFTAR PERTEMUAN --}}
-<div class="col-span-12 lg:col-span-3">
-                <div class="bg-white rounded-xl border border-gray-200 p-6 min-h-[500px]">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-sm font-bold text-[#111218]">Daftar Pertemuan</h3>
-                        <span class="text-xs text-[#616889]">Total {{ count($meetings) }}</span>
-                    </div>
+            <!-- Room -->
+            <div
+                class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                <div class="size-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                    <span class="material-symbols-outlined">location_on</span>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Ruangan</p>
+                    <p class="text-sm font-bold text-gray-800">{{ $class_info['room'] }}</p>
+                </div>
+            </div>
 
-                    <div class="flex flex-col gap-3 max-h-[620px] overflow-y-auto pr-2 custom-scrollbar">
+            <!-- Total Students -->
+            <div
+                class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                <div class="size-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                    <span class="material-symbols-outlined">group</span>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Mahasiswa</p>
+                    <p class="text-sm font-bold text-gray-800">{{ $class_info['students_count'] }} Terdaftar</p>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div
+                class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                <div class="size-12 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center">
+                    <span class="material-symbols-outlined">timeline</span>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Pertemuan</p>
+                    <p class="text-sm font-bold text-gray-800">3 / {{ $class_info['total_pertemuan'] }} Selesai</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {{-- LEFT: MEETING TIMELINE --}}
+            <div class="col-span-12 lg:col-span-3 space-y-4">
+                <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">event_note</span>
+                    Daftar Pertemuan
+                </h3>
+
+                <div class="bg-white rounded-2xl border border-gray-100 p-2 shadow-sm">
+                    <div class="flex flex-col gap-1 min-h-[400px]">
                         @foreach($meetings as $m)
-                            <div x-data="{ open: false }"
-                                class="border border-gray-100 rounded-lg overflow-hidden bg-white hover:shadow-sm transition-shadow">
+                            <div x-data="{ open: false }" class="group"
+                                x-show="{{ $loop->index }} >= (meetingPage - 1) * perPage && {{ $loop->index }} < meetingPage * perPage"
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0 transform scale-95"
+                                x-transition:enter-end="opacity-100 transform scale-100">
                                 <button @click="open = !open"
-                                    class="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-50 transition-colors">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#8B1538] to-[#C41E3A] flex items-center justify-center text-white font-bold shadow-sm">
-                                            {{ $m['no'] }}
+                                    class="w-full flex items-start gap-4 p-3 rounded-xl transition-colors text-left relative overflow-hidden"
+                                    :class="open ? 'bg-gray-50' : 'hover:bg-gray-50'">
+
+                                    {{-- Status Indicator Line --}}
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-200"
+                                        :class="open ? 'bg-primary' : 'bg-gray-200'"></div>
+
+                                    <div class="pl-2 flex-1">
+                                        <div class="flex justify-between items-start">
+                                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                                {{ $m['label'] }}
+                                            </span>
                                         </div>
-                                        <div class="text-left">
-                                            <div class="text-sm font-semibold text-[#111218]">{{ $m['label'] }}</div>
-                                            <div class="text-xs text-[#616889]">{{ $m['date'] }}</div>
+                                        <h4 class="font-bold text-gray-800 text-sm mt-0.5">{{ $m['date'] }}</h4>
+
+                                        <div x-show="!open" class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                            <span class="font-semibold text-gray-700">{{ $m['time'] }}</span>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-gray-300 transition-transform duration-200"
-                                            :class="open ? 'rotate-180' : ''">expand_more</span>
-                                    </div>
+
+                                    <span
+                                        class="material-symbols-outlined text-gray-300 text-[20px] transition-transform duration-300"
+                                        :class="open ? 'rotate-180 text-primary' : ''">expand_more</span>
                                 </button>
 
-                                <div x-show="open" x-cloak x-collapse class="px-4 pb-4 pt-2 border-t border-gray-50 bg-gray-50">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="text-xs text-[#616889]">Kehadiran:
-                                            <span class="font-semibold text-[#111218]">{{ $m['present'] }}</span>
+                                <div x-show="open" x-collapse class="pl-5 pr-3 pb-3">
+                                    <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 mt-1">
+                                        <div class="flex justify-between items-center text-xs mb-3">
+                                            <div class="text-gray-500">Waktu</div>
+                                            <div class="font-bold text-gray-800">{{ $m['time'] }}</div>
                                         </div>
-                                        <div class="text-xs text-[#616889]">Total:
-                                            <span class="font-semibold text-[#111218]">{{ $m['total'] }}</span>
+
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <a href="{{ route('dosen.kelas.absensi', ['id' => $id]) }}?pertemuan={{ $m['no'] }}"
+                                                class="flex items-center justify-center gap-1.5 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-hover transition-all shadow-sm">
+                                                <span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+                                                Absen
+                                            </a>
+                                            <a href="{{ route('dosen.kelas.pertemuan.detail', ['id' => $id, 'pertemuan' => $m['no']]) }}"
+                                                class="flex items-center justify-center gap-1.5 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-50 transition-all">
+                                                Lihat Rincian
+                                            </a>
                                         </div>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <a href="{{ route('dosen.kelas.absensi', ['id' => $id]) }}?pertemuan={{ $m['no'] }}"
-                                            class="px-3 py-2 bg-[#8B1538] text-white rounded-lg text-xs font-medium text-center hover:bg-[#701230] transition-colors">
-                                            Absen
-                                        </a>
-                                        <button
-                                            class="px-3 py-2 border border-gray-200 rounded-lg text-xs text-gray-600 font-medium text-center hover:bg-white transition-colors">
-                                            Rincian
-                                        </button>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
+
+                    {{-- Pagination Controls --}}
+                    <div class="flex justify-between items-center px-2 py-3 border-t border-gray-100 mt-2"
+                        x-show="totalMeetings > perPage">
+                        <button @click="prevPage" :disabled="meetingPage === 1"
+                            class="size-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        </button>
+
+                        <span class="text-xs font-bold text-gray-400">
+                            Page <span class="text-gray-800" x-text="meetingPage"></span>
+                        </span>
+
+                        <button @click="nextPage" :disabled="meetingPage === totalPages"
+                            class="size-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {{-- RIGHT: SEARCH + TABLE --}}
-<div class="col-span-12 lg:col-span-9 flex flex-col gap-6 w-full">
+            {{-- RIGHT: STUDENTS TABLE --}}
+            <div class="col-span-12 lg:col-span-9 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">school</span>
+                        Daftar Mahasiswa
+                    </h3>
+                    <div class="text-sm text-gray-500">
+                        Total <span class="font-bold text-gray-800">{{ count($students) }}</span> mahasiswa terdaftar
+                    </div>
+                </div>
 
-
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <div class="relative flex-1">
+                {{-- FILTERS --}}
+                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4">
+                    <div class="relative flex-1">
+                        <span
+                            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">search</span>
+                        <input type="text" x-model="searchQuery" placeholder="     Cari nama mahasiswa atau NIM..."
+                            class="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm text-gray-800 placeholder-gray-400">
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="relative w-full md:w-48">
+                            <select x-model="filterProdi"
+                                class="w-full appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-sm text-gray-700 cursor-pointer font-medium">
+                                <option value="">Semua Prodi</option>
+                                <option value="Informatika">Informatika</option>
+                                <option value="Sistem Informasi">Sistem Informasi</option>
+                            </select>
                             <span
-                                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">search</span>
-                            <input type="text" x-model="searchQuery" placeholder="Cari nama atau NIM..."
-                                class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] text-sm text-gray-600 placeholder-gray-400">
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none material-symbols-outlined text-[20px]">expand_more</span>
                         </div>
-
-                        <div class="flex gap-3">
-                            <div class="relative w-full md:w-auto">
-                                <select x-model="filterProdi"
-                                    class="w-full md:w-40 appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] text-sm text-gray-600 cursor-pointer">
-                                    <option value="">Semua Prodi</option>
-                                    <option value="Informatika">Informatika</option>
-                                    <option value="Sistem Informasi">Sistem Informasi</option>
-                                </select>
-                                <span
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none material-symbols-outlined text-[20px]">expand_more</span>
-                            </div>
-
-                            <div class="relative w-full md:w-auto">
-                                <select x-model="filterStatus"
-                                    class="w-full md:w-40 appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] text-sm text-gray-600 cursor-pointer">
-                                    <option value="">Semua Status</option>
-                                    <option value="Aktif">Aktif</option>
-                                    <option value="Cuti">Cuti</option>
-                                    <option value="Non-Aktif">Non-Aktif</option>
-                                </select>
-                                <span
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none material-symbols-outlined text-[20px]">expand_more</span>
-                            </div>
+                        <div class="relative w-full md:w-48">
+                            <select x-model="filterStatus"
+                                class="w-full appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-sm text-gray-700 cursor-pointer font-medium">
+                                <option value="">Semua Status</option>
+                                <option value="Aktif">Aktif</option>
+                                <option value="Cuti">Cuti</option>
+                            </select>
+                            <span
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none material-symbols-outlined text-[20px]">expand_more</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden min-h-[320px] w-full">
-                    <div class="w-full overflow-x-auto">
-    <table class="w-full text-sm text-left">
-
-                            <thead class="bg-gray-50 text-[#616889] border-b border-gray-200">
-                                <tr>
-                                    <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider">Mahasiswa</th>
-                                    <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider">Prodi</th>
-                                    <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider text-center">
-                                        Semester</th>
-                                    <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider text-center">IPK
-                                    </th>
-                                    <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider">Status</th>
-                                    <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider text-right">Aksi
-                                    </th>
+                {{-- TABLE --}}
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr
+                                    class="bg-gray-50/80 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold">
+                                    <th class="px-6 py-4">Mahasiswa</th>
+                                    <th class="px-6 py-4">Prodi</th>
+                                    <th class="px-6 py-4 text-center">Smt</th>
+                                    <th class="px-6 py-4 text-center">IPK</th>
+                                    <th class="px-6 py-4">Status</th>
+                                    <th class="px-6 py-4 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @if(count($students) > 0)
                                     @foreach($students as $student)
-                                        <tr class="hover:bg-gray-50 transition-colors" x-show="filterStudent(
-                                                    '{{ $student['name'] }}', 
-                                                    '{{ $student['nim'] }}', 
-                                                    '{{ $student['prodi'] }}', 
-                                                    '{{ $student['status'] }}'
-                                                )">
+                                        <tr class="hover:bg-blue-50/30 transition-colors group"
+                                            x-show="filterStudent('{{ $student['name'] }}', '{{ $student['nim'] }}', '{{ $student['prodi'] }}', '{{ $student['status'] }}')">
+
                                             <td class="px-6 py-4">
-                                                <div class="flex items-center gap-3">
+                                                <div class="flex items-center gap-4">
                                                     <div
-                                                        class="size-10 rounded-full bg-gradient-to-br from-[#8B1538] to-[#C41E3A] flex items-center justify-center text-white text-xs font-bold">
+                                                        class="size-10 rounded-full bg-gradient-to-br from-primary to-pink-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shadow-primary/20">
                                                         {{ strtoupper(substr($student['name'], 0, 2)) }}
                                                     </div>
                                                     <div>
-                                                        <p class="text-[#111218] font-semibold">{{ $student['name'] }}</p>
-                                                        <p class="text-[#616889] text-xs">{{ $student['nim'] }}</p>
+                                                        <p class="text-gray-900 font-bold text-sm">{{ $student['name'] }}</p>
+                                                        <p class="text-gray-500 text-xs font-medium font-mono">{{ $student['nim'] }}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 text-[#616889]">{{ $student['prodi'] }}</td>
-                                            <td class="px-6 py-4 text-[#616889] text-center">{{ $student['semester'] }}</td>
-                                            <td class="px-6 py-4 text-[#8B1538] font-bold text-center">
-                                                {{ number_format($student['ipk'], 2) }}
+
+                                            <td class="px-6 py-4 text-gray-600 font-medium text-sm">{{ $student['prodi'] }}</td>
+
+                                            <td class="px-6 py-4 text-center">
+                                                <span
+                                                    class="inline-flex items-center justify-center size-6 rounded bg-gray-100 text-xs font-bold text-gray-600">{{ $student['semester'] }}</span>
                                             </td>
+
+                                            <td class="px-6 py-4 text-center">
+                                                <span class="text-gray-900 font-bold">{{ number_format($student['ipk'], 2) }}</span>
+                                            </td>
+
                                             <td class="px-6 py-4">
                                                 @php
-                                                    $statusColor = match ($student['status']) {
-                                                        'Aktif' => 'text-emerald-600',
-                                                        'Cuti' => 'text-amber-600',
-                                                        'Non-Aktif' => 'text-rose-600',
-                                                        default => 'text-gray-600'
+                                                    $statusClass = match ($student['status']) {
+                                                        'Aktif' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                                                        'Cuti' => 'bg-amber-50 text-amber-700 border-amber-100',
+                                                        'Non-Aktif' => 'bg-rose-50 text-rose-700 border-rose-100',
+                                                        default => 'bg-gray-50 text-gray-700 border-gray-200'
                                                     };
                                                 @endphp
-                                                <span class="{{ $statusColor }} font-medium text-sm">
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border {{ $statusClass }}">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-60"></span>
                                                     {{ $student['status'] }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4">
-                                                <div class="flex items-center justify-end gap-2">
+
+                                            <td class="px-6 py-4 text-right">
+                                                <div
+                                                    class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
                                                     <button
-                                                        class="size-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-[#8B1538] transition-colors"
-                                                        title="Kirim Pesan">
-                                                        <span class="material-symbols-outlined text-[18px]">mail</span>
+                                                        class="size-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-red-50 transition-colors"
+                                                        title="Chat">
+                                                        <span class="material-symbols-outlined text-[18px]">chat_bubble</span>
                                                     </button>
                                                     <button
-                                                        class="size-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                                                        title="Lainnya">
-                                                        <span class="material-symbols-outlined text-[18px]">more_horiz</span>
+                                                        class="size-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                                                        title="Detail">
+                                                        <span class="material-symbols-outlined text-[18px]">more_vert</span>
                                                     </button>
                                                 </div>
                                             </td>
@@ -280,13 +367,11 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="6" class="py-16 w-full text-center">
-                                            <div class="flex flex-col items-center justify-center w-full">
-                                                <div class="mb-3">
-                                                    <span class="material-symbols-outlined text-4xl text-gray-300">group_off</span>
-                                                </div>
-                                                <div class="text-lg font-semibold text-gray-400 mb-1">Belum ada mahasiswa di kelas ini</div>
-                                                <div class="text-sm text-gray-300">Silakan tambahkan mahasiswa ke kelas ini melalui menu KRS atau hubungi admin.</div>
+                                        <td colspan="6" class="py-12 text-center">
+                                            <div class="flex flex-col items-center justify-center">
+                                                <span
+                                                    class="material-symbols-outlined text-4xl text-gray-300 mb-2">supervisor_account</span>
+                                                <p class="text-gray-500 font-medium">Belum ada mahasiswa</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -295,66 +380,76 @@
                         </table>
                     </div>
 
-                    <div
-                        class="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50">
-                        <p class="text-sm text-[#616889]">
-                            Menampilkan
-                            <span class="font-semibold text-[#111218]" x-text="filteredCount">
-                                {{ count($students) }}
-                            </span>
-                            dari
-                            <span class="font-semibold text-[#111218]">
-                                {{ count($students) }}
-                            </span> mahasiswa
+                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                        <p class="text-xs text-gray-500">
+                            Menampilkan <span class="font-bold text-gray-800" x-text="filteredCount"></span> mahasiswa
                         </p>
+                        <div class="flex gap-1">
+                            <button
+                                class="px-3 py-1 rounded border border-gray-200 text-xs font-bold text-gray-500 hover:bg-white hover:text-gray-800 disabled:opacity-50"
+                                disabled>Prev</button>
+                            <button
+                                class="px-3 py-1 rounded border border-gray-200 text-xs font-bold text-gray-500 hover:bg-white hover:text-gray-800 disabled:opacity-50"
+                                disabled>Next</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        @push('scripts')
-            <script>
-                function detailKelas() {    
-                    return {
-                        searchQuery: '',
-                        filterProdi: '',
-                        filterStatus: '',
-                        filteredCount: {{ count($students) }},
+    @push('scripts')
+        <script>
+            function detailKelas() {
+                return {
+                    searchQuery: '',
+                    filterProdi: '',
+                    filterStatus: '',
+                    filteredCount: {{ count($students) }},
 
-                        filterStudent(name, nim, prodi, status) {
-                            let matchSearch = true;
-                            let matchProdi = true;
-                            let matchStatus = true;
+                    // Meeting Pagination
+                    meetingPage: 1,
+                    perPage: 5,
+                    totalMeetings: {{ count($meetings) }},
 
-                            if (this.searchQuery) {
-                                const query = this.searchQuery.toLowerCase();
-                                matchSearch = name.toLowerCase().includes(query) || nim.toLowerCase().includes(query);
-                            }
+                    get totalPages() {
+                        return Math.ceil(this.totalMeetings / this.perPage);
+                    },
 
-                            if (this.filterProdi) {
-                                matchProdi = prodi === this.filterProdi;
-                            }
-
-                            if (this.filterStatus) {
-                                matchStatus = status === this.filterStatus;
-                            }
-
-                            const matches = matchSearch && matchProdi && matchStatus;
-
-                            this.$nextTick(() => {
-                                this.updateCount();
-                            });
-
-                            return matches;
-                        },
-
-                        updateCount() {
-                            const visibleRows = document.querySelectorAll('tbody tr:not([style*="display: none"])').length;
-                            this.filteredCount = visibleRows;
+                    nextPage() {
+                        if (this.meetingPage < this.totalPages) {
+                            this.meetingPage++;
                         }
+                    },
+
+                    prevPage() {
+                        if (this.meetingPage > 1) {
+                            this.meetingPage--;
+                        }
+                    },
+
+                    filterStudent(name, nim, prodi, status) {
+                        const query = this.searchQuery.toLowerCase();
+                        const matches = (
+                            (name.toLowerCase().includes(query) || nim.toLowerCase().includes(query)) &&
+                            (this.filterProdi === '' || prodi === this.filterProdi) &&
+                            (this.filterStatus === '' || status === this.filterStatus)
+                        );
+
+                        // Update count on next tick to wait for DOM update
+                        this.$nextTick(() => {
+                            this.updateCount();
+                        });
+
+                        return matches;
+                    },
+
+                    updateCount() {
+                        const visibleRows = document.querySelectorAll('tbody tr:not([style*="display: none"])').length;
+                        this.filteredCount = visibleRows;
                     }
                 }
-            </script>
-        @endpush
-
+            }
+        </script>
+    @endpush
 @endsection

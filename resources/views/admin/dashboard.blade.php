@@ -141,7 +141,7 @@
                             </div>
                             <div class="flex-1">
                                 <h4 class="font-semibold text-gray-800">{{ $krs->mahasiswa->user->name }}</h4>
-                                <p class="text-sm text-gray-600">{{ $krs->kelasMataKuliah->mataKuliah->nama_mk }}</p>
+                                <p class="text-sm text-gray-600">{{ optional(optional($krs->kelas)->mataKuliah)->nama_mk ?? '-' }}</p>
                                 <p class="text-xs text-gray-500 mt-1">
                                     <i class="fas fa-calendar mr-1"></i>
                                     {{ $krs->created_at->format('d M Y H:i') }}
@@ -192,9 +192,9 @@
         <div class="p-6 space-y-3">
             <a href="{{ route('admin.mahasiswa.create') }}" 
                 class="flex items-center p-4 bg-white border-2 border-maroon rounded-lg hover:bg-maroon hover:text-white transition group">
-                <div class="bg-maroon text-white group-hover:bg-white group-hover:text-maroon rounded-full p-3 mr-4 transition">
-                    <i class="fas fa-user-plus text-xl"></i>
-                </div>
+                            <div class="bg-maroon text-white rounded-full p-3 mr-4 transition">
+                                <i class="fas fa-user-plus text-xl"></i>
+                            </div>
                 <div>
                     <h4 class="font-semibold">Tambah Mahasiswa</h4>
                     <p class="text-xs text-gray-500 group-hover:text-white">Daftarkan mahasiswa baru</p>

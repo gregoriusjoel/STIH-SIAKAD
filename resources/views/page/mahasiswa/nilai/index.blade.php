@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto space-y-6">
-    
+
     {{-- Summary Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {{-- IPK Card --}}
@@ -45,112 +45,22 @@
         </div>
     </div>
 
-    {{-- Nilai per Semester --}}
-    @forelse($nilaiPerSemester as $semesterNama => $nilaiList)
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        {{-- Semester Header --}}
-        <div class="bg-gradient-to-r from-maroon to-red-800 text-white px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="text-xl font-bold mb-1">{{ $semesterNama }}</h3>
-                    <p class="text-sm opacity-90">
-                        Total SKS: {{ $ipsPerSemester[$semesterNama]['sks'] ?? 0 }} | 
-                        IPS: {{ number_format($ipsPerSemester[$semesterNama]['ips'] ?? 0, 2) }}
-                    </p>
-                </div>
-                <div class="text-right">
-                    <p class="text-3xl font-bold">{{ number_format($ipsPerSemester[$semesterNama]['ips'] ?? 0, 2) }}</p>
-                    <p class="text-sm opacity-90">IPS</p>
-                </div>
-            </div>
-        </div>
-
-        {{-- Nilai Table --}}
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b-2 border-gray-200">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">No</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Kode MK</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Mata Kuliah</th>
-                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase">SKS</th>
-                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase">Nilai</th>
-                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase">Grade</th>
-                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase">Bobot</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                    @foreach($nilaiList as $index => $krs)
-                    @php
-                        $mataKuliah = $krs->kelasMataKuliah->mataKuliah ?? null;
-                        $nilai = $krs->nilai;
-                        $nilaiAngka = $nilai->nilai ?? 0;
-                        $grade = $this->getGrade($nilaiAngka);
-                        $bobot = $this->getBobot($nilaiAngka);
-                        
-                        // Grade colors
-                        $gradeColors = [
-                            'A' => 'bg-green-100 text-green-800',
-                            'A-' => 'bg-green-100 text-green-700',
-                            'B+' => 'bg-blue-100 text-blue-800',
-                            'B' => 'bg-blue-100 text-blue-700',
-                            'B-' => 'bg-blue-100 text-blue-600',
-                            'C+' => 'bg-yellow-100 text-yellow-800',
-                            'C' => 'bg-yellow-100 text-yellow-700',
-                            'C-' => 'bg-yellow-100 text-yellow-600',
-                            'D' => 'bg-orange-100 text-orange-700',
-                            'E' => 'bg-red-100 text-red-700',
-                        ];
-                        $gradeColor = $gradeColors[$grade] ?? 'bg-gray-100 text-gray-700';
-                    @endphp
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-sm text-gray-700">{{ $index + 1 }}</td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-800">{{ $mataKuliah->kode_mk ?? '-' }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-800">{{ $mataKuliah->nama_mk ?? '-' }}</td>
-                        <td class="px-6 py-4 text-sm text-center font-semibold text-gray-800">{{ $mataKuliah->sks ?? 0 }}</td>
-                        <td class="px-6 py-4 text-sm text-center font-bold text-gray-900">{{ $nilaiAngka }}</td>
-                        <td class="px-6 py-4 text-center">
-                            <span class="px-3 py-1 rounded-lg font-bold text-sm {{ $gradeColor }}">
-                                {{ $grade }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-center font-semibold text-gray-800">{{ number_format($bobot, 1) }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        {{-- Semester Summary --}}
-        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-6">
-                    <div>
-                        <p class="text-xs text-gray-600 mb-1">Total Mata Kuliah</p>
-                        <p class="text-lg font-bold text-gray-800">{{ $nilaiList->count() }} MK</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-600 mb-1">Total SKS</p>
-                        <p class="text-lg font-bold text-gray-800">{{ $ipsPerSemester[$semesterNama]['sks'] ?? 0 }} SKS</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="text-xs text-gray-600 mb-1">Indeks Prestasi Semester</p>
-                    <p class="text-2xl font-bold text-maroon">{{ number_format($ipsPerSemester[$semesterNama]['ips'] ?? 0, 2) }}</p>
-                </div>
-            </div>
-        </div>
+    {{-- Akademik Tabs (Rangkuman Nilai / KHS) --}}
+    <div class="bg-white rounded-xl shadow-sm px-4 py-3 mt-6">
+        <nav class="flex items-center space-x-2" id="akademikTabs">
+            <button data-target="rangkuman" class="tab-btn px-4 py-2 text-sm rounded-t-lg border-b-2 -mb-px border-maroon text-maroon font-semibold">Rangkuman Nilai</button>
+            <button data-target="khs" class="tab-btn px-4 py-2 text-sm rounded-t-lg border-b-2 -mb-px border-transparent text-gray-600">KHS</button>
+        </nav>
     </div>
-    @empty
-    <div class="bg-white rounded-xl shadow-lg p-12">
-        <div class="text-center">
-            <i class="fas fa-clipboard-list text-6xl text-gray-300 mb-4"></i>
-            <h3 class="text-xl font-bold text-gray-700 mb-2">Belum Ada Nilai</h3>
-            <p class="text-gray-500">Nilai akademik Anda akan muncul di sini setelah dosen memasukkan nilai.</p>
-        </div>
-    </div>
-    @endforelse
 
+    {{-- Content Panels --}}
+    <div id="rangkuman">
+        @include('page.mahasiswa.nilai._content')
+    </div>
+
+    <div id="khs" class="hidden">
+        @include('page.mahasiswa.khs._content')
+    </div>
 </div>
 
 @php
@@ -182,3 +92,41 @@
     }
 @endphp
 @endsection
+
+@push('scripts')
+<script>
+    (function(){
+        const tabs = document.querySelectorAll('#akademikTabs .tab-btn');
+        const panels = {
+            rangkuman: document.getElementById('rangkuman'),
+            khs: document.getElementById('khs')
+        };
+
+        function setActive(target) {
+            // toggle buttons
+            tabs.forEach(t => {
+                if (t.dataset.target === target) {
+                    t.classList.remove('border-transparent','text-gray-600');
+                    t.classList.add('border-maroon','text-maroon','font-semibold');
+                } else {
+                    t.classList.remove('border-maroon','text-maroon','font-semibold');
+                    t.classList.add('border-transparent','text-gray-600');
+                }
+            });
+
+            // toggle panels
+            Object.keys(panels).forEach(k => {
+                if (k === target) panels[k].classList.remove('hidden'); else panels[k].classList.add('hidden');
+            });
+        }
+
+        tabs.forEach(t => t.addEventListener('click', (e) => {
+            e.preventDefault();
+            setActive(t.dataset.target);
+        }));
+
+        // default
+        setActive('rangkuman');
+    })();
+</script>
+@endpush

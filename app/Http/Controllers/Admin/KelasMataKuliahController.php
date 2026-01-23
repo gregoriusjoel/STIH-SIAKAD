@@ -31,21 +31,51 @@ class KelasMataKuliahController extends Controller
         $request->validate([
             'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
             'dosen_id' => 'required|exists:dosens,id',
-            'semester_id' => 'required|exists:semesters,id',
             'nama_kelas' => 'required|string|max:10',
             'kuota' => 'required|integer|min:1',
             'ruangan' => 'nullable|string|max:50',
+            'hari' => 'nullable|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+            'jam_mulai' => 'nullable|date_format:H:i',
+            'jam_selesai' => 'nullable|date_format:H:i',
         ]);
 
-        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'semester_id', 'nama_kelas', 'kuota', 'ruangan']);
+        // Get semester from mata_kuliah
+        $mataKuliah = MataKuliah::findOrFail($request->mata_kuliah_id);
+        $semesterNumber = $mataKuliah->semester; // 1-8
+        $semesterName = ($semesterNumber % 2 == 1) ? 'Ganjil' : 'Genap';
+        
+        // Find or create semester based on mata_kuliah semester
+        $semester = Semester::where('nama_semester', 'like', '%' . $semesterName . '%')
+            ->where('status', 'aktif')
+            ->first();
+        
+        if (!$semester) {
+            $semester = Semester::where('nama_semester', 'like', '%' . $semesterName . '%')->first();
+        }
+        
+        // Create semester with correct type if not found
+        if (!$semester) {
+            $semester = Semester::create([
+                'nama_semester' => $semesterName,
+                'tahun_ajaran' => date('Y') . '/' . (date('Y') + 1),
+                'status' => 'aktif',
+                'tanggal_mulai' => now(),
+                'tanggal_selesai' => now()->addMonths(6),
+            ]);
+        }
+
+        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kuota', 'ruangan', 'hari', 'jam_mulai', 'jam_selesai']);
         // Map form field names to database column names
         $mapped = [
             'mata_kuliah_id' => $data['mata_kuliah_id'],
             'dosen_id' => $data['dosen_id'],
-            'semester_id' => $data['semester_id'],
+            'semester_id' => $semester ? $semester->id : null,
             'kode_kelas' => $data['nama_kelas'],
             'kapasitas' => $data['kuota'],
             'ruang' => $data['ruangan'] ?? null,
+            'hari' => $data['hari'] ?? null,
+            'jam_mulai' => $data['jam_mulai'] ?? null,
+            'jam_selesai' => $data['jam_selesai'] ?? null,
             'qr_enabled' => $request->has('qr_enabled') ? true : false,
             'qr_expires_at' => $request->qr_expires_at ?? null,
         ];
@@ -57,7 +87,7 @@ class KelasMataKuliahController extends Controller
             $created->qr_token = Str::random(40);
             $created->save();
         }
-        return redirect()->route('admin.kelas-mata-kuliah.index')->with('success', 'Kelas mata kuliah berhasil ditambahkan');
+        return redirect()->route('admin.jadwal.index')->with('success', 'Kelas mata kuliah berhasil ditambahkan');
     }
 
     public function edit(KelasMataKuliah $kelasMataKuliah)
@@ -73,20 +103,25 @@ class KelasMataKuliahController extends Controller
         $request->validate([
             'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
             'dosen_id' => 'required|exists:dosens,id',
-            'semester_id' => 'required|exists:semesters,id',
             'nama_kelas' => 'required|string|max:10',
             'kuota' => 'required|integer|min:1',
             'ruangan' => 'nullable|string|max:50',
+            'hari' => 'nullable|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
         ]);
 
-        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'semester_id', 'nama_kelas', 'kuota', 'ruangan']);
+        // Get semester from mata_kuliah
+        $mataKuliah = MataKuliah::findOrFail($request->mata_kuliah_id);
+        $semester = Semester::where('status', 'aktif')->first();
+
+        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kuota', 'ruangan', 'hari']);
         $mapped = [
             'mata_kuliah_id' => $data['mata_kuliah_id'],
             'dosen_id' => $data['dosen_id'],
-            'semester_id' => $data['semester_id'],
+            'semester_id' => $semester ? $semester->id : $kelasMataKuliah->semester_id,
             'kode_kelas' => $data['nama_kelas'],
             'kapasitas' => $data['kuota'],
             'ruang' => $data['ruangan'] ?? null,
+            'hari' => $data['hari'] ?? null,
             'qr_enabled' => $request->has('qr_enabled') ? true : false,
             'qr_expires_at' => $request->qr_expires_at ?? null,
         ];

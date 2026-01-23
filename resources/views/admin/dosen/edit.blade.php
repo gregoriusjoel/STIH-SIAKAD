@@ -9,7 +9,7 @@
         <div class="p-6 border-b border-gray-200 bg-maroon text-white rounded-t-xl">
             <h3 class="text-xl font-bold flex items-center">
                 <i class="fas fa-user-edit mr-3 text-2xl"></i>
-                Edit Data Dosen
+                Form Edit Dosen
             </h3>
             <p class="text-sm mt-1 text-white text-opacity-90">Perbarui data dosen {{ $dosen->user->name }}</p>
         </div>
@@ -147,6 +147,48 @@
                                 placeholder="Alamat lengkap dosen">{{ old('address', $dosen->address) }}</textarea>
                         </div>
                     </div>
+                
+                    <!-- Mata Kuliah yang diajar -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fas fa-book text-maroon mr-2"></i>
+                            Mata Kuliah Pengajaran
+                        </h4>
+
+                        <div id="mata-kuliah-list" class="space-y-3">
+                            @php
+                                $dosenMkIds = $dosen->mata_kuliah_ids ?? [];
+                                if (!is_array($dosenMkIds)) {
+                                    $dosenMkIds = json_decode($dosenMkIds, true) ?: [];
+                                }
+                            @endphp
+
+                            @if(count($dosenMkIds) > 0)
+                                @foreach($dosenMkIds as $mkId)
+                                    <div class="flex items-center gap-3">
+                                        <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                            <option value="">Pilih Mata Kuliah</option>
+                                            @foreach($mataKuliahs as $mk)
+                                                <option value="{{ $mk->id }}" {{ $mk->id == $mkId ? 'selected' : '' }}>{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="button" class="remove-mk px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="flex items-center gap-3">
+                                    <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                        <option value="">Pilih Mata Kuliah</option>
+                                        @foreach($mataKuliahs as $mk)
+                                            <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" id="add-mk" class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                </div>
+                            @endif
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Tambahkan mata kuliah yang diampu oleh dosen. Klik + untuk menambah baris.</p>
+                    </div>
                 </div>
             </div>
 
@@ -165,4 +207,31 @@
         </form>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const addBtn = document.getElementById('add-mk');
+    const list = document.getElementById('mata-kuliah-list');
+    addBtn?.addEventListener('click', function(){
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-3';
+        row.innerHTML = `
+            <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                <option value="">Pilih Mata Kuliah</option>
+                @foreach($mataKuliahs as $mk)
+                    <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
+                @endforeach
+            </select>
+            <button type="button" class="remove-mk px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+        `;
+        list.appendChild(row);
+        row.querySelector('.remove-mk')?.addEventListener('click', function(){ row.remove(); });
+    });
+
+    // wire up existing remove buttons
+    document.querySelectorAll('.remove-mk').forEach(btn => btn.addEventListener('click', function(){
+        const row = this.closest('.flex');
+        if(row) row.remove();
+    }));
+});
+</script>
 @endsection

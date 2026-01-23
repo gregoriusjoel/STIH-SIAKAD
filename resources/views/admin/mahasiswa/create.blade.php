@@ -108,6 +108,18 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-layer-group text-gray-400 mr-1"></i>
+                                Semester *
+                            </label>
+                            <select name="semester" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                @for($i = 1; $i <= 8; $i++)
+                                    <option value="{{ $i }}" {{ old('semester', 1) == $i ? 'selected' : '' }}>Semester {{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-phone text-gray-400 mr-1"></i>
                                 No. Telepon
                             </label>

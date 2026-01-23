@@ -11,7 +11,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="text-2xl font-bold text-gray-800 mb-1">Jadwal Kuliah</h2>
-                <p class="text-gray-600">Semester: <span class="font-semibold">{{ $semesterAktif->nama_semester ?? 'Tidak ada semester aktif' }}</span></p>
+                <p class="text-gray-600">Semester: <span class="font-semibold">{{ Auth::user()->mahasiswa->getCurrentSemester() ?? 'Tidak ada semester aktif' }}</span></p>
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">

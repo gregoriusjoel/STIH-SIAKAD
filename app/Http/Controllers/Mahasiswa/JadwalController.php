@@ -16,11 +16,19 @@ class JadwalController extends Controller
         // Get semester aktif
         $semesterAktif = Semester::where('is_active', true)->first();
         
-        // Get KRS yang sudah approved untuk semester aktif
-        $krsData = $mahasiswa->krs()
-            ->with(['kelasMataKuliah.mataKuliah', 'kelasMataKuliah.dosen.user', 'kelasMataKuliah.jadwal'])
-            ->where('semester_id', $semesterAktif->id ?? null)
-            ->where('status', 'approved')
+        // Get KRS yang sudah disetujui untuk semester aktif
+        $krsQuery = $mahasiswa->krs()
+            ->with(['kelas.mataKuliah', 'kelas.dosen', 'kelas.jadwals']);
+
+        // If there is an active semester, constrain by kelas' tahun_ajaran and semester_type
+        if ($semesterAktif) {
+            $krsQuery->whereHas('kelas', function ($q) use ($semesterAktif) {
+                $q->where('tahun_ajaran', $semesterAktif->tahun_ajaran)
+                  ->where('semester_type', $semesterAktif->nama_semester);
+            });
+        }
+
+        $krsData = $krsQuery->where('status', 'disetujui')
             ->where('ambil_mk', 'ya')
             ->get();
         
@@ -36,18 +44,27 @@ class JadwalController extends Controller
         ];
         
         foreach($krsData as $krs) {
-            $kelas = $krs->kelasMataKuliah;
-            if($kelas && $kelas->jadwal) {
-                $hari = $kelas->jadwal->hari;
+            $kelas = $krs->kelas;
+            if (!$kelas) {
+                continue;
+            }
+
+            // If kelas has multiple jadwals, add each one separately
+            $jadwals = $kelas->jadwals ?? collect([]);
+            foreach ($jadwals as $jadwal) {
+                if (!$jadwal) {
+                    continue;
+                }
+                $hari = $jadwal->hari;
                 $jadwalPerHari[$hari][] = [
                     'mata_kuliah' => $kelas->mataKuliah->nama_mk ?? '-',
                     'kode_mk' => $kelas->mataKuliah->kode_mk ?? '-',
                     'sks' => $kelas->mataKuliah->sks ?? 0,
-                    'dosen' => $kelas->dosen->user->name ?? '-',
-                    'kelas' => $kelas->nama_kelas,
-                    'jam_mulai' => $kelas->jadwal->jam_mulai,
-                    'jam_selesai' => $kelas->jadwal->jam_selesai,
-                    'ruangan' => $kelas->jadwal->ruangan ?? 'Online'
+                    'dosen' => $kelas->dosen->name ?? '-',
+                    'kelas' => $kelas->kode_kelas ?? $kelas->nama_kelas ?? '-',
+                    'jam_mulai' => $jadwal->jam_mulai,
+                    'jam_selesai' => $jadwal->jam_selesai,
+                    'ruangan' => $jadwal->ruangan ?? 'Online'
                 ];
             }
         }

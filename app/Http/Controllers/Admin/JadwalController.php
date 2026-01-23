@@ -38,7 +38,29 @@ class JadwalController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('admin.jadwal.index', compact('pendingJadwals', 'approvedJadwals', 'activeJadwals', 'pendingReschedules'));
+        // Load kelas mata kuliah for jadwal aktif display
+        $kelasMataKuliahs = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])
+            ->orderBy('hari')
+            ->orderBy('jam_mulai')
+            ->paginate(10);
+
+        // Load pending kelas reschedules (weekly reschedule requests)
+        $pendingKelasReschedules = \App\Models\KelasReschedule::with(['kelasMataKuliah.mataKuliah', 'dosen.user'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Load approved kelas reschedules (waiting for room assignment)
+        $approvedKelasReschedules = \App\Models\KelasReschedule::with(['kelasMataKuliah.mataKuliah', 'dosen.user'])
+            ->where('status', 'approved')
+            ->orderBy('approved_at', 'desc')
+            ->get();
+
+        // Fetch data for "Tambah Kelas Mata Kuliah Baru" form
+        $mataKuliahs = MataKuliah::orderBy('nama_mk')->get();
+        $dosens = \App\Models\Dosen::with('user')->get();
+
+        return view('admin.jadwal.index', compact('pendingJadwals', 'approvedJadwals', 'activeJadwals', 'pendingReschedules', 'kelasMataKuliahs', 'pendingKelasReschedules', 'approvedKelasReschedules', 'mataKuliahs', 'dosens'));
     }
 
     public function create()
@@ -261,5 +283,65 @@ class JadwalController extends Controller
         ]);
 
         return redirect()->route('admin.jadwal.index')->with('success', 'Permintaan reschedule ditolak.');
+    }
+
+    /**
+     * Approve a weekly kelas reschedule request
+     */
+    public function approveKelasReschedule(Request $request, \App\Models\KelasReschedule $reschedule)
+    {
+        if ($reschedule->status !== 'pending') {
+            return redirect()->route('admin.jadwal.index')->with('error', 'Permintaan ini sudah diproses.');
+        }
+
+        $reschedule->update([
+            'status' => 'approved',
+            'approved_by' => auth()->id(),
+            'approved_at' => now(),
+        ]);
+
+        return redirect()->route('admin.jadwal.index')->with('success', 'Permintaan reschedule disetujui. Silakan tetapkan ruangan.');
+    }
+
+    /**
+     * Reject a weekly kelas reschedule request
+     */
+    public function rejectKelasReschedule(Request $request, \App\Models\KelasReschedule $reschedule)
+    {
+        $request->validate(['catatan_admin' => 'required|string|max:1000']);
+
+        if ($reschedule->status !== 'pending') {
+            return redirect()->route('admin.jadwal.index')->with('error', 'Permintaan ini sudah diproses.');
+        }
+
+        $reschedule->update([
+            'status' => 'rejected',
+            'catatan_admin' => $request->catatan_admin,
+        ]);
+
+        return redirect()->route('admin.jadwal.index')->with('success', 'Permintaan reschedule ditolak.');
+    }
+
+    /**
+     * Assign room and class to an approved weekly kelas reschedule
+     */
+    public function assignRoomKelasReschedule(Request $request, \App\Models\KelasReschedule $reschedule)
+    {
+        $request->validate([
+            'new_kelas' => 'required|string|max:50',
+            'new_ruang' => 'required|string|max:100',
+        ]);
+
+        if ($reschedule->status !== 'approved') {
+            return redirect()->route('admin.jadwal.index')->with('error', 'Permintaan harus disetujui terlebih dahulu.');
+        }
+
+        $reschedule->update([
+            'new_kelas' => $request->new_kelas,
+            'new_ruang' => $request->new_ruang,
+            'status' => 'room_assigned',
+        ]);
+
+        return redirect()->route('admin.jadwal.index')->with('success', 'Kelas dan ruangan berhasil ditetapkan untuk minggu tersebut.');
     }
 }

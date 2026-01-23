@@ -11,7 +11,7 @@ class KrsController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Krs::with(['mahasiswa.user', 'kelasMataKuliah.mataKuliah', 'kelasMataKuliah.dosen.user']);
+        $query = Krs::with(['mahasiswa.user', 'kelas.mataKuliah', 'kelas.dosen', 'kelas.jadwals']);
 
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
@@ -23,10 +23,10 @@ class KrsController extends Controller
         return view('admin.krs.index', compact('krsData', 'semesterAktif'));
     }
 
-    public function show(Krs $kr)
+    public function show(Krs $krs)
     {
-        $kr->load(['mahasiswa.user', 'kelasMataKuliah.mataKuliah', 'kelasMataKuliah.dosen.user', 'kelasMataKuliah.jadwal']);
-        return view('admin.krs.show', compact('kr'));
+        $krs->load(['mahasiswa.user', 'kelas.mataKuliah', 'kelas.dosen', 'kelas.jadwals']);
+        return view('admin.krs.show', compact('krs'));
     }
 
     public function updateStatus(Request $request, Krs $kr)

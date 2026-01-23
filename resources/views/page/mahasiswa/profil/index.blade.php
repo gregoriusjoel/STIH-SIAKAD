@@ -1,207 +1,193 @@
 @extends('layouts.mahasiswa')
 
-@section('title', 'Profil')
+@section('title', 'Profil Mahasiswa')
 @section('page-title', 'Profil Mahasiswa')
 
 @section('content')
-<div class="max-w-5xl mx-auto space-y-6">
-    
-    {{-- Profile Header Card --}}
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <div class="bg-gradient-to-r from-maroon to-red-800 h-32"></div>
-        <div class="px-8 pb-8">
-            <div class="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16">
-                {{-- Photo --}}
-                <div class="relative">
-                    <div class="w-32 h-32 rounded-full border-4 border-white shadow-xl bg-white flex items-center justify-center overflow-hidden">
-                        @if($mahasiswa->foto)
-                            <img src="{{ asset('storage/' . $mahasiswa->foto) }}" alt="Foto Profil" class="w-full h-full object-cover">
-                        @else
-                            <div class="w-full h-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center text-white text-4xl font-bold">
-                                {{ substr($user->name, 0, 1) }}
-                            </div>
-                        @endif
-                    </div>
-                    <button onclick="document.getElementById('fotoInput').click()" class="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition shadow-lg flex items-center justify-center">
-                        <i class="fas fa-camera"></i>
-                    </button>
-                </div>
+    <div class="bg-white rounded-lg shadow-sm p-8" x-data="{ activeTab: 'akademik' }">
 
-                {{-- Info --}}
-                <div class="flex-grow text-center md:text-left mt-4 md:mt-0">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-1">{{ $user->name }}</h2>
-                    <p class="text-gray-600 mb-2">{{ $mahasiswa->npm }}</p>
-                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
-                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold">
-                            {{ $mahasiswa->prodi ?? 'Hukum' }}
-                        </span>
-                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-semibold">
-                            Angkatan {{ $mahasiswa->angkatan ?? '-' }}
-                        </span>
-                        <span class="px-3 py-1 
-                            @if($mahasiswa->status_akun === 'aktif') bg-green-100 text-green-700
-                            @elseif($mahasiswa->status_akun === 'tidak_aktif') bg-red-100 text-red-700
-                            @else bg-yellow-100 text-yellow-700
-                            @endif
-                            rounded-lg text-sm font-semibold">
-                            {{ strtoupper($mahasiswa->status_akun) }}
-                        </span>
-                    </div>
-                </div>
+        {{-- Header with Edit Button --}}
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            {{-- Tabs Header --}}
+            <div class="flex border-b border-gray-200 overflow-x-auto w-full md:w-auto">
+                <button @click="activeTab = 'akademik'"
+                    class="flex-1 min-w-[120px] py-4 text-center text-sm transition-all duration-200 font-semibold"
+                    style="border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb;"
+                    x-bind:style="activeTab === 'akademik'
+                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb;'
+                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
+                    Akademik
+                </button>
+
+                <button @click="activeTab = 'data_pribadi'"
+                    class="flex-shrink-0 px-6 py-4 text-center text-sm transition-all duration-200 whitespace-nowrap"
+                    x-bind:style="activeTab === 'data_pribadi'
+                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
+                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
+                    Data Pribadi
+                </button>
+
+                <button @click="activeTab = 'orang_tua'"
+                    class="flex-shrink-0 px-6 py-4 text-center text-sm transition-all duration-200 whitespace-nowrap"
+                    x-bind:style="activeTab === 'orang_tua'
+                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
+                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
+                    Orang Tua
+                </button>
+
+                <button @click="activeTab = 'asal_sekolah'"
+                    class="flex-shrink-0 px-6 py-4 text-center text-sm transition-all duration-200 whitespace-nowrap"
+                    x-bind:style="activeTab === 'asal_sekolah'
+                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
+                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
+                    Asal Sekolah
+                </button>
             </div>
+
+            <a href="{{ route('mahasiswa.profil.manajemen') }}"
+                class="inline-flex items-center gap-2 px-6 py-2.5 text-white font-medium rounded-full shadow-sm transition-all text-sm whitespace-nowrap"
+                style="background-color:#8B1538;"
+                onmouseover="this.style.backgroundColor='#6D1029'"
+                onmouseout="this.style.backgroundColor='#8B1538'">
+                <i class="fas fa-edit"></i> Edit Profil
+            </a>
         </div>
-    </div>
 
-    {{-- Edit Profile Form --}}
-    <form action="{{ route('mahasiswa.profil.update') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
-        
-        <input type="file" id="fotoInput" name="foto" accept="image/*" class="hidden" onchange="this.form.submit()">
-        
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-bold text-gray-800">Informasi Pribadi</h3>
-            </div>
+        <div class="max-w-5xl mx-auto">
 
-            <div class="p-6 space-y-6">
-                {{-- Nama Lengkap --}}
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
-                    <input type="text" name="name" value="{{ old('name', $user->name) }}" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                           required>
-                    @error('name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+            {{-- TAB AKADEMIK --}}
+            <div x-show="activeTab === 'akademik'" x-cloak class="space-y-10">
 
-                {{-- Email --}}
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                    <input type="email" name="email" value="{{ old('email', $user->email) }}" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                           required>
-                    @error('email')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- NPM (Read Only) --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">NPM</label>
-                        <input type="text" value="{{ $mahasiswa->npm }}" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100"
-                               readonly>
-                    </div>
-
-                    {{-- No HP --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">No. HP</label>
-                        <input type="text" name="no_hp" value="{{ old('no_hp', $mahasiswa->no_hp) }}" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent">
-                        @error('no_hp')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                {{-- Alamat --}}
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Alamat</label>
-                    <textarea name="alamat" rows="3" 
-                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent">{{ old('alamat', $mahasiswa->alamat) }}</textarea>
-                    @error('alamat')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Submit Button --}}
-                <div class="flex justify-end pt-4 border-t border-gray-200">
-                    <button type="submit" class="px-6 py-3 bg-maroon text-white rounded-lg hover:bg-maroon-hover transition font-semibold flex items-center gap-2">
-                        <i class="fas fa-save"></i>
-                        Simpan Perubahan
-                    </button>
-                </div>
-            </div>
+                <div class="flex flex-col md:flex-row gap-8 items-start border-b border-gray-100 pb-8">
+                    <div class="shrink-0 mx-auto md:mx-0">
+                        <div
+    class="border-2 border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm"
+    style="width:160px; height:208px; min-width:160px; min-height:208px; max-width:160px; max-height:208px;"
+>
+    @if($mahasiswa->foto)
+        <img
+            src="{{ asset('storage/' . $mahasiswa->foto) }}"
+            alt="Foto Mahasiswa"
+            loading="lazy"
+            style="
+                width:160px;
+                height:208px;
+                object-fit:cover;
+                display:block;
+            "
+        >
+    @else
+        <div class="w-full h-full flex items-center justify-center text-gray-300">
+            <i class="fas fa-user text-5xl"></i>
         </div>
-    </form>
-
-    {{-- Change Password Form --}}
-    <form action="{{ route('mahasiswa.profil.update-password') }}" method="POST">
-        @csrf
-        @method('PUT')
-        
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-bold text-gray-800">Ubah Password</h3>
-            </div>
-
-            <div class="p-6 space-y-6">
-                {{-- Current Password --}}
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password Lama</label>
-                    <input type="password" name="current_password" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                           required>
-                    @error('current_password')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- New Password --}}
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password Baru</label>
-                    <input type="password" name="new_password" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                           required>
-                    @error('new_password')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Confirm Password --}}
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Konfirmasi Password Baru</label>
-                    <input type="password" name="new_password_confirmation" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent"
-                           required>
-                </div>
-
-                {{-- Submit Button --}}
-                <div class="flex justify-end pt-4 border-t border-gray-200">
-                    <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold flex items-center gap-2">
-                        <i class="fas fa-lock"></i>
-                        Ubah Password
-                    </button>
-                </div>
-            </div>
-        </div>
-    </form>
-
-    {{-- Additional Info --}}
-    <div class="bg-white rounded-xl shadow-lg p-6">
-        <h3 class="text-lg font-bold text-gray-800 mb-4">Informasi Akademik</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="text-center p-4 bg-blue-50 rounded-lg">
-                <p class="text-sm text-gray-600 mb-1">Program Studi</p>
-                <p class="font-bold text-blue-600">{{ $mahasiswa->prodi ?? 'Hukum' }}</p>
-            </div>
-            <div class="text-center p-4 bg-green-50 rounded-lg">
-                <p class="text-sm text-gray-600 mb-1">Angkatan</p>
-                <p class="font-bold text-green-600">{{ $mahasiswa->angkatan ?? '-' }}</p>
-            </div>
-            <div class="text-center p-4 bg-purple-50 rounded-lg">
-                <p class="text-sm text-gray-600 mb-1">Status</p>
-                <p class="font-bold text-purple-600">{{ strtoupper($mahasiswa->status_akun) }}</p>
-            </div>
-            <div class="text-center p-4 bg-orange-50 rounded-lg">
-                <p class="text-sm text-gray-600 mb-1">NPM</p>
-                <p class="font-bold text-orange-600">{{ $mahasiswa->npm }}</p>
-            </div>
-        </div>
-    </div>
-
+    @endif
 </div>
+
+                    </div>
+
+                    <div class="grow w-full space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 border-b pb-4">
+                            <label class="text-xs font-bold text-gray-400 uppercase">Nama Lengkap</label>
+                            <div class="md:col-span-2 text-lg font-semibold text-gray-800">{{ $user->name }}</div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 border-b pb-4">
+                            <label class="text-xs font-bold text-gray-400 uppercase">NIM</label>
+                            <div class="md:col-span-2 font-mono text-gray-800">{{ $mahasiswa->npm }}</div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 border-b pb-4">
+                            <label class="text-xs font-bold text-gray-400 uppercase">Program Studi</label>
+                            <div class="md:col-span-2 text-gray-800">{{ $mahasiswa->prodi }}</div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3">
+                            <label class="text-xs font-bold text-gray-400 uppercase">Status Akun</label>
+                            <div class="md:col-span-2">
+                                <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                                    {{ ucfirst($mahasiswa->status_akun) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-medium text-gray-800 mb-6 border-b pb-2">Kontak & Akun</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Email</label>
+                            <div class="text-gray-800">{{ $user->email }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Nomor HP</label>
+                            <div class="text-gray-800">{{ $mahasiswa->no_hp ?? 'Belum diisi' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-medium text-gray-800 mb-6 border-b pb-2">Detail Akademik</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Program</label>
+                            <div>Reguler</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Kurikulum</label>
+                            <div>Kurikulum {{ $mahasiswa->prodi }} Angkatan {{ $mahasiswa->angkatan }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Angkatan</label>
+                            <div>{{ $mahasiswa->angkatan }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Penasihat Akademik</label>
+                            <div>Dosen PA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- TAB DATA PRIBADI --}}
+            <div x-show="activeTab === 'data_pribadi'" x-cloak class="space-y-10">
+                <h3 class="font-medium text-gray-800 border-b pb-2">Informasi Alamat</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase">Alamat Lengkap</label>
+                        <div>{{ $mahasiswa->alamat ?? 'Belum diisi' }}</div>
+                    </div>
+                </div>
+
+                <h3 class="font-medium text-gray-800 border-b pb-2">Data Pribadi</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase">Tempat Lahir</label>
+                        <div>{{ $mahasiswa->tempat_lahir ?? 'Belum diisi' }}</div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase">Tanggal Lahir</label>
+                        <div>
+                            {{ $mahasiswa->tanggal_lahir
+                                ? \Carbon\Carbon::parse($mahasiswa->tanggal_lahir)->format('d F Y')
+                                : 'Belum diisi' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- TAB ORANG TUA --}}
+            <div x-show="activeTab === 'orang_tua'" x-cloak class="space-y-10">
+                <h3 class="font-medium text-gray-800 border-b pb-2">Data Orang Tua</h3>
+                <p class="text-sm text-gray-500">Informasi orang tua belum dilengkapi.</p>
+            </div>
+
+            {{-- TAB ASAL SEKOLAH --}}
+            <div x-show="activeTab === 'asal_sekolah'" x-cloak class="space-y-10">
+                <h3 class="font-medium text-gray-800 border-b pb-2">Asal Sekolah</h3>
+                <p class="text-sm text-gray-500">Data asal sekolah belum tersedia.</p>
+            </div>
+
+        </div>
+    </div>
 @endsection

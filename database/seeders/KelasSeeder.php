@@ -14,47 +14,77 @@ class KelasSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get the dosen user
-        $dosen = User::where('role', 'dosen')->first();
+        // Get all dosen users
+        $dosens = User::where('role', 'dosen')->get();
         
-        if (!$dosen) {
+        if ($dosens->isEmpty()) {
             $this->command->warn('No dosen user found. Skipping KelasSeeder.');
             return;
         }
 
+        // Current academic year and semester
+        $tahunAjaran = '2024/2025';
+        $semesterType = 'Ganjil'; // Change to 'Genap' for even semester
+        
+        $this->command->info("Creating kelas for {$tahunAjaran} - {$semesterType}");
+        
+        // Get all mata kuliah
         $mataKuliahs = MataKuliah::all();
-        $sections = ['IF-A', 'IF-B', 'IF-C', 'IF-D', 'SI-A', 'SI-B'];
+        
+        if ($mataKuliahs->isEmpty()) {
+            $this->command->warn('No mata kuliah found. Please seed mata kuliah first.');
+            return;
+        }
 
-        foreach ($mataKuliahs->take(6) as $index => $mk) {
-            // Create 1-2 classes per course
-            Kelas::updateOrCreate(
-                [
-                    'mata_kuliah_id' => $mk->id,
-                    'dosen_id' => $dosen->id,
-                    'section' => $sections[$index % count($sections)],
-                ],
-                [
-                    'kapasitas' => 40,
-                    'tahun_ajaran' => '2023/2024',
-                    'semester_type' => 'Ganjil',
-                ]
-            );
+        $sections = ['A', 'B', 'C', 'D'];
+        $kelasCount = 0;
 
-            // Add second section for some courses
-            if ($index < 3) {
+        foreach ($mataKuliahs as $mk) {
+            // Determine if this mata kuliah should be offered this semester
+            // based on kode_id (sms1,3,5,7 = Ganjil; sms2,4,6,8 = Genap)
+            $kodeIdNum = null;
+            if (preg_match('/sms(\d+)/', $mk->kode_id, $matches)) {
+                $kodeIdNum = (int)$matches[1];
+            }
+            
+            // Skip if this mata kuliah doesn't match the current semester type
+            if ($kodeIdNum !== null) {
+                $isOddSemester = ($kodeIdNum % 2 == 1);
+                if ($isOddSemester && $semesterType !== 'Ganjil') {
+                    continue; // Skip odd semester courses in even semester
+                }
+                if (!$isOddSemester && $semesterType !== 'Genap') {
+                    continue; // Skip even semester courses in odd semester
+                }
+            }
+            
+            // Create 1-2 sections for each mata kuliah
+            $numSections = rand(1, 2);
+            
+            for ($i = 0; $i < $numSections; $i++) {
+                $section = $sections[$i];
+                
+                // Assign a random dosen
+                $dosen = $dosens->random();
+                
                 Kelas::updateOrCreate(
                     [
                         'mata_kuliah_id' => $mk->id,
-                        'dosen_id' => $dosen->id,
-                        'section' => $sections[($index + 1) % count($sections)],
+                        'section' => $section,
+                        'tahun_ajaran' => $tahunAjaran,
+                        'semester_type' => $semesterType,
                     ],
                     [
-                        'kapasitas' => 40,
-                        'tahun_ajaran' => '2023/2024',
-                        'semester_type' => 'Ganjil',
+                        'dosen_id' => $dosen->id,
+                        'kapasitas' => rand(30, 50),
                     ]
                 );
+                
+                $kelasCount++;
+                $this->command->info("Created: [{$mk->kode_id}] {$mk->nama_mk} - Section {$section} - Dosen: {$dosen->name}");
             }
         }
+        
+        $this->command->info("Kelas seeder completed! Created {$kelasCount} classes.");
     }
 }

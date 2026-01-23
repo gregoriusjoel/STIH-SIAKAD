@@ -67,6 +67,105 @@ class NilaiController extends Controller
             'ipsPerSemester'
         ));
     }
+
+    public function khs()
+    {
+        $mahasiswa = Auth::user()->mahasiswa;
+
+        $nilaiData = $mahasiswa->krs()
+            ->with(['kelasMataKuliah.mataKuliah', 'kelasMataKuliah.semester', 'nilai'])
+            ->whereHas('nilai')
+            ->get();
+
+        $nilaiPerSemester = $nilaiData->groupBy(function($item) {
+            return $item->kelasMataKuliah->semester->nama_semester ?? 'Unknown';
+        });
+
+        // reuse IPK calculation
+        $totalBobot = 0;
+        $totalSks = 0;
+        foreach($nilaiData as $krs) {
+            if($krs->nilai) {
+                $bobot = $this->getBobot($krs->nilai->nilai);
+                $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
+                $totalBobot += ($bobot * $sks);
+                $totalSks += $sks;
+            }
+        }
+        $ipk = $totalSks > 0 ? round($totalBobot / $totalSks, 2) : 0;
+
+        $ipsPerSemester = [];
+        foreach($nilaiPerSemester as $semesterNama => $nilaiList) {
+            $semesterBobot = 0;
+            $semesterSks = 0;
+            foreach($nilaiList as $krs) {
+                if($krs->nilai) {
+                    $bobot = $this->getBobot($krs->nilai->nilai);
+                    $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
+                    $semesterBobot += ($bobot * $sks);
+                    $semesterSks += $sks;
+                }
+            }
+            $ipsPerSemester[$semesterNama] = [
+                'ips' => $semesterSks > 0 ? round($semesterBobot / $semesterSks, 2) : 0,
+                'sks' => $semesterSks
+            ];
+        }
+
+        return view('page.mahasiswa.khs.index', compact(
+            'mahasiswa', 'nilaiPerSemester', 'ipk', 'totalSks', 'ipsPerSemester'
+        ));
+    }
+
+    public function print()
+    {
+        // reuse index data
+        $mahasiswa = Auth::user()->mahasiswa;
+
+        $nilaiData = $mahasiswa->krs()
+            ->with(['kelasMataKuliah.mataKuliah', 'kelasMataKuliah.semester', 'nilai'])
+            ->whereHas('nilai')
+            ->get();
+
+        $nilaiPerSemester = $nilaiData->groupBy(function($item) {
+            return $item->kelasMataKuliah->semester->nama_semester ?? 'Unknown';
+        });
+
+        // Calculate IPK and IPS per semester as in index
+        $totalBobot = 0;
+        $totalSks = 0;
+        foreach($nilaiData as $krs) {
+            if($krs->nilai) {
+                $bobot = $this->getBobot($krs->nilai->nilai);
+                $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
+                $totalBobot += ($bobot * $sks);
+                $totalSks += $sks;
+            }
+        }
+        $ipk = $totalSks > 0 ? round($totalBobot / $totalSks, 2) : 0;
+
+        $ipsPerSemester = [];
+        foreach($nilaiPerSemester as $semesterNama => $nilaiList) {
+            $semesterBobot = 0;
+            $semesterSks = 0;
+            foreach($nilaiList as $krs) {
+                if($krs->nilai) {
+                    $bobot = $this->getBobot($krs->nilai->nilai);
+                    $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
+                    $semesterBobot += ($bobot * $sks);
+                    $semesterSks += $sks;
+                }
+            }
+            $ipsPerSemester[$semesterNama] = [
+                'ips' => $semesterSks > 0 ? round($semesterBobot / $semesterSks, 2) : 0,
+                'sks' => $semesterSks
+            ];
+        }
+
+        return view('page.mahasiswa.nilai.print', compact(
+            'mahasiswa', 'nilaiPerSemester', 'ipk', 'totalSks', 'ipsPerSemester'
+        ));
+    }
     
     private function getBobot($nilai)
     {

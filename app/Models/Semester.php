@@ -15,8 +15,6 @@ class Semester extends Model
         'tanggal_selesai',
         'is_active',
         'krs_dapat_diisi',
-        'max_sks_rendah',
-        'max_sks_tinggi',
         'krs_mulai',
         'krs_selesai',
     ];

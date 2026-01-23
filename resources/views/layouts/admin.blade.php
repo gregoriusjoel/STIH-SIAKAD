@@ -8,6 +8,9 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -30,6 +33,12 @@
         .text-maroon { color: #800020; }
         .bg-maroon { background-color: #800020; }
         .border-maroon { border-color: #800020; }
+        /* Header on maroon background adjustments */
+        .header-maroon { background-color: #7a1621; color: #fff; }
+        .header-maroon .breadcrumb { color: rgba(255,255,255,0.9); }
+        .header-maroon .breadcrumb .muted { color: rgba(255,255,255,0.75); }
+        .header-maroon .search-input { background: #fff; color: #111827; }
+        .header-maroon .user-name { color: #ffffff; }
         /* Header tweaks */
         .top-badge { background: linear-gradient(90deg,#ff7b7b,#b22222); }
     </style>
@@ -37,98 +46,21 @@
 <body class="bg-gray-100">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside class="sidebar w-64 flex-shrink-0 hidden md:block overflow-y-auto">
-            <div class="p-6">
-                <h1 class="text-2xl font-bold text-white text-center">SIAKAD STIH</h1>
-                <p class="text-white text-center text-sm mt-1">Admin Panel</p>
-            </div>
-            
-            <nav class="px-4 pb-4">
-                <a href="{{ route('admin.dashboard') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-home w-5 mr-3"></i>
-                    Dashboard
-                </a>
-                
-                <div class="mt-4">
-                    <p class="text-gray-300 text-xs uppercase px-4 mb-2">Manajemen Data</p>
-                    
-                    <a href="{{ route('admin.mahasiswa.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.mahasiswa.*') ? 'active' : '' }}">
-                        <i class="fas fa-user-graduate w-5 mr-3"></i>
-                        Data Mahasiswa
-                    </a>
-                    
-                    <a href="{{ route('admin.dosen.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.dosen.*') ? 'active' : '' }}">
-                        <i class="fas fa-chalkboard-teacher w-5 mr-3"></i>
-                        Data Dosen
-                    </a>
-                    
-                    <a href="{{ route('admin.parents.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.parents.*') ? 'active' : '' }}">
-                        <i class="fas fa-users w-5 mr-3"></i>
-                        Data Parent
-                    </a>
-                </div>
-                
-                <div class="mt-4">
-                    <p class="text-gray-300 text-xs uppercase px-4 mb-2">Akademik</p>
-                    
-                    <a href="{{ route('admin.mata-kuliah.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.mata-kuliah.*') ? 'active' : '' }}">
-                        <i class="fas fa-book w-5 mr-3"></i>
-                        Mata Kuliah
-                    </a>
-                    
-                    <a href="{{ route('admin.kelas-mata-kuliah.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.kelas-mata-kuliah.*') ? 'active' : '' }}">
-                        <i class="fas fa-door-open w-5 mr-3"></i>
-                        Kelas Mata Kuliah
-                    </a>
-                    
-                    <a href="{{ route('admin.jadwal.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.jadwal.*') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-alt w-5 mr-3"></i>
-                        Jadwal Perkuliahan
-                    </a>
-                    
-                    <a href="{{ route('admin.krs.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.krs.*') ? 'active' : '' }}">
-                        <i class="fas fa-file-alt w-5 mr-3"></i>
-                        Manajemen KRS
-                    </a>
-                    
-                    <a href="{{ route('admin.semester.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.semester.*') ? 'active' : '' }}">
-                        <i class="fas fa-clock w-5 mr-3"></i>
-                        Semester & Tahun Ajaran
-                    </a>
-                </div>
-                
-                <div class="mt-4">
-                    <p class="text-gray-300 text-xs uppercase px-4 mb-2">Sistem</p>
-                    
-                    <a href="{{ route('admin.users.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                        <i class="fas fa-user-cog w-5 mr-3"></i>
-                        Manajemen User
-                    </a>
-                    
-                    <form method="POST" action="{{ route('logout') }}" class="mt-2">
-                        @csrf
-                        <button type="submit" class="sidebar-link w-full flex items-center px-4 py-3 text-white rounded-lg">
-                            <i class="fas fa-sign-out-alt w-5 mr-3"></i>
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </nav>
-        </aside>
+        @include('admin.sidebar-admin')
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Top Navbar -->
-            <header class="bg-white shadow-sm z-10">
+            <header class="header-maroon shadow-sm z-10">
                 <div class="flex items-center justify-between px-6 py-3">
                     <div class="flex items-center gap-4">
-                        <button class="text-gray-500 md:hidden focus:outline-none focus:text-gray-700" id="sidebar-toggle">
+                        <button class="text-white md:hidden focus:outline-none" id="sidebar-toggle">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <nav class="text-sm text-gray-500">
-                            <span class="mr-2">Home</span>
+                        <nav class="text-sm breadcrumb">
+                            <span class="mr-2 muted">Home</span>
                             <i class="fas fa-chevron-right text-xs mr-2"></i>
-                            <span class="font-semibold text-gray-800">@yield('page-title', 'Dashboard')</span>
+                            <span class="font-semibold">@yield('page-title', 'Dashboard')</span>
                         </nav>
                         <div class="ml-4">
                             @php
@@ -151,8 +83,8 @@
                         <div class="max-w-2xl mx-auto">
                             <form action="{{ route('admin.search') }}" method="GET" class="relative" id="header-search-form" data-search-url="{{ route('admin.search') }}">
                                 <div class="relative">
-                                    <input id="header-search-input" name="q" value="{{ request('q') }}" type="text" placeholder="Cari data..." aria-label="Cari data" autocomplete="off" class="w-full border rounded-full px-4 py-2 pl-10 focus:ring-2 focus:ring-maroon focus:border-transparent" />
-                                    <button type="submit" class="absolute left-0 top-0 h-full pl-3 pr-2 text-gray-500">
+                                    <input id="header-search-input" name="q" value="{{ request('q') }}" type="text" placeholder="Cari data..." aria-label="Cari data" autocomplete="off" class="w-full border rounded-full px-4 py-2 pl-10 focus:ring-2 focus:ring-maroon focus:border-transparent search-input" />
+                                    <button type="submit" class="absolute left-0 top-0 h-full pl-3 pr-2 text-gray-600">
                                         <i class="fas fa-search"></i>
                                     </button>
 
@@ -166,10 +98,10 @@
                     <div class="flex items-center gap-4">
                         <div class="flex items-center space-x-3">
                             <div class="text-right mr-2 hidden sm:block">
-                                <div class="text-sm font-medium text-gray-800">{{ auth()->user()->name }}</div>
+                                <div class="text-sm font-medium user-name">{{ auth()->user()->name }}</div>
                                 
                             </div>
-                            <div class="w-10 h-10 bg-maroon rounded-full flex items-center justify-center text-white font-bold">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-maroon shadow-sm">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                         </div>

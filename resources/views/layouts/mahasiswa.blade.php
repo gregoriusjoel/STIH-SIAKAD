@@ -11,16 +11,17 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logo_stih_white.png') }}">
-    
+
     <!-- Fonts -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
+
     <!-- Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <style>
         [x-cloak] {
             display: none !important;
@@ -75,7 +76,8 @@
             <div class="p-6 flex flex-col gap-6 h-full overflow-y-auto">
                 <!-- Logo -->
                 <div class="flex items-center gap-3 border-b border-gray-100 pb-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center text-white shadow-lg">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center text-white shadow-lg">
                         <i class="fas fa-graduation-cap text-xl"></i>
                     </div>
                     <div class="flex flex-col">
@@ -83,49 +85,56 @@
                         <p class="text-gray-500 text-xs font-normal">Student Portal</p>
                     </div>
                 </div>
-                
+
                 <!-- Navigation -->
                 <nav class="flex flex-col gap-1 grow">
-                    <a class="{{ Request::routeIs('mahasiswa.dashboard') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
-                       href="{{ route('mahasiswa.dashboard') }}">
+                    <a class="{{ Request::routeIs('mahasiswa.dashboard') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
+                        href="{{ route('mahasiswa.dashboard') }}">
                         <i class="fas fa-home text-lg w-5"></i>
                         <span class="text-sm font-medium">Dashboard</span>
                     </a>
-                    
-                    <a class="{{ Request::routeIs('mahasiswa.krs*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
-                       href="{{ route('mahasiswa.krs.index') }}">
+
+                    <a class="{{ Request::routeIs('mahasiswa.profil.manajemen') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
+                        href="{{ route('mahasiswa.profil.manajemen') }}">
+                        <i class="fas fa-user-cog text-lg w-5"></i>
+                        <span class="text-sm font-medium">Manajemen Profil</span>
+                    </a>
+
+                    <a class="{{ Request::routeIs('mahasiswa.krs*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
+                        href="{{ route('mahasiswa.krs.index') }}">
                         <i class="fas fa-file-alt text-lg w-5"></i>
                         <span class="text-sm font-medium">KRS</span>
                     </a>
-                    
-                    <a class="{{ Request::routeIs('mahasiswa.nilai*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
-                       href="{{ route('mahasiswa.nilai.index') }}">
+
+                    <a class="{{ Request::routeIs('mahasiswa.nilai*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
+                        href="{{ route('mahasiswa.nilai.index') }}">
                         <i class="fas fa-chart-line text-lg w-5"></i>
                         <span class="text-sm font-medium">Akademik</span>
                     </a>
-                    
-                    <a class="{{ Request::routeIs('mahasiswa.jadwal*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
-                       href="{{ route('mahasiswa.jadwal.index') }}">
+
+                    <a class="{{ Request::routeIs('mahasiswa.jadwal*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
+                        href="{{ route('mahasiswa.jadwal.index') }}">
                         <i class="fas fa-calendar-alt text-lg w-5"></i>
                         <span class="text-sm font-medium">Jadwal Kuliah</span>
                     </a>
-                    
-                    <a class="{{ Request::routeIs('mahasiswa.pembayaran*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg" 
-                       href="{{ route('mahasiswa.pembayaran.index') }}">
+
+                    <a class="{{ Request::routeIs('mahasiswa.pembayaran*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
+                        href="{{ route('mahasiswa.pembayaran.index') }}">
                         <i class="fas fa-credit-card text-lg w-5"></i>
                         <span class="text-sm font-medium">Pembayaran</span>
                     </a>
-                    
+
                     <!-- Bottom Section -->
-                    <a class="{{ Request::routeIs('mahasiswa.profil*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg mt-auto" 
-                       href="{{ route('mahasiswa.profil.index') }}">
+                    <a class="{{ Request::routeIs('mahasiswa.profil.index') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg mt-auto"
+                        href="{{ route('mahasiswa.profil.index') }}">
                         <i class="fas fa-user-circle text-lg w-5"></i>
                         <span class="text-sm font-medium">Profil</span>
                     </a>
-                    
+
                     <form method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
-                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all">
+                        <button type="submit"
+                            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all">
                             <i class="fas fa-sign-out-alt text-lg w-5"></i>
                             <span class="text-sm font-medium">Logout</span>
                         </button>
@@ -152,31 +161,16 @@
 
                     <!-- Right Side -->
                     <div class="flex items-center gap-4 ml-auto">
-                        <!-- Search -->
-                        <div class="relative hidden md:block">
-                            <input type="text" placeholder="Search..." 
-                                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent text-sm w-64">
-                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        </div>
-
-                        <!-- Notifications -->
-                        <button class="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition">
-                            <i class="fas fa-bell text-lg"></i>
-                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
-
-                        <!-- Settings -->
-                        <button class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition">
-                            <i class="fas fa-cog text-lg"></i>
-                        </button>
-
-                        <!-- User Dropdown -->
+                        <!-- User Dropdown (minimal) -->
                         <div class="flex items-center gap-3 pl-4 border-l border-gray-200">
                             <div class="text-right hidden sm:block">
-                                <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->mahasiswa->nama ?? Auth::user()->name }}</p>
-                                <p class="text-xs text-gray-500">NIDN: {{ Auth::user()->mahasiswa->npm ?? '-' }}</p>
+                                <p class="text-sm font-semibold text-gray-800">
+                                    {{ Auth::user()->mahasiswa->nama ?? Auth::user()->name }}
+                                </p>
+                                <p class="text-xs text-gray-500">NPM: {{ Auth::user()->mahasiswa->npm ?? '-' }}</p>
                             </div>
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center text-white font-bold shadow-md">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center text-white font-bold shadow-md">
                                 {{ substr(Auth::user()->name, 0, 1) }}
                             </div>
                         </div>
@@ -187,21 +181,21 @@
             <!-- Main Content -->
             <main class="flex-1 p-6 bg-gray-50">
                 @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6 animate-fade-in">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                        <p class="text-green-800 font-medium">{{ session('success') }}</p>
+                    <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6 animate-fade-in">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                            <p class="text-green-800 font-medium">{{ session('success') }}</p>
+                        </div>
                     </div>
-                </div>
                 @endif
 
                 @if(session('error'))
-                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6 animate-fade-in">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
-                        <p class="text-red-800 font-medium">{{ session('error') }}</p>
+                    <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6 animate-fade-in">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
+                            <p class="text-red-800 font-medium">{{ session('error') }}</p>
+                        </div>
                     </div>
-                </div>
                 @endif
 
                 @yield('content')
@@ -219,7 +213,7 @@
 
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    
+
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 

@@ -1,0 +1,71 @@
+kode_id;kode_mk;nama_matkul;praktikum;sks;semester
+sms1;ADH10010;Ilmu Agama;;2;1
+sms1;ADH10006;Bahasa Indonesia Hukum;;2;1
+sms1;ADH10007;Pancasila & Kewarganegaraan;;3;1
+sms1;ADH30001;Ekonomi Pembangunan;;2;1
+sms1;ADH20001;Ilmu Negara;;3;1
+sms1;ADH20002;Pengantar Ilmu Hukum;;3;1
+sms1;ADH20003;Pengantar Hukum Indonesia;;3;1
+sms1;ADH20004;Hukum & Hak Asasi Manusia;;2;1
+sms2;ADH20050;Hukum Perdata;;3;2
+sms2;ADH20006;Hukum Pidana;;3;2
+sms2;ADH20009;Hukum Adat;;4;2
+sms2;ADH20010;Hukum Islam;;2;2
+sms2;ADH20012;Ilmu Perundang-undangan;1;2;2
+sms2;ADH20014;Hukum Internasional;;3;2
+sms2;ADH20007;Hukum Tata Negara;;3;2
+sms3;ADH20005;Hukum Benda & Orang;;2;3
+sms3;ADH20015;Hukum Dagang;;3;3
+sms3;ADH20018;Hukum Acara Pidana;1;3;3
+sms3;ADH20013;Hukum Acara Perdata;1;3;3
+sms3;ADH20008;Hukum Administrasi Negara;;3;3
+sms3;ADH20020;Kejaksaan dan Badan Peradilan di Indonesia;1;2;3
+sms3;ADH20040;Hukum Sanksi;1;2;3
+sms3;ADH20051;Penerapan Asas-Asas Hukum Pidana;;2;3
+sms3;ADH30011;Lembaga Negara Indonesia;;2;3
+sms3;ADH20011;Hukum Perikatan;;2;3
+sms4;ADH30002;Legal English;1;2;4
+sms4;ADH20019;Hukum Acara Tata Usaha Negara;1;3;4
+sms4;ADH20017;Hukum Agraria;;2;4
+sms4;ADH20047;Hukum Perdata Internasional;;2;4
+sms4;ADH20016;Hukum Ketenagakerjaan;;2;4
+sms4;ADH20026;Hukum Kekayaan Interlektual;1;2;4
+sms4;ADH20052;Kejaksaan Dalam Sistem Peradilan Pidana;1;2;4
+sms4;ADH20036;Praktik Pembuktian Pidana;2;3;4
+sms4;ADH20023;Hukum Lingkungan ;;2;4
+sms4;ADH20022;Hukum Pajak;;2;4
+sms4;ADH10009;Logika Hukum;;2;4
+sms5;ADH20033;Metode Penelitian Hukum & Penulisan Jurnal Ilmiah;1;2;5
+sms5;ADH30005;Hukum Pidana Khusus;;2;5
+sms5;ADH20027;Hukum Perlindungan Anak;;2;5
+sms5;ADH20029;Hukum Pidana Internasional;;2;5
+sms5;ADH20025;Hukum Acara Mahkamah Konstitusi;1;2;5
+sms5;ADH30007;Hukum Siber;;2;5
+sms5;ADH20048;Hukum Humaniter;;2;5
+sms5;ADH20035;Hukum Kepailitan;1;2;5
+sms5;ADH20021;Hukum Perdata Islam;1;2;5
+sms5;ADH20034;Pencucian Uang, Penyitaan & Pemulihan Aset;;2;5
+sms5;ADH20028;Hukum Antar Tata Hukum;;2;5
+sms5;ADH20053;Kejaksaan Dalam Bidang Perdata & Tata Usaha Negara;1;2;5
+sms6;ADH20037;Etika, Tanggung Jawab & Profesi Hukum;;2;6
+sms6;ADH20038;Filsafat Hukum;;2;6
+sms6;ADH20039;Legal Drafting;2;2;6
+sms6;ADH20041;Praktik Hukum Perdata;1;2;6
+sms6;ADH20042;Praktik Hukum Tata Usaha Negara;1;2;6
+sms6;ADH40004;Kriminologi & Viktimologi;;2;6
+sms6;ADH20044;Arbitrase & Alternative Dispute Resolution;1;2;6
+sms6;ADH30004;Hukum Perusahaan, Persaingan Usaha & Jaminan;;2;6
+sms6;ADH20030;Hukum Perbankan & Surat Berharga;;2;6
+sms6;ADH20031;Penyelesaian Sengketa Industrial;;2;6
+sms6;ADH20032;Perbandingan Hukum Pidana;1;2;6
+sms6;ADH30010;Hukum Organisasi Internasional;;2;6
+sms7;ADH20024;Hukum Administrasi Negara Sektoral;1;2;7
+sms7;ADH30003;Legal Enterpreneurship (Kewirausahaan);1;2;7
+sms7;ADD20049;Penulisan Skripsi/ Penulisan Jurnal Ilmiah;3;4;7
+sms7;ADH40001;Hukum Laut  ;;2;7
+sms7;ADH30014;Hukum Perlindungan Konsumen;;2;7
+sms7;ADH30006;Hukum Jaminan;1;2;7
+sms7;ADH30012;Hukum Kesehatan & Medikolegal;;2;7
+sms7;ADH30008;Hukum Investasi;;2;7
+sms7;ADH30009;Hukum Perjanjian Internasional;;2;7
+sms7;ADH30015;Kapita Selekta Hukum Acara Pidana;1;2;7

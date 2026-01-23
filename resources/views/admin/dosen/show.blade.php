@@ -36,8 +36,18 @@
 
             <div class="mt-6">
                 <h5 class="text-md font-semibold text-gray-700 mb-3">Kelas & Mata Kuliah</h5>
-                @if($dosen->kelasMataKuliahs && $dosen->kelasMataKuliahs->count())
+                @if((isset($assignedMataKuliahs) && $assignedMataKuliahs->count()) || ($dosen->kelasMataKuliahs && $dosen->kelasMataKuliahs->count()))
                     <div class="grid grid-cols-1 gap-3">
+                        @foreach($assignedMataKuliahs ?? [] as $mk)
+                            <div class="p-4 border rounded-lg flex items-center justify-between">
+                                <div>
+                                    <div class="text-sm font-semibold">{{ $mk->nama_mk ?? '-' }}</div>
+                                    <div class="text-xs text-gray-500">Kode: {{ $mk->kode_mk ?? '-' }}</div>
+                                </div>
+                                <div class="text-xs text-gray-500">SKS: {{ $mk->sks ?? '-' }}</div>
+                            </div>
+                        @endforeach
+
                         @foreach($dosen->kelasMataKuliahs as $km)
                             <div class="p-4 border rounded-lg flex items-center justify-between">
                                 <div>

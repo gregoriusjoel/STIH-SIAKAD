@@ -34,20 +34,20 @@ class DashboardController extends Controller
             ->whereHas('nilai')
             ->with(['nilai', 'kelasMataKuliah.mataKuliah'])
             ->get();
-        
-        $totalMutu = 0;
         $totalSksNilai = 0;
-        
+        $totalBobot = 0;
+
         foreach ($nilaiData as $krs) {
             if ($krs->nilai && $krs->kelasMataKuliah && $krs->kelasMataKuliah->mataKuliah) {
                 $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
                 $bobot = $this->getBobot($krs->nilai->grade);
-                $totalMutu += $sks * $bobot;
                 $totalSksNilai += $sks;
+                $totalBobot += ($bobot * $sks);
             }
         }
+
+        $ipk = $totalSksNilai > 0 ? round($totalBobot / $totalSksNilai, 2) : 0;
         
-        $ipk = $totalSksNilai > 0 ? round($totalMutu / $totalSksNilai, 2) : 0;
         
         // Get payment status
         $pembayaran = Pembayaran::where('mahasiswa_id', $mahasiswa->id)
@@ -57,7 +57,7 @@ class DashboardController extends Controller
         $statusPembayaran = $pembayaran ? $pembayaran->status : 'belum_bayar';
         
         // Get KRS status
-        $krsStatus = $activeKrs->isEmpty() ? 'Belum Diisi' : 'Disetujui';
+        $krsStatus = $activeKrs->isEmpty() ? 'Belum Di Isi' : 'Disetujui';
         
         return view('page.mahasiswa.dashboard', compact(
             'mahasiswa',

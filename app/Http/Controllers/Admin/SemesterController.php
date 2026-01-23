@@ -10,10 +10,8 @@ class SemesterController extends Controller
 {
     public function index()
     {
-        $semesters = Semester::orderBy('tahun_ajaran', 'desc')->orderBy('tanggal_mulai', 'desc')->paginate(10);
-        $semesterAktif = Semester::where('status', 'aktif')->first();
-        $allSemesters = Semester::orderBy('tahun_ajaran', 'desc')->orderBy('tanggal_mulai', 'desc')->get();
-        return view('admin.semester.index', compact('semesters', 'semesterAktif', 'allSemesters'));
+        // Redirect to KRS management since semester listing page was removed
+        return redirect()->route('admin.krs.index');
     }
 
     public function manage()
@@ -43,16 +41,12 @@ class SemesterController extends Controller
     {
         $request->validate([
             'krs_dapat_diisi' => 'nullable|boolean',
-            'max_sks_rendah' => 'required|integer|min:1',
-            'max_sks_tinggi' => 'required|integer|min:1',
             'krs_mulai' => 'nullable|date',
             'krs_selesai' => 'nullable|date|after_or_equal:krs_mulai',
         ]);
 
         $semester->update([
             'krs_dapat_diisi' => $request->has('krs_dapat_diisi') ? true : false,
-            'max_sks_rendah' => $request->max_sks_rendah,
-            'max_sks_tinggi' => $request->max_sks_tinggi,
             'krs_mulai' => $request->krs_mulai,
             'krs_selesai' => $request->krs_selesai,
         ]);
@@ -82,7 +76,7 @@ class SemesterController extends Controller
         }
 
         Semester::create(array_merge($request->all(), ['status' => $request->status ?? 'non-aktif']));
-        return redirect()->route('admin.semester.index')->with('success', 'Semester berhasil ditambahkan');
+        return redirect()->route('admin.krs.index')->with('success', 'Semester berhasil ditambahkan');
     }
 
     public function edit(Semester $semester)
@@ -106,7 +100,7 @@ class SemesterController extends Controller
         }
 
         $semester->update(array_merge($request->all(), ['status' => $request->status ?? 'non-aktif']));
-        return redirect()->route('admin.semester.index')->with('success', 'Semester berhasil diperbarui');
+        return redirect()->route('admin.krs.index')->with('success', 'Semester berhasil diperbarui');
     }
 
     public function destroy(Semester $semester)
@@ -115,6 +109,6 @@ class SemesterController extends Controller
             return back()->with('error', 'Tidak dapat menghapus semester yang sedang aktif');
         }
         $semester->delete();
-        return redirect()->route('admin.semester.index')->with('success', 'Semester berhasil dihapus');
+        return redirect()->route('admin.krs.index')->with('success', 'Semester berhasil dihapus');
     }
 }

@@ -13,8 +13,12 @@ class Krs extends Model
 
     protected $fillable = [
         'mahasiswa_id',
+        'mata_kuliah_id',
+        'kelas_mata_kuliah_id',
+        'kelas_id',
         'status',
         'keterangan',
+        'ambil_mk',
     ];
 
     public function mahasiswa(): BelongsTo
@@ -22,9 +26,19 @@ class Krs extends Model
         return $this->belongsTo(Mahasiswa::class);
     }
 
+    public function mataKuliah(): BelongsTo
+    {
+        return $this->belongsTo(MataKuliah::class);
+    }
+
     public function kelas(): BelongsTo
     {
         return $this->belongsTo(Kelas::class);
+    }
+
+    public function kelasMataKuliah(): BelongsTo
+    {
+        return $this->belongsTo(KelasMataKuliah::class, 'kelas_mata_kuliah_id');
     }
 
     public function nilai(): HasOne

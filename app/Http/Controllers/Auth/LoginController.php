@@ -44,12 +44,12 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
 
-            // Only allow admin, dosen, and mahasiswa roles
-            if (!in_array($user->role, ['admin', 'dosen', 'mahasiswa'])) {
+            // Only allow admin, dosen, mahasiswa, and parent roles
+            if (!in_array($user->role, ['admin', 'dosen', 'mahasiswa', 'parent'])) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                
+
                 return back()
                     ->with('error', 'Role tidak diizinkan untuk login')
                     ->withInput($request->only('email'));
@@ -67,14 +67,17 @@ class LoginController extends Controller
             // Redirect based on role
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard')
-                    ->with('login_success', 'Selamat datang, '.$user->name.'!');
+                    ->with('login_success', 'Selamat datang, ' . $user->name . '!');
             } elseif ($user->role === 'mahasiswa') {
                 return redirect()->route('mahasiswa.dashboard')
-                    ->with('login_success', 'Selamat datang, '.$user->name.'!');
+                    ->with('login_success', 'Selamat datang, ' . $user->name . '!');
+            } elseif ($user->role === 'parent') {
+                return redirect()->route('parent.dashboard')
+                    ->with('login_success', 'Selamat datang, ' . $user->name . '!');
             }
 
             return redirect()->route('dosen.dashboard')
-                ->with('login_success', 'Selamat datang, '.$user->name.'!');
+                ->with('login_success', 'Selamat datang, ' . $user->name . '!');
         }
 
         return back()

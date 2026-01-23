@@ -26,7 +26,8 @@ class MataKuliahController extends Controller
             'nama_mk' => 'required|string|max:255',
             'sks' => 'required|integer|min:1|max:6',
             'semester' => 'required|integer|min:1|max:8',
-            'jenis' => 'required|in:wajib,pilihan',
+            'praktikum' => 'nullable|integer|min:0|max:10',
+            'jenis' => 'required|in:wajib_nasional,wajib_prodi,pilihan,peminatan',
             'prodi' => 'required|string',
             'deskripsi' => 'nullable|string',
         ]);
@@ -55,7 +56,8 @@ class MataKuliahController extends Controller
             'nama_mk' => 'required|string|max:255',
             'sks' => 'required|integer|min:1|max:6',
             'semester' => 'required|integer|min:1|max:8',
-            'jenis' => 'required|in:wajib,pilihan',
+            'praktikum' => 'nullable|integer|min:0|max:10',
+            'jenis' => 'required|in:wajib_nasional,wajib_prodi,pilihan,peminatan',
             'prodi' => 'required|string',
             'deskripsi' => 'nullable|string',
         ]);

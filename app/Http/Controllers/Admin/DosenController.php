@@ -13,13 +13,14 @@ class DosenController extends Controller
 {
     public function index()
     {
-        $dosens = Dosen::with('user')->paginate(10);
+        $dosens = Dosen::with('user', 'kelasMataKuliahs.mataKuliah')->paginate(10);
         return view('admin.dosen.index', compact('dosens'));
     }
 
     public function create()
     {
-        return view('admin.dosen.create');
+        $mataKuliahs = \App\Models\MataKuliah::orderBy('nama_mk')->get();
+        return view('admin.dosen.create', compact('mataKuliahs'));
     }
 
     public function store(Request $request)
@@ -29,9 +30,12 @@ class DosenController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'nidn' => 'required|unique:dosens,nidn',
+            'pendidikan' => 'required|string',
             'prodi' => 'required|string',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
+            'mata_kuliah_ids' => 'nullable|array',
+            'mata_kuliah_ids.*' => 'exists:mata_kuliahs,id',
         ]);
 
         DB::beginTransaction();
@@ -43,14 +47,20 @@ class DosenController extends Controller
                 'role' => 'dosen',
             ]);
 
-            Dosen::create([
+            $dosen = Dosen::create([
                 'user_id' => $user->id,
                 'nidn' => $request->nidn,
+                'pendidikan' => $request->pendidikan,
                 'prodi' => $request->prodi,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'status' => 'aktif',
             ]);
+
+            // store mata_kuliah ids directly on dosens table as JSON
+            if ($request->filled('mata_kuliah_ids') && $dosen) {
+                $dosen->update(['mata_kuliah_ids' => array_values($request->mata_kuliah_ids)]);
+            }
 
             DB::commit();
             return redirect()->route('admin.dosen.index')
@@ -64,12 +74,31 @@ class DosenController extends Controller
     public function show(Dosen $dosen)
     {
         $dosen->load('user', 'kelasMataKuliahs.mataKuliah');
-        return view('admin.dosen.show', compact('dosen'));
+
+        $assignedMataKuliahs = collect();
+
+        // If mata_kuliah_ids stored as JSON, use them
+        if (!empty($dosen->mata_kuliah_ids) && is_array($dosen->mata_kuliah_ids) && count($dosen->mata_kuliah_ids) > 0) {
+            $assignedMataKuliahs = \App\Models\MataKuliah::whereIn('id', $dosen->mata_kuliah_ids)->get();
+        } else {
+            // Fallback: try to read from a pivot relation if the pivot table exists
+            try {
+                $assigned = $dosen->mataKuliahs()->get();
+                if ($assigned && $assigned->count()) {
+                    $assignedMataKuliahs = $assigned;
+                }
+            } catch (\Throwable $e) {
+                // pivot table likely doesn't exist — ignore
+            }
+        }
+
+        return view('admin.dosen.show', compact('dosen', 'assignedMataKuliahs'));
     }
 
     public function edit(Dosen $dosen)
     {
-        return view('admin.dosen.edit', compact('dosen'));
+        $mataKuliahs = \App\Models\MataKuliah::orderBy('nama_mk')->get();
+        return view('admin.dosen.edit', compact('dosen', 'mataKuliahs'));
     }
 
     public function update(Request $request, Dosen $dosen)
@@ -78,10 +107,13 @@ class DosenController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $dosen->user_id,
             'nidn' => 'required|unique:dosens,nidn,' . $dosen->id,
+            'pendidikan' => 'required|string',
             'prodi' => 'required|string',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
             'status' => 'required|in:aktif,non-aktif',
+            'mata_kuliah_ids' => 'nullable|array',
+            'mata_kuliah_ids.*' => 'exists:mata_kuliahs,id',
         ]);
 
         DB::beginTransaction();
@@ -99,11 +131,17 @@ class DosenController extends Controller
 
             $dosen->update([
                 'nidn' => $request->nidn,
+                'pendidikan' => $request->pendidikan,
                 'prodi' => $request->prodi,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'status' => $request->status,
             ]);
+
+            // update mata_kuliah_ids JSON column if provided
+            if ($request->has('mata_kuliah_ids')) {
+                $dosen->update(['mata_kuliah_ids' => array_values($request->mata_kuliah_ids ?? [])]);
+            }
 
             DB::commit();
             return redirect()->route('admin.dosen.index')

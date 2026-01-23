@@ -23,7 +23,7 @@ class DashboardController extends Controller
             'total_kelas' => KelasMataKuliah::count(),
             'total_krs' => Krs::count(),
             'krs_pending' => Krs::where('status', 'pending')->count(),
-            'recent_krs' => Krs::with(['mahasiswa.user', 'kelasMataKuliah.mataKuliah'])
+            'recent_krs' => Krs::with(['mahasiswa.user', 'kelas.mataKuliah'])
                 ->orderBy('created_at', 'desc')
                 ->limit(5)
                 ->get(),

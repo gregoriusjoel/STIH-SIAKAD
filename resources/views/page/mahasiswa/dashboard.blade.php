@@ -48,63 +48,33 @@
         </div>
     </div>
 
-    {{-- Stats Grid --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {{-- Total SKS Semester Ini --}}
-        <div class="stat-card bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-book text-blue-600 text-xl"></i>
-                </div>
-                <span class="text-xs text-gray-500 font-semibold">SEMESTER INI</span>
-            </div>
-            <div class="text-3xl font-bold text-gray-800 mb-1">{{ $totalSks }}</div>
-            <div class="text-sm text-gray-600">Total SKS</div>
+    {{-- Pengumuman (ganti 4 kartu stat) --}}
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-gray-800">Berita Terikini</h3>
+            @php
+                $pengumumanIndexUrl = Route::has('mahasiswa.pengumuman.index') ? route('mahasiswa.pengumuman.index') : '#';
+            @endphp
+            <a href="{{ $pengumumanIndexUrl }}" class="text-sm text-maroon hover:underline">Lihat semua</a>
         </div>
 
-        {{-- Jumlah Mata Kuliah --}}
-        <div class="stat-card bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-chalkboard-teacher text-green-600 text-xl"></i>
-                </div>
-                <span class="text-xs text-gray-500 font-semibold">MATA KULIAH</span>
+        @if(isset($pengumuman) && $pengumuman->count())
+            <div class="space-y-4">
+                @foreach($pengumuman->take(4) as $p)
+                    <div class="flex items-start gap-4 p-4 border rounded-lg hover:shadow-sm transition">
+                        <div class="flex-shrink-0 w-3 h-12 rounded-full bg-maroon mt-1"></div>
+                        <div class="flex-1">
+                            @php $showUrl = Route::has('mahasiswa.pengumuman.show') ? route('mahasiswa.pengumuman.show', $p->id) : '#'; @endphp
+                            <a href="{{ $showUrl }}" class="text-md font-semibold text-gray-800 hover:text-maroon">{{ $p->judul }}</a>
+                            <p class="text-sm text-gray-600 mt-1">{{ \Illuminate\Support\Str::limit(strip_tags($p->isi ?? ''), 140) }}</p>
+                            <div class="text-xs text-gray-400 mt-2">{{ $p->created_at ? $p->created_at->format('d M Y') : '' }}</div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-            <div class="text-3xl font-bold text-gray-800 mb-1">{{ $jumlahMk }}</div>
-            <div class="text-sm text-gray-600">Diambil</div>
-        </div>
-
-        {{-- IPK --}}
-        <div class="stat-card bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-chart-line text-purple-600 text-xl"></i>
-                </div>
-                <span class="text-xs text-gray-500 font-semibold">PRESTASI</span>
-            </div>
-            <div class="text-3xl font-bold text-gray-800 mb-1">{{ number_format($ipk, 2) }}</div>
-            <div class="text-sm text-gray-600">IPK ({{ $totalSksNilai }} SKS)</div>
-        </div>
-
-        {{-- Status Pembayaran --}}
-        <div class="stat-card bg-white rounded-xl shadow-md p-6 border-l-4 border-red-500">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-wallet text-red-600 text-xl"></i>
-                </div>
-                <span class="text-xs text-gray-500 font-semibold">PEMBAYARAN</span>
-            </div>
-            <div class="text-lg font-bold text-gray-800 mb-1">
-                @if($statusPembayaran === 'lunas')
-                    <span class="text-green-600">LUNAS</span>
-                @elseif($statusPembayaran === 'sebagian')
-                    <span class="text-yellow-600">SEBAGIAN</span>
-                @else
-                    <span class="text-red-600">BELUM BAYAR</span>
-                @endif
-            </div>
-            <div class="text-sm text-gray-600">Status Bayar</div>
-        </div>
+        @else
+            <div class="text-sm text-gray-600">Belum ada pengumuman terbaru.</div>
+        @endif
     </div>
 
     {{-- Quick Actions --}}

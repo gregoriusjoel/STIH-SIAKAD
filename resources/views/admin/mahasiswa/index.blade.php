@@ -20,7 +20,7 @@
     </a>
 </div>
 
-<div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+<div x-data="{ selectedMahasiswa: null }" class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 border-separate" style="border-spacing: 0;">
             <thead class="bg-maroon text-white rounded-t-xl">
@@ -43,7 +43,7 @@
                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-calendar mr-2"></i>Angkatan
                     </th>
-                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                    <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-info-circle mr-2"></i>Status
                     </th>
                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tr-xl">
@@ -53,7 +53,9 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($mahasiswas as $mahasiswa)
-                        <tr class="hover:bg-gray-50 transition">
+                        <tr class="hover:bg-blue-50 transition cursor-pointer"
+                            @click='selectedMahasiswa = { npm: @js($mahasiswa->npm), name: @js($mahasiswa->user->name), email: @js($mahasiswa->user->email), no_hp: @js($mahasiswa->no_hp ?? "-"), prodi: @js($mahasiswa->prodi), angkatan: @js($mahasiswa->angkatan), status: @js(ucfirst($mahasiswa->status)), foto: @js($mahasiswa->foto ? asset("storage/" . $mahasiswa->foto) : null) }'
+                            :class="{ 'bg-blue-50': selectedMahasiswa && selectedMahasiswa.npm === '{{ $mahasiswa->npm }}' }">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                                 {{ ($mahasiswas->currentPage() - 1) * $mahasiswas->perPage() + $loop->iteration }}
                             </td>
@@ -81,8 +83,8 @@
                                 <i class="fas fa-calendar-alt text-gray-400 mr-1"></i>
                                 {{ $mahasiswa->angkatan }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full 
                                     {{ $mahasiswa->status == 'aktif' ? 'bg-green-100 text-green-800' : '' }}
                                     {{ $mahasiswa->status == 'cuti' ? 'bg-yellow-100 text-yellow-800' : '' }}
                                     {{ $mahasiswa->status == 'lulus' ? 'bg-blue-100 text-blue-800' : '' }}
@@ -92,7 +94,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center space-x-2">
+                                <div class="flex items-center space-x-2" @click.stop>
                                     <button type="button" onclick="document.getElementById('modal-mahasiswa-{{ $mahasiswa->id }}').classList.remove('hidden')" class="text-blue-600 hover:text-blue-900 transition" title="Detail">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -155,6 +157,133 @@
 
         <div class="mt-6">
             {{ $mahasiswas->links() }}
+        </div>
+    </div>
+
+    <!-- Detail Mahasiswa (Data Akademik) -->
+    <div x-show="selectedMahasiswa" x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform translate-y-4"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         class="bg-white rounded-lg shadow-lg border-t-4 border-maroon mt-6 p-8">
+        <div class="flex justify-between items-center mb-6 pb-2 border-b border-gray-100">
+            <h3 class="text-xl font-bold text-gray-800">Detail Mahasiswa</h3>
+            <button @click="selectedMahasiswa = null" class="text-gray-500 hover:text-gray-700" title="Tutup">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="space-y-5">
+            <!-- NIM -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">NIM</label>
+                <div class="lg:col-span-9">
+                    <input type="text" x-model="selectedMahasiswa.npm" readonly 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm shadow-sm">
+                </div>
+            </div>
+
+            <!-- Nama Lengkap -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Nama Lengkap</label>
+                <div class="lg:col-span-9">
+                    <input type="text" x-model="selectedMahasiswa.name" readonly 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm shadow-sm">
+                </div>
+            </div>
+
+            <!-- Handphone -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Handphone</label>
+                <div class="lg:col-span-9">
+                    <input type="text" x-model="selectedMahasiswa.no_hp" readonly 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm shadow-sm">
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Email</label>
+                <div class="lg:col-span-9">
+                    <input type="text" x-model="selectedMahasiswa.email" readonly 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm shadow-sm">
+                </div>
+            </div>
+
+            <!-- Foto -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium pt-2">Foto Mahasiswa</label>
+                <div class="lg:col-span-9">
+                    <div class="w-32 h-40 border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style="width:128px; height:160px; overflow:hidden;">
+                        <template x-if="selectedMahasiswa.foto">
+                            <img :src="selectedMahasiswa.foto" class="w-full h-full object-cover">
+                        </template>
+                        <template x-if="!selectedMahasiswa.foto">
+                            <div class="text-gray-300 flex flex-col items-center">
+                                <i class="fas fa-user text-4xl mb-2"></i>
+                                <span class="text-xs">No Photo</span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-b border-gray-100 my-4"></div>
+
+            <!-- Jurusan -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Jurusan</label>
+                <div class="lg:col-span-9">
+                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
+                        <span x-text="selectedMahasiswa.prodi"></span>
+                        <i class="fas fa-lock text-gray-300 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Program -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Program</label>
+                <div class="lg:col-span-9">
+                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
+                        <span>1 - REGULER</span>
+                        <i class="fas fa-lock text-gray-300 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kurikulum -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Kurikulum</label>
+                <div class="lg:col-span-9">
+                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
+                        <span x-text="'32 - Kurikulum ' + selectedMahasiswa.prodi + ' ' + selectedMahasiswa.angkatan"></span>
+                        <i class="fas fa-lock text-gray-300 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Angkatan -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Angkatan</label>
+                <div class="lg:col-span-9">
+                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
+                        <span x-text="selectedMahasiswa.angkatan"></span>
+                        <i class="fas fa-lock text-gray-300 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Mahasiswa -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Status Mahasiswa</label>
+                <div class="lg:col-span-9">
+                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
+                        <span x-text="selectedMahasiswa.status"></span>
+                        <i class="fas fa-lock text-gray-300 text-xs"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

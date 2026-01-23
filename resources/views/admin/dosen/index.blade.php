@@ -39,7 +39,7 @@
                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-graduation-cap mr-2"></i>Pendidikan
                     </th>
-                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                    <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-toggle-on mr-2"></i>Status
                     </th>
                     <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
@@ -82,8 +82,8 @@
                                 {{ $dosen->pendidikan }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full 
                                 {{ $dosen->status == 'aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                 <i class="fas fa-circle text-xs mr-1"></i>
                                 {{ ucfirst($dosen->status) }}
@@ -137,6 +137,38 @@
                                     <div><strong>Telepon:</strong> {{ $dosen->phone ?? '-' }}</div>
                                     <div><strong>Status:</strong> {{ ucfirst($dosen->status) }}</div>
                                 </div>
+                            </div>
+                            <div class="p-6 border-t">
+                                <h5 class="text-sm font-semibold mb-2">Mata Kuliah yang Diampu</h5>
+                                @php
+                                    $assigned = collect();
+                                    if (!empty($dosen->mata_kuliah_ids) && is_array($dosen->mata_kuliah_ids) && count($dosen->mata_kuliah_ids) > 0) {
+                                        $assigned = \App\Models\MataKuliah::whereIn('id', $dosen->mata_kuliah_ids)->get();
+                                    }
+                                    // merge kelasMataKuliahs' mataKuliah
+                                    if ($dosen->relationLoaded('kelasMataKuliahs') && $dosen->kelasMataKuliahs->count()) {
+                                        $dosen->kelasMataKuliahs->each(function($km) use (&$assigned) {
+                                            if ($km->mataKuliah) $assigned->push($km->mataKuliah);
+                                        });
+                                    }
+                                    $assigned = $assigned->unique('id')->values();
+                                @endphp
+
+                                @if($assigned->count())
+                                    <div class="grid grid-cols-1 gap-2">
+                                        @foreach($assigned as $mk)
+                                            <div class="flex items-center justify-between p-2 border rounded">
+                                                <div>
+                                                    <div class="text-sm font-semibold">{{ $mk->nama_mk ?? '-' }}</div>
+                                                    <div class="text-xs text-gray-500">Kode: {{ $mk->kode_mk ?? '-' }}</div>
+                                                </div>
+                                                <div class="text-xs text-gray-500">SKS: {{ $mk->sks ?? '-' }}</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="text-sm text-gray-500">Belum ada mata kuliah tercatat.</div>
+                                @endif
                             </div>
                             <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
                                 <a href="{{ route('admin.dosen.edit', $dosen) }}" class="bg-maroon text-white px-4 py-2 rounded shadow">Edit</a>

@@ -3,59 +3,158 @@
 @section('title', 'Jadwal Mengajar')
 
 @push('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        .active-nav {
-            background-color: var(--color-primary);
-            color: white !important;
-        }
-    </style>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .active-nav {
+        background-color: var(--color-primary);
+        color: white !important;
+    }
+</style>
 @endpush
 
 @section('content')
     <div class="flex flex-col min-w-0 h-full" x-data="scheduleNavigation()">
         <div class="p-6 md:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6">
-
+            
             <!-- Header -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 class="text-2xl font-black text-[#111218] dark:text-white">Jadwal Mengajar</h1>
                     <p class="text-[#616889] dark:text-slate-400 text-sm">Jadwal perkuliahan Semester Ganjil 2023/2024.</p>
                 </div>
-
+                
                 <!-- Week Navigator -->
-                <div
-                    class="flex items-center gap-2 bg-white dark:bg-[#1a1d2e] p-1 rounded-lg border border-[#dbdde6] dark:border-slate-800 shadow-sm">
-                    <button @click="prevWeek()" :disabled="!canGoBack"
-                        :class="{'opacity-50 cursor-not-allowed': !canGoBack, 'hover:bg-gray-100 dark:hover:bg-slate-800': canGoBack}"
-                        class="p-1.5 rounded-md text-[#616889]">
+                <div class="flex items-center gap-2 bg-white dark:bg-[#1a1d2e] p-1 rounded-lg border border-[#dbdde6] dark:border-slate-800 shadow-sm">
+                    @if($weekOffset > 0)
+                    <a href="{{ route('dosen.jadwal', ['week' => $weekOffset - 1]) }}" class="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md text-[#616889]">
                         <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-                    </button>
-                    <span class="text-sm font-semibold px-2 text-[#111218] dark:text-white" x-text="displayText"></span>
-                    <button @click="nextWeek()"
-                        class="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md text-[#616889]">
+                    </a>
+                    @else
+                    <span class="p-1.5 rounded-md text-[#616889] opacity-50 cursor-not-allowed">
+                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                    </span>
+                    @endif
+                    
+                    <span class="text-sm font-semibold px-2 text-[#111218] dark:text-white">
+                        @php
+                            $weekNum = ceil($weekStart->day / 7);
+                            $monthName = $weekStart->translatedFormat('M');
+                        @endphp
+                        Minggu ke-{{ $weekNum }} ({{ $weekStart->format('d') }} - {{ $weekEnd->format('d') }} {{ $monthName }})
+                    </span>
+                    
+                    <a href="{{ route('dosen.jadwal', ['week' => $weekOffset + 1]) }}" class="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md text-[#616889]">
                         <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                    </button>
+                    </a>
                 </div>
             </div>
 
+            <!-- Rejected Reschedules Alert -->
+            @if($rejectedReschedules->count() > 0)
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-red-500 text-xl">error</span>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-red-800 text-sm mb-2">Permintaan Reschedule Ditolak</h4>
+                        @foreach($rejectedReschedules as $rejected)
+                        <div class="text-sm text-red-700 mb-1">
+                            <span class="font-semibold">{{ $rejected->kelasMataKuliah->mataKuliah->nama_mk ?? '-' }} ({{ $rejected->kelasMataKuliah->kode_kelas ?? '-' }})</span>
+                            - {{ $rejected->new_hari }} {{ substr($rejected->new_jam_mulai, 0, 5) }} - {{ substr($rejected->new_jam_selesai, 0, 5) }}
+                            @if($rejected->catatan_admin)
+                            <div class="text-xs text-red-600 italic mt-0.5">Alasan: {{ $rejected->catatan_admin }}</div>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Schedule Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
+                
                 @php
                     $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
                 @endphp
 
                 @foreach($days as $day)
-
-                            </div>
+                <div class="bg-white dark:bg-[#1a1d2e] rounded-xl border border-[#dbdde6] dark:border-slate-800 p-5 flex flex-col gap-4 shadow-sm {{ !isset($schedulesByDay[$day]) ? 'min-h-[200px]' : '' }}">
+                    <div class="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-slate-800">
+                        <h3 class="font-bold text-[#111218] dark:text-white">{{ $day }}</h3>
+                        @if(isset($schedulesByDay[$day]))
+                            <span class="text-xs font-medium text-[#616889]">{{ $schedulesByDay[$day]->count() }} Kelas</span>
                         @endif
                     </div>
+                    @if(isset($schedulesByDay[$day]) && $schedulesByDay[$day]->count() > 0)
+                        @foreach($schedulesByDay[$day] as $kelas)
+                        <!-- Class Item -->
+                        <div class="flex gap-3 relative pl-3 hover:bg-gray-50/50 rounded-r-lg transition-colors p-2 -mx-2 {{ $kelas->is_rescheduled ? 'bg-amber-50/50' : '' }}">
+                            <div class="absolute left-0 top-1 bottom-1 w-1 {{ $kelas->is_rescheduled ? 'bg-amber-500' : 'bg-red-900' }} rounded-full"></div>
+                            <div class="flex-1 flex flex-col gap-1">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-bold text-[#111218] dark:text-white text-sm">{{ $kelas->mataKuliah->nama_mk }}</h4>
+                                    <div class="flex items-center gap-1">
+                                        @if($kelas->is_rescheduled)
+                                        <span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">RESCHEDULE</span>
+                                        @endif
+                                        <span class="bg-{{ $kelas->mataKuliah->jenis === 'pilihan' ? 'blue' : 'orange' }}-50 text-{{ $kelas->mataKuliah->jenis === 'pilihan' ? 'blue' : 'orange' }}-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase">{{ $kelas->mataKuliah->jenis }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-[#616889]">
+                                    <span class="bg-red-50 text-red-700 px-1.5 rounded font-bold">{{ $kelas->display_kelas }}</span>
+                                    <span>•</span>
+                                    <span class="font-semibold">{{ $kelas->mataKuliah->sks }} SKS</span>
+                                    @if($kelas->display_jam_mulai && $kelas->display_jam_selesai)
+                                    <span>•</span>
+                                    <div class="flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                        {{ substr($kelas->display_jam_mulai, 0, 5) }} - {{ substr($kelas->display_jam_selesai, 0, 5) }}
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="flex items-center gap-1 text-xs text-[#616889] mt-0.5">
+                                    <span class="material-symbols-outlined text-[14px]">location_on</span>
+                                    {{ $kelas->display_ruang ?: 'Belum ditentukan' }}
+                                </div>
+                                <!-- Reschedule Button (only show if not already rescheduled this week and no pending request) -->
+                                @if($kelas->is_rescheduled)
+                                    {{-- Already rescheduled badge shown above --}}
+                                @elseif($kelas->has_pending_reschedule)
+                                <div class="mt-2">
+                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-yellow-100 text-yellow-700 border border-yellow-300 rounded-md text-xs font-semibold">
+                                        <span class="material-symbols-outlined text-[14px]">hourglass_top</span>
+                                        Menunggu Approval
+                                    </span>
+                                </div>
+                                @else
+                                <div class="mt-2">
+                                    <button type="button"
+                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#8B1538] text-white rounded-md text-xs font-semibold shadow hover:opacity-90"
+                                        @click="openRescheduleModal({
+                                            id: {{ $kelas->id }},
+                                            mata_kuliah: '{{ $kelas->mataKuliah->nama_mk }}',
+                                            kode_kelas: '{{ $kelas->kode_kelas }}',
+                                            hari: '{{ $kelas->hari }}',
+                                            jam_mulai: '{{ $kelas->jam_mulai ? substr($kelas->jam_mulai, 0, 5) : '' }}',
+                                            jam_selesai: '{{ $kelas->jam_selesai ? substr($kelas->jam_selesai, 0, 5) : '' }}'
+                                        })">
+                                        <span class="material-symbols-outlined text-[14px]">calendar_month</span>
+                                        Reschedule
+                                    </button>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @endforeach
+                    @else
+                        <div class="flex-1 flex flex-col items-center justify-center text-center gap-2 text-[#616889]">
+                            <p class="text-sm">Tidak ada jadwal mengajar</p>
+                        </div>
+                    @endif
+                </div>
                 @endforeach
 
             </div>
@@ -102,12 +201,22 @@
             <p class="text-sm text-[#616889] dark:text-slate-400 mt-1">
                 Ajukan perubahan hari atau jam mengajar
             </p>
+            <!-- Week Indicator -->
+            <div class="mt-3 px-3 py-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[18px]">calendar_month</span>
+                    <span class="text-blue-700 dark:text-blue-300 font-medium">
+                        Berlaku untuk: <strong>{{ $weekStart->format('d M') }} - {{ $weekEnd->format('d M Y') }}</strong>
+                    </span>
+                </div>
+            </div>
         </div>
 
         <!-- Form -->
         <form method="POST" :action="rescheduleFormAction" class="space-y-4">
             @csrf
-            <input type="hidden" name="jadwal_id" :value="rescheduleData.id">
+            <input type="hidden" name="kelas_mata_kuliah_id" :value="rescheduleData.id">
+            <input type="hidden" name="week_offset" value="{{ $weekOffset }}">
 
             <!-- Mata Kuliah -->
             <div>
@@ -117,14 +226,14 @@
                 <input type="text"
                     class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
                     rounded-lg bg-gray-100 dark:bg-slate-800 text-sm"
-                    :value="rescheduleData.mata_kuliah"
+                    :value="rescheduleData.mata_kuliah + ' (' + rescheduleData.kode_kelas + ')'"
                     readonly>
             </div>
 
             <!-- Hari -->
             <div>
                 <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
-                    Hari
+                    Hari <span class="text-red-500">*</span>
                 </label>
                 <select name="new_hari" x-model="rescheduleData.hari"
                     class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
@@ -140,7 +249,7 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
-                        Jam Mulai
+                        Jam Mulai <span class="text-red-500">*</span>
                     </label>
                     <input type="time" name="new_jam_mulai"
                         x-model="rescheduleData.jam_mulai"
@@ -152,7 +261,7 @@
 
                 <div>
                     <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
-                        Jam Selesai
+                        Jam Selesai <span class="text-red-500">*</span>
                     </label>
                     <input type="time" name="new_jam_selesai"
                         x-model="rescheduleData.jam_selesai"
@@ -161,6 +270,19 @@
                         rounded-lg bg-white dark:bg-slate-800 text-sm
                         focus:outline-none focus:ring-1 focus:ring-[#8B1538]">
                 </div>
+            </div>
+
+            <!-- Alasan Reschedule -->
+            <div>
+                <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
+                    Alasan Reschedule <span class="text-red-500">*</span>
+                </label>
+                <textarea name="catatan_dosen" rows="3"
+                    placeholder="Jelaskan alasan mengapa anda perlu reschedule..."
+                    required
+                    class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
+                    rounded-lg bg-white dark:bg-slate-800 text-sm
+                    focus:outline-none focus:ring-1 focus:ring-[#8B1538]"></textarea>
             </div>
 
             <!-- Actions -->
@@ -187,5 +309,66 @@
 
     </div>
 
+@push('scripts')
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('scheduleNavigation', () => ({
+            currentDate: new Date(),
+            minDate: new Date(),
+            weekOffset: {{ $weekOffset }},
 
+            // Modal state
+            showRescheduleModal: false,
+            rescheduleData: {
+                id: '',
+                mata_kuliah: '',
+                kode_kelas: '',
+                hari: '',
+                jam_mulai: '',
+                jam_selesai: ''
+            },
+            get rescheduleFormAction() {
+                return '/dosen/kelas/reschedule';
+            },
+            openRescheduleModal(kelas) {
+                this.rescheduleData = { ...kelas };
+                this.showRescheduleModal = true;
+            },
+            init() {
+                // Set to current week's Monday
+                this.normalizeToMonday(this.currentDate);
+                this.normalizeToMonday(this.minDate);
+            },
+            normalizeToMonday(date) {
+                const day = date.getDay();
+                const diff = date.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+                date.setDate(diff);
+                date.setHours(0, 0, 0, 0);
+            },
+            nextWeek() {
+                this.currentDate.setDate(this.currentDate.getDate() + 7);
+                this.currentDate = new Date(this.currentDate);
+            },
+            prevWeek() {
+                if (this.canGoBack) {
+                    this.currentDate.setDate(this.currentDate.getDate() - 7);
+                    this.currentDate = new Date(this.currentDate);
+                }
+            },
+            get canGoBack() {
+                return this.currentDate.getTime() > this.minDate.getTime();
+            },
+            get displayText() {
+                const start = new Date(this.currentDate);
+                const end = new Date(this.currentDate);
+                end.setDate(end.getDate() + 5); // Saturday
+                const weekNum = Math.ceil(start.getDate() / 7);
+                const monthName = new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(start);
+                return `Minggu ke-${weekNum} (${start.getDate()} - ${end.getDate()} ${monthName})`;
+            }
+        }))
+    });
+    // pending check removed
+</script>
+@endpush
 @endsection

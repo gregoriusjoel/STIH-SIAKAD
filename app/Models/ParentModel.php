@@ -14,6 +14,19 @@ class ParentModel extends Model
         'mahasiswa_id',
         'phone',
         'address',
+        'nama_ayah',
+        'pendidikan_ayah',
+        'pekerjaan_ayah',
+        'agama_ayah',
+        'nama_ibu',
+        'pendidikan_ibu',
+        'pekerjaan_ibu',
+        'agama_ibu',
+        'alamat_ortu',
+        'kota_ortu',
+        'propinsi_ortu',
+        'negara_ortu',
+        'handphone_ortu',
     ];
 
     public function user(): BelongsTo
