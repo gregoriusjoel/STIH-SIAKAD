@@ -62,7 +62,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-start gap-4">
                     <div
-                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-pink-700 flex items-center justify-center text-white shadow-lg shadow-pink-900/10 shrink-0">
+                        class="w-16 h-16 rounded-2xl bg-maroon flex items-center justify-center text-white shadow-lg shadow-maroon/10 shrink-0">
                         <span class="material-symbols-outlined text-4xl">menu_book</span>
                     </div>
                     <div>
@@ -295,7 +295,7 @@
                                     class="bg-gray-50/80 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold">
                                     <th class="px-6 py-4">Mahasiswa</th>
                                     <th class="px-6 py-4">Prodi</th>
-                                    <th class="px-6 py-4 text-center">Smt</th>
+                                    <th class="px-6 py-4 text-center">Semester</th>
                                     <th class="px-6 py-4 text-center">IPK</th>
                                     <th class="px-6 py-4">Status</th>
                                     <th class="px-6 py-4 text-right">Aksi</th>
@@ -310,7 +310,7 @@
                                             <td class="px-6 py-4">
                                                 <div class="flex items-center gap-4">
                                                     <div
-                                                        class="size-10 rounded-full bg-gradient-to-br from-primary to-pink-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shadow-primary/20">
+                                                        class="size-10 rounded-full bg-maroon flex items-center justify-center text-white text-xs font-bold shadow-sm shadow-maroon/20">
                                                         {{ strtoupper(substr($student['name'], 0, 2)) }}
                                                     </div>
                                                     <div>
@@ -329,7 +329,7 @@
                                             </td>
 
                                             <td class="px-6 py-4 text-center">
-                                                <span class="text-gray-900 font-bold">{{ number_format($student['ipk'], 2) }}</span>
+                                                <span class="text-gray-900 font-bold">{{ is_numeric($student['ipk']) ? number_format((float) $student['ipk'], 2) : '-' }}</span>
                                             </td>
 
                                             <td class="px-6 py-4">

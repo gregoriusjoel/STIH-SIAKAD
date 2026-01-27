@@ -18,7 +18,7 @@
 @endpush
 
 @section('content')
-    <div class="flex flex-col gap-8 w-full" x-data="calendarApp(@js($all_schedules ?? []))">
+    <div class="p-6 md:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6" x-data="calendarApp(@js($all_schedules ?? []))">
         <!-- Force Tailwind JIT: grid grid-cols-7 gap-1 -->
 
         <!-- Welcome Section -->
@@ -31,11 +31,11 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
 
             <!-- LEFT COLUMN: CALENDAR -->
             <div
-                class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm flex flex-col h-fit">
+                class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm flex flex-col h-full">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-xl font-bold text-gray-800 dark:text-white" x-text="monthName + ' ' + year"></h3>
                     <div class="flex gap-1">
@@ -67,17 +67,23 @@
 
                     <!-- Days -->
                     <template x-for="date in daysInMonth">
-                        <div class="border border-gray-100 dark:border-slate-700 rounded-lg p-2 min-h-[60px] flex flex-col gap-1 transition-all relative"
+                        <div class="border border-gray-100 dark:border-slate-700 rounded-lg p-2 pb-10 min-h-[80px] flex flex-col gap-1 transition-all relative"
                             :class="{ 'bg-blue-50 dark:bg-blue-900/20 ring-2 ring-primary ring-inset': isToday(date), 'hover:border-primary/30': !isToday(date) }">
-                            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300"
+                            <span class="relative z-30 text-sm font-semibold text-gray-700 dark:text-gray-300"
                                 :class="{ 'text-primary font-black text-lg': isToday(date) }" x-text="date"></span>
+
+                            <!-- Day marker: small dot when there are events on this date (click to open day's events) -->
+                            <div class="absolute bottom-3 right-3 z-10 transform translate-y-1" x-show="getEvents(date).length > 0" @click.stop="openDay(date)">
+                                <span class="inline-block w-2 h-2 bg-primary rounded-full"></span>
+                            </div>
 
                             <!-- Events -->
                             <div class="flex flex-col gap-1 overflow-y-auto max-h-[40px] custom-scrollbar">
                                 <template x-for="event in getEvents(date)">
-                                    <div class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded leading-tight truncate"
+                                    <div @click.stop="openEvent(event)"
+                                        class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded leading-tight truncate cursor-pointer hover:opacity-90"
                                         :title="event.title + ' (' + event.time + ')'">
-                                        <span x-text="event.title.substr(0, 10) + '...'"></span>
+                                        <span x-text="event.title.substr(0, 20) + (event.title.length>20? '...' : '')"></span>
                                     </div>
                                 </template>
                             </div>
@@ -90,7 +96,7 @@
             <div class="flex flex-col gap-8 lg:col-span-2">
 
                 <!-- Stats Grid (2x2) -->
-                <div class="grid grid-cols-2 gap-5">
+                <div class="grid grid-cols-2 gap-6">
 
                     <!-- Stat Card 1 -->
                     <div
@@ -139,7 +145,7 @@
 
                     <!-- Stat Card 4 (Urgent) -->
                     <div
-                        class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-pink-200 dark:border-pink-900/30 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-200">
+                        class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-transparent dark:border-transparent p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-200">
                         <div class="flex items-start justify-between">
                             <div
                                 class="w-12 h-12 rounded-xl bg-pink-50 text-pink-600 dark:bg-pink-900/30 flex items-center justify-center">
@@ -220,6 +226,53 @@
                             </tbody>
                         </table>
                     </div>
+                <!-- Event Detail Modal (inside x-data so Alpine has access) -->
+                <div x-cloak x-show="showModal" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-black/40" @click="closeModal"></div>
+                    <div x-transition class="bg-white dark:bg-[#0b1220] rounded-xl shadow-xl w-full max-w-md mx-4 p-6 z-50">
+                        <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-lg font-bold text-[#111218] dark:text-white" x-text="selectedEvent?.title || ''"></h3>
+                                    <div class="flex items-center gap-3 mt-1">
+                                        <span class="text-sm font-semibold text-gray-600 dark:text-slate-400" x-text="selectedEvent?.section ? ('Kelas ' + selectedEvent.section) : ''"></span>
+                                        <span class="text-sm text-gray-500 dark:text-slate-400" x-text="selectedEvent ? (selectedEvent.time || '') : ''"></span>
+                                    </div>
+                                </div>
+                            <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-slate-400">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <div class="space-y-2 text-sm text-[#111218] dark:text-white">
+                            <!-- If a single event selected, show details -->
+                            <template x-if="selectedEvent">
+                                <div class="space-y-2">
+                                    <div><strong>Matakuliah:</strong> <span x-text="selectedEvent?.title || '-' "></span></div>
+                                    <div><strong>Kode:</strong> <span x-text="selectedEvent?.code || '-' "></span></div>
+                                    <div><strong>Kelas:</strong> <span x-text="selectedEvent?.section || '-' "></span></div>
+                                    <div><strong>Ruangan:</strong> <span x-text="selectedEvent?.room || '-' "></span></div>
+                                    <div><strong>Waktu:</strong> <span x-text="selectedEvent?.time || '-' "></span></div>
+                                </div>
+                            </template>
+
+                            <!-- If multiple events on the day, list them -->
+                            <template x-if="!selectedEvent && dayEvents.length > 0">
+                                <div class="space-y-2">
+                                    <template x-for="(e, i) in dayEvents" :key="i">
+                                        <div @click="openEvent(e)" class="p-2 rounded hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer">
+                                            <div class="font-semibold" x-text="e.title"></div>
+                                            <div class="text-xs text-gray-500" x-text="e.time + ' • ' + (e.room || '-')"></div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="mt-6 text-right">
+                            <button @click="closeModal"
+                                class="px-4 py-2 bg-gray-100 dark:bg-slate-700 rounded-lg text-sm font-semibold">Tutup</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -229,6 +282,9 @@
         <script>
             function calendarApp(schedules) {
                 return {
+                    showModal: false,
+                    selectedEvent: null,
+                    dayEvents: [],
                     month: new Date().getMonth(),
                     year: new Date().getFullYear(),
                     schedules: schedules,
@@ -278,6 +334,28 @@
                     getEvents(date) {
                         const currentDayName = this.getDayName(date);
                         return this.schedules.filter(s => s.day === currentDayName);
+                    },
+
+                    openEvent(event) {
+                        this.selectedEvent = event;
+                        this.dayEvents = [];
+                        this.showModal = true;
+                    },
+
+                    openDay(date) {
+                        const events = this.getEvents(date);
+                        this.dayEvents = events;
+                        if (events.length === 1) {
+                            this.openEvent(events[0]);
+                        } else {
+                            this.selectedEvent = null;
+                            this.showModal = true;
+                        }
+                    },
+
+                    closeModal() {
+                        this.showModal = false;
+                        this.selectedEvent = null;
                     },
 
                     getDayName(date) {

@@ -14,74 +14,73 @@
                     class="flex-1 min-w-[120px] py-4 text-center text-sm transition-all duration-200 font-semibold"
                     style="border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb;"
                     x-bind:style="activeTab === 'akademik'
-                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb;'
-                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
+                                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb;'
+                                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
                     Akademik
                 </button>
 
                 <button @click="activeTab = 'data_pribadi'"
                     class="flex-shrink-0 px-6 py-4 text-center text-sm transition-all duration-200 whitespace-nowrap"
                     x-bind:style="activeTab === 'data_pribadi'
-                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
-                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
+                                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
+                                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
                     Data Pribadi
                 </button>
 
                 <button @click="activeTab = 'orang_tua'"
                     class="flex-shrink-0 px-6 py-4 text-center text-sm transition-all duration-200 whitespace-nowrap"
                     x-bind:style="activeTab === 'orang_tua'
-                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
-                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
+                                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
+                                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
                     Orang Tua
                 </button>
 
                 <button @click="activeTab = 'asal_sekolah'"
                     class="flex-shrink-0 px-6 py-4 text-center text-sm transition-all duration-200 whitespace-nowrap"
                     x-bind:style="activeTab === 'asal_sekolah'
-                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
-                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
+                                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
+                                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
                     Asal Sekolah
                 </button>
             </div>
 
-            <a href="{{ route('mahasiswa.profil.manajemen') }}"
-                class="inline-flex items-center gap-2 px-6 py-2.5 text-white font-medium rounded-full shadow-sm transition-all text-sm whitespace-nowrap"
-                style="background-color:#8B1538;"
-                onmouseover="this.style.backgroundColor='#6D1029'"
-                onmouseout="this.style.backgroundColor='#8B1538'">
-                <i class="fas fa-edit"></i> Edit Profil
-            </a>
+            @if(isset($mahasiswa) && $mahasiswa->isProfileComplete())
+                <button disabled
+                    class="inline-flex items-center gap-2 px-6 py-2.5 font-medium rounded-full shadow-sm transition-all text-sm whitespace-nowrap cursor-not-allowed text-white bg-green-600 opacity-90">
+                    <i class="fas fa-check-circle"></i> Data Sudah Lengkap
+                </button>
+            @else
+                <a href="{{ route('mahasiswa.profil.manajemen') }}"
+                    class="inline-flex items-center gap-2 px-6 py-2.5 text-white font-medium rounded-full shadow-sm transition-all text-sm whitespace-nowrap"
+                    style="background-color:#8B1538;" onmouseover="this.style.backgroundColor='#6D1029'"
+                    onmouseout="this.style.backgroundColor='#8B1538'">
+                    <i class="fas fa-edit"></i> Edit Profil
+                </a>
+            @endif
         </div>
 
         <div class="max-w-5xl mx-auto">
 
             {{-- TAB AKADEMIK --}}
-            <div x-show="activeTab === 'akademik'" x-cloak class="space-y-10">
+            <div x-show="activeTab === 'akademik'" x-cloak class="space-y-8">
 
                 <div class="flex flex-col md:flex-row gap-8 items-start border-b border-gray-100 pb-8">
                     <div class="shrink-0 mx-auto md:mx-0">
-                        <div
-    class="border-2 border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm"
-    style="width:160px; height:208px; min-width:160px; min-height:208px; max-width:160px; max-height:208px;"
->
-    @if($mahasiswa->foto)
-        <img
-            src="{{ asset('storage/' . $mahasiswa->foto) }}"
-            alt="Foto Mahasiswa"
-            loading="lazy"
-            style="
-                width:160px;
-                height:208px;
-                object-fit:cover;
-                display:block;
-            "
-        >
-    @else
-        <div class="w-full h-full flex items-center justify-center text-gray-300">
-            <i class="fas fa-user text-5xl"></i>
-        </div>
-    @endif
-</div>
+                        <div class="border-2 border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm"
+                            style="width:160px; height:208px; min-width:160px; min-height:208px; max-width:160px; max-height:208px;">
+                            @if($mahasiswa->foto)
+                                <img src="{{ asset('storage/' . $mahasiswa->foto) }}" alt="Foto Mahasiswa" loading="lazy" style="
+                                                            width:160px;
+                                                            height:208px;
+                                                            object-fit:cover;
+                                                            display:block;
+                                                        ">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                    <i class="fas fa-user text-5xl"></i>
+                                </div>
+                            @endif
+                        </div>
 
                     </div>
 
@@ -104,8 +103,12 @@
                         <div class="grid grid-cols-1 md:grid-cols-3">
                             <label class="text-xs font-bold text-gray-400 uppercase">Status Akun</label>
                             <div class="md:col-span-2">
+                                @php
+                                    $currentSemester = $mahasiswa->semester ?? ($mahasiswa->getCurrentSemester() ?? null);
+                                    $displayStatus = ($currentSemester !== null && (int)$currentSemester === 1) ? 'Baru' : 'Aktif';
+                                @endphp
                                 <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                                    {{ ucfirst($mahasiswa->status_akun) }}
+                                    {{ $displayStatus }}
                                 </span>
                             </div>
                         </div>
@@ -113,7 +116,7 @@
                 </div>
 
                 <div>
-                    <h3 class="font-medium text-gray-800 mb-6 border-b pb-2">Kontak & Akun</h3>
+                    <h3 class="font-medium text-gray-800 mb-4 border-b pb-2">Kontak & Akun</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="text-xs font-bold text-gray-400 uppercase">Email</label>
@@ -127,7 +130,7 @@
                 </div>
 
                 <div>
-                    <h3 class="font-medium text-gray-800 mb-6 border-b pb-2">Detail Akademik</h3>
+                    <h3 class="font-medium text-gray-800 mb-4 border-b pb-2">Detail Akademik</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="text-xs font-bold text-gray-400 uppercase">Program</label>
@@ -150,42 +153,166 @@
             </div>
 
             {{-- TAB DATA PRIBADI --}}
-            <div x-show="activeTab === 'data_pribadi'" x-cloak class="space-y-10">
-                <h3 class="font-medium text-gray-800 border-b pb-2">Informasi Alamat</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase">Alamat Lengkap</label>
-                        <div>{{ $mahasiswa->alamat ?? 'Belum diisi' }}</div>
+            <div x-show="activeTab === 'data_pribadi'" x-cloak class="space-y-8">
+                <div>
+                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Informasi Alamat</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="text-xs font-bold text-gray-400 uppercase">Alamat Lengkap</label>
+                            <div>{{ $mahasiswa->alamat ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">RT / RW</label>
+                            <div>{{ ($mahasiswa->rt ?? '-') . ' / ' . ($mahasiswa->rw ?? '-') }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Kota</label>
+                            <div>{{ $mahasiswa->kota ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Propinsi</label>
+                            <div>{{ $mahasiswa->propinsi ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
+                            <div>{{ $mahasiswa->negara ?? 'Belum diisi' }}</div>
+                        </div>
                     </div>
                 </div>
 
-                <h3 class="font-medium text-gray-800 border-b pb-2">Data Pribadi</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase">Tempat Lahir</label>
-                        <div>{{ $mahasiswa->tempat_lahir ?? 'Belum diisi' }}</div>
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase">Tanggal Lahir</label>
+                <div>
+                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Pribadi</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            {{ $mahasiswa->tanggal_lahir
-                                ? \Carbon\Carbon::parse($mahasiswa->tanggal_lahir)->format('d F Y')
-                                : 'Belum diisi' }}
+                            <label class="text-xs font-bold text-gray-400 uppercase">Tempat Lahir</label>
+                            <div>{{ $mahasiswa->tempat_lahir ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Tanggal Lahir</label>
+                            <div>
+                                {{ $mahasiswa->tanggal_lahir
+                                    ? \Carbon\Carbon::parse($mahasiswa->tanggal_lahir)->format('d F Y')
+                                    : 'Belum diisi' }}
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Jenis Kelamin</label>
+                            <div>{{ $mahasiswa->jenis_kelamin ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Agama</label>
+                            <div>{{ $mahasiswa->agama ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Status Sipil</label>
+                            <div>{{ $mahasiswa->status_sipil ?? 'Belum diisi' }}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {{-- TAB ORANG TUA --}}
-            <div x-show="activeTab === 'orang_tua'" x-cloak class="space-y-10">
-                <h3 class="font-medium text-gray-800 border-b pb-2">Data Orang Tua</h3>
-                <p class="text-sm text-gray-500">Informasi orang tua belum dilengkapi.</p>
+            <div x-show="activeTab === 'orang_tua'" x-cloak class="space-y-8">
+                @if($mahasiswa->parents()->exists())
+                    @php $parent = $mahasiswa->parents()->first(); @endphp
+
+                    <div>
+                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Ayah</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Nama Ayah</label>
+                                <div>{{ $parent->nama_ayah ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Pendidikan Ayah</label>
+                                <div>{{ $parent->pendidikan_ayah ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Pekerjaan Ayah</label>
+                                <div>{{ $parent->pekerjaan_ayah ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Agama Ayah</label>
+                                <div>{{ $parent->agama_ayah ?? 'Belum diisi' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Ibu</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Nama Ibu</label>
+                                <div>{{ $parent->nama_ibu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Pendidikan Ibu</label>
+                                <div>{{ $parent->pendidikan_ibu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Pekerjaan Ibu</label>
+                                <div>{{ $parent->pekerjaan_ibu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Agama Ibu</label>
+                                <div>{{ $parent->agama_ibu ?? 'Belum diisi' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Orang Tua</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Alamat</label>
+                                <div>{{ $parent->alamat_ortu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Kota</label>
+                                <div>{{ $parent->kota_ortu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Propinsi</label>
+                                <div>{{ $parent->propinsi_ortu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
+                                <div>{{ $parent->negara_ortu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>
+                                <div>{{ $parent->handphone_ortu ?? 'Belum diisi' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">Informasi orang tua belum dilengkapi.</p>
+                @endif
             </div>
 
             {{-- TAB ASAL SEKOLAH --}}
-            <div x-show="activeTab === 'asal_sekolah'" x-cloak class="space-y-10">
-                <h3 class="font-medium text-gray-800 border-b pb-2">Asal Sekolah</h3>
-                <p class="text-sm text-gray-500">Data asal sekolah belum tersedia.</p>
+            <div x-show="activeTab === 'asal_sekolah'" x-cloak class="space-y-8">
+                <div>
+                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Asal Sekolah</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Jenis Sekolah</label>
+                            <div>{{ $mahasiswa->jenis_sekolah ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Jurusan Sekolah</label>
+                            <div>{{ $mahasiswa->jurusan_sekolah ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Tahun Lulus</label>
+                            <div>{{ $mahasiswa->tahun_lulus ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Nilai Kelulusan</label>
+                            <div>{{ $mahasiswa->nilai_kelulusan ?? 'Belum diisi' }}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>

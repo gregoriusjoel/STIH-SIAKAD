@@ -12,6 +12,8 @@ class ParentModel extends Model
     protected $fillable = [
         'user_id',
         'mahasiswa_id',
+        'hubungan',
+        'pekerjaan',
         'phone',
         'address',
         'nama_ayah',

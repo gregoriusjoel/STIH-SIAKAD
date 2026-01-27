@@ -61,8 +61,10 @@
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
                             required>
                             <option value="">Pilih Jenis</option>
-                            <option value="wajib" {{ old('jenis') == 'wajib' ? 'selected' : '' }}>Wajib</option>
+                            <option value="wajib_nasional" {{ old('jenis') == 'wajib_nasional' ? 'selected' : '' }}>Wajib Nasional</option>
+                            <option value="wajib_prodi" {{ old('jenis') == 'wajib_prodi' ? 'selected' : '' }}>Wajib Prodi</option>
                             <option value="pilihan" {{ old('jenis') == 'pilihan' ? 'selected' : '' }}>Pilihan</option>
+                            <option value="peminatan" {{ old('jenis') == 'peminatan' ? 'selected' : '' }}>Peminatan</option>
                         </select>
                     </div>
 
@@ -115,7 +117,7 @@
                     Batal
                 </a>
                 <button type="submit" 
-                    class="btn-maroon px-6 py-3 rounded-lg hover:bg-opacity-90 transition flex items-center shadow-md transform hover:scale-105">
+                    class="bg-maroon text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition flex items-center shadow-md transform hover:scale-105">
                     <i class="fas fa-save mr-2"></i>
                     Simpan Data
                 </button>

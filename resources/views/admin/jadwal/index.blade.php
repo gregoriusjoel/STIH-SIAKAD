@@ -3,459 +3,516 @@
 @section('page-title', 'Jadwal Perkuliahan')
 
 @push('styles')
-<style>
-    .tab-btn.active { border-color: #8B1538; color: #8B1538; background-color: #FEF2F2; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-</style>
+    <style>
+        .tab-btn.active {
+            border-color: #8B1538;
+            color: #8B1538;
+            background-color: #FEF2F2;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
 @endpush
 
 @section('content')
-<div class="space-y-6">
-    {{-- Alert Messages --}}
-    @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
-        <i class="fas fa-check-circle"></i>
-        {{ session('success') }}
-    </div>
-    @endif
-    @if(session('error'))
-    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
-        <i class="fas fa-exclamation-circle"></i>
-        {{ session('error') }}
-    </div>
-    @endif
-
-    {{-- Cards Layout: Pending, Waiting Room, Active --}}
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {{-- Left Column (30%): Form Tambah Kelas --}}
-        <div class="lg:col-span-3">
-            <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
-                <div class="p-6 border-b border-gray-200 bg-maroon text-white">
-                    <div class="font-semibold text-lg flex items-center"><i class="fas fa-plus-circle mr-2"></i>Tambah Jadwal Baru</div>
-                </div>
-                <form action="{{ route('admin.kelas-mata-kuliah.store') }}" method="POST" class="p-4">
-                    @csrf
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="fas fa-book text-gray-400 mr-1"></i>Mata Kuliah <span class="text-red-500">*</span></label>
-                            <select name="mata_kuliah_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm" required>
-                                <option value="">Pilih Mata Kuliah</option>
-                                @foreach($mataKuliahs as $mk)
-                                <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="fas fa-users text-gray-400 mr-1"></i>Nama Kelas <span class="text-red-500">*</span></label>
-                            <input type="text" name="nama_kelas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm" placeholder="A, B, C..." required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="fas fa-user-tie text-gray-400 mr-1"></i>Dosen <span class="text-red-500">*</span></label>
-                            <select name="dosen_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm" required>
-                                <option value="">Pilih Dosen</option>
-                                @foreach($dosens as $d)
-                                <option value="{{ $d->id }}">{{ $d->user->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1"><i class="fas fa-user-friends text-gray-400 mr-1"></i>Kuota <span class="text-red-500">*</span></label>
-                                <input type="number" name="kuota" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm" placeholder="40" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1"><i class="fas fa-door-open text-gray-400 mr-1"></i>Ruangan</label>
-                                <input type="text" name="ruangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm" placeholder="R.101">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="fas fa-calendar-day text-gray-400 mr-1"></i>Hari</label>
-                            <select name="hari" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm">
-                                <option value="">Pilih Hari</option>
-                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $h)
-                                <option value="{{ $h }}">{{ $h }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1"><i class="fas fa-clock text-gray-400 mr-1"></i>Mulai</label>
-                                <input type="time" name="jam_mulai" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1"><i class="fas fa-clock text-gray-400 mr-1"></i>Selesai</label>
-                                <input type="time" name="jam_selesai" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm">
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-maroon text-white px-4 py-2 rounded-lg hover:bg-maroon-700 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-md mt-4">
-                            <i class="fas fa-save"></i> Simpan Jadwal
-                        </button>
-                    </div>
-                </form>
+    <div class="space-y-6">
+        {{-- Alert Messages --}}
+        @if(session('success'))
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fas fa-check-circle"></i>
+                {{ session('success') }}
             </div>
-        </div>
+        @endif
+        @if(session('error'))
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ session('error') }}
+            </div>
+        @endif
 
-        {{-- Right Column (70%): Cards & Table --}}
-        <div class="lg:col-span-9 space-y-6">
-            {{-- Top Row: Pending & Waiting Room (Side by Side) --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Card: Pending Approval --}}
-                <div class="bg-white rounded-2xl shadow-xl border-t-4 border-amber-400 overflow-hidden flex flex-col h-full min-h-[520px]">
-                    <div class="p-6 border-b border-gray-200 flex items-center justify-between bg-amber-50">
-                        <div class="font-semibold text-gray-800 text-lg"><i class="fas fa-hourglass-half mr-2 text-amber-600"></i>Menunggu Approval</div>
-                        <div class="text-lg text-gray-600">@if($pendingJadwals->count() > 0)<span class="ml-2 px-2 py-0.5 bg-amber-500 text-white text-xs rounded-full">{{ $pendingJadwals->count() }}</span>@endif</div>
+        {{-- Cards Layout: Pending, Waiting Room, Active --}}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {{-- Left Column (30%): Form Tambah Kelas --}}
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 bg-maroon text-white">
+                        <div class="font-semibold text-lg flex items-center"><i class="fas fa-plus-circle mr-2"></i>Tambah
+                            Jadwal Baru</div>
                     </div>
-                    <div class="p-6 flex-1 overflow-y-auto max-h-[480px]">
-                        @if($pendingJadwals->count() > 0 || (!empty($pendingReschedules) && $pendingReschedules->count() > 0) || (!empty($pendingKelasReschedules) && $pendingKelasReschedules->count() > 0))
+                    <form action="{{ route('admin.kelas-mata-kuliah.store') }}" method="POST" class="p-4" x-data="{
+                                                  mataKuliahId: '',
+                                                  dosens: [],
+                                                  selectedDosenId: '',
+                                                  loading: false,
+
+                                                  // Room Validation
+                                                  hari: '',
+                                                  jamMulai: '',
+                                                  jamSelesai: '',
+                                                  ruangan: '',
+                                                  roomStatus: { available: true, message: '' },
+                                                  checkingRoom: false,
+
+                                                  async fetchDosens() {
+                                                      if (!this.mataKuliahId) {
+                                                          this.dosens = [];
+                                                          this.selectedDosenId = '';
+                                                          return;
+                                                      }
+                                                      this.loading = true;
+                                                      try {
+                                                          const response = await fetch(`/api/dosens-by-mata-kuliah/${this.mataKuliahId}`);
+                                                          this.dosens = await response.json();
+                                                          if (this.dosens.length === 1) {
+                                                              this.selectedDosenId = this.dosens[0].id;
+                                                          } else {
+                                                              this.selectedDosenId = '';
+                                                          }
+                                                      } catch (e) {
+                                                          console.error('Error fetching dosens:', e);
+                                                          this.dosens = [];
+                                                      }
+                                                      this.loading = false;
+                                                  },
+
+                                                  async checkRoom() {
+                                                      if (!this.hari || !this.jamMulai || !this.jamSelesai || !this.ruangan) {
+                                                          this.roomStatus = { available: true, message: '' };
+                                                          return;
+                                                      }
+
+                                                      this.checkingRoom = true;
+                                                      try {
+                                                          const params = new URLSearchParams({
+                                                              hari: this.hari,
+                                                              jam_mulai: this.jamMulai,
+                                                              jam_selesai: this.jamSelesai,
+                                                              ruangan: this.ruangan
+                                                          });
+                                                          const response = await fetch(`/api/check-room-availability?${params.toString()}`);
+                                                          const data = await response.json();
+                                                          this.roomStatus = data;
+                                                      } catch (e) {
+                                                          console.error('Error checking room:', e);
+                                                      }
+                                                      this.checkingRoom = false;
+                                                  }
+                                              }">
+                        @csrf
                         <div class="space-y-4">
-                            @foreach($pendingJadwals as $jadwal)
-                            <div class="border border-amber-200 bg-white rounded-lg p-3 shadow-sm relative">
-                                <div class="pr-20">
-                                    <div class="flex items-center gap-2 mb-1 flex-wrap">
-                                        <h4 class="font-bold text-gray-800 text-sm">{{ $jadwal->kelas->mataKuliah->nama_mk }}</h4>
-                                        <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-semibold">{{ $jadwal->kelas->mataKuliah->kode_mk }}</span>
-                                        <span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px] font-semibold">{{ $jadwal->kelas->mataKuliah->sks }} SKS</span>
-                                    </div>
-                                    <div class="text-xs text-gray-600 space-y-0.5">
-                                        <p><i class="fas fa-user-tie text-maroon mr-1"></i>{{ $jadwal->kelas->dosen->name ?? 'N/A' }}</p>
-                                        <p><i class="fas fa-calendar-day text-maroon mr-1"></i>{{ $jadwal->hari }}, {{ substr($jadwal->jam_mulai, 0, 5) }}-{{ substr($jadwal->jam_selesai, 0, 5) }}</p>
-                                        @if($jadwal->catatan_dosen)
-                                        <p class="italic text-gray-500 mt-1"><i class="fas fa-comment text-maroon mr-1"></i>"{{ $jadwal->catatan_dosen }}"</p>
-                                        @endif
-                                        <p class="text-[10px] text-gray-400 mt-1">Diajukan {{ $jadwal->created_at->diffForHumans() }}</p>
-                                    </div>
-                                </div>
-                                <div class="absolute top-3 right-3 flex flex-col gap-2">
-                                    <form action="{{ route('admin.jadwal.approve', $jadwal) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="w-8 h-8 rounded-full bg-green-500 text-white hover:bg-green-600 transition flex items-center justify-center shadow-sm" onclick="return confirm('Setujui jadwal ini?')" title="Setujui">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                    </form>
-                                    <button type="button" class="w-8 h-8 rounded-full bg-red-500 text-white hover:bg-red-600 transition flex items-center justify-center shadow-sm" onclick="openRejectModal({{ $jadwal->id }})" title="Tolak">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
+                                        class="fas fa-book text-gray-400 mr-1"></i>Mata Kuliah <span
+                                        class="text-red-500">*</span></label>
+                                <select name="mata_kuliah_id" x-model="mataKuliahId" @change="fetchDosens()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    required>
+                                    <option value="">Pilih Mata Kuliah</option>
+                                    @foreach($mataKuliahs as $mk)
+                                        <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            @endforeach
-                                                       {{-- Pending Reschedule Requests (Detailed) --}}
-                             @if(!empty($pendingReschedules) && $pendingReschedules->count() > 0)
-                             <div class="mt-4">
-                                <h4 class="text-sm font-bold text-gray-700 mb-3 pl-1 border-l-4 border-yellow-500">Permintaan Reschedule Dosen</h4>
-                                <div class="space-y-3">
-                                    @foreach($pendingReschedules as $r)
-                                    <div class="border border-yellow-200 bg-yellow-50 rounded-lg p-3 relative">
-                                        <div class="pr-20"> {{-- Space for buttons --}}
-                                            <div class="font-bold text-gray-800 text-sm mb-1">{{ $r->jadwal->kelas->mataKuliah->nama_mk ?? '-' }}</div>
-                                            <div class="text-xs text-gray-600 mb-1"><i class="fas fa-user-tie text-maroon mr-1"></i>{{ $r->dosen->name ?? '-' }}</div>
-                                            
-                                            <div class="grid grid-cols-2 gap-2 text-xs mb-2">
-                                                <div class="bg-white/50 p-1.5 rounded border border-yellow-100">
-                                                    <span class="block text-gray-500 text-[10px] uppercase font-semibold">Jadwal Asli</span>
-                                                    <div class="font-medium text-gray-700">
-                                                        {{ $r->old_hari }} <span class="mx-1">•</span> {{ substr($r->old_jam_mulai,0,5) }}-{{ substr($r->old_jam_selesai,0,5) }}
-                                                    </div>
-                                                </div>
-                                                <div class="bg-white p-1.5 rounded border border-yellow-200">
-                                                    <span class="block text-green-600 text-[10px] uppercase font-semibold">Jadwal Baru</span>
-                                                    <div class="font-bold text-gray-800">
-                                                        {{ $r->new_hari }} <span class="mx-1">•</span> {{ substr($r->new_jam_mulai,0,5) }}-{{ substr($r->new_jam_selesai,0,5) }}
-                                                    </div>
-                                                </div>
-                                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
+                                        class="fas fa-users text-gray-400 mr-1"></i>Nama Kelas <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="nama_kelas"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    placeholder="A, B, C..." required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
+                                        class="fas fa-user-tie text-gray-400 mr-1"></i>Dosen <span
+                                        class="text-red-500">*</span></label>
 
-                                            @if($r->catatan)
-                                            <div class="text-xs bg-white/60 p-2 rounded italic text-gray-600 border border-yellow-100">
-                                                <i class="fas fa-quote-left text-yellow-400 mr-1"></i>{{ $r->catatan }}
-                                            </div>
-                                            @endif
-                                        </div>
-
-                                        <div class="absolute top-3 right-3 flex flex-col gap-2">
-                                            <form action="{{ route('admin.jadwal.reschedules.approve', $r->id) }}" method="POST">
-                                                @csrf
-                                                <button class="w-8 h-8 rounded-full bg-green-500 text-white hover:bg-green-600 transition flex items-center justify-center shadow-sm" title="Setujui">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            </form>
-                                            <button type="button" class="w-8 h-8 rounded-full bg-red-500 text-white hover:bg-red-600 transition flex items-center justify-center shadow-sm" onclick="openRejectModalReschedule({{ $r->id }})" title="Tolak">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    @endforeach
+                                {{-- Loading state --}}
+                                <div x-show="loading"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm">
+                                    <i class="fas fa-spinner fa-spin mr-1"></i> Memuat dosen...
                                 </div>
-                             </div>
-                             @endif
 
-                             {{-- Pending Weekly Reschedules Requests (Detailed) --}}
-                             @if(!empty($pendingKelasReschedules) && $pendingKelasReschedules->count() > 0)
-                             <div class="mt-4">
-                                <h4 class="text-sm font-bold text-gray-700 mb-3 pl-1 border-l-4 border-amber-500">Permintaan Reschedule Mingguan</h4>
-                                <div class="space-y-3">
-                                    @foreach($pendingKelasReschedules as $kr)
-                                    <div class="border border-amber-200 bg-amber-50 rounded-lg p-3 relative">
-                                        <div class="pr-20"> {{-- Space for buttons --}}
-                                            <div class="font-bold text-gray-800 text-sm mb-1">{{ $kr->kelasMataKuliah->mataKuliah->nama_mk ?? '-' }}</div>
-                                            <div class="flex items-center gap-2 text-xs text-gray-600 mb-2">
-                                                <span><i class="fas fa-user-tie text-maroon mr-1"></i>{{ $kr->dosen->user->name ?? '-' }}</span>
-                                                <span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px]">{{ $kr->kelasMataKuliah->kode_kelas }}</span>
-                                            </div>
-                                            
-                                            <div class="grid grid-cols-2 gap-2 text-xs mb-2">
-                                                <div class="bg-white/50 p-1.5 rounded border border-amber-100">
-                                                    <span class="block text-gray-500 text-[10px] uppercase font-semibold">Jadwal Sebelumnya</span>
-                                                    <div class="font-medium text-gray-700">
-                                                        {{ $kr->old_hari }}<span class="mx-1">|</span>{{ $kr->old_jam_mulai ? substr($kr->old_jam_mulai,0,5) : '-' }}-{{ $kr->old_jam_selesai ? substr($kr->old_jam_selesai,0,5) : '-' }}
-                                                    </div>
-                                                </div>
-                                                <div class="bg-white p-1.5 rounded border border-amber-200">
-                                                    <span class="block text-green-600 text-[10px] uppercase font-semibold">Jadwal Baru</span>
-                                                    <div class="font-bold text-gray-800">
-                                                        {{ $kr->new_hari }}<span class="mx-1">|</span>{{ substr($kr->new_jam_mulai,0,5) }}-{{ substr($kr->new_jam_selesai,0,5) }}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="text-[10px] text-blue-600 mb-2 font-medium">
-                                                <i class="fas fa-calendar-week mr-1"></i>Berlaku: {{ $kr->week_start->format('d M') }} - {{ $kr->week_end->format('d M Y') }}
-                                            </div>
-
-                                            @if($kr->catatan_dosen)
-                                            <div class="text-xs bg-white/60 p-2 rounded italic text-gray-600 border border-amber-100">
-                                                <i class="fas fa-quote-left text-amber-400 mr-1"></i>{{ $kr->catatan_dosen }}
-                                            </div>
-                                            @endif
-                                        </div>
-
-                                        <div class="absolute top-3 right-3 flex flex-col gap-2">
-                                            <form action="{{ route('admin.kelas.reschedules.approve', $kr->id) }}" method="POST">
-                                                @csrf
-                                                <button class="w-8 h-8 rounded-full bg-green-500 text-white hover:bg-green-600 transition flex items-center justify-center shadow-sm" title="Setujui">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            </form>
-                                            <button type="button" class="w-8 h-8 rounded-full bg-red-500 text-white hover:bg-red-600 transition flex items-center justify-center shadow-sm" onclick="openRejectModalWeekly({{ $kr->id }})" title="Tolak">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    @endforeach
+                                {{-- No mata kuliah selected --}}
+                                <div x-show="!loading && !mataKuliahId"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-400 text-sm">
+                                    <i class="fas fa-info-circle mr-1"></i> Pilih mata kuliah terlebih dahulu
                                 </div>
-                             </div>
-                             @endif
-                        </div>
-                        @else
-                        <div class="text-center py-8 text-gray-400">
-                            <i class="fas fa-check-circle text-3xl mb-2"></i>
-                            <p class="text-xs">Semua aman</p>
-                        </div>
-                        @endif
-                    </div>
-                </div>
 
-                {{-- Card: Waiting for Room --}}
-                <div class="bg-white rounded-xl shadow-lg border-t-4 border-blue-400 overflow-hidden flex flex-col h-full">
-                    <div class="p-6 border-b border-gray-200 flex items-center justify-between bg-blue-50">
-                        <div class="font-semibold text-gray-800 text-lg"><i class="fas fa-door-open mr-2 text-blue-600"></i>Menunggu Ruangan</div>
-                        <div class="text-lg text-gray-600">@if($approvedJadwals->count() > 0)<span class="ml-2 px-2 py-0.5 bg-blue-500 text-white text-xs rounded-full">{{ $approvedJadwals->count() }}</span>@endif</div>
-                    </div>
-                    <div class="p-6 flex-1 overflow-y-auto max-h-[480px]">
-                        @if($approvedJadwals->count() > 0 || (!empty($approvedKelasReschedules) && $approvedKelasReschedules->count() > 0))
-                        <div class="space-y-4">
-                            {{-- Approved Jadwals --}}
-                            @foreach($approvedJadwals as $jadwal)
-                            <div class="border border-blue-200 bg-white rounded-lg p-3 shadow-sm">
-                                <div class="flex flex-col gap-2">
+                                {{-- No dosen available --}}
+                                <div x-show="!loading && mataKuliahId && dosens.length === 0"
+                                    class="w-full px-3 py-2 border border-red-300 rounded-lg bg-red-50 text-red-500 text-sm">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> Tidak ada dosen yang mengajar mata
+                                    kuliah ini
+                                </div>
+
+                                {{-- Single dosen (auto-select, readonly) --}}
+                                <template x-if="!loading && dosens.length === 1">
                                     <div>
-                                        <div class="flex items-center gap-2 mb-1 flex-wrap">
-                                            <h4 class="font-bold text-gray-800 text-sm">{{ $jadwal->kelas->mataKuliah->nama_mk }}</h4>
-                                            <span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px] font-semibold">Approved</span>
-                                        </div>
-                                        <div class="text-xs text-gray-600 space-y-0.5">
-                                            <p><i class="fas fa-user-tie text-maroon mr-1"></i>{{ $jadwal->kelas->dosen->name ?? 'N/A' }}</p>
-                                            <p><i class="fas fa-clock text-maroon mr-1"></i>{{ $jadwal->hari }}, {{ substr($jadwal->jam_mulai, 0, 5) }}</p>
+                                        <input type="hidden" name="dosen_id" :value="selectedDosenId">
+                                        <div
+                                            class="w-full px-3 py-2 border border-green-300 rounded-lg bg-green-50 text-green-700 text-sm flex items-center justify-between">
+                                            <span><i class="fas fa-check-circle mr-1"></i> <span
+                                                    x-text="dosens[0].name"></span></span>
+                                            <i class="fas fa-lock text-green-400 text-xs"></i>
                                         </div>
                                     </div>
-                                    <form action="{{ route('admin.jadwal.assignRoom', $jadwal) }}" method="POST" class="mt-1">
-                                        @csrf
-                                        <div class="flex gap-1">
-                                            <input type="text" name="section" placeholder="Kls" required class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs w-10">
-                                            <input type="text" name="ruangan" placeholder="Ruang" required class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs">
-                                            <button type="submit" class="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition"><i class="fas fa-save"></i></button>
-                                        </div>
-                                    </form>
+                                </template>
+
+                                {{-- Multiple dosens (dropdown) --}}
+                                <select x-show="!loading && dosens.length > 1" name="dosen_id" x-model="selectedDosenId"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    :required="dosens.length > 1">
+                                    <option value="">Pilih Dosen</option>
+                                    <template x-for="dosen in dosens" :key="dosen.id">
+                                        <option :value="dosen.id" x-text="dosen.name"></option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1"><i
+                                            class="fas fa-user-friends text-gray-400 mr-1"></i>Kuota <span
+                                            class="text-red-500">*</span></label>
+                                    <input type="number" name="kuota"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                        placeholder="40" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1"><i
+                                            class="fas fa-door-open text-gray-400 mr-1"></i>Ruangan <span
+                                            class="text-red-500">*</span></label>
+                                    <select name="ruangan" x-model="ruangan" @change="checkRoom()"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                        required>
+                                        <option value="">Pilih Ruangan</option>
+                                        @foreach($daftarRuangan as $r)
+                                            <option value="{{ $r }}">{{ $r }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                            @endforeach
-
-                            {{-- Approved Kelas Reschedules waiting for room --}}
-                            @if(!empty($approvedKelasReschedules) && $approvedKelasReschedules->count() > 0)
-                            <div class="mt-4 border-gray-200">
-                                 <p class="text-xs font-bold text-blue-700 mb-2">Reschedule (Butuh Kelas & Ruang):</p>
-                                 @foreach($approvedKelasReschedules as $kr)
-                                 <div class="border border-blue-200 bg-blue-50 rounded p-2 text-xs mb-2">
-                                     <div class="font-semibold">{{ $kr->kelasMataKuliah->mataKuliah->nama_mk ?? '-' }}</div>
-                                     <div class="text-gray-500">{{ $kr->new_hari }} {{ substr($kr->new_jam_mulai,0,5) }} - {{ substr($kr->new_jam_selesai,0,5) }}</div>
-                                     <div class="text-[10px] text-blue-600 mb-1">
-                                         <i class="fas fa-calendar-week mr-1"></i>{{ $kr->week_start->format('d M') }} - {{ $kr->week_end->format('d M Y') }}
-                                     </div>
-                                     <form action="{{ route('admin.kelas.reschedules.assignRoom', $kr->id) }}" method="POST" class="mt-1 flex gap-1">
-                                         @csrf
-                                         <input type="text" name="new_kelas" placeholder="Kelas" required class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs">
-                                         <input type="text" name="new_ruang" placeholder="Ruang" required class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs">
-                                         <button type="submit" class="bg-blue-600 text-white px-2 py-1 rounded text-xs"><i class="fas fa-save"></i></button>
-                                     </form>
-                                 </div>
-                                 @endforeach
+                            <div x-show="!roomStatus.available"
+                                class="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-xs flex items-start gap-2">
+                                <i class="fas fa-exclamation-circle mt-0.5"></i>
+                                <span x-text="roomStatus.message"></span>
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
+                                        class="fas fa-calendar-day text-gray-400 mr-1"></i>Hari <span
+                                        class="text-red-500">*</span></label>
+                                <select name="hari" x-model="hari" @change="checkRoom()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    required>
+                                    <option value="">Pilih Hari</option>
+                                    @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $h)
+                                        <option value="{{ $h }}">{{ $h }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1"><i
+                                            class="fas fa-clock text-gray-400 mr-1"></i>Mulai <span
+                                            class="text-red-500">*</span></label>
+                                    <input type="time" name="jam_mulai" x-model="jamMulai" @change="checkRoom()"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                        required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1"><i
+                                            class="fas fa-clock text-gray-400 mr-1"></i>Selesai <span
+                                            class="text-red-500">*</span></label>
+                                    <input type="time" name="jam_selesai" x-model="jamSelesai" @change="checkRoom()"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                        required>
+                                </div>
+                            </div>
+                            <button type="submit" :disabled="!roomStatus.available || checkingRoom"
+                                :class="{'opacity-50 cursor-not-allowed': !roomStatus.available || checkingRoom, 'hover:bg-maroon-700': roomStatus.available && !checkingRoom}"
+                                class="w-full bg-maroon text-white px-4 py-2 rounded-lg transition flex items-center justify-center gap-2 text-sm font-semibold shadow-md mt-4">
+                                <i class="fas fa-save"></i> Simpan Jadwal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Right Column (70%): Cards & Table --}}
+            <div class="lg:col-span-9 space-y-6">
+                {{-- Card: Active Schedules (Full Width inside Right Column) --}}
+                <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 bg-maroon text-white flex items-center justify-between">
+                        <div class="font-semibold text-white text-lg"><i class="fas fa-check-circle mr-2"></i>Jadwal Aktif
+                        </div>
+                        <div class="text-lg">
+                            @if($kelasMataKuliahs->count() > 0)
+                                <span
+                                    class="ml-2 px-2 py-0.5 bg-white text-maroon text-xs rounded-full">{{ $kelasMataKuliahs->total() }}</span>
                             @endif
                         </div>
-                        @else
-                        <div class="text-center py-8 text-gray-400">
-                            <i class="fas fa-check-circle text-3xl mb-2"></i>
-                            <p class="text-xs">Semua aman</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-base">
+                                <thead class="bg-maroon text-white">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left font-semibold">Hari/Jam</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Mata Kuliah</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Dosen</th>
+                                        <th class="px-4 py-3 text-left font-semibold">Ruang</th>
+                                        <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    @forelse($kelasMataKuliahs as $k)
+                                        <tr class="hover:bg-maroon-50 transition duration-200">
+                                            <td class="px-4 py-3">
+                                                <div class="font-semibold text-gray-900">{{ $k->hari ?: '-' }}</div>
+                                                <div class="text-xs text-gray-500">
+                                                    {{ $k->jam_mulai ? substr($k->jam_mulai, 0, 5) : '-' }} -
+                                                    {{ $k->jam_selesai ? substr($k->jam_selesai, 0, 5) : '-' }}
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                <div class="font-bold">{{ $k->mataKuliah->nama_mk }}</div>
+                                                <div class="text-xs text-gray-500">{{ $k->kode_kelas }} •
+                                                    {{ $k->mataKuliah->sks }} SKS
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3">{{ $k->dosen->user->name ?? 'N/A' }}</td>
+                                            <td class="px-4 py-3 font-medium">{{ $k->ruang ?: '-' }}</td>
+                                            <td class="px-4 py-3 text-center">
+                                                <div class="flex justify-center space-x-1">
+                                                    <a href="{{ route('admin.kelas-mata-kuliah.edit', $k) }}"
+                                                        class="bg-yellow-500 text-white p-1.5 rounded hover:bg-yellow-600 transition"
+                                                        title="Edit"><i class="fas fa-edit text-xs"></i></a>
+                                                    <form action="{{ route('admin.kelas-mata-kuliah.destroy', $k) }}"
+                                                        method="POST" onsubmit="return confirm('Hapus jadwal ini?')">@csrf
+                                                        @method('DELETE')<button type="submit"
+                                                            class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition"
+                                                            title="Hapus"><i class="fas fa-trash text-xs"></i></button></form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada jadwal aktif
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
+                        @if($kelasMataKuliahs->hasPages())
+                            <div class="mt-4">{{ $kelasMataKuliahs->links() }}</div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Card: Informasi Penggunaan Ruangan (New Feature) --}}
+                <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" x-data="{
+                                            selectedDay: '{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd') }}',
+                                            schedules: @js($allSchedules->map(function ($s) {
+                                                return [
+                                                    'id' => $s->id,
+                                                    'hari' => $s->hari,
+                                                    'ruang' => $s->ruang,
+                                                    'jam' => substr($s->jam_mulai, 0, 5) . '-' . substr($s->jam_selesai, 0, 5),
+                                                    'mk' => $s->mataKuliah->nama_mk ?? '',
+                                                    'dosen' => $s->dosen->user->name ?? ''
+                                                ];
+                                            })),
+                                            getRoomSchedules(room) {
+                                                return this.schedules.filter(s => s.ruang === room && s.hari === this.selectedDay);
+                                            }
+                                         }">
+                    <div
+                        class="p-6 border-b border-gray-200 bg-gradient-to-r from-maroon to-red-900 text-white flex items-center justify-between">
+                        <div class="font-bold text-white text-xl flex items-center gap-3">
+                            <div class="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
+                                <i class="fas fa-door-open"></i>
+                            </div>
+                            Informasi Penggunaan Ruangan
+                        </div>
+                        <div class="relative">
+                            <select x-model="selectedDay"
+                                class="appearance-none pl-4 pr-10 py-2 border border-white/20 rounded-full text-sm font-semibold focus:ring-2 focus:ring-white/40 bg-white/10 text-white cursor-pointer hover:bg-white/20 transition-all backdrop-blur-sm shadow-sm">
+                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $h)
+                                    <option value="{{ $h }}" class="text-gray-800 bg-white">{{ $h }}</option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-gray-50/50">
+                        @if($rooms->count() > 0)
+                            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                @foreach($rooms as $room)
+                                    <div class="group relative bg-white border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                                        :class="getRoomSchedules('{{ $room }}').length === 0 ? 'border-green-200 hover:border-green-400' : 'border-red-200 hover:border-red-400'">
+
+                                        <!-- Room Header -->
+                                        <div class="p-4 border-b flex justify-between items-center"
+                                            :class="getRoomSchedules('{{ $room }}').length === 0 ? 'bg-green-50/50 border-green-100' : 'bg-red-50/50 border-red-100'">
+                                            <div class="font-bold text-lg text-gray-800">{{ $room }}</div>
+                                            <div class="text-xs font-bold px-2 py-1 rounded-full text-center min-w-[60px]"
+                                                :class="getRoomSchedules('{{ $room }}').length === 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+                                                <span
+                                                    x-text="getRoomSchedules('{{ $room }}').length === 0 ? 'KOSONG' : 'TERISI'"></span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Content -->
+                                        <div class="p-4 min-h-[140px]">
+                                            <ul class="space-y-3" x-show="getRoomSchedules('{{ $room }}').length > 0">
+                                                <template x-for="jadwal in getRoomSchedules('{{ $room }}')" :key="jadwal.id">
+                                                    <li
+                                                        class="relative pl-3 border-l-2 border-red-200 group-hover:border-red-400 transition-colors">
+                                                        <div class="text-xs font-bold text-maroon mb-0.5 flex items-center gap-1">
+                                                            <i class="far fa-clock"></i> <span x-text="jadwal.jam"></span>
+                                                        </div>
+                                                        <div class="font-medium text-gray-800 text-xs leading-tight mb-1"
+                                                            x-text="jadwal.mk" :title="jadwal.mk"></div>
+                                                        <div class="text-[10px] text-gray-500 flex items-center gap-1">
+                                                            <i class="fas fa-chalkboard-teacher text-gray-400"></i>
+                                                            <span x-text="jadwal.dosen" class="truncate"></span>
+                                                        </div>
+                                                    </li>
+                                                </template>
+                                            </ul>
+
+                                            <!-- Empty State Illustration -->
+                                            <div x-show="getRoomSchedules('{{ $room }}').length === 0"
+                                                class="h-full flex flex-col items-center justify-center text-center py-4 text-green-600/80 group-hover:text-green-600 transition-colors">
+                                                <div
+                                                    class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                                    <i class="fas fa-check text-xl"></i>
+                                                </div>
+                                                <p class="text-xs font-medium">Tidak ada jadwal</p>
+                                                <p class="text-[10px] opacity-70">Ruangan tersedia</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center py-12">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-door-open text-3xl text-gray-400"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900">Belum ada data ruangan</h3>
+                                <p class="text-sm text-gray-500">Silakan tambahkan data ruangan terlebih dahulu.</p>
+                            </div>
                         @endif
                     </div>
                 </div>
             </div>
-
-            {{-- Card: Active Schedules (Full Width inside Right Column) --}}
-            <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
-                <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-                    <div class="font-semibold text-gray-800 text-lg"><i class="fas fa-check-circle mr-2 text-maroon-600"></i>Jadwal Aktif</div>
-                    <div class="text-lg text-gray-600">@if($kelasMataKuliahs->count() > 0)<span class="ml-2 px-2 py-0.5 bg-maroon text-white text-xs rounded-full">{{ $kelasMataKuliahs->total() }}</span>@endif</div>
-                </div>
-                <div class="p-6">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-base">
-                            <thead class="bg-maroon text-white">
-                                <tr>
-                                    <th class="px-4 py-3 text-left font-semibold">Hari/Jam</th>
-                                    <th class="px-4 py-3 text-left font-semibold">Mata Kuliah</th>
-                                    <th class="px-4 py-3 text-left font-semibold">Dosen</th>
-                                    <th class="px-4 py-3 text-left font-semibold">Ruang</th>
-                                    <th class="px-4 py-3 text-center font-semibold">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @forelse($kelasMataKuliahs as $k)
-                                <tr class="hover:bg-maroon-50 transition duration-200">
-                                    <td class="px-4 py-3">
-                                        <div class="font-semibold text-gray-900">{{ $k->hari ?: '-' }}</div>
-                                        <div class="text-xs text-gray-500">{{ $k->jam_mulai ? substr($k->jam_mulai, 0, 5) : '-' }} - {{ $k->jam_selesai ? substr($k->jam_selesai, 0, 5) : '-' }}</div>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <div class="font-bold">{{ $k->mataKuliah->nama_mk }}</div>
-                                        <div class="text-xs text-gray-500">{{ $k->kode_kelas }} • {{ $k->mataKuliah->sks }} SKS</div>
-                                    </td>
-                                    <td class="px-4 py-3">{{ $k->dosen->user->name ?? 'N/A' }}</td>
-                                    <td class="px-4 py-3 font-medium">{{ $k->ruang ?: '-' }}</td>
-                                    <td class="px-4 py-3 text-center">
-                                        <div class="flex justify-center space-x-1">
-                                            <a href="{{ route('admin.kelas-mata-kuliah.edit', $k) }}" class="bg-yellow-500 text-white p-1.5 rounded hover:bg-yellow-600 transition" title="Edit"><i class="fas fa-edit text-xs"></i></a>
-                                            <form action="{{ route('admin.kelas-mata-kuliah.destroy', $k) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?')">@csrf @method('DELETE')<button type="submit" class="bg-red-500 text-white p-1.5 rounded hover:bg-red-600 transition" title="Hapus"><i class="fas fa-trash text-xs"></i></button></form>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada jadwal aktif</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    @if($kelasMataKuliahs->hasPages())
-                    <div class="mt-4">{{ $kelasMataKuliahs->links() }}</div>
-                    @endif
-                </div>
-            </div>
         </div>
     </div>
-</div>
 
-{{-- Reject Modal --}}
-<div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
-        <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-times-circle text-red-500 mr-2"></i>Tolak Jadwal</h3>
-        <form id="rejectForm" method="POST">
-            @csrf
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Alasan Penolakan <span class="text-red-500">*</span></label>
-                <textarea name="catatan" rows="3" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Jelaskan alasan penolakan..."></textarea>
-            </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="closeRejectModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">Tolak Jadwal</button>
-            </div>
-        </form>
+    {{-- Reject Modal --}}
+    <div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-times-circle text-red-500 mr-2"></i>Tolak
+                Jadwal</h3>
+            <form id="rejectForm" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Alasan Penolakan <span
+                            class="text-red-500">*</span></label>
+                    <textarea name="catatan" rows="3" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="Jelaskan alasan penolakan..."></textarea>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeRejectModal()"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-maroon text-white rounded-lg hover:bg-maroon-700 transition">Tolak
+                        Jadwal</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-{{-- Reject Modal for Kelas Reschedule (Weekly) --}}
-<div id="rejectModalKelas" class="fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center" style="display: none;">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
-        <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-times-circle text-red-500 mr-2"></i>Tolak Reschedule Mingguan</h3>
-        <form id="rejectFormKelas" method="POST">
-            @csrf
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Alasan Penolakan <span class="text-red-500">*</span></label>
-                <textarea name="catatan_admin" rows="3" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Jelaskan alasan penolakan..."></textarea>
-            </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="closeRejectModalWeekly()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition" onclick="return confirm('Yakin ingin menolak permintaan reschedule ini?')">Tolak</button>
-            </div>
-        </form>
+    {{-- Reject Modal for Kelas Reschedule (Weekly) --}}
+    <div id="rejectModalKelas" class="fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center"
+        style="display: none;">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-times-circle text-red-500 mr-2"></i>Tolak
+                Reschedule Mingguan</h3>
+            <form id="rejectFormKelas" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Alasan Penolakan <span
+                            class="text-red-500">*</span></label>
+                    <textarea name="catatan_admin" rows="3" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="Jelaskan alasan penolakan..."></textarea>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeRejectModalWeekly()"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-maroon text-white rounded-lg hover:bg-maroon-700 transition"
+                        onclick="return confirm('Yakin ingin menolak permintaan reschedule ini?')">Tolak</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-@push('scripts')
-<script>
-    // Tab switching
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-        });
-    });
+    @push('scripts')
+        <script>
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+                });
+            });
 
-    // Reject modal for jadwal
-    function openRejectModal(jadwalId) {
-        document.getElementById('rejectForm').action = '/admin/jadwal/' + jadwalId + '/reject';
-        document.getElementById('rejectModal').classList.remove('hidden');
-    }
-    function closeRejectModal() {
-        document.getElementById('rejectModal').classList.add('hidden');
-    }
+            // Reject modal for jadwal
+            function openRejectModal(jadwalId) {
+                document.getElementById('rejectForm').action = '/admin/jadwal/' + jadwalId + '/reject';
+                document.getElementById('rejectModal').classList.remove('hidden');
+            }
+            function closeRejectModal() {
+                document.getElementById('rejectModal').classList.add('hidden');
+            }
 
-    // Reject modal for jadwal-reschedules (permintaan reschedule biasa)
-    window.openRejectModalReschedule = function(rescheduleId) {
-        document.getElementById('rejectForm').action = '/admin/jadwal-reschedules/' + rescheduleId + '/reject';
-        document.getElementById('rejectModal').classList.remove('hidden');
-    }
+            // Reject modal for jadwal-reschedules (permintaan reschedule biasa)
+            window.openRejectModalReschedule = function (rescheduleId) {
+                document.getElementById('rejectForm').action = '/admin/jadwal-reschedules/' + rescheduleId + '/reject';
+                document.getElementById('rejectModal').classList.remove('hidden');
+            }
 
-    // Reject modal for kelas reschedule (weekly)
-    window.openRejectModalWeekly = function(rescheduleId) {
-        console.log('Opening reject modal for id:', rescheduleId);
-        document.getElementById('rejectFormKelas').action = '/admin/kelas-reschedules/' + rescheduleId + '/reject';
-        const modal = document.getElementById('rejectModalKelas');
-        if(modal) {
-            modal.style.display = 'flex';
-        } else {
-            console.error('Reject modal not found!');
-        }
-    }
-    
-    window.closeRejectModalWeekly = function() {
-        const modal = document.getElementById('rejectModalKelas');
-        if(modal) {
-            modal.style.display = 'none';
-        }
-    }
-</script>
-@endpush
+            // Reject modal for kelas reschedule (weekly)
+            window.openRejectModalWeekly = function (rescheduleId) {
+                console.log('Opening reject modal for id:', rescheduleId);
+                document.getElementById('rejectFormKelas').action = '/admin/kelas-reschedules/' + rescheduleId + '/reject';
+                const modal = document.getElementById('rejectModalKelas');
+                if (modal) {
+                    modal.style.display = 'flex';
+                } else {
+                    console.error('Reject modal not found!');
+                }
+            }
+
+            window.closeRejectModalWeekly = function () {
+                const modal = document.getElementById('rejectModalKelas');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        </script>
+    @endpush
 @endsection

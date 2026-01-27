@@ -18,13 +18,29 @@ class AttendanceController extends Controller
             abort(404);
         }
         if (! $kelas->qr_enabled) {
-            abort(410, 'QR disabled');
-        }
-        if ($kelas->qr_expires_at && Carbon::now()->gt($kelas->qr_expires_at)) {
-            abort(410, 'QR expired');
+            // If QR isn't enabled, show the thank-you/closed page to the scanner.
+            return redirect()->route('absensi.thanks');
         }
 
-        return view('absensi.form', compact('kelas', 'token'));
+        if ($kelas->qr_expires_at && Carbon::now()->gt($kelas->qr_expires_at)) {
+            // If QR expired, persist the disabled state so it is treated as closed,
+            // then send the scanner to the thank-you page.
+            try {
+                $kelas->qr_enabled = false;
+                $kelas->save();
+                \Log::info('QR token auto-disabled due to expiry', ['kelas_mk_id' => $kelas->id, 'qr_token' => $token]);
+            } catch (\Exception $e) {
+                \Log::warning('Failed to auto-disable expired QR token', ['error' => $e->getMessage(), 'kelas_mk_id' => $kelas->id]);
+            }
+
+            return redirect()->route('absensi.thanks');
+        }
+
+        // Provide meeting information to the form
+        $totalPertemuan = $kelas->meeting_count ?? 16;
+        $currentPertemuan = $kelas->qr_current_pertemuan ?? null;
+
+        return view('absensi.form', compact('kelas', 'token', 'totalPertemuan', 'currentPertemuan'));
     }
 
     public function store(Request $request, $token)
@@ -34,10 +50,20 @@ class AttendanceController extends Controller
             abort(404);
         }
         if (! $kelas->qr_enabled) {
-            return back()->withErrors(['qr' => 'QR code is not active.']);
+            // If the QR is not enabled (or has been auto-disabled), send the user to thank-you
+            return redirect()->route('absensi.thanks');
         }
         if ($kelas->qr_expires_at && Carbon::now()->gt($kelas->qr_expires_at)) {
-            return back()->withErrors(['qr' => 'QR code has expired.']);
+            // Auto-disable expired QR so it cannot be reused, then redirect to thank-you
+            try {
+                $kelas->qr_enabled = false;
+                $kelas->save();
+                \Log::info('QR token auto-disabled due to expiry on submit', ['kelas_mk_id' => $kelas->id, 'qr_token' => $token]);
+            } catch (\Exception $e) {
+                \Log::warning('Failed to auto-disable expired QR token on submit', ['error' => $e->getMessage(), 'kelas_mk_id' => $kelas->id]);
+            }
+
+            return redirect()->route('absensi.thanks');
         }
 
         $data = $request->validate([
@@ -45,7 +71,14 @@ class AttendanceController extends Controller
             'name' => 'nullable|string',
             'kontak' => 'nullable|string',
             'keterangan' => 'nullable|string',
+            'pertemuan' => 'nullable|integer',
         ]);
+
+        // prefer explicit pertemuan from request, otherwise use kelas current setting
+        $pertemuan = $request->input('pertemuan') ?? ($kelas->qr_current_pertemuan ?? null);
+
+        // only include pertemuan if column exists in DB
+        $canRecordPertemuan = \Illuminate\Support\Facades\Schema::hasColumn('presensis', 'pertemuan');
 
         $krs = null;
 
@@ -65,9 +98,12 @@ class AttendanceController extends Controller
 
         // Prevent duplicate attendance: same mahasiswa can't submit twice for the same kelas
         if (! empty($mahasiswa?->id)) {
-            $already = Presensi::where('mahasiswa_id', $mahasiswa->id)
-                ->where('kelas_mata_kuliah_id', $kelas->id)
-                ->exists();
+            $alreadyQuery = Presensi::where('mahasiswa_id', $mahasiswa->id)
+                ->where('kelas_mata_kuliah_id', $kelas->id);
+            if ($canRecordPertemuan && ! is_null($pertemuan)) {
+                $alreadyQuery->where('pertemuan', $pertemuan);
+            }
+            $already = $alreadyQuery->exists();
 
             if ($already) {
                 return redirect()->route('absensi.thanks')->with('info', 'Anda sudah mengisi absensi untuk kelas ini.');
@@ -86,7 +122,7 @@ class AttendanceController extends Controller
                 $krs = Krs::create([
                     'mahasiswa_id' => $mahasiswa->id,
                     'kelas_mata_kuliah_id' => $kelas->id,
-                    'status' => 'disetujui',
+                    'status' => 'approved',
                     'keterangan' => 'Auto-created via QR attendance',
                 ]);
 
@@ -107,7 +143,7 @@ class AttendanceController extends Controller
         }
 
         // Create presensi entry (store additional fields per DB schema)
-        $presensi = Presensi::create([
+        $createData = [
             'krs_id' => $krs->id,
             'mahasiswa_id' => $mahasiswa->id ?? null,
             'kelas_mata_kuliah_id' => $kelas->id ?? null,
@@ -117,7 +153,13 @@ class AttendanceController extends Controller
             'waktu' => Carbon::now(),
             'status' => 'hadir',
             'keterangan' => $data['keterangan'] ?? null,
-        ]);
+        ];
+
+        if ($canRecordPertemuan && ! is_null($pertemuan)) {
+            $createData['pertemuan'] = $pertemuan;
+        }
+
+        $presensi = Presensi::create($createData);
 
         if ($presensi) {
             \Log::info('Presensi created', [

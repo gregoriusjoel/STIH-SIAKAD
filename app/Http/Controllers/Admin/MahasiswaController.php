@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Mahasiswa;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Krs;
+use App\Models\Mahasiswa;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class MahasiswaController extends Controller
 {
@@ -16,12 +17,13 @@ class MahasiswaController extends Controller
      */
     public function index()
     {
-        $mahasiswas = Mahasiswa::with('user')->paginate(10);
+        // Admin listing of all mahasiswa with pagination
+        $mahasiswas = \App\Models\Mahasiswa::with('user')->orderBy('npm')->paginate(25);
         return view('admin.mahasiswa.index', compact('mahasiswas'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new mahasiswa.
      */
     public function create()
     {
@@ -29,7 +31,7 @@ class MahasiswaController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created mahasiswa.
      */
     public function store(Request $request)
     {
@@ -37,54 +39,42 @@ class MahasiswaController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
-            'npm' => 'required|unique:mahasiswas,npm',
-            'prodi' => 'required|string',
-            'angkatan' => 'required|string',
-            'semester' => 'required|integer|min:1|max:8',
-            'phone' => 'nullable|string',
-            'address' => 'nullable|string',
+            'npm' => 'required|string|unique:mahasiswas,npm',
+            'prodi' => 'required|string|max:255',
+            'angkatan' => 'required|string|max:10',
+            'semester' => 'required|integer|min:1|max:12',
+            'jenis_kelamin' => 'required|string|max:50',
+            'phone' => 'nullable|string|max:30',
+            'address' => 'nullable|string|max:1000',
         ]);
 
-        DB::beginTransaction();
-        try {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => 'mahasiswa',
-            ]);
+        // create user
+        $user = \App\Models\User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => Hash::make($request->input('password')),
+            'role' => 'mahasiswa',
+        ]);
 
-            Mahasiswa::create([
-                'user_id' => $user->id,
-                'npm' => $request->npm,
-                'prodi' => $request->prodi,
-                'angkatan' => $request->angkatan,
-                'semester' => $request->semester,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'status' => 'aktif',
-            ]);
+        // create mahasiswa
+        Mahasiswa::create([
+            'user_id' => $user->id,
+            'npm' => $request->input('npm'),
+            'prodi' => $request->input('prodi'),
+            'angkatan' => $request->input('angkatan'),
+            'semester' => $request->input('semester'),
+            'jenis_kelamin' => $request->input('jenis_kelamin'),
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
+            'status' => 'aktif',
+            'status_akun' => 'baru',
+        ]);
 
-            DB::commit();
-            return redirect()->route('admin.mahasiswa.index')
-                ->with('success', 'Data mahasiswa berhasil ditambahkan');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
+        return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil ditambahkan.');
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Mahasiswa $mahasiswa)
-    {
-        $mahasiswa->load('user', 'krs.kelasMataKuliah.mataKuliah');
-        return view('admin.mahasiswa.show', compact('mahasiswa'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified mahasiswa.
      */
     public function edit(Mahasiswa $mahasiswa)
     {
@@ -92,65 +82,52 @@ class MahasiswaController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified mahasiswa in storage.
      */
     public function update(Request $request, Mahasiswa $mahasiswa)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $mahasiswa->user_id,
-            'npm' => 'required|unique:mahasiswas,npm,' . $mahasiswa->id,
-            'prodi' => 'required|string',
-            'angkatan' => 'required|string',
-            'semester' => 'required|integer|min:1|max:8',
-            'phone' => 'nullable|string',
-            'address' => 'nullable|string',
-            'status' => 'required|in:aktif,cuti,lulus,drop-out',
+            'email' => 'required|email|max:255',
+            'password' => 'nullable|string|min:6',
+            'npm' => 'required|string|max:50',
+            'prodi' => 'required|string|max:255',
+            'angkatan' => 'required|string|max:10',
+            'jenis_kelamin' => 'nullable|string|max:50',
+            'semester' => 'required|integer|min:1|max:12',
+            'status' => 'required|string|max:50',
+            'phone' => 'nullable|string|max:30',
+            'address' => 'nullable|string|max:1000',
         ]);
 
-        DB::beginTransaction();
-        try {
-            $mahasiswa->user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-            ]);
-
-            if ($request->filled('password')) {
-                $mahasiswa->user->update([
-                    'password' => Hash::make($request->password),
-                ]);
-            }
-
-            $mahasiswa->update([
-                'npm' => $request->npm,
-                'prodi' => $request->prodi,
-                'angkatan' => $request->angkatan,
-                'semester' => $request->semester,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'status' => $request->status,
-            ]);
-
-            DB::commit();
-            return redirect()->route('admin.mahasiswa.index')
-                ->with('success', 'Data mahasiswa berhasil diupdate');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        // Update user
+        $user = $mahasiswa->user;
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
         }
+        $user->save();
+
+        // Update mahasiswa fields
+        $mahasiswa->npm = $request->input('npm');
+        $mahasiswa->prodi = $request->input('prodi');
+        $mahasiswa->angkatan = $request->input('angkatan');
+        $mahasiswa->jenis_kelamin = $request->input('jenis_kelamin');
+        $mahasiswa->semester = $request->input('semester');
+        $mahasiswa->status = $request->input('status');
+        $mahasiswa->phone = $request->input('phone');
+        $mahasiswa->address = $request->input('address');
+        $mahasiswa->save();
+
+        return redirect()->route('admin.mahasiswa.index')->with('success', 'Data mahasiswa berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Display the specified resource.
      */
-    public function destroy(Mahasiswa $mahasiswa)
+    public function show(Mahasiswa $mahasiswa)
     {
-        try {
-            $mahasiswa->user->delete(); // Cascade akan menghapus mahasiswa
-            return redirect()->route('admin.mahasiswa.index')
-                ->with('success', 'Data mahasiswa berhasil dihapus');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
+        return view('admin.mahasiswa.show', compact('mahasiswa'));
     }
 }

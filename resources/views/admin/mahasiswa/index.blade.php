@@ -4,54 +4,55 @@
 @section('page-title', 'Data Mahasiswa')
 
 @section('content')
-<div class="mb-6 flex items-start justify-between">
-    <div>
-        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
-            <i class="fas fa-user-graduate text-maroon mr-3 text-2xl"></i>
-            Daftar Mahasiswa STIH
-        </h3>
-        <p class="text-sm text-gray-600 mt-1">Kelola data mahasiswa kampus STIH</p>
-    </div>
-    <a href="{{ route('admin.mahasiswa.create') }}" class="btn-maroon px-6 py-3 rounded-lg hover:bg-opacity-90 transition transform hover:scale-105 shadow-md">
-        <span class="flex items-center">
-            <i class="fas fa-plus-circle mr-2"></i>
-            Tambah Mahasiswa
-        </span>
-    </a>
-</div>
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-user-graduate text-maroon mr-3 text-2xl"></i>
+                Daftar Mahasiswa STIH
+            </h3>
+            <p class="text-sm text-gray-600 mt-1">Kelola data mahasiswa kampus STIH</p>
+        </div>
 
-<div x-data="{ selectedMahasiswa: null }" class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 border-separate" style="border-spacing: 0;">
-            <thead class="bg-maroon text-white rounded-t-xl">
-                <tr>
-                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tl-xl">
-                        <i class=""></i>No
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                        <i class="fas fa-id-card mr-2"></i>NPM
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                        <i class="fas fa-user mr-2"></i>Nama
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                        <i class="fas fa-envelope mr-2"></i>Email
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                        <i class="fas fa-graduation-cap mr-2"></i>Prodi
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                        <i class="fas fa-calendar mr-2"></i>Angkatan
-                    </th>
-                    <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
-                        <i class="fas fa-info-circle mr-2"></i>Status
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tr-xl">
-                        <i class="fas fa-cog mr-2"></i>Aksi
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+        <a href="{{ route('admin.mahasiswa.create') }}"
+            class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
+            <i class="fas fa-plus mr-2"></i>
+            Tambah Mahasiswa
+        </a>
+    </div>
+
+    <div x-data="{ selectedMahasiswa: null }"
+        class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 border-separate" style="border-spacing: 0;">
+                <thead class="bg-maroon text-white rounded-t-xl">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tl-xl">
+                            <i class=""></i>No
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                            <i class="fas fa-id-card mr-2"></i>NPM
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                            <i class="fas fa-user mr-2"></i>Nama
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                            <i class="fas fa-envelope mr-2"></i>Email
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                            <i class="fas fa-graduation-cap mr-2"></i>Prodi
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                            <i class="fas fa-calendar mr-2"></i>Angkatan
+                        </th>
+                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
+                            <i class="fas fa-info-circle mr-2"></i>Status
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tr-xl">
+                            <i class="fas fa-cog mr-2"></i>Aksi
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($mahasiswas as $mahasiswa)
                         <tr class="hover:bg-blue-50 transition cursor-pointer"
                             @click='selectedMahasiswa = { npm: @js($mahasiswa->npm), name: @js($mahasiswa->user->name), email: @js($mahasiswa->user->email), no_hp: @js($mahasiswa->no_hp ?? "-"), prodi: @js($mahasiswa->prodi), angkatan: @js($mahasiswa->angkatan), status: @js(ucfirst($mahasiswa->status)), foto: @js($mahasiswa->foto ? asset("storage/" . $mahasiswa->foto) : null) }'
@@ -64,7 +65,8 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="bg-maroon text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-3">
+                                    <div
+                                        class="bg-maroon text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-3">
                                         {{ strtoupper(substr($mahasiswa->user->name, 0, 1)) }}
                                     </div>
                                     <span class="text-sm font-medium text-gray-900">{{ $mahasiswa->user->name }}</span>
@@ -85,64 +87,36 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full 
-                                    {{ $mahasiswa->status == 'aktif' ? 'bg-green-100 text-green-800' : '' }}
-                                    {{ $mahasiswa->status == 'cuti' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                    {{ $mahasiswa->status == 'lulus' ? 'bg-blue-100 text-blue-800' : '' }}
-                                    {{ $mahasiswa->status == 'drop-out' ? 'bg-red-100 text-red-800' : '' }}">
+                                            {{ $mahasiswa->status == 'aktif' ? 'bg-green-100 text-green-800' : '' }}
+                                            {{ $mahasiswa->status == 'cuti' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                            {{ $mahasiswa->status == 'lulus' ? 'bg-blue-100 text-blue-800' : '' }}
+                                            {{ $mahasiswa->status == 'drop-out' ? 'bg-red-100 text-red-800' : '' }}">
                                     <i class="fas fa-circle text-xs mr-1"></i>
                                     {{ ucfirst($mahasiswa->status) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2" @click.stop>
-                                    <button type="button" onclick="document.getElementById('modal-mahasiswa-{{ $mahasiswa->id }}').classList.remove('hidden')" class="text-blue-600 hover:text-blue-900 transition" title="Detail">
+                                    <a href="{{ route('admin.mahasiswa.show', $mahasiswa) }}"
+                                        class="text-blue-600 hover:text-blue-900 transition" title="Detail">
                                         <i class="fas fa-eye"></i>
-                                    </button>
-                                    <a href="{{ route('admin.mahasiswa.edit', $mahasiswa) }}" class="text-indigo-600 hover:text-indigo-900 transition" title="Edit">
+                                    </a>
+                                    <a href="{{ route('admin.mahasiswa.edit', $mahasiswa) }}"
+                                        class="text-indigo-600 hover:text-indigo-900 transition" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('admin.mahasiswa.destroy', $mahasiswa) }}" method="POST" class="inline">
+                                    <form action="{{ route('admin.mahasiswa.destroy', $mahasiswa) }}" method="POST"
+                                        class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 transition" onclick="return confirm('Yakin ingin menghapus data ini?')" title="Hapus">
+                                        <button type="submit" class="text-red-600 hover:text-red-900 transition"
+                                            onclick="return confirm('Yakin ingin menghapus data ini?')" title="Hapus">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
-
-                        <!-- Modal Mahasiswa -->
-                        <div id="modal-mahasiswa-{{ $mahasiswa->id }}" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm hidden">
-                            <div class="bg-white rounded-lg shadow-2xl w-11/12 md:w-3/4 lg:w-2/3 max-h-[90vh] overflow-y-auto overflow-x-hidden">
-                                <div class="flex items-center justify-between px-6 py-4 bg-maroon text-white">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="h-10 w-10 rounded-full bg-white bg-opacity-10 flex items-center justify-center text-white font-bold">
-                                            <i class="fas fa-user-graduate"></i>
-                                        </div>
-                                        <div>
-                                            <h3 class="text-lg font-semibold">Detail Mahasiswa</h3>
-                                            <p class="text-sm text-white text-opacity-90">Informasi lengkap mahasiswa</p>
-                                        </div>
-                                    </div>
-                                    <button onclick="document.getElementById('modal-mahasiswa-{{ $mahasiswa->id }}').classList.add('hidden')" class="text-white text-xl leading-none">&times;</button>
-                                </div>
-                                <div class="p-6">
-                                    <div class="grid grid-cols-1 gap-2 text-sm text-gray-700">
-                                        <div><strong>Nama:</strong> {{ $mahasiswa->user->name }}</div>
-                                        <div><strong>Email:</strong> {{ $mahasiswa->user->email }}</div>
-                                        <div><strong>NPM:</strong> {{ $mahasiswa->npm }}</div>
-                                        <div><strong>Prodi:</strong> {{ $mahasiswa->prodi }}</div>
-                                        <div><strong>Angkatan:</strong> {{ $mahasiswa->angkatan }}</div>
-                                        <div><strong>Status:</strong> {{ ucfirst($mahasiswa->status) }}</div>
-                                    </div>
-                                </div>
-                                <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
-                                    <a href="{{ route('admin.mahasiswa.edit', $mahasiswa) }}" class="bg-maroon text-white px-4 py-2 rounded shadow">Edit</a>
-                                    <button onclick="document.getElementById('modal-mahasiswa-{{ $mahasiswa->id }}').classList.add('hidden')" class="px-4 py-2 border rounded">Tutup</button>
-                                </div>
-                            </div>
-                        </div>
                     @empty
                         <tr>
                             <td colspan="8" class="px-6 py-8 text-center text-gray-500">
@@ -159,132 +133,5 @@
             {{ $mahasiswas->links() }}
         </div>
     </div>
-
-    <!-- Detail Mahasiswa (Data Akademik) -->
-    <div x-show="selectedMahasiswa" x-cloak
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 transform translate-y-4"
-         x-transition:enter-end="opacity-100 transform translate-y-0"
-         class="bg-white rounded-lg shadow-lg border-t-4 border-maroon mt-6 p-8">
-        <div class="flex justify-between items-center mb-6 pb-2 border-b border-gray-100">
-            <h3 class="text-xl font-bold text-gray-800">Detail Mahasiswa</h3>
-            <button @click="selectedMahasiswa = null" class="text-gray-500 hover:text-gray-700" title="Tutup">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <div class="space-y-5">
-            <!-- NIM -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">NIM</label>
-                <div class="lg:col-span-9">
-                    <input type="text" x-model="selectedMahasiswa.npm" readonly 
-                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm shadow-sm">
-                </div>
-            </div>
-
-            <!-- Nama Lengkap -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Nama Lengkap</label>
-                <div class="lg:col-span-9">
-                    <input type="text" x-model="selectedMahasiswa.name" readonly 
-                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm shadow-sm">
-                </div>
-            </div>
-
-            <!-- Handphone -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Handphone</label>
-                <div class="lg:col-span-9">
-                    <input type="text" x-model="selectedMahasiswa.no_hp" readonly 
-                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm shadow-sm">
-                </div>
-            </div>
-
-            <!-- Email -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Email</label>
-                <div class="lg:col-span-9">
-                    <input type="text" x-model="selectedMahasiswa.email" readonly 
-                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-700 text-sm shadow-sm">
-                </div>
-            </div>
-
-            <!-- Foto -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium pt-2">Foto Mahasiswa</label>
-                <div class="lg:col-span-9">
-                    <div class="w-32 h-40 border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style="width:128px; height:160px; overflow:hidden;">
-                        <template x-if="selectedMahasiswa.foto">
-                            <img :src="selectedMahasiswa.foto" class="w-full h-full object-cover">
-                        </template>
-                        <template x-if="!selectedMahasiswa.foto">
-                            <div class="text-gray-300 flex flex-col items-center">
-                                <i class="fas fa-user text-4xl mb-2"></i>
-                                <span class="text-xs">No Photo</span>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <div class="border-b border-gray-100 my-4"></div>
-
-            <!-- Jurusan -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Jurusan</label>
-                <div class="lg:col-span-9">
-                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
-                        <span x-text="selectedMahasiswa.prodi"></span>
-                        <i class="fas fa-lock text-gray-300 text-xs"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Program -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Program</label>
-                <div class="lg:col-span-9">
-                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
-                        <span>1 - REGULER</span>
-                        <i class="fas fa-lock text-gray-300 text-xs"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kurikulum -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Kurikulum</label>
-                <div class="lg:col-span-9">
-                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
-                        <span x-text="'32 - Kurikulum ' + selectedMahasiswa.prodi + ' ' + selectedMahasiswa.angkatan"></span>
-                        <i class="fas fa-lock text-gray-300 text-xs"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Angkatan -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Angkatan</label>
-                <div class="lg:col-span-9">
-                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
-                        <span x-text="selectedMahasiswa.angkatan"></span>
-                        <i class="fas fa-lock text-gray-300 text-xs"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Status Mahasiswa -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Status Mahasiswa</label>
-                <div class="lg:col-span-9">
-                    <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
-                        <span x-text="selectedMahasiswa.status"></span>
-                        <i class="fas fa-lock text-gray-300 text-xs"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-</div>
 @endsection

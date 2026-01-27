@@ -18,7 +18,7 @@
 @endpush
 
 @section('content')
-    <div class="flex flex-col gap-8 max-w-[1200px] mx-auto w-full flex-1">
+    <div class="p-6 md:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6">
         
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -65,7 +65,13 @@
                             <div class="size-8 rounded-full bg-gray-50 dark:bg-slate-800 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-[16px]">schedule</span>
                             </div>
-                            <span>{{ $class['day'] }}, {{ explode(' - ', $class['time'])[0] }}</span>
+                            @php
+                                $time = $class['time'] ?? '-';
+                                $parts = explode(' - ', $time);
+                                $start = $parts[0] ?? '-';
+                                $end = $parts[1] ?? '-';
+                            @endphp
+                            <span>{{ $class['day'] }}, {{ $start }} - {{ $end }}</span>
                         </div>
                     </div>
 

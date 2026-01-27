@@ -59,6 +59,8 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/kelas/{id}/pertemuan/{pertemuan}', [LecturerController::class, 'meetingDetail'])->name('kelas.pertemuan.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi', [LecturerController::class, 'meetingMaterials'])->name('kelas.pertemuan.materi');
     Route::post('/kelas/{id}/generate-qr', [LecturerController::class, 'generateQr'])->name('kelas.generate_qr');
+    Route::post('/kelas/{id}/activate-qr', [LecturerController::class, 'activateQr'])->name('kelas.activate_qr');
+    Route::post('/kelas/{id}/deactivate-qr', [LecturerController::class, 'deactivateQr'])->name('kelas.deactivate_qr');
     Route::get('/krs', [LecturerController::class, 'krs'])->name('krs');
     Route::get('/input-nilai', [LecturerController::class, 'inputNilai'])->name('input-nilai');
     Route::get('/mahasiswa', [LecturerController::class, 'students'])->name('mahasiswa');
@@ -69,6 +71,10 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
     // Aktivasi (tidak perlu middleware status check)
     Route::get('/aktivasi', [AktivasiController::class, 'index'])->name('aktivasi.index');
     Route::post('/aktivasi', [AktivasiController::class, 'store'])->name('aktivasi.store');
+
+    // New student survey (must be accessible before filling it)
+    Route::get('/survey-new', [App\Http\Controllers\Mahasiswa\NewStudentSurveyController::class, 'index'])->name('survey_new.index');
+    Route::post('/survey-new', [App\Http\Controllers\Mahasiswa\NewStudentSurveyController::class, 'store'])->name('survey_new.store');
 
     // Routes yang memerlukan status check
     Route::middleware(['mahasiswa.status'])->group(function () {
@@ -93,12 +99,27 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         // Pembayaran
         Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 
+        // Kelas Saya
+        Route::get('/kelas', [App\Http\Controllers\Mahasiswa\KelasController::class, 'index'])->name('kelas.index');
+        Route::get('/kelas/{id}', [App\Http\Controllers\Mahasiswa\KelasController::class, 'show'])->name('kelas.show');
+
         // Profil
         Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
          Route::get('/manajemen-profil', [ProfilController::class, 'manajemen'])->name('profil.manajemen');
         Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
         Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.update-password');
     });
+
+    // Menu Akademik Tambahan
+        Route::view('/perpustakaan', 'errors.503')->name('perpustakaan.index');
+        Route::view('/prestasi', 'errors.503')->name('prestasi.index');
+
+        // Menu Pengajuan
+        Route::prefix('pengajuan')->name('pengajuan.')->group(function () {
+            Route::view('/sidang', 'errors.503')->name('sidang.index');
+            Route::view('/surat', 'errors.503')->name('surat.index');
+            Route::view('/yudisium', 'errors.503')->name('yudisium.index');
+        });
 });
 
 Route::prefix('parent')->name('parent.')->middleware(['auth'])->group(function () {
@@ -156,6 +177,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('semester/{semester}/krs-settings', [App\Http\Controllers\Admin\SemesterController::class, 'updateKrsSettings'])->name('semester.update-krs-settings');
     // Global search
     Route::get('search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
+
+   // Academic Calendar Management
+    Route::get('kalender-akademik', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'index'])->name('kalender.index');
+    Route::get('kalender-akademik/data', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'getData'])->name('kalender.data');
+    Route::post('kalender-akademik/event', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'storeEvent'])->name('kalender.event.store');
+    Route::put('kalender-akademik/event/{id}', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'updateEvent'])->name('kalender.event.update');
+    Route::delete('kalender-akademik/event/{id}', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'deleteEvent'])->name('kalender.event.delete');
+    Route::put('kalender-akademik/semester/{id}', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'updateSemester'])->name('kalender.semester.update');
+    Route::put('kalender-akademik/event/{id}/date', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'updateDate'])->name('kalender.event.updateDate');
+    Route::post('kalender-akademik/import', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'import'])->name('kalender.import');
+    Route::get('kalender-akademik/import-template', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'downloadTemplate'])->name('kalender.import-template');
+
+
+    // Maintenance
+    Route::view('maintenance', 'errors.503')->name('maintenance');
 
     // KRS Management
     Route::get('krs', [App\Http\Controllers\Admin\KrsController::class, 'index'])->name('krs.index');

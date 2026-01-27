@@ -11,6 +11,7 @@ class Presensi extends Model
         'krs_id',
         'mahasiswa_id',
         'kelas_mata_kuliah_id',
+        'pertemuan',
         'nama',
         'kontak',
         'tanggal',

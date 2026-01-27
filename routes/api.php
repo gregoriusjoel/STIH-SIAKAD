@@ -29,3 +29,7 @@ Route::prefix('jadwal')->group(function () {
     // Assign room to approved schedule
     Route::post('/{id}/assign-room', [JadwalApiController::class, 'assignRoom']);
 });
+
+// Helper API for frontend
+Route::get('/dosens-by-mata-kuliah/{mataKuliahId}', [App\Http\Controllers\Admin\JadwalController::class, 'getDosensByMataKuliah']);
+Route::get('/check-room-availability', [App\Http\Controllers\Admin\JadwalController::class, 'checkRoomAvailability']);

@@ -155,90 +155,129 @@
             })->load('mataKuliah');
         @endphp
 
+        {{-- Calendar modal (hidden). Calendar view moved into modal; open with calendar button in table header. --}}
+
         @if($calendarKelas->isNotEmpty())
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-lg font-bold text-gray-800">Kalender Jadwal Mata Kuliah</h4>
-                <div class="flex items-center gap-4 text-xs">
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded" style="background: #3b82f6;"></div>
-                        <span class="font-medium">Wajib Nasional</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded" style="background: #ef4444;"></div>
-                        <span class="font-medium">Wajib Prodi</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded" style="background: #8b5cf6;"></div>
-                        <span class="font-medium">Pilihan</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded" style="background: #eab308;"></div>
-                        <span class="font-medium">Peminatan</span>
-                    </div>
+        <div id="krsCalendarModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4">
+            <div class="absolute inset-0 bg-black/40" id="krsCalendarBackdrop"></div>
+            <div class="relative w-full max-w-6xl bg-white rounded-xl shadow-xl overflow-auto p-6 z-50">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-lg font-bold text-gray-800">Kalender Jadwal Mata Kuliah</h4>
+                    <button type="button" id="closeKrsCalendar" class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">Tutup</button>
                 </div>
-            </div>
-            <div class="overflow-x-auto">
-                <style>
-                    .krs-calendar { display:flex; gap:8px; }
-                    .krs-column { flex:1; min-width:120px; background:#fff; border:1px solid #eef2f7; position:relative; height:780px; }
-                    .krs-column .day-label { position:absolute; top:6px; left:8px; font-weight:600; color:#374151 }
-                    .krs-slot { position:absolute; left:8px; right:8px; background:#06b6d4; color:#fff; border-radius:8px; padding:6px 8px; font-size:12px; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
-                </style>
 
-                <div class="krs-calendar">
-                    @php
-                        $days = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-                        $hourStart = 6; $hourEnd = 19; $hourHeight = 60; // px per hour
-                    @endphp
+                <div class="overflow-x-auto">
+                    <style>
+                        .krs-calendar { display:flex; gap:8px; }
+                        .krs-column { flex:1; min-width:140px; background:#fff; border:1px solid #eef2f7; position:relative; height:780px; }
+                        .krs-column .day-label { position:absolute; top:6px; left:8px; font-weight:600; color:#374151 }
+                        .krs-slot { position:absolute; background:#06b6d4; color:#fff; border-radius:8px; padding:6px 8px; font-size:12px; box-shadow:0 2px 6px rgba(0,0,0,0.08); overflow:hidden; }
+                    </style>
 
-                    @foreach($days as $day)
-                        <div class="krs-column">
-                            <div class="day-label">{{ $day }}</div>
-                            {{-- slots --}}
-                            @foreach($calendarKelas as $kelasItem)
-                                @foreach($kelasItem->jadwals as $jadwal)
-                                    @if(trim($jadwal->hari) === $day)
-                                        @php
-                                            try {
-                                                $start = \Carbon\Carbon::parse($jadwal->jam_mulai);
-                                                $end = \Carbon\Carbon::parse($jadwal->jam_selesai);
-                                                $startMinutes = $start->hour * 60 + $start->minute;
-                                                $endMinutes = $end->hour * 60 + $end->minute;
-                                                $top = max(0, $startMinutes - ($hourStart * 60));
-                                                $height = max(20, $endMinutes - $startMinutes);
-                                            } catch (\Exception $e) {
-                                                $top = 0; $height = 40;
+                    <div class="krs-calendar">
+                        @php
+                            $days = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                            $hourStart = 6; $hourEnd = 19; $hourHeight = 60; // px per hour
+                        @endphp
+
+                        @foreach($days as $day)
+                            <div class="krs-column">
+                                <div class="day-label">{{ $day }}</div>
+
+                                @php
+                                    // collect events for this day
+                                    $events = [];
+                                    foreach($calendarKelas as $kelasItem) {
+                                        foreach($kelasItem->jadwals as $jadwal) {
+                                            if(trim($jadwal->hari) === $day) {
+                                                try {
+                                                    $start = \Carbon\Carbon::parse($jadwal->jam_mulai);
+                                                    $end = \Carbon\Carbon::parse($jadwal->jam_selesai);
+                                                    $startMinutes = $start->hour * 60 + $start->minute;
+                                                    $endMinutes = $end->hour * 60 + $end->minute;
+                                                } catch (\Exception $e) {
+                                                    $startMinutes = ($hourStart*60); $endMinutes = ($hourStart*60)+40;
+                                                    $start = \Carbon\Carbon::createFromTime($hourStart,0);
+                                                    $end = \Carbon\Carbon::createFromTime($hourStart,40);
+                                                }
+
+                                                $events[] = (object) [
+                                                    'start' => $startMinutes,
+                                                    'end' => $endMinutes,
+                                                    'startObj' => $start,
+                                                    'endObj' => $end,
+                                                    'kelas' => $kelasItem,
+                                                ];
                                             }
-                                            
-                                            // Color based on jenis mata kuliah
-                                            $jenis = $kelasItem->mataKuliah->jenis ?? 'wajib_prodi';
-                                            switch($jenis) {
-                                                case 'wajib_nasional':
-                                                    $bg = '#3b82f6'; // blue
-                                                    break;
-                                                case 'wajib_prodi':
-                                                    $bg = '#ef4444'; // red
-                                                    break;
-                                                case 'pilihan':
-                                                    $bg = '#8b5cf6'; // purple
-                                                    break;
-                                                case 'peminatan':
-                                                    $bg = '#eab308'; // yellow
-                                                    break;
-                                                default:
-                                                    $bg = '#06b6d4';
+                                        }
+                                    }
+
+                                    // sort by start
+                                    usort($events, function($a,$b){ if($a->start == $b->start) return $a->end - $b->end; return $a->start - $b->start; });
+
+                                    // assign columns to avoid overlapping: greedy using free indices
+                                    $active = []; // [['end'=>..., 'idx'=>...], ...]
+                                    $free = [];
+                                    $maxColumns = 0;
+                                    foreach($events as $i => $ev) {
+                                        // remove finished
+                                        foreach($active as $k => $act) {
+                                            if($act['end'] <= $ev->start) {
+                                                $free[] = $act['idx'];
+                                                unset($active[$k]);
                                             }
-                                        @endphp
-                                        <div class="krs-slot" style="top: {{ $top }}px; height: {{ $height }}px; background: {{ $bg }};">
-                                            <div class="font-semibold">{{ $kelasItem->mataKuliah->nama_mk ?? '-' }}</div>
-                                            <div class="text-xs">{{ $start->format('H:i') }} - {{ $end->format('H:i') }} • {{ $kelasItem->section ?? $kelasItem->kode_kelas ?? '-' }}</div>
-                                        </div>
-                                    @endif
+                                        }
+                                        // get index
+                                        if(count($free) > 0) {
+                                            $idx = array_shift($free);
+                                        } else {
+                                            // find smallest unused index
+                                            $used = array_column($active, 'idx');
+                                            $idx = 0; while(in_array($idx, $used)) $idx++;
+                                        }
+                                        $ev->col = $idx;
+                                        // add to active
+                                        $active[] = ['end' => $ev->end, 'idx' => $idx, 'ref' => $i];
+                                        // update max columns
+                                        $maxColumns = max($maxColumns, count($active));
+
+                                        // store back
+                                        $events[$i] = $ev;
+                                    }
+
+                                    // set colCount for each event to the day's max columns (simple and safe)
+                                    foreach($events as $i => $ev) {
+                                        $ev->colCount = max(1, $maxColumns);
+                                        $events[$i] = $ev;
+                                    }
+                                @endphp
+
+                                @foreach($events as $ev)
+                                    @php
+                                        $top = max(0, $ev->start - ($hourStart*60));
+                                        $height = max(20, $ev->end - $ev->start);
+                                        $kelasItem = $ev->kelas;
+                                        $jenis = $kelasItem->mataKuliah->jenis ?? 'wajib_prodi';
+                                        switch($jenis) {
+                                            case 'wajib_nasional': $bg = '#3b82f6'; break;
+                                            case 'wajib_prodi': $bg = '#ef4444'; break;
+                                            case 'pilihan': $bg = '#8b5cf6'; break;
+                                            case 'peminatan': $bg = '#eab308'; break;
+                                            default: $bg = '#06b6d4';
+                                        }
+                                        $colCount = $ev->colCount > 0 ? $ev->colCount : 1;
+                                        $leftPercent = ($ev->col / $colCount) * 100;
+                                        $widthPercent = (1 / $colCount) * 100;
+                                    @endphp
+                                    <div class="krs-slot"
+                                         style="top: {{ $top }}px; height: {{ $height }}px; left: calc({{ $leftPercent }}% + 8px); width: calc({{ $widthPercent }}% - 16px); background: {{ $bg }};">
+                                        <div class="font-semibold truncate">{{ $kelasItem->mataKuliah->nama_mk ?? '-' }}</div>
+                                        <div class="text-xs">{{ $ev->startObj->format('H:i') }} - {{ $ev->endObj->format('H:i') }} • {{ $kelasItem->section ?? $kelasItem->kode_kelas ?? '-' }}</div>
+                                    </div>
                                 @endforeach
-                            @endforeach
-                        </div>
-                    @endforeach
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
@@ -246,9 +285,18 @@
         
         <div class="bg-white rounded-xl shadow-lg overflow-hidden">
             {{-- Table Header --}}
-            <div class="bg-gradient-to-r from-maroon to-maroon-hover text-white px-6 py-4">
-                <h3 class="text-xl font-bold">Daftar Mata Kuliah yang Diambil</h3>
-            </div>
+            <div class="bg-gradient-to-r from-maroon to-maroon-hover text-white px-6 py-4 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold">Daftar Mata Kuliah yang Diambil</h3>
+                        <p class="text-xs mt-1 opacity-75">Debug: {{ $availableKelas->count() }} kelas tersedia</p>
+                    </div>
+                    <div>
+                        <button type="button" id="openKrsCalendarBtn" title="Lihat Kalender" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg">
+                            <i class="fas fa-calendar-alt text-white"></i>
+                            <span class="text-sm font-semibold">Kalender</span>
+                        </button>
+                    </div>
+                </div>
 
             {{-- Table Content --}}
             <div class="overflow-x-auto">
@@ -302,8 +350,34 @@
                                         {{ $jenisLabel }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-4 text-sm text-gray-700 text-center">-</td>
-                                <td class="px-4 py-4 text-sm text-center text-gray-600">-</td>
+                                @php
+                                    $kelas = $availableKelas->firstWhere('mata_kuliah_id', $mk->id);
+                                    // Debug: uncomment to see data
+                                    // dd($mk->id, $kelas, $availableKelas->pluck('mata_kuliah_id'));
+                                @endphp
+
+                                {{-- DOSEN --}}
+                                <td class="px-4 py-4 text-sm text-gray-700 text-center">
+                                    @if($kelas && $kelas->dosen)
+                                        {{ $kelas->dosen->name }}
+                                    @else
+                                        - {{ $kelas ? '(Kelas ada, dosen null)' : '(Kelas tidak ditemukan)' }}
+                                    @endif
+                                </td>
+
+                                {{-- JADWAL --}}
+                                <td class="px-4 py-4 text-sm text-center text-gray-600">
+                                    @if($kelas && $kelas->jadwals && $kelas->jadwals->count())
+                                        @php $jadwal = $kelas->jadwals->first(); @endphp
+                                        <div class="text-xs leading-tight">
+                                            <div>{{ $jadwal->hari }}</div>
+                                            <div>{{ substr($jadwal->jam_mulai,0,5) }} - {{ substr($jadwal->jam_selesai,0,5) }}</div>
+                                            <div class="font-semibold">{{ $jadwal->ruangan }}</div>
+                                        </div>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 <td class="px-4 py-4 text-center">
                                     <label class="inline-flex items-center cursor-pointer">
                                         <input type="checkbox" 
@@ -352,8 +426,32 @@
                                         {{ $jenisLabel }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-4 text-sm text-gray-700 text-center">-</td>
-                                <td class="px-4 py-4 text-sm text-center text-gray-600">-</td>
+                                @php
+                                    $kelas = $availableKelas->firstWhere('mata_kuliah_id', $mk->id);
+                                @endphp
+
+                                {{-- DOSEN --}}
+                                <td class="px-4 py-4 text-sm text-gray-700 text-center">
+                                    @if($kelas && $kelas->dosen)
+                                        {{ $kelas->dosen->name }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+
+                                {{-- JADWAL --}}
+                                <td class="px-4 py-4 text-sm text-center text-gray-600">
+                                    @if($kelas && $kelas->jadwals && $kelas->jadwals->count())
+                                        @php $jadwal = $kelas->jadwals->first(); @endphp
+                                        <div class="text-xs leading-tight">
+                                            <div>{{ $jadwal->hari }}</div>
+                                            <div>{{ substr($jadwal->jam_mulai,0,5) }} - {{ substr($jadwal->jam_selesai,0,5) }}</div>
+                                            <div class="font-semibold">{{ $jadwal->ruangan }}</div>
+                                        </div>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 <td class="px-4 py-4 text-center">
                                     <button type="button" class="remove-additional-btn px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition" data-mk-id="{{ $mk->id }}" @if(!$isEditable) disabled aria-disabled="true" @endif>
                                         <i class="fas fa-trash"></i> Hapus
@@ -544,6 +642,37 @@ document.addEventListener('DOMContentLoaded', function () {
         if (totalSks > 24) { e.preventDefault(); alert('Total SKS melebihi batas maksimal (24 SKS)!'); return false; }
         if (totalSks === 0) { e.preventDefault(); alert('Anda belum memilih mata kuliah!'); return false; }
         return true;
+    });
+
+    // Modal handlers for calendar
+    const openKrsCalendarBtn = document.getElementById('openKrsCalendarBtn');
+    const krsCalendarModal = document.getElementById('krsCalendarModal');
+    const krsCalendarBackdrop = document.getElementById('krsCalendarBackdrop');
+    const closeKrsCalendar = document.getElementById('closeKrsCalendar');
+
+    if (openKrsCalendarBtn && krsCalendarModal) {
+        openKrsCalendarBtn.addEventListener('click', function () {
+            krsCalendarModal.classList.remove('hidden');
+            krsCalendarModal.classList.add('flex');
+        });
+    }
+    if (closeKrsCalendar && krsCalendarModal) {
+        closeKrsCalendar.addEventListener('click', function () {
+            krsCalendarModal.classList.add('hidden');
+            krsCalendarModal.classList.remove('flex');
+        });
+    }
+    if (krsCalendarBackdrop && krsCalendarModal) {
+        krsCalendarBackdrop.addEventListener('click', function () {
+            krsCalendarModal.classList.add('hidden');
+            krsCalendarModal.classList.remove('flex');
+        });
+    }
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && krsCalendarModal && !krsCalendarModal.classList.contains('hidden')) {
+            krsCalendarModal.classList.add('hidden');
+            krsCalendarModal.classList.remove('flex');
+        }
     });
 });
 </script>

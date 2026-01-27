@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Mahasiswa;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -22,21 +24,49 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
-            'role' => 'required|in:admin,dosen,mahasiswa,parent',
-        ]);
+            'role' => 'required|in:admin,dosen,mahasiswa,parent,keuangan,perpustakaan',
+        ];
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-        ]);
+        // Add mahasiswa-specific validation
+        if ($request->role === 'mahasiswa') {
+            $rules['npm'] = 'required|string|unique:mahasiswas,npm';
+            $rules['prodi'] = 'required|string';
+            $rules['angkatan'] = 'required|string';
+        }
 
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan');
+        $request->validate($rules);
+
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => $request->role,
+            ]);
+
+            // Create mahasiswa record if role is mahasiswa
+            if ($request->role === 'mahasiswa') {
+                Mahasiswa::create([
+                    'user_id' => $user->id,
+                    'npm' => $request->npm,
+                    'prodi' => $request->prodi,
+                    'angkatan' => $request->angkatan,
+                    'status' => 'aktif',
+                    'status_akun' => 'baru',
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function edit(User $user)
@@ -55,7 +85,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:6',
-            'role' => 'required|in:admin,dosen,mahasiswa,parent',
+            'role' => 'required|in:admin,dosen,mahasiswa,parent,keuangan,perpustakaan',
         ]);
 
         $userData = [

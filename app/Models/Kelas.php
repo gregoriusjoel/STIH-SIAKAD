@@ -52,8 +52,10 @@ class Kelas extends Model
 
     public function mahasiswas()
     {
+        // KRS status values have changed over time (indonesian: 'disetujui', english: 'approved').
+        // Accept either so students with approved KRS are included in the class participant list.
         return $this->belongsToMany(Mahasiswa::class, 'krs', 'kelas_id', 'mahasiswa_id')
             ->withPivot('status')
-            ->wherePivot('status', 'disetujui');
+            ->wherePivotIn('status', ['approved', 'disetujui']);
     }
 }

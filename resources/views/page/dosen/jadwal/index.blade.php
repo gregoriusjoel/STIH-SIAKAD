@@ -190,7 +190,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
-        class="relative bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 z-50"
+        class="relative bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-2xl max-w-2xl w-full mx-4 p-6 z-50 max-h-[90vh] overflow-y-auto"
     >
 
         <!-- Header -->
@@ -235,7 +235,7 @@
                 <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
                     Hari <span class="text-red-500">*</span>
                 </label>
-                <select name="new_hari" x-model="rescheduleData.hari"
+                <select name="new_hari" x-model="rescheduleData.hari" @change="checkRoomAvailability()"
                     class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
                     rounded-lg bg-white dark:bg-slate-800 text-sm
                     focus:outline-none focus:ring-1 focus:ring-[#8B1538]">
@@ -253,6 +253,7 @@
                     </label>
                     <input type="time" name="new_jam_mulai"
                         x-model="rescheduleData.jam_mulai"
+                        @change="checkRoomAvailability()"
                         required
                         class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
                         rounded-lg bg-white dark:bg-slate-800 text-sm
@@ -265,6 +266,7 @@
                     </label>
                     <input type="time" name="new_jam_selesai"
                         x-model="rescheduleData.jam_selesai"
+                        @change="checkRoomAvailability()"
                         required
                         class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
                         rounded-lg bg-white dark:bg-slate-800 text-sm
@@ -272,17 +274,61 @@
                 </div>
             </div>
 
-            <!-- Alasan Reschedule -->
-            <div>
-                <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
-                    Alasan Reschedule <span class="text-red-500">*</span>
-                </label>
-                <textarea name="catatan_dosen" rows="3"
-                    placeholder="Jelaskan alasan mengapa anda perlu reschedule..."
-                    required
-                    class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
-                    rounded-lg bg-white dark:bg-slate-800 text-sm
-                    focus:outline-none focus:ring-1 focus:ring-[#8B1538]"></textarea>
+            <!-- Hidden input for room (selected from availability card) -->
+            <input type="hidden" name="new_ruang" :value="rescheduleData.ruang">
+
+            <!-- Room Availability Card -->
+            <div class="border rounded-lg p-3 bg-gray-50 dark:bg-slate-800 max-h-64 overflow-y-auto">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-xs font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">meeting_room</span>
+                        Ketersediaan Ruangan
+                        <span class="text-gray-400 ml-1" x-text="rescheduleData.hari ? '(' + rescheduleData.hari + ')' : ''"></span>
+                    </div>
+                    <!-- Filter Buttons -->
+                    <div class="flex items-center gap-1">
+                        <button type="button" @click="roomFilter = 'all'"
+                            :class="roomFilter === 'all' ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'"
+                            class="px-2 py-0.5 rounded text-[10px] font-bold transition-all">
+                            Semua
+                        </button>
+                        <button type="button" @click="roomFilter = 'available'"
+                            :class="roomFilter === 'available' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-700 hover:bg-green-200'"
+                            class="px-2 py-0.5 rounded text-[10px] font-bold transition-all flex items-center gap-1">
+                            <span class="w-2 h-2 bg-green-300 rounded"></span> Tersedia
+                        </button>
+                        <button type="button" @click="roomFilter = 'occupied'"
+                            :class="roomFilter === 'occupied' ? 'bg-red-600 text-white' : 'bg-red-100 text-red-700 hover:bg-red-200'"
+                            class="px-2 py-0.5 rounded text-[10px] font-bold transition-all flex items-center gap-1">
+                            <span class="w-2 h-2 bg-red-300 rounded"></span> Terpakai
+                        </button>
+                    </div>
+                </div>
+                <div class="max-h-64 overflow-y-auto">
+                    <div class="grid auto-rows-fr gap-2" style="grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));">
+                        @foreach($daftarRuangan as $room)
+                        <div x-show="roomFilter === 'all' || (roomFilter === 'available' && isRoomAvailable('{{ $room }}')) || (roomFilter === 'occupied' && !isRoomAvailable('{{ $room }}'))"
+                             class="p-2 rounded-md text-sm font-semibold cursor-pointer transition-all text-center flex items-center justify-center"
+                             :class="{
+                                'bg-green-50 text-green-800 border border-green-200 hover:bg-green-100': isRoomAvailable('{{ $room }}') && rescheduleData.ruang !== '{{ $room }}',
+                                'bg-red-50 text-red-800 border border-red-200 opacity-90': !isRoomAvailable('{{ $room }}') && rescheduleData.ruang !== '{{ $room }}',
+                                'bg-blue-600 text-white ring-2 ring-blue-400': rescheduleData.ruang === '{{ $room }}'
+                             }"
+                             @click="if(isRoomAvailable('{{ $room }}')) { rescheduleData.ruang = '{{ $room }}' }"
+                             :title="isRoomAvailable('{{ $room }}') ? 'Tersedia - Klik untuk memilih' : getRoomConflict('{{ $room }}')">
+                            <span>{{ $room }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Room Display -->
+            <div x-show="rescheduleData.ruang" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="material-symbols-outlined text-blue-600 text-lg">check_circle</span>
+                    <span class="text-blue-700">Ruangan dipilih: <strong x-text="rescheduleData.ruang"></strong></span>
+                </div>
             </div>
 
             <!-- Actions -->
@@ -295,8 +341,10 @@
                 </button>
 
                 <button type="submit"
+                    :disabled="!rescheduleData.ruang || !rescheduleData.hari || !rescheduleData.jam_mulai || !rescheduleData.jam_selesai"
+                    :class="{'opacity-50 cursor-not-allowed': !rescheduleData.ruang}"
                     class="px-5 py-2 rounded-lg bg-[#8B1538] text-white text-sm font-semibold shadow hover:opacity-90">
-                    Kirim Permintaan
+                    Ubah Jadwal
                 </button>
             </div>
         </form>
@@ -317,6 +365,12 @@
             minDate: new Date(),
             weekOffset: {{ $weekOffset }},
 
+            // All schedules for room availability checking
+            allSchedules: @js($allSchedules),
+
+            // Room filter state: 'all', 'available', 'occupied'
+            roomFilter: 'all',
+
             // Modal state
             showRescheduleModal: false,
             rescheduleData: {
@@ -325,15 +379,61 @@
                 kode_kelas: '',
                 hari: '',
                 jam_mulai: '',
-                jam_selesai: ''
+                jam_selesai: '',
+                ruang: ''
             },
             get rescheduleFormAction() {
                 return '/dosen/kelas/reschedule';
             },
             openRescheduleModal(kelas) {
-                this.rescheduleData = { ...kelas };
+                this.rescheduleData = { ...kelas, ruang: '' };
                 this.showRescheduleModal = true;
             },
+            
+            // Check if a room is available for the selected day and time
+            isRoomAvailable(room) {
+                if (!this.rescheduleData.hari || !this.rescheduleData.jam_mulai || !this.rescheduleData.jam_selesai) {
+                    return true; // Show all as available if time not selected yet
+                }
+                
+                const conflict = this.allSchedules.find(s => {
+                    if (s.id === this.rescheduleData.id) return false; // Exclude current class
+                    if (s.ruang !== room) return false;
+                    if (s.hari !== this.rescheduleData.hari) return false;
+                    
+                    // Check time overlap: (StartA < EndB) && (EndA > StartB)
+                    return s.jam_mulai < this.rescheduleData.jam_selesai && 
+                           s.jam_selesai > this.rescheduleData.jam_mulai;
+                });
+                
+                return !conflict;
+            },
+            
+            // Get conflict info for tooltip
+            getRoomConflict(room) {
+                if (!this.rescheduleData.hari || !this.rescheduleData.jam_mulai || !this.rescheduleData.jam_selesai) {
+                    return '';
+                }
+                
+                const conflict = this.allSchedules.find(s => {
+                    if (s.id === this.rescheduleData.id) return false;
+                    if (s.ruang !== room) return false;
+                    if (s.hari !== this.rescheduleData.hari) return false;
+                    return s.jam_mulai < this.rescheduleData.jam_selesai && 
+                           s.jam_selesai > this.rescheduleData.jam_mulai;
+                });
+                
+                if (conflict) {
+                    return `Terpakai: ${conflict.dosen} (${conflict.mk}) ${conflict.jam_mulai}-${conflict.jam_selesai}`;
+                }
+                return '';
+            },
+            
+            checkRoomAvailability() {
+                // Reset room selection when time changes to force re-evaluation
+                // This is handled reactively by Alpine.js
+            },
+            
             init() {
                 // Set to current week's Monday
                 this.normalizeToMonday(this.currentDate);

@@ -10,6 +10,8 @@ use App\Models\Semester;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Presensi;
+use Illuminate\Support\Facades\Schema;
 
 class LecturerController extends Controller
 {
@@ -27,7 +29,11 @@ class LecturerController extends Controller
         $user = Auth::user();
 
         // Get data from database
-        $kelasList = Kelas::where('dosen_id', $user->id)->with('mataKuliah')->get();
+        // Only consider kelas that have an active jadwal assigned
+        $kelasList = Kelas::where('dosen_id', $user->id)
+            ->whereHas('jadwals', function($q){ $q->where('status', 'active'); })
+            ->with('mataKuliah')
+            ->get();
         $activeJadwals = Jadwal::whereHas('kelas', function ($q) use ($user) {
             $q->where('dosen_id', $user->id);
         })->where('status', 'active')->with(['kelas.mataKuliah'])->get();
@@ -70,8 +76,9 @@ class LecturerController extends Controller
     {
         $user = Auth::user();
 
-        // Get classes from database
+        // Get classes from database - only classes with an active jadwal
         $kelasList = Kelas::where('dosen_id', $user->id)
+            ->whereHas('jadwals', function($q){ $q->where('status','active'); })
             ->with([
                 'mataKuliah',
                 'jadwals' => function ($q) {
@@ -83,14 +90,24 @@ class LecturerController extends Controller
         $classes = $kelasList->map(function ($kelas) {
             $jadwal = $kelas->jadwals->first();
 
-            // Calculate student count manually
-            $krsCount = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            // Calculate student count manually: consider KRS rows that reference either
+            // `kelas_mata_kuliah_id` (old system) or `kelas_id` (current system).
+            $kelasMkRecord = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
                 ->where('kode_kelas', $kelas->section)
                 ->where('dosen_id', $kelas->dosen_id)
-                ->first()
-                    ?->krs()
-                ->where('status', 'disetujui')
-                ->count() ?? 0;
+                ->first();
+
+            if ($kelasMkRecord) {
+                $krsCount = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+                    ->where(function ($q) use ($kelasMkRecord, $kelas) {
+                        $q->where('kelas_mata_kuliah_id', $kelasMkRecord->id)
+                          ->orWhere('kelas_id', $kelas->id);
+                    })->count();
+            } else {
+                $krsCount = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+                    ->where('kelas_id', $kelas->id)
+                    ->count();
+            }
 
             // Calculate progress percentage
             $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
@@ -197,31 +214,46 @@ class LecturerController extends Controller
         ];
 
         // Fetch students from the related KelasMataKuliah -> krs
+        // Match the same way as generateQr: prefer exact kode_kelas match, fallback to first with same mata_kuliah_id
         $kelasMataKuliah = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('kode_kelas', $kelas->section)
-            ->where('dosen_id', $kelas->dosen_id)
-            ->first();
+            ->where(function ($q) use ($kelas) {
+                $q->where('kode_kelas', $kelas->section)
+                    ->orWhere('kode_kelas', $kelas->section . '');
+            })->first();
 
-        // Ensure the kelas_mata_kuliah has a qr_token so QR can be displayed; generate if missing
+        if (!$kelasMataKuliah) {
+            $kelasMataKuliah = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)->first();
+        }
+
+        // Ensure the kelas_mata_kuliah has a qr_token so QR can be generated; generate if missing
         if ($kelasMataKuliah && empty($kelasMataKuliah->qr_token)) {
             $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
+            // Do not enable the QR automatically when creating the token
+            $kelasMataKuliah->qr_enabled = $kelasMataKuliah->qr_enabled ?? false;
             $kelasMataKuliah->save();
         }
 
-        $students = $kelasMataKuliah ? $kelasMataKuliah->krs()
-            ->where('status', 'disetujui')
-            ->with('mahasiswa')
-            ->get()
-            ->map(function ($krs) {
-                return [
-                    'name' => $krs->mahasiswa->nama,
-                    'nim' => $krs->mahasiswa->nim,
-                    'prodi' => $krs->mahasiswa->prodi,
-                    'semester' => $krs->mahasiswa->semester,
-                    'ipk' => $krs->mahasiswa->ipk ?? 3.5, // Fallback if null
-                    'status' => 'Aktif', // Default status
-                ];
-            })->toArray() : [];
+        $krsCollection = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+            ->where(function ($q) use ($kelasMataKuliah, $kelas) {
+                $q->where('kelas_id', $kelas->id);
+                if ($kelasMataKuliah) {
+                    $q->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
+                }
+            })->with('mahasiswa')
+            ->get();
+
+        $students = $krsCollection->map(function ($krs) {
+            $m = $krs->mahasiswa;
+            $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
+            return [
+                'name' => $userName,
+                'nim' => $m->npm ?? null,
+                'prodi' => $m->prodi ?? null,
+                'semester' => $m->semester ?? null,
+                'ipk' => $m->ipk ?? null,
+                'status' => 'Aktif',
+            ];
+        })->toArray();
 
         // Build a `class` array expected by the blade templates (includes QR token)
         $class = [
@@ -236,13 +268,33 @@ class LecturerController extends Controller
             'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
             'dosen_name' => $kelas->dosen->name ?? 'Dosen Belum Ditentukan',
             'qr_token' => $kelasMataKuliah->qr_token ?? null,
+            'qr_enabled' => $kelasMataKuliah->qr_enabled ?? false,
+            'qr_expires_at' => $kelasMataKuliah->qr_expires_at ?? null,
         ];
 
-        if (request()->ajax()) {
-            return view('page.dosen.kelas.partials.absensi-content', compact('class_info', 'students', 'id', 'class'))->with('is_modal', true);
+        // Determine which pertemuan we are viewing (request param, or the kelas's QR current pertemuan, otherwise the calculated pertemuanKe)
+        $currentPertemuan = request()->input('pertemuan') ?? ($kelasMataKuliah->qr_current_pertemuan ?? $pertemuanKe);
+
+        // Load presensi records for this kelas_mata_kuliah and current pertemuan (recent first)
+        $presensis = collect();
+        if ($kelasMataKuliah) {
+            $presensiQuery = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+                ->with(['krs.mahasiswa.user'])
+                ->orderByDesc('created_at');
+
+            // Only filter by pertemuan if the column exists in DB
+            if (Schema::hasColumn('presensis', 'pertemuan')) {
+                $presensiQuery->where('pertemuan', $currentPertemuan);
+            }
+
+            $presensis = $presensiQuery->get();
         }
 
-        return view('page.dosen.kelas.absensi', compact('class_info', 'students', 'id', 'class'))->with('is_modal', false);
+        if (request()->ajax()) {
+            return view('page.dosen.kelas.partials.absensi-content', compact('class_info', 'students', 'id', 'class', 'presensis'))->with('is_modal', true);
+        }
+
+        return view('page.dosen.kelas.absensi', compact('class_info', 'students', 'id', 'class', 'presensis'))->with('is_modal', false);
     }
 
     public function detail($id)
@@ -277,20 +329,27 @@ class LecturerController extends Controller
             ->where('dosen_id', $kelas->dosen_id)
             ->first();
 
-        $students = $kelasMataKuliah ? $kelasMataKuliah->krs()
-            ->where('status', 'disetujui')
-            ->with('mahasiswa')
-            ->get()
-            ->map(function ($krs) {
-                return [
-                    'name' => $krs->mahasiswa->nama,
-                    'nim' => $krs->mahasiswa->nim,
-                    'prodi' => $krs->mahasiswa->prodi,
-                    'semester' => $krs->mahasiswa->semester,
-                    'ipk' => $krs->mahasiswa->ipk ?? 3.5,
-                    'status' => 'Aktif',
-                ];
-            })->toArray() : [];
+        $krsCollection = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+            ->where(function ($q) use ($kelasMataKuliah, $kelas) {
+                $q->where('kelas_id', $kelas->id);
+                if ($kelasMataKuliah) {
+                    $q->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
+                }
+            })->with('mahasiswa')
+            ->get();
+
+        $students = $krsCollection->map(function ($krs) {
+            $m = $krs->mahasiswa;
+            $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
+            return [
+                'name' => $userName,
+                'nim' => $m->npm ?? null,
+                'prodi' => $m->prodi ?? null,
+                'semester' => $m->semester ?? null,
+                'ipk' => $m->ipk !== null ? number_format((float)$m->ipk, 2) : '-',
+                'status' => 'Aktif',
+            ];
+        })->toArray();
 
         $class_info = [
             'name' => $kelas->mataKuliah->nama,
@@ -338,11 +397,16 @@ class LecturerController extends Controller
             return back()->with('error', 'Tidak dapat menemukan record KelasMataKuliah untuk kelas ini. Silakan buat kelas mata kuliah terlebih dahulu.');
         }
 
-        if (empty($kelasMataKuliah->qr_token)) {
-            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
-            $kelasMataKuliah->qr_enabled = true;
-            $kelasMataKuliah->save();
+        // Always generate a fresh QR token when the lecturer requests it.
+        // Do NOT enable the QR or start the expiry window here — activation must be explicit by the lecturer.
+        $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
+        $kelasMataKuliah->qr_enabled = $kelasMataKuliah->qr_enabled ?? false;
+        // If the lecturer submitted a pertemuan in the request, store it so the QR refers to that meeting
+        $requestedPertemuan = request()->input('pertemuan');
+        if ($requestedPertemuan) {
+            $kelasMataKuliah->qr_current_pertemuan = (int) $requestedPertemuan;
         }
+        $kelasMataKuliah->save();
 
         // Log and return debug info in session so UI can show whether token was created
         \Log::info('Generated QR token', ['kelas_mk_id' => $kelasMataKuliah->id, 'qr_token' => $kelasMataKuliah->qr_token]);
@@ -391,18 +455,25 @@ class LecturerController extends Controller
             ->where('dosen_id', $kelas->dosen_id)
             ->first();
 
-        $students = $kelasMataKuliah ? $kelasMataKuliah->krs()
-            ->where('status', 'disetujui')
-            ->with('mahasiswa')
-            ->get()
-            ->map(function ($krs) {
-                return [
-                    'name' => $krs->mahasiswa->nama,
-                    'nim' => $krs->mahasiswa->nim,
-                    'prodi' => $krs->mahasiswa->prodi,
-                    'status' => 'Aktif',
-                ];
-            })->toArray() : [];
+        $krsCollection = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+            ->where(function ($q) use ($kelasMataKuliah, $kelas) {
+                $q->where('kelas_id', $kelas->id);
+                if ($kelasMataKuliah) {
+                    $q->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
+                }
+            })->with('mahasiswa')
+            ->get();
+
+        $students = $krsCollection->map(function ($krs) {
+            $m = $krs->mahasiswa;
+            $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
+            return [
+                'name' => $userName,
+                'nim' => $m->npm ?? null,
+                'prodi' => $m->prodi ?? null,
+                'status' => 'Aktif',
+            ];
+        })->toArray();
 
         return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students'));
     }
@@ -438,5 +509,62 @@ class LecturerController extends Controller
         ];
 
         return view('page.dosen.kelas.materi', compact('kelas', 'meeting'));
+    }
+
+    /**
+     * Activate the QR for the class: enable it and start a 5-minute expiry window.
+     */
+    public function activateQr(Request $request, $id)
+    {
+        $kelas = Kelas::findOrFail($id);
+
+        $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where(function ($q) use ($kelas) {
+                $q->where('kode_kelas', $kelas->section)
+                    ->orWhere('kode_kelas', $kelas->section . '');
+            })->first();
+
+        if (!$kelasMataKuliah) {
+            return back()->with('error', 'Tidak dapat menemukan record kelas mata kuliah untuk mengaktifkan QR.');
+        }
+
+        // Ensure token exists
+        if (empty($kelasMataKuliah->qr_token)) {
+            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
+        }
+
+        $kelasMataKuliah->qr_enabled = true;
+        $kelasMataKuliah->qr_expires_at = Carbon::now()->addMinutes(5);
+        $kelasMataKuliah->save();
+
+        \Log::info('Activated QR token', ['kelas_mk_id' => $kelasMataKuliah->id, 'qr_token' => $kelasMataKuliah->qr_token]);
+
+        return back()->with('success', 'QR ditampilkan untuk 5 menit.');
+    }
+
+    /**
+     * Manually deactivate the QR for the class.
+     */
+    public function deactivateQr(Request $request, $id)
+    {
+        $kelas = Kelas::findOrFail($id);
+
+        $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where(function ($q) use ($kelas) {
+                $q->where('kode_kelas', $kelas->section)
+                    ->orWhere('kode_kelas', $kelas->section . '');
+            })->first();
+
+        if (! $kelasMataKuliah) {
+            return back()->with('error', 'Tidak dapat menemukan record kelas mata kuliah untuk menonaktifkan QR.');
+        }
+
+        $kelasMataKuliah->qr_enabled = false;
+        $kelasMataKuliah->qr_expires_at = null;
+        $kelasMataKuliah->save();
+
+        \Log::info('QR token manually disabled', ['kelas_mk_id' => $kelasMataKuliah->id, 'qr_token' => $kelasMataKuliah->qr_token]);
+
+        return back()->with('success', 'QR dinonaktifkan.');
     }
 }

@@ -13,18 +13,6 @@ class JadwalController extends Controller
 {
     public function index()
     {
-        // Load pending jadwals (waiting for approval)
-        $pendingJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        // Load approved jadwals (waiting for room assignment)
-        $approvedJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen', 'approvedBy'])
-            ->where('status', 'approved')
-            ->orderBy('approved_at', 'desc')
-            ->get();
-
         // Load active jadwals
         $activeJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
             ->where('status', 'active')
@@ -32,35 +20,32 @@ class JadwalController extends Controller
             ->orderBy('jam_mulai')
             ->paginate(10);
 
-        // Also fetch pending reschedule requests to show within the pending card
-        $pendingReschedules = JadwalReschedule::with(['jadwal.kelas.mataKuliah', 'dosen'])
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        // Load kelas mata kuliah for jadwal aktif display
+        // Load kelas mata kuliah for jadwal aktif display (paginated)
         $kelasMataKuliahs = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])
             ->orderBy('hari')
             ->orderBy('jam_mulai')
             ->paginate(10);
 
-        // Load pending kelas reschedules (weekly reschedule requests)
-        $pendingKelasReschedules = \App\Models\KelasReschedule::with(['kelasMataKuliah.mataKuliah', 'dosen.user'])
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        // Load approved kelas reschedules (waiting for room assignment)
-        $approvedKelasReschedules = \App\Models\KelasReschedule::with(['kelasMataKuliah.mataKuliah', 'dosen.user'])
-            ->where('status', 'approved')
-            ->orderBy('approved_at', 'desc')
+        // Load ALL kelas mata kuliah for room visualization (not paginated)
+        $allSchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user'])
+            ->whereNotNull('ruang')
+            ->whereNotNull('hari')
             ->get();
 
         // Fetch data for "Tambah Kelas Mata Kuliah Baru" form
         $mataKuliahs = MataKuliah::orderBy('nama_mk')->get();
         $dosens = \App\Models\Dosen::with('user')->get();
+        
+        // Get list of unique rooms for filter/display (from KelasMataKuliah, column 'ruang')
+        $rooms = \App\Models\KelasMataKuliah::whereNotNull('ruang')->distinct()->pluck('ruang')->sort()->values();
 
-        return view('admin.jadwal.index', compact('pendingJadwals', 'approvedJadwals', 'activeJadwals', 'pendingReschedules', 'kelasMataKuliahs', 'pendingKelasReschedules', 'approvedKelasReschedules', 'mataKuliahs', 'dosens'));
+        // Dummy room data for dropdown (R.100 - R.199)
+        $daftarRuangan = collect();
+        for ($i = 100; $i <= 199; $i++) {
+            $daftarRuangan->push('R.' . $i);
+        }
+
+        return view('admin.jadwal.index', compact('activeJadwals', 'kelasMataKuliahs', 'allSchedules', 'mataKuliahs', 'dosens', 'rooms', 'daftarRuangan'));
     }
 
     public function create()
@@ -343,5 +328,74 @@ class JadwalController extends Controller
         ]);
 
         return redirect()->route('admin.jadwal.index')->with('success', 'Kelas dan ruangan berhasil ditetapkan untuk minggu tersebut.');
+    }
+
+    /**
+     * Get dosens that teach a specific mata kuliah (API for form filtering)
+     */
+    public function getDosensByMataKuliah($mataKuliahId)
+    {
+        // Cari dosen yang memiliki mata_kuliah_id di dalam kolom JSON mata_kuliah_ids
+        // Karena DosenController menyimpan data ke kolom JSON, bukan pivot table
+        $dosens = \App\Models\Dosen::whereJsonContains('mata_kuliah_ids', (string)$mataKuliahId)
+            ->orWhereJsonContains('mata_kuliah_ids', (int)$mataKuliahId)
+            ->with('user')
+            ->get();
+
+        return response()->json($dosens->map(function($dosen) {
+            return [
+                'id' => $dosen->id,
+                'name' => $dosen->user->name ?? 'N/A',
+            ];
+        }));
+    }
+
+    /**
+     * Check room availability API (uses KelasMataKuliah model, column 'ruang')
+     */
+    public function checkRoomAvailability(Request $request)
+    {
+        $request->validate([
+            'hari' => 'required|string',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i',
+            'ruangan' => 'required|string',
+            'ignore_id' => 'nullable|integer'
+        ]);
+
+        $hari = $request->hari;
+        $mulai = $request->jam_mulai;
+        $selesai = $request->jam_selesai;
+        $ruangan = $request->ruangan;
+        $ignoreId = $request->ignore_id;
+
+        // Cek clash: (StartA < EndB) && (EndA > StartB) using KelasMataKuliah
+        $query = \App\Models\KelasMataKuliah::where('hari', $hari)
+            ->where('ruang', $ruangan)
+            ->where(function($q) use ($mulai, $selesai) {
+                $q->where('jam_mulai', '<', $selesai)
+                  ->where('jam_selesai', '>', $mulai);
+            });
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        $conflict = $query->with(['mataKuliah', 'dosen.user'])->first();
+
+        if ($conflict) {
+            return response()->json([
+                'available' => false,
+                'message' => "Ruangan $ruangan sudah terpakai oleh " . 
+                             ($conflict->dosen->user->name ?? 'Dosen') . 
+                             " (" . ($conflict->mataKuliah->nama_mk ?? '-') . ") " .
+                             "pukul " . substr($conflict->jam_mulai,0,5) . "-" . substr($conflict->jam_selesai,0,5)
+            ]);
+        }
+
+        return response()->json([
+            'available' => true,
+            'message' => 'Ruangan tersedia'
+        ]);
     }
 }

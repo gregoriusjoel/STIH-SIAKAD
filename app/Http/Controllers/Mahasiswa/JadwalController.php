@@ -28,7 +28,7 @@ class JadwalController extends Controller
             });
         }
 
-        $krsData = $krsQuery->where('status', 'disetujui')
+        $krsData = $krsQuery->whereIn('status', ['approved', 'disetujui'])
             ->where('ambil_mk', 'ya')
             ->get();
         

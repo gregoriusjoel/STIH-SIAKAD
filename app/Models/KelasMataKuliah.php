@@ -22,6 +22,8 @@ class KelasMataKuliah extends Model
         'qr_token',
         'qr_enabled',
         'qr_expires_at',
+        'meeting_count',
+        'qr_current_pertemuan',
     ];
 
     protected $casts = [

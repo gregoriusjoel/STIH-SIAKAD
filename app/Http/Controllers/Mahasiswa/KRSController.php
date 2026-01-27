@@ -126,17 +126,31 @@ class KRSController extends Controller
 
         // Build available classes (kelas) for the active KRS semester to drive calendar and optional class-level info
         $kelasQuery = \App\Models\Kelas::with(['mataKuliah', 'dosen', 'jadwals']);
+        
+        // Try to filter by tahun_ajaran and semester_type if available
+        // But if no results, fall back to getting all kelas for the allowed mata kuliah
+        $kelasQueryWithFilters = clone $kelasQuery;
         if ($krsSemester && $krsSemester->tahun_ajaran) {
-            $kelasQuery->where('tahun_ajaran', $krsSemester->tahun_ajaran);
+            $kelasQueryWithFilters->where('tahun_ajaran', $krsSemester->tahun_ajaran);
         }
         if ($krsSemester && $krsSemester->nama_semester) {
-            $kelasQuery->where('semester_type', $krsSemester->nama_semester);
+            $kelasQueryWithFilters->where('semester_type', $krsSemester->nama_semester);
         }
-        // Filter kelas to only those whose mataKuliah match the student's current semester
-        $kelasQuery->whereHas('mataKuliah', function ($q) use ($currentKodeId) {
-            $q->where('kode_id', $currentKodeId);
+        
+        // Filter kelas to only allowed semesters (current + cross semester)
+        $kelasQueryWithFilters->whereHas('mataKuliah', function ($q) use ($allowedKodeIds, $currentKodeId) {
+            $q->whereIn('kode_id', array_merge([$currentKodeId], $allowedKodeIds));
         });
-        $availableKelas = $kelasQuery->get();
+
+        $availableKelas = $kelasQueryWithFilters->get();
+        
+        // If no kelas found with strict filters, try without tahun_ajaran/semester_type filters
+        if ($availableKelas->isEmpty()) {
+            $kelasQuery->whereHas('mataKuliah', function ($q) use ($allowedKodeIds, $currentKodeId) {
+                $q->whereIn('kode_id', array_merge([$currentKodeId], $allowedKodeIds));
+            });
+            $availableKelas = $kelasQuery->get();
+        }
 
         // Calendar only needs kelas that have jadwals
         $calendarKelas = $availableKelas->filter(function ($k) {
@@ -161,7 +175,6 @@ class KRSController extends Controller
             }
         }
 
-        $maxSks = 24; // Max SKS per semester
         $statusKrs = $existingKrs->first()->status ?? null;
         $isLocked = in_array($statusKrs, ['diajukan', 'approved']);
 
@@ -211,7 +224,6 @@ class KRSController extends Controller
             'additionalMataKuliah' => $additionalMataKuliah,
             'existingKrs' => $existingKrs,
             'totalSks' => $totalSks,
-            'maxSks' => $maxSks,
             'statusKrs' => $statusKrs,
             'isLocked' => $isLocked,
             'semesterAktif' => $displaySemester,
@@ -394,10 +406,7 @@ class KRSController extends Controller
                 $totalSks += $mk->sks ?? 0;
             }
 
-            // Validate max SKS
-            if ($totalSks > 24) {
-                return back()->with('error', 'Total SKS melebihi batas maksimal (24 SKS). Anda memilih ' . $totalSks . ' SKS.');
-            }
+            // Max SKS limit removed — no server-side SKS cap enforced here
         }
 
         $currentKodeId = 'sms' . $mahasiswaSemester;
@@ -435,12 +444,25 @@ class KRSController extends Controller
             // Create new KRS entries for selected mata kuliah
             foreach ($request->mata_kuliah as $mkId => $ambil) {
                 if ($ambil === 'ya') {
-                    Krs::create([
+                    // Try to associate the KRS with an existing Kelas and KelasMataKuliah
+                    $kelasRecord = \App\Models\Kelas::where('mata_kuliah_id', $mkId)->first();
+                    $kelasMkRecord = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $mkId)->first();
+
+                    $createData = [
                         'mahasiswa_id' => $mahasiswa->id,
                         'mata_kuliah_id' => $mkId,
                         'ambil_mk' => 'ya',
                         'status' => $status,
-                    ]);
+                    ];
+
+                    if ($kelasRecord) {
+                        $createData['kelas_id'] = $kelasRecord->id;
+                    }
+                    if ($kelasMkRecord) {
+                        $createData['kelas_mata_kuliah_id'] = $kelasMkRecord->id;
+                    }
+
+                    Krs::create($createData);
                 }
             }
 

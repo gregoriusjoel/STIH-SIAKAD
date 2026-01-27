@@ -53,7 +53,7 @@
                                     <hr class="my-4 border-t border-gray-100">
                                         <div class="mt-3 flex items-center space-x-3">
                                         <a href="{{ route('admin.semester.manage') }}" class="px-6 py-3 bg-maroon text-white rounded-full hover:bg-red-900 transition flex items-center shadow-sm"><i class="fas fa-plus mr-2"></i>Set Semester Baru</a>
-                                        <a href="{{ route('admin.jadwal.index') }}" class="px-5 py-3 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition flex items-center">Lihat Kalender Akademik</a>
+                                        <a href="{{ route('admin.kalender.index') }}" class="px-5 py-3 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition flex items-center">Lihat Kalender Akademik</a>
                                     </div>
                                 @else
                                     <h3 class="text-lg font-semibold text-gray-800 mt-2">Belum ada semester aktif</h3>
@@ -202,7 +202,16 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="text-sm text-gray-700">
                                 <i class="fas fa-calendar text-gray-400 mr-1"></i>
-                                {{ $item->semester?->nama_semester ?? '-' }}
+                                @php
+                                    // Prefer semester relation on the KRS item; if not present, fall back to mahasiswa.semester numeric
+                                    $displaySemester = '-';
+                                    if (!empty($item->semester?->nama_semester)) {
+                                        $displaySemester = $item->semester->nama_semester;
+                                    } elseif (!empty($item->mahasiswa->semester)) {
+                                        $displaySemester = 'Semester ' . $item->mahasiswa->semester;
+                                    }
+                                @endphp
+                                {{ $displaySemester }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -212,20 +221,18 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
-                            @if($item->status == 'pending')
+                            @php
+                                $displayStatus = ($item->status === 'draft') ? 'Draft' : 'Sudah Isi';
+                            @endphp
+                            @if($displayStatus === 'Draft')
                                 <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                    <i class="fas fa-clock mr-1"></i>
-                                    Pending
-                                </span>
-                            @elseif($item->status == 'disetujui')
-                                <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    <i class="fas fa-check-circle mr-1"></i>
-                                    Disetujui
+                                    <i class="fas fa-edit mr-1"></i>
+                                    Draft
                                 </span>
                             @else
-                                <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                    <i class="fas fa-times-circle mr-1"></i>
-                                    Ditolak
+                                <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Sudah Isi
                                 </span>
                             @endif
                         </td>
@@ -290,9 +297,16 @@
                                 <div class="grid grid-cols-1 gap-2">
                                     <div><strong>Mahasiswa:</strong> {{ $item->mahasiswa->user->name }} (NPM: {{ $item->mahasiswa->npm }})</div>
                                     <div><strong>Mata Kuliah:</strong> {{ optional(optional($item->kelas)->mataKuliah)->nama_mk ?? '-' }}</div>
-                                    <div><strong>Semester:</strong> {{ $item->semester?->nama_semester ?? '-' }}</div>
+                                    @php
+                                        $modalSemester = $item->semester?->nama_semester ?? null;
+                                        if (!$modalSemester && !empty($item->mahasiswa->semester)) {
+                                            $modalSemester = 'Semester ' . $item->mahasiswa->semester;
+                                        }
+                                    @endphp
+                                    <div><strong>Semester:</strong> {{ $modalSemester ?? '-' }}</div>
                                     <div><strong>SKS:</strong> {{ optional(optional($item->kelas)->mataKuliah)->sks ?? '-' }}</div>
-                                    <div><strong>Status:</strong> {{ ucfirst($item->status) }}</div>
+                                    @php $displayStatusModal = ($item->status === 'draft') ? 'Draft' : 'Sudah Isi'; @endphp
+                                    <div><strong>Status:</strong> {{ $displayStatusModal }}</div>
                                 </div>
                             </div>
                             <div class="px-6 py-4 bg-gray-50 flex justify-end">

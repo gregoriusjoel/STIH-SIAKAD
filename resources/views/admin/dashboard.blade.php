@@ -141,23 +141,26 @@
                             </div>
                             <div class="flex-1">
                                 <h4 class="font-semibold text-gray-800">{{ $krs->mahasiswa->user->name }}</h4>
-                                <p class="text-sm text-gray-600">{{ optional(optional($krs->kelas)->mataKuliah)->nama_mk ?? '-' }}</p>
+                                <p class="text-sm text-gray-600">NPM: {{ $krs->mahasiswa->npm ?? '-' }} • Prodi: {{ $krs->mahasiswa->prodi ?? '-' }}</p>
                                 <p class="text-xs text-gray-500 mt-1">
                                     <i class="fas fa-calendar mr-1"></i>
                                     {{ $krs->created_at->format('d M Y H:i') }}
                                 </p>
                             </div>
-                            <div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-700 font-semibold">
+                                    {{ optional(optional($krs->kelas)->mataKuliah)->sks ?? optional($krs->mataKuliah)->sks ?? '-' }} SKS
+                                </p>
                                 @if($krs->status == 'pending')
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 inline-block mt-2">
                                         <i class="fas fa-clock mr-1"></i>Pending
                                     </span>
                                 @elseif($krs->status == 'disetujui')
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                        <i class="fas fa-check-circle mr-1"></i>Disetujui
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 inline-block mt-2">
+                                        <i class="fas fa-check-circle mr-1"></i>Sudah di ambil
                                     </span>
                                 @else
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 inline-block mt-2">
                                         <i class="fas fa-times-circle mr-1"></i>Ditolak
                                     </span>
                                 @endif

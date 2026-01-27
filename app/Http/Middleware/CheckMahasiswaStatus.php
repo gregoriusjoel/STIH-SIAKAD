@@ -34,6 +34,44 @@ class CheckMahasiswaStatus
                         ->with('warning', 'Anda harus mengaktifkan akun terlebih dahulu');
                 }
             }
+
+            // If mahasiswa is new (semester 1) and hasn't completed the new-student survey,
+            // redirect to the survey page (except when already on survey routes or activation/profile routes)
+            if ((int)$mahasiswa->semester === 1 && empty($mahasiswa->new_survey_completed)) {
+                $allowedSurveyRoutes = [
+                    'mahasiswa.survey_new.index',
+                    'mahasiswa.survey_new.store',
+                    'mahasiswa.aktivasi.index',
+                    'mahasiswa.aktivasi.store',
+                    'mahasiswa.profil.manajemen',
+                    'mahasiswa.profil.update',
+                ];
+
+                $currentRoute = $request->route() ? $request->route()->getName() : null;
+                if (!in_array($currentRoute, $allowedSurveyRoutes)) {
+                    return redirect()->route('mahasiswa.survey_new.index')
+                        ->with('warning', 'Harap isi kuesioner singkat untuk mahasiswa baru terlebih dahulu.');
+                }
+            }
+
+            // Check if profile is complete
+            // Allow access to: dashboard, profil.index, profil.manajemen, profil.update
+            $allowedRoutes = [
+                'mahasiswa.dashboard',
+                'mahasiswa.profil.index',
+                'mahasiswa.profil.manajemen',
+                'mahasiswa.profil.update',
+                'mahasiswa.profil.update-password',
+            ];
+            
+            if (!$mahasiswa->isProfileComplete()) {
+                $currentRoute = $request->route()->getName();
+                
+                if (!in_array($currentRoute, $allowedRoutes)) {
+                    return redirect()->route('mahasiswa.profil.manajemen')
+                        ->with('warning', 'Lengkapi data profil Anda terlebih dahulu sebelum mengakses fitur lainnya.');
+                }
+            }
         }
         
         return $next($request);

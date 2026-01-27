@@ -4,9 +4,41 @@
 @section('page-title', 'Profile Mahasiswa')
 
 @section('content')
+@php
+    $isLocked = $mahasiswa->isProfileComplete();
+@endphp
+
+{{-- Flash Warning Message (from redirect) --}}
+@if(session('warning'))
+<div class="bg-orange-50 border-l-4 border-orange-500 p-4 mb-6 rounded-md">
+    <div class="flex items-center">
+        <i class="fas fa-exclamation-circle text-orange-600 mr-3"></i>
+        <p class="text-sm text-orange-800 font-medium">{{ session('warning') }}</p>
+    </div>
+</div>
+@endif
+
+@if($isLocked)
+<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-md">
+    <div class="flex items-center">
+        <i class="fas fa-lock text-yellow-600 mr-3"></i>
+        <p class="text-sm text-yellow-800 font-medium">Data profil Anda sudah lengkap dan terkunci. Anda hanya dapat melihat data tanpa melakukan perubahan.</p>
+    </div>
+</div>
+@else
+{{-- Profile Completion Progress --}}
+<div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-md">
+    <div class="flex items-center">
+        <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+        <p class="text-sm text-blue-800 font-medium">Lengkapi semua data profil (Akademik, Data Pribadi, Orang Tua, dan Asal Sekolah) untuk mengakses fitur lainnya.</p>
+    </div>
+</div>
+@endif
+
+
 <div class="bg-white rounded-lg shadow-sm p-8" x-data="{ 
     activeTab: 'akademik', 
-    photoPreview: '{{ $mahasiswa->foto ? asset('storage/' . $mahasiswa->foto) : '' }}' 
+    photoPreview: '{{ $mahasiswa->foto ? asset("storage/" . $mahasiswa->foto) : "" }}' 
 }">
 
     {{-- Tabs Header --}}
@@ -517,9 +549,16 @@
 
         {{-- Actions --}}
         <div class="mt-10 pt-6 border-t border-gray-100 flex items-center gap-4">
-            <button type="submit" class="px-8 py-2.5 font-semibold rounded-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 text-sm" style="background-color: #8B1538; color: #ffffff;" onmouseover="this.style.backgroundColor='#6D1029'" onmouseout="this.style.backgroundColor='#8B1538'">
-                <i class="fas fa-save mr-2"></i> Update
-            </button>
+            @if(!$isLocked)
+                <button type="submit" class="px-8 py-2.5 font-semibold rounded-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 text-sm" style="background-color: #8B1538; color: #ffffff;" onmouseover="this.style.backgroundColor='#6D1029'" onmouseout="this.style.backgroundColor='#8B1538'">
+                    <i class="fas fa-save mr-2"></i> Update
+                </button>
+            @else
+                <div class="flex items-center gap-2 px-8 py-2.5 bg-gray-100 text-gray-500 rounded-full text-sm">
+                    <i class="fas fa-lock"></i>
+                    <span>Data Terkunci</span>
+                </div>
+            @endif
             <a href="{{ route('mahasiswa.profil.index') }}" class="inline-flex items-center px-8 py-2.5 font-semibold rounded-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 text-sm" style="background-color: #dc2626; color: #ffffff;">
                 <i class="fas fa-times mr-2"></i> Batal
             </a>
@@ -527,4 +566,20 @@
 
     </form>
 </div>
+
+@if($isLocked)
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Disable all input, select, and textarea fields
+        const form = document.querySelector('form');
+        if (form) {
+            const fields = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
+            fields.forEach(field => {
+                field.disabled = true;
+                field.classList.add('bg-gray-50', 'cursor-not-allowed');
+            });
+        }
+    });
+</script>
+@endif
 @endsection

@@ -1,0 +1,2 @@
+_HiStOrY_V2_
+'PHP'DB::table('krs')->where('status',\040'approved')->update(['status'\040=>\040'disetujui']);

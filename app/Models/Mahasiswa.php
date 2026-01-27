@@ -114,4 +114,65 @@ class Mahasiswa extends Model
     {
         return $this->belongsToMany(Dosen::class, 'dosen_pa', 'mahasiswa_id', 'dosen_id')->withTimestamps();
     }
+
+    /**
+     * Check if the student profile is complete
+     * Profile is complete when all required fields are filled
+     */
+    public function isProfileComplete(): bool
+    {
+        // Check mahasiswa personal data
+        $requiredMahasiswaFields = [
+            'no_hp',
+            'alamat',
+            'tempat_lahir',
+            'tanggal_lahir',
+            'jenis_kelamin',
+            'agama',
+            'status_sipil',
+            'kota',
+            'propinsi',
+            'negara',
+            'jenis_sekolah',
+            'jurusan_sekolah',
+            'tahun_lulus',
+            'nilai_kelulusan',
+        ];
+
+        foreach ($requiredMahasiswaFields as $field) {
+            if (empty($this->$field)) {
+                return false;
+            }
+        }
+
+        // Check if parent data exists and is complete
+        $parent = $this->parents()->first();
+        if (!$parent) {
+            return false;
+        }
+
+        $requiredParentFields = [
+            'nama_ayah',
+            'pendidikan_ayah',
+            'pekerjaan_ayah',
+            'agama_ayah',
+            'nama_ibu',
+            'pendidikan_ibu',
+            'pekerjaan_ibu',
+            'agama_ibu',
+            'alamat_ortu',
+            'kota_ortu',
+            'propinsi_ortu',
+            'negara_ortu',
+            'handphone_ortu',
+        ];
+
+        foreach ($requiredParentFields as $field) {
+            if (empty($parent->$field)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

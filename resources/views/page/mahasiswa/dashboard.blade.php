@@ -23,20 +23,50 @@
 @endpush
 
 @section('content')
+@php
+    $isProfileComplete = $mahasiswa->isProfileComplete();
+@endphp
 <div class="max-w-7xl mx-auto space-y-6">
     
+    {{-- Profile Incomplete Warning --}}
+    @if(!$isProfileComplete)
+    <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+        <div class="flex items-start gap-4">
+            <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+            <div class="flex-1">
+                <h4 class="font-bold text-red-900 mb-2">Profil Belum Lengkap!</h4>
+                <p class="text-sm text-red-800 mb-3">
+                    Anda harus melengkapi data profil terlebih dahulu untuk dapat mengakses fitur KRS, Nilai, Jadwal, dan fitur lainnya.
+                </p>
+                <a href="{{ route('mahasiswa.profil.manajemen') }}" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-semibold">
+                    <i class="fas fa-user-edit mr-2"></i>
+                    Lengkapi Profil Sekarang
+                </a>
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- Welcome Card --}}
     <div class="bg-gradient-to-r from-maroon to-maroon-hover rounded-xl shadow-lg text-white p-8">
         <div class="flex items-center gap-6">
-            <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold">
-                {{ strtoupper(substr($mahasiswa->user->name ?? 'M', 0, 1)) }}
+            <div class="w-20 h-20 rounded-full overflow-hidden bg-white/20 flex items-center justify-center text-3xl font-bold">
+                @if(!empty($mahasiswa->foto))
+                    <img src="{{ asset('storage/' . $mahasiswa->foto) }}" alt="Foto {{ $mahasiswa->user->name }}" class="w-full h-full object-cover">
+                @else
+                    <span class="text-white">{{ strtoupper(substr($mahasiswa->user->name ?? 'M', 0, 1)) }}</span>
+                @endif
             </div>
             <div class="flex-1">
                 <h1 class="text-3xl font-bold mb-2">Selamat Datang, {{ $mahasiswa->user->name ?? 'Mahasiswa' }}!</h1>
+                @php
+                    $studentSemester = $mahasiswa->semester ?? $mahasiswa->getCurrentSemester();
+                @endphp
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div><span class="opacity-80">NPM:</span> <span class="font-semibold">{{ $mahasiswa->npm }}</span></div>
                     <div><span class="opacity-80">Prodi:</span> <span class="font-semibold">{{ $mahasiswa->prodi ?? 'Hukum' }}</span></div>
                     <div><span class="opacity-80">Angkatan:</span> <span class="font-semibold">{{ $mahasiswa->angkatan ?? '2023' }}</span></div>
+                    <div class="mt-1"><span class="opacity-80">Semester:</span> <span class="font-semibold">{{ $studentSemester }}</span></div>
                     <div>
                         <span class="opacity-80">Status:</span> 
                         <span class="px-2 py-1 rounded-full text-xs font-bold ml-1 {{ $mahasiswa->status === 'aktif' ? 'bg-green-400 text-green-900' : 'bg-yellow-400 text-yellow-900' }}">
@@ -82,8 +112,14 @@
         <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
             <i class="fas fa-bolt text-maroon mr-3"></i>
             Akses Cepat
+            @if(!$isProfileComplete)
+            <span class="ml-3 text-xs font-normal text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                <i class="fas fa-lock mr-1"></i> Lengkapi profil untuk mengaktifkan
+            </span>
+            @endif
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            @if($isProfileComplete)
             <a href="{{ route('mahasiswa.krs.index') }}" class="flex items-center gap-4 p-4 border-2 border-maroon rounded-lg hover:bg-maroon-light transition group">
                 <div class="w-12 h-12 bg-maroon rounded-lg flex items-center justify-center group-hover:scale-110 transition">
                     <i class="fas fa-clipboard-list text-white text-xl"></i>
@@ -93,7 +129,19 @@
                     <div class="text-sm text-gray-600">Status: {{ $krsStatus }}</div>
                 </div>
             </a>
+            @else
+            <div class="flex items-center gap-4 p-4 border-2 border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed opacity-60">
+                <div class="w-12 h-12 bg-gray-400 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-clipboard-list text-white text-xl"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-gray-500">Isi KRS</div>
+                    <div class="text-sm text-gray-400"><i class="fas fa-lock mr-1"></i> Profil belum lengkap</div>
+                </div>
+            </div>
+            @endif
 
+            @if($isProfileComplete)
             <a href="{{ route('mahasiswa.nilai.index') }}" class="flex items-center gap-4 p-4 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition group">
                 <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
                     <i class="fas fa-graduation-cap text-white text-xl"></i>
@@ -103,7 +151,19 @@
                     <div class="text-sm text-gray-600">IPK: {{ number_format($ipk, 2) }}</div>
                 </div>
             </a>
+            @else
+            <div class="flex items-center gap-4 p-4 border-2 border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed opacity-60">
+                <div class="w-12 h-12 bg-gray-400 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-white text-xl"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-gray-500">Lihat Nilai</div>
+                    <div class="text-sm text-gray-400"><i class="fas fa-lock mr-1"></i> Profil belum lengkap</div>
+                </div>
+            </div>
+            @endif
 
+            @if($isProfileComplete)
             <a href="{{ route('mahasiswa.jadwal.index') }}" class="flex items-center gap-4 p-4 border-2 border-green-500 rounded-lg hover:bg-green-50 transition group">
                 <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
                     <i class="fas fa-calendar-alt text-white text-xl"></i>
@@ -113,6 +173,17 @@
                     <div class="text-sm text-gray-600">Semester Ini</div>
                 </div>
             </a>
+            @else
+            <div class="flex items-center gap-4 p-4 border-2 border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed opacity-60">
+                <div class="w-12 h-12 bg-gray-400 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-white text-xl"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-gray-500">Jadwal Kuliah</div>
+                    <div class="text-sm text-gray-400"><i class="fas fa-lock mr-1"></i> Profil belum lengkap</div>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 

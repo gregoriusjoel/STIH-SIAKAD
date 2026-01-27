@@ -8,7 +8,7 @@
                 <span class="material-symbols-outlined">school</span>
             </div>
             <div class="flex flex-col">
-                <h1 class="text-[#111218] dark:text-white text-base font-bold leading-tight">SIAKAD Uni</h1>
+                <h1 class="text-[#111218] dark:text-white text-base font-bold leading-tight">STIH</h1>
                 <p class="text-[#616889] dark:text-slate-400 text-xs font-normal">Lecturer Portal</p>
             </div>
         </div>

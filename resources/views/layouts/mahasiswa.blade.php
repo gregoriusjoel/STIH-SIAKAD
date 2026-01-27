@@ -43,9 +43,9 @@
             transform: translateX(2px);
         }
 
-        /* Custom Scrollbar */
+        /* Custom Scrollbar - Small/Thin */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 4px;
         }
 
         ::-webkit-scrollbar-track {
@@ -87,7 +87,10 @@
                 </div>
 
                 <!-- Navigation -->
-                <nav class="flex flex-col gap-1 grow">
+                <nav class="flex flex-col gap-1 grow" x-data="{ 
+                        openAkademik: {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'true' : 'false' }},
+                        openPengajuan: {{ Request::routeIs('mahasiswa.pengajuan*') ? 'true' : 'false' }} 
+                    }">
                     <a class="{{ Request::routeIs('mahasiswa.dashboard') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
                         href="{{ route('mahasiswa.dashboard') }}">
                         <i class="fas fa-home text-lg w-5"></i>
@@ -106,17 +109,79 @@
                         <span class="text-sm font-medium">KRS</span>
                     </a>
 
-                    <a class="{{ Request::routeIs('mahasiswa.nilai*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
-                        href="{{ route('mahasiswa.nilai.index') }}">
-                        <i class="fas fa-chart-line text-lg w-5"></i>
-                        <span class="text-sm font-medium">Akademik</span>
-                    </a>
+                    <!-- Akademik Dropdown -->
+                    <div>
+                        <button @click="openAkademik = !openAkademik"
+                            class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-gray-600 hover:bg-red-50 hover:text-maroon transition-colors group {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'bg-red-50 text-maroon' : '' }}">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-graduation-cap text-lg w-5 group-hover:text-maroon"></i>
+                                <span class="text-sm font-medium">Akademik</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs transition-transform duration-200"
+                                :class="{'rotate-180': openAkademik}"></i>
+                        </button>
 
-                    <a class="{{ Request::routeIs('mahasiswa.jadwal*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
-                        href="{{ route('mahasiswa.jadwal.index') }}">
-                        <i class="fas fa-calendar-alt text-lg w-5"></i>
-                        <span class="text-sm font-medium">Jadwal Kuliah</span>
-                    </a>
+                        <!-- Dropdown Content -->
+                        <div x-show="openAkademik" x-collapse class="bg-gray-50/50 rounded-b-lg mb-2">
+                            <a class="{{ Request::routeIs('mahasiswa.nilai.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
+                                href="{{ route('mahasiswa.nilai.index') }}">
+                                <i class="fas fa-chart-bar w-4 text-center text-xs opacity-70"></i>
+                                <span>Kartu Hasil Studi</span>
+                            </a>
+                            <a class="{{ Request::routeIs('mahasiswa.jadwal.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
+                                href="{{ route('mahasiswa.jadwal.index') }}">
+                                <i class="fas fa-calendar-alt w-4 text-center text-xs opacity-70"></i>
+                                <span>Jadwal Kelas</span>
+                            </a>
+                            <a class="{{ Request::routeIs('mahasiswa.kelas.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
+                                href="{{ route('mahasiswa.kelas.index') }}">
+                                <i class="fas fa-laptop-code w-4 text-center text-xs opacity-70"></i>
+                                <span>E-Learning</span>
+                            </a>
+                            <a class="{{ Request::routeIs('mahasiswa.perpustakaan.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
+                                href="{{ route('mahasiswa.perpustakaan.index') }}">
+                                <i class="fas fa-book w-4 text-center text-xs opacity-70"></i>
+                                <span>Perpustakaan</span>
+                            </a>
+                            <a class="{{ Request::routeIs('mahasiswa.prestasi.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
+                                href="{{ route('mahasiswa.prestasi.index') }}">
+                                <i class="fas fa-trophy w-4 text-center text-xs opacity-70"></i>
+                                <span>Prestasi Mahasiswa</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Pengajuan Dropdown -->
+                    <div>
+                        <button @click="openPengajuan = !openPengajuan"
+                            class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-gray-600 hover:bg-red-50 hover:text-maroon transition-colors group {{ Request::routeIs('mahasiswa.pengajuan*') ? 'bg-red-50 text-maroon' : '' }}">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-file-signature text-lg w-5 group-hover:text-maroon"></i>
+                                <span class="text-sm font-medium">Pengajuan</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs transition-transform duration-200"
+                                :class="{'rotate-180': openPengajuan}"></i>
+                        </button>
+
+                        <!-- Dropdown Content -->
+                        <div x-show="openPengajuan" x-collapse class="bg-gray-50/50 rounded-b-lg mb-2">
+                            <a class="{{ Request::routeIs('mahasiswa.pengajuan.sidang.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
+                                href="{{ route('mahasiswa.pengajuan.sidang.index') }}">
+                                <i class="fas fa-gavel w-4 text-center text-xs opacity-70"></i>
+                                <span>Pengajuan Sidang</span>
+                            </a>
+                            <a class="{{ Request::routeIs('mahasiswa.pengajuan.surat.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
+                                href="{{ route('mahasiswa.pengajuan.surat.index') }}">
+                                <i class="fas fa-envelope-open-text w-4 text-center text-xs opacity-70"></i>
+                                <span>Pengajuan Surat</span>
+                            </a>
+                            <a class="{{ Request::routeIs('mahasiswa.pengajuan.yudisium.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
+                                href="{{ route('mahasiswa.pengajuan.yudisium.index') }}">
+                                <i class="fas fa-user-graduate w-4 text-center text-xs opacity-70"></i>
+                                <span>Pengajuan Yudisium</span>
+                            </a>
+                        </div>
+                    </div>
 
                     <a class="{{ Request::routeIs('mahasiswa.pembayaran*') ? 'active-nav' : 'sidebar-link text-gray-600' }} flex items-center gap-3 px-4 py-3 rounded-lg"
                         href="{{ route('mahasiswa.pembayaran.index') }}">
@@ -140,6 +205,7 @@
                         </button>
                     </form>
                 </nav>
+
             </div>
         </aside>
 

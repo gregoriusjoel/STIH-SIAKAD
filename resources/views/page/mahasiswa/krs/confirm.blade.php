@@ -74,7 +74,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
-                    <a href="{{ route('mahasiswa.krs.index') }}" class="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-yellow-600 hover:bg-yellow-700 md:py-4 md:text-lg transition-colors shadow-md">
+                    <a href="{{ route('mahasiswa.krs.index') }}" class="flex items-center justify-center px-6 py-3 border border- bg-maroon text-base font-medium rounded-lg text-white bg-yellow-600 hover:bg-yellow-700 md:py-4 md:text-lg transition-colors shadow-md">
                         Lanjutkan Pengisian
                     </a>
                     <a href="{{ route('mahasiswa.dashboard') }}" class="flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-gray-100 hover:bg-gray-200 md:py-4 md:text-lg transition-colors">

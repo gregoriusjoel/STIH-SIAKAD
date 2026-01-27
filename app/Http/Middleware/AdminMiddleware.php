@@ -19,7 +19,12 @@ class AdminMiddleware
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu');
         }
 
-        if (auth()->user()->role !== 'admin') {
+        $user = auth()->user();
+        // Prefer model helper if available
+        $isAdmin = method_exists($user, 'isAdmin') ? $user->isAdmin() : ($user->role === 'admin');
+
+        if (! $isAdmin) {
+            \Log::warning('AdminMiddleware denied access', ['user_id' => $user->id ?? null, 'role' => $user->role ?? null, 'url' => $request->fullUrl()]);
             abort(403, 'Unauthorized access');
         }
 

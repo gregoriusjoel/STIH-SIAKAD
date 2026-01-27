@@ -48,9 +48,23 @@
                 <div id="qrCard" class="bg-white rounded-xl border border-gray-200 p-6 text-center">
                     <h4 class="text-sm font-bold text-[#8B1538] mb-4">QR Code Absensi</h4>
                     <div id="qrWrap" class="inline-block p-6 bg-white border rounded-lg shadow-sm">
-                        @php $token = $class['qr_token'] ?? ($class->qr_token ?? null); @endphp
+                        @php
+                            $token = $class['qr_token'] ?? ($class->qr_token ?? null);
+                            $qrEnabled = $class['qr_enabled'] ?? false;
+                            $qrExpires = $class['qr_expires_at'] ?? null;
+                        @endphp
+
                         @if($token)
-                            <img id="generatedQr" src="{{ route('qrcode.kelas.image', $token) }}" alt="QR Kelas" width="180" height="180" />
+                            @if($qrEnabled)
+                                <img id="generatedQr" src="{{ route('qrcode.kelas.image', $token) }}" alt="QR Kelas" width="180" height="180" />
+                                @if($qrExpires)
+                                        <div id="qrExpiryText" class="text-xs text-gray-500 mt-2">Berakhir: {{ \Illuminate\Support\Carbon::parse($qrExpires)->locale('id')->isoFormat('H:mm, D MMM') }}<span id="qrCountdown"></span></div>
+                                @endif
+                                        <div id="qrExpiryText" class="text-xs text-gray-500 mt-2"></div>
+                                <div class="w-44 h-44 flex items-center justify-center border rounded bg-gray-50">
+                                    <div class="text-sm text-gray-500">QR aktif</div>
+                                </div>
+                            @endif
                         @else
                             <div class="w-44 h-44 flex items-center justify-center border rounded bg-gray-50">
                                 <div class="text-sm text-gray-500">QR belum dibuat</div>
@@ -62,10 +76,25 @@
 
                     <div class="mt-4 flex items-center justify-center gap-3">
                         @if($token)
-                            <a id="downloadBtn" href="{{ route('qrcode.kelas.image', $token) }}" class="px-3 py-2 rounded-md bg-green-600 text-white text-sm" download>Download QR</a>
+                            @if($qrEnabled)
+                                <div class="flex items-center gap-2">
+                                    <a id="downloadBtn" href="{{ route('qrcode.kelas.image', $token) }}" class="px-3 py-2 rounded-md bg-green-600 text-white text-sm" download>Download QR</a>
+                                        <form id="deactivateForm" action="{{ route('dosen.kelas.deactivate_qr', ['id' => $id]) }}" method="POST" onsubmit="return confirm('Nonaktifkan QR sekarang?');">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-2 rounded-md bg-red-600 text-white text-sm">Nonaktifkan QR</button>
+                                    </form>
+                                </div>
+                            @else
+                                    <form id="activateForm" action="{{ route('dosen.kelas.activate_qr', ['id' => $id]) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="pertemuan" value="{{ request('pertemuan', $class_info['pertemuan'] ?? 1) }}">
+                                    <button type="submit" class="px-4 py-2 rounded-md text-white text-sm bg-green-600">Tampilkan QR (5 menit)</button>
+                                </form>
+                            @endif
                         @else
                             <form action="{{ route('dosen.kelas.generate_qr', ['id' => $id]) }}" method="POST">
                                 @csrf
+                                <input type="hidden" name="pertemuan" value="{{ request('pertemuan', $class_info['pertemuan'] ?? 1) }}">
                                 <button type="submit" class="px-4 py-2 rounded-md text-white text-sm bg-green-600">Buat QR</button>
                             </form>
                         @endif
@@ -108,10 +137,24 @@
                                 </tr>
                             </thead>
                             <tbody class="text-gray-700">
-                                <!-- Dummy empty state -->
-                                <tr>
-                                    <td colspan="6" class="px-4 py-8 text-center text-gray-400">Belum ada peserta yang mengisi absensi.</td>
-                                </tr>
+                                @if(!empty($presensis) && count($presensis) > 0)
+                                    @foreach($presensis as $index => $p)
+                                        <tr>
+                                            <td class="px-4 py-4">{{ $index + 1 }}</td>
+                                            <td class="px-4 py-4">
+                                                {{ $p->nama ?? ($p->krs->mahasiswa->user->name ?? ($p->krs->mahasiswa->nama ?? '-')) }}
+                                            </td>
+                                            <td class="px-4 py-4">{{ $p->krs?->kelas?->section ?? ($class_info['section'] ?? '-') }}</td>
+                                            <td class="px-4 py-4">{{ $p->kontak ?? '-' }}</td>
+                                            <td class="px-4 py-4">{{ optional($p->waktu ?? $p->tanggal)->format('d M Y H:i') ?? (optional($p->tanggal)->format('d M Y') ?? '-') }}</td>
+                                            <td class="px-4 py-4">-</td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="6" class="px-4 py-8 text-center text-gray-400">Belum ada peserta yang mengisi absensi.</td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -200,6 +243,61 @@
             }
 
             updateUI();
+        })();
+    </script>
+    <script>
+        (function(){
+            const qrEnabled = {!! json_encode($class['qr_enabled'] ?? false) !!};
+            const qrExpiresRaw = {!! json_encode($class['qr_expires_at'] ?? null) !!};
+            const deactivateUrl = "{{ route('dosen.kelas.deactivate_qr', ['id' => $id]) }}";
+
+            const generatedQr = document.getElementById('generatedQr');
+            const qrExpiryText = document.getElementById('qrExpiryText');
+            const qrCountdown = document.getElementById('qrCountdown');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const activateForm = document.getElementById('activateForm');
+            const deactivateForm = document.getElementById('deactivateForm');
+
+            function setDisabledUI() {
+                const wrap = document.getElementById('qrWrap');
+                if (wrap) {
+                    wrap.innerHTML = '<div class="w-44 h-44 flex items-center justify-center border rounded bg-gray-50"><div class="text-sm text-gray-500">QR tidak aktif</div></div>';
+                }
+                if (downloadBtn) downloadBtn.classList.add('hidden');
+                if (deactivateForm) deactivateForm.remove();
+                if (activateForm) activateForm.classList.remove('hidden');
+                if (qrExpiryText) qrExpiryText.textContent = '';
+            }
+
+            if (qrEnabled && qrExpiresRaw) {
+                const expiresAt = new Date(qrExpiresRaw);
+                function tick() {
+                    const now = new Date();
+                    const diff = expiresAt - now;
+                    if (diff <= 0) {
+                        clearInterval(timer);
+                        // persist server-side deactivation, then update UI
+                        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                        fetch(deactivateUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrf,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({})
+                        }).catch(()=>{}).finally(()=>{
+                            setDisabledUI();
+                        });
+                        return;
+                    }
+                    const mm = Math.floor(diff/60000);
+                    const ss = Math.floor((diff%60000)/1000);
+                    if (qrCountdown) qrCountdown.textContent = ' ('+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0')+')';
+                }
+                tick();
+                const timer = setInterval(tick, 1000);
+            }
         })();
     </script>
 @endpush

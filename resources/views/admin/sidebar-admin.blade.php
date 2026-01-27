@@ -12,7 +12,7 @@
         /* Increase link text and icon sizing */
         .sidebar .sidebar-link { color: #374151; font-size: 1rem; }
         .sidebar .sidebar-link i { width: 1.25rem; font-size: 1.05rem; margin-right: 0.6rem; }
-        .sidebar .sidebar-link:hover { background-color: rgba(139,21,56,0.06); color: #7a1621; }
+        .sidebar .sidebar-link:not(.active):hover { background-color: rgba(139,21,56,0.06); color: #7a1621; }
         .sidebar-link.active { background-color: #7a1621; color: #ffffff !important; }
         .sidebar .section-toggle { color: #6b1620; font-size: 0.95rem; }
         .rotate-180 { transform: rotate(180deg); }

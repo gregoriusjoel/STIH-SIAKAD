@@ -18,7 +18,7 @@
             /* maroon */
         }
 
-        .sidebar-link:hover {
+        .sidebar-link:not(.active):hover {
             background-color: rgba(255, 255, 255, 0.06);
         }
 

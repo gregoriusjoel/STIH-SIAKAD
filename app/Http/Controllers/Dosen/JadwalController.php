@@ -97,6 +97,29 @@ class JadwalController extends Controller
         
         // For backward compatibility
         $activeJadwals = $kelasMataKuliahs;
+
+        // Dummy room data for dropdown (R.100 - R.199)
+        $daftarRuangan = collect();
+        for ($i = 100; $i <= 199; $i++) {
+            $daftarRuangan->push('R.' . $i);
+        }
+
+        // Get all schedules for room availability checking
+        $allSchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user'])
+            ->whereNotNull('ruang')
+            ->whereNotNull('hari')
+            ->get()
+            ->map(function($s) {
+                return [
+                    'id' => $s->id,
+                    'hari' => $s->hari,
+                    'ruang' => $s->ruang,
+                    'jam_mulai' => substr($s->jam_mulai, 0, 5),
+                    'jam_selesai' => substr($s->jam_selesai, 0, 5),
+                    'mk' => $s->mataKuliah->nama_mk ?? '',
+                    'dosen' => $s->dosen->user->name ?? ''
+                ];
+            });
         
         return view('page.dosen.jadwal.index', compact(
             'schedulesByDay', 
@@ -107,7 +130,9 @@ class JadwalController extends Controller
             'currentWeekStart',
             'kelasMataKuliahs', 
             'rejectedReschedules',
-            'pendingReschedules'
+            'pendingReschedules',
+            'daftarRuangan',
+            'allSchedules'
         ));
     }
 
@@ -190,10 +215,9 @@ class JadwalController extends Controller
         return redirect()->route('dosen.jadwal')->with('success', 'Permintaan reschedule telah dikirim. Menunggu approval dari admin.');
     }
 
-    // Note: Creation/pending submission features removed per request.
-
     /**
-     * Submit a reschedule request for a kelas mata kuliah (weekly)
+     * Direct reschedule for a kelas mata kuliah (no approval needed)
+     * Directly updates the schedule if no room conflict exists
      */
     public function kelasReschedule(Request $request)
     {
@@ -202,7 +226,7 @@ class JadwalController extends Controller
             'new_hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'new_jam_mulai' => 'required|date_format:H:i',
             'new_jam_selesai' => 'required|date_format:H:i|after:new_jam_mulai',
-            'catatan_dosen' => 'required|string|max:1000',
+            'new_ruang' => 'required|string|max:50',
             'week_offset' => 'nullable|integer|min:0',
         ]);
 
@@ -220,40 +244,34 @@ class JadwalController extends Controller
             return redirect()->back()->withErrors('Anda tidak memiliki izin untuk mereschedule kelas ini.');
         }
 
-        // Get week offset from request (default 0 = current week)
-        $weekOffset = (int) $request->input('week_offset', 0);
-
-        // Calculate the target week based on offset (Monday to Saturday)
-        $weekStart = Carbon::today()->startOfWeek(Carbon::MONDAY)->addWeeks($weekOffset);
-        $weekEnd = $weekStart->copy()->addDays(5); // Saturday
-
-        // Check if there's already a pending reschedule for this week
-        $existingReschedule = \App\Models\KelasReschedule::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
-            ->where('week_start', $weekStart->toDateString())
-            ->whereIn('status', ['pending', 'approved', 'room_assigned'])
+        // Check for room conflict (same day, same room, overlapping time)
+        $conflict = \App\Models\KelasMataKuliah::where('id', '!=', $kelasMataKuliah->id)
+            ->where('hari', $request->new_hari)
+            ->where('ruang', $request->new_ruang)
+            ->where(function($q) use ($request) {
+                $q->where('jam_mulai', '<', $request->new_jam_selesai)
+                  ->where('jam_selesai', '>', $request->new_jam_mulai);
+            })
+            ->with(['mataKuliah', 'dosen.user'])
             ->first();
 
-        if ($existingReschedule) {
-            $weekName = $weekStart->format('d M') . ' - ' . $weekEnd->format('d M Y');
-            return redirect()->back()->withErrors("Sudah ada permintaan reschedule untuk minggu tersebut ({$weekName}).");
+        if ($conflict) {
+            $conflictInfo = ($conflict->dosen->user->name ?? 'Dosen lain') . 
+                           ' (' . ($conflict->mataKuliah->nama_mk ?? '-') . ') ' .
+                           'pukul ' . substr($conflict->jam_mulai, 0, 5) . '-' . substr($conflict->jam_selesai, 0, 5);
+            return redirect()->back()->withErrors("Ruangan {$request->new_ruang} sudah terpakai oleh {$conflictInfo}. Silakan pilih ruangan atau waktu lain.");
         }
 
-        \App\Models\KelasReschedule::create([
-            'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
-            'dosen_id' => $dosen->id,
-            'old_hari' => $kelasMataKuliah->hari,
-            'old_jam_mulai' => $kelasMataKuliah->jam_mulai,
-            'old_jam_selesai' => $kelasMataKuliah->jam_selesai,
-            'new_hari' => $request->new_hari,
-            'new_jam_mulai' => $request->new_jam_mulai,
-            'new_jam_selesai' => $request->new_jam_selesai,
-            'week_start' => $weekStart->toDateString(),
-            'week_end' => $weekEnd->toDateString(),
-            'catatan_dosen' => $request->catatan_dosen,
-            'status' => 'pending',
+        // Directly update the kelas mata kuliah
+        $kelasMataKuliah->update([
+            'hari' => $request->new_hari,
+            'jam_mulai' => $request->new_jam_mulai,
+            'jam_selesai' => $request->new_jam_selesai,
+            'ruang' => $request->new_ruang,
         ]);
 
-        // Redirect back to the same week view
-        return redirect()->route('dosen.jadwal', ['week' => $weekOffset])->with('success', 'Permintaan reschedule telah dikirim untuk minggu ' . $weekStart->format('d M') . ' - ' . $weekEnd->format('d M Y') . '. Menunggu approval dari admin.');
+        $weekOffset = (int) $request->input('week_offset', 0);
+
+        return redirect()->route('dosen.jadwal', ['week' => $weekOffset])->with('success', 'Jadwal berhasil diubah ke ' . $request->new_hari . ' pukul ' . $request->new_jam_mulai . ' - ' . $request->new_jam_selesai . ' di ruang ' . $request->new_ruang . '.');
     }
 }

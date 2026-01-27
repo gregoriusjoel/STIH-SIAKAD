@@ -167,7 +167,7 @@
                     Batal
                 </a>
                 <button type="submit" 
-                    class="btn-maroon px-6 py-3 rounded-lg hover:bg-opacity-90 transition flex items-center shadow-md transform hover:scale-105">
+                    class="bg-maroon text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition flex items-center shadow-md transform hover:scale-105">
                     <i class="fas fa-save mr-2"></i>
                     Update Data
                 </button>
