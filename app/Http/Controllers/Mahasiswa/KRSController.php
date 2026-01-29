@@ -126,7 +126,7 @@ class KRSController extends Controller
 
         // Build available classes (kelas) for the active KRS semester to drive calendar and optional class-level info
         $kelasQuery = \App\Models\Kelas::with(['mataKuliah', 'dosen', 'jadwals']);
-        
+
         // Try to filter by tahun_ajaran and semester_type if available
         // But if no results, fall back to getting all kelas for the allowed mata kuliah
         $kelasQueryWithFilters = clone $kelasQuery;
@@ -136,14 +136,14 @@ class KRSController extends Controller
         if ($krsSemester && $krsSemester->nama_semester) {
             $kelasQueryWithFilters->where('semester_type', $krsSemester->nama_semester);
         }
-        
+
         // Filter kelas to only allowed semesters (current + cross semester)
         $kelasQueryWithFilters->whereHas('mataKuliah', function ($q) use ($allowedKodeIds, $currentKodeId) {
             $q->whereIn('kode_id', array_merge([$currentKodeId], $allowedKodeIds));
         });
 
         $availableKelas = $kelasQueryWithFilters->get();
-        
+
         // If no kelas found with strict filters, try without tahun_ajaran/semester_type filters
         if ($availableKelas->isEmpty()) {
             $kelasQuery->whereHas('mataKuliah', function ($q) use ($allowedKodeIds, $currentKodeId) {
@@ -157,15 +157,23 @@ class KRSController extends Controller
             return isset($k->jadwals) && $k->jadwals->isNotEmpty();
         });
 
-        // Get existing KRS entries for the relevant semester codes
+        // Get existing KRS entries for the relevant semester codes with full details for calendar
         $relevantKodeIds = array_merge([$currentKodeId], $allowedKodeIds);
         $existingKrs = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->whereHas('mataKuliah', function ($q) use ($relevantKodeIds) {
                 $q->whereIn('kode_id', $relevantKodeIds);
             })
-            ->with('mataKuliah')
+            ->with(['mataKuliah', 'kelas.jadwals', 'kelas.dosen', 'kelas.mataKuliah'])
             ->get()
             ->keyBy('mata_kuliah_id');
+
+        // Merge taken classes (from existingKrs) into calendarKelas to ensure they appear in the calendar
+        // even if they were filtered out of availableKelas
+        $takenKelas = $existingKrs->pluck('kelas')->filter(function ($k) {
+            return $k && isset($k->jadwals) && $k->jadwals->isNotEmpty();
+        });
+
+        $calendarKelas = $calendarKelas->merge($takenKelas)->unique('id');
 
         // Calculate total SKS
         $totalSks = 0;
@@ -187,8 +195,8 @@ class KRSController extends Controller
             $downloadable = [];
             foreach ($semesterList as $s) {
                 // Prefer stored PDF existence (saved by store())
-                $npmOrId = $mahasiswa->npm ?? $mahasiswa->id;
-                $filename = 'KRS_' . $npmOrId . '_' . ($s->id ?? 'sem') . '.pdf';
+                $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
+                $filename = 'KRS_' . $nimOrId . '_' . ($s->id ?? 'sem') . '.pdf';
                 $path = 'krs/' . $mahasiswa->id . '/' . $filename;
 
                 if (Storage::disk('public')->exists($path)) {
@@ -252,8 +260,8 @@ class KRSController extends Controller
         }
 
         // If a saved PDF exists in storage for this mahasiswa+semester, serve it immediately
-        $npmOrId = $mahasiswa->npm ?? $mahasiswa->id;
-        $filename = 'KRS_' . $npmOrId . '_' . ($krsSemester->id ?? 'sem') . '.pdf';
+        $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
+        $filename = 'KRS_' . $nimOrId . '_' . ($krsSemester->id ?? 'sem') . '.pdf';
         $path = 'krs/' . $mahasiswa->id . '/' . $filename;
         if (Storage::disk('public')->exists($path)) {
             return Storage::disk('public')->download($path, $filename);
@@ -284,8 +292,8 @@ class KRSController extends Controller
             ?? Semester::latest()->first();
 
         // If a saved PDF exists in storage for this mahasiswa+semester, serve it
-        $npmOrId = $mahasiswa->npm ?? $mahasiswa->id;
-        $filename = 'KRS_' . $npmOrId . '_' . ($krsSemester->id ?? 'sem') . '.pdf';
+        $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
+        $filename = 'KRS_' . $nimOrId . '_' . ($krsSemester->id ?? 'sem') . '.pdf';
         $path = 'krs/' . $mahasiswa->id . '/' . $filename;
         if (Storage::disk('public')->exists($path)) {
             return Storage::disk('public')->download($path, $filename);
@@ -490,8 +498,8 @@ class KRSController extends Controller
             ])->setPaper('a4', 'landscape');
 
             // Save PDF to public storage for later download; do not force immediate download
-            $npmOrId = $mahasiswa->npm ?? $mahasiswa->id;
-            $filename = 'KRS_' . $npmOrId . '_' . ($krsSemesterForPdf->id ?? 'sem') . '.pdf';
+            $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
+            $filename = 'KRS_' . $nimOrId . '_' . ($krsSemesterForPdf->id ?? 'sem') . '.pdf';
             $path = 'krs/' . $mahasiswa->id . '/' . $filename;
             Storage::disk('public')->put($path, $pdf->output());
 
@@ -536,8 +544,8 @@ class KRSController extends Controller
         $downloadable = [];
         foreach ($semesterList as $s) {
             // Prefer stored PDF existence (saved by store())
-            $npmOrId = $mahasiswa->npm ?? $mahasiswa->id;
-            $filename = 'KRS_' . $npmOrId . '_' . ($s->id ?? 'sem') . '.pdf';
+            $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
+            $filename = 'KRS_' . $nimOrId . '_' . ($s->id ?? 'sem') . '.pdf';
             $path = 'krs/' . $mahasiswa->id . '/' . $filename;
 
             if (Storage::disk('public')->exists($path)) {

@@ -161,6 +161,27 @@ class KelasController extends Controller
                 'status' => $status,
                 'status_class' => $statusClass,
                 'is_past' => $meetingDate->isPast(),
+                // Dummy Data for E-Learning
+                'description' => 'Pada pertemuan ini akan dibahas mengenai pengantar mata kuliah, kontrak perkuliahan, dan pemaparan silabus selama satu semester.',
+                'materials' => [
+                    [
+                        'name' => 'Slide Pengantar.pdf',
+                        'url' => '#', // In real app, this would be a URL
+                        'type' => 'pdf'
+                    ],
+                    [
+                        'name' => 'Kontrak Kuliah.docx',
+                        'url' => '#',
+                        'type' => 'doc'
+                    ]
+                ],
+                'assignments' => [
+                    [
+                        'title' => 'Tugas Resume Pertemuan 1',
+                        'deadline' => $meetingDate->copy()->addDays(7)->format('d M Y'),
+                        'file_url' => '#' // Dummy URL for assignment file
+                    ]
+                ]
             ];
         }
 

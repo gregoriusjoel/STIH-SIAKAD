@@ -27,13 +27,13 @@ class UserController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'password' => 'nullable|min:6',
             'role' => 'required|in:admin,dosen,mahasiswa,parent,keuangan,perpustakaan',
         ];
 
         // Add mahasiswa-specific validation
         if ($request->role === 'mahasiswa') {
-            $rules['npm'] = 'required|string|unique:mahasiswas,npm';
+            $rules['nim'] = 'required|string|unique:mahasiswas,nim';
             $rules['prodi'] = 'required|string';
             $rules['angkatan'] = 'required|string';
         }
@@ -42,10 +42,29 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try {
+            // Determine password: use provided, otherwise fall back to role-based default
+            if ($request->filled('password')) {
+                $plainPassword = $request->password;
+            } else {
+                switch ($request->role) {
+                    case 'mahasiswa':
+                        $plainPassword = 'mahasiswa123';
+                        break;
+                    case 'dosen':
+                        $plainPassword = 'dosen123';
+                        break;
+                    case 'parent':
+                        $plainPassword = 'parent123';
+                        break;
+                    default:
+                        $plainPassword = 'password123';
+                }
+            }
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'password' => Hash::make($plainPassword),
                 'role' => $request->role,
             ]);
 
@@ -53,7 +72,7 @@ class UserController extends Controller
             if ($request->role === 'mahasiswa') {
                 Mahasiswa::create([
                     'user_id' => $user->id,
-                    'npm' => $request->npm,
+                    'nim' => $request->nim,
                     'prodi' => $request->prodi,
                     'angkatan' => $request->angkatan,
                     'status' => 'aktif',

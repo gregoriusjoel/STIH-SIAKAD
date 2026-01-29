@@ -46,7 +46,7 @@
                 </div>
 
                 <div id="qrCard" class="bg-white rounded-xl border border-gray-200 p-6 text-center">
-                    <h4 class="text-sm font-bold text-[#8B1538] mb-4">QR Code Absensi</h4>
+                    <h4 class="text-sm font-bold text-[#8B1538] mb-4">QR Absensi</h4>
                     <div id="qrWrap" class="inline-block p-6 bg-white border rounded-lg shadow-sm">
                         @php
                             $token = $class['qr_token'] ?? ($class->qr_token ?? null);
@@ -54,21 +54,29 @@
                             $qrExpires = $class['qr_expires_at'] ?? null;
                         @endphp
 
-                        @if($token)
-                            @if($qrEnabled)
-                                <img id="generatedQr" src="{{ route('qrcode.kelas.image', $token) }}" alt="QR Kelas" width="180" height="180" />
-                                @if($qrExpires)
-                                        <div id="qrExpiryText" class="text-xs text-gray-500 mt-2">Berakhir: {{ \Illuminate\Support\Carbon::parse($qrExpires)->locale('id')->isoFormat('H:mm, D MMM') }}<span id="qrCountdown"></span></div>
-                                @endif
-                                        <div id="qrExpiryText" class="text-xs text-gray-500 mt-2"></div>
-                                <div class="w-44 h-44 flex items-center justify-center border rounded bg-gray-50">
-                                    <div class="text-sm text-gray-500">QR aktif</div>
-                                </div>
+                        @if($token && $qrEnabled)
+                            <img id="generatedQr" src="{{ route('qrcode.kelas.image', $token) }}" alt="QR Kelas" width="180" height="180" />
+                            @if($qrExpires)
+                                <div id="qrExpiryText" class="text-xs text-gray-500 mt-2">Berakhir: {{ \Illuminate\Support\Carbon::parse($qrExpires)->locale('id')->isoFormat('H:mm, D MMM') }}<span id="qrCountdown"></span></div>
+                            @else
+                                <div id="qrExpiryText" class="text-xs text-gray-500 mt-2"></div>
                             @endif
                         @else
-                            <div class="w-44 h-44 flex items-center justify-center border rounded bg-gray-50">
-                                <div class="text-sm text-gray-500">QR belum dibuat</div>
+                            <!-- placeholder + dummy SVG for download fallback -->
+                            <div id="dummyQr" class="w-44 flex items-center justify-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="-mt-8 mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="88" height="88" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
+                                            <rect x="3" y="3" width="8" height="8" rx="1"></rect>
+                                            <rect x="13" y="3" width="8" height="8" rx="1"></rect>
+                                            <rect x="3" y="13" width="8" height="8" rx="1"></rect>
+                                            <path d="M13 13h2v2h-2z"></path>
+                                            <path d="M17 17h2v2h-2z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
+                            <div id="qrExpiryText" class="text-xs text-gray-500 mt-2">QR belum dibuat</div>
                         @endif
                     </div>
 
@@ -227,18 +235,59 @@
             }
 
             if (copyBtn && absensiLinkEl) {
+                function tryCopyText(text) {
+                    if (!text) return Promise.reject(new Error('no-text'));
+                    // Prefer modern clipboard API
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        return navigator.clipboard.writeText(text);
+                    }
+                    // Fallback using execCommand (works on http in most browsers)
+                    return new Promise(function(resolve, reject){
+                        try {
+                            const textarea = document.createElement('textarea');
+                            textarea.value = text;
+                            // avoid showing the element
+                            textarea.style.position = 'fixed';
+                            textarea.style.left = '-9999px';
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            const ok = document.execCommand('copy');
+                            document.body.removeChild(textarea);
+                            if (ok) resolve(); else reject(new Error('exec-failed'));
+                        } catch (e) { reject(e); }
+                    });
+                }
+
                 copyBtn.addEventListener('click', function(){
                     try {
-                        if (absensiLinkEl.select) absensiLinkEl.select();
-                        navigator.clipboard.writeText(absensiLinkEl.value || '').then(()=>{
+                        const text = absensiLinkEl.value || '';
+                        tryCopyText(text).then(()=>{
                             if (toggleBtn) {
                                 const prev = toggleBtn.innerText;
                                 toggleBtn.innerText = 'Disalin';
                                 setTimeout(()=> toggleBtn.innerText = prev, 900);
                             }
-                        }).catch(()=>{});
+                            const prevBtn = copyBtn.innerText;
+                            copyBtn.innerText = 'Disalin';
+                            setTimeout(()=> copyBtn.innerText = prevBtn, 900);
+                        }).catch(()=>{
+                            // final fallback: select input and instruct user
+                            if (absensiLinkEl.select) absensiLinkEl.select();
+                        });
                     } catch (ex) {
                     }
+                });
+
+                // Auto-copy when clicking the input itself
+                absensiLinkEl.addEventListener('click', function(){
+                    const text = absensiLinkEl.value || '';
+                    tryCopyText(text).then(()=>{
+                        const prevBtn = copyBtn.innerText;
+                        copyBtn.innerText = 'Disalin';
+                        setTimeout(()=> copyBtn.innerText = prevBtn, 900);
+                    }).catch(()=>{
+                        if (absensiLinkEl.select) absensiLinkEl.select();
+                    });
                 });
             }
 

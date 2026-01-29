@@ -58,6 +58,10 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/kelas/{id}/detail', [LecturerController::class, 'detail'])->name('kelas.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}', [LecturerController::class, 'meetingDetail'])->name('kelas.pertemuan.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi', [LecturerController::class, 'meetingMaterials'])->name('kelas.pertemuan.materi');
+    // Tugas (Dosen)
+    Route::post('/kelas/{id}/pertemuan/{pertemuan}/tugas', [App\Http\Controllers\Dosen\TugasController::class, 'store'])->name('kelas.pertemuan.tugas.store');
+    Route::get('/kelas/{id}/pertemuan/{pertemuan}/tugas', [App\Http\Controllers\Dosen\TugasController::class, 'index'])->name('kelas.pertemuan.tugas.index');
+    Route::delete('/kelas/{id}/pertemuan/{pertemuan}/tugas/{tugas}', [App\Http\Controllers\Dosen\TugasController::class, 'destroy'])->name('kelas.pertemuan.tugas.destroy');
     Route::post('/kelas/{id}/generate-qr', [LecturerController::class, 'generateQr'])->name('kelas.generate_qr');
     Route::post('/kelas/{id}/activate-qr', [LecturerController::class, 'activateQr'])->name('kelas.activate_qr');
     Route::post('/kelas/{id}/deactivate-qr', [LecturerController::class, 'deactivateQr'])->name('kelas.deactivate_qr');
@@ -102,6 +106,8 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         // Kelas Saya
         Route::get('/kelas', [App\Http\Controllers\Mahasiswa\KelasController::class, 'index'])->name('kelas.index');
         Route::get('/kelas/{id}', [App\Http\Controllers\Mahasiswa\KelasController::class, 'show'])->name('kelas.show');
+        // Tugas (Mahasiswa submit)
+        Route::post('/kelas/{id}/pertemuan/{pertemuan}/tugas/{tugas}/submit', [App\Http\Controllers\Mahasiswa\TugasController::class, 'submit'])->name('kelas.pertemuan.tugas.submit');
 
         // Profil
         Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
@@ -171,6 +177,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('kelas-reschedules/{reschedule}/assign-room', [App\Http\Controllers\Admin\JadwalController::class, 'assignRoomKelasReschedule'])->name('kelas.reschedules.assignRoom');
 
     // Semester Management
+    Route::get('semester/previous-end', [App\Http\Controllers\Admin\SemesterController::class, 'previousEnd'])->name('semester.previous_end');
     Route::resource('semester', App\Http\Controllers\Admin\SemesterController::class);
     Route::get('semester-manage', [App\Http\Controllers\Admin\SemesterController::class, 'manage'])->name('semester.manage');
     Route::post('semester/set-active', [App\Http\Controllers\Admin\SemesterController::class, 'setActive'])->name('semester.set-active');
@@ -195,8 +202,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // KRS Management
     Route::get('krs', [App\Http\Controllers\Admin\KrsController::class, 'index'])->name('krs.index');
-    Route::get('krs/{kr}', [App\Http\Controllers\Admin\KrsController::class, 'show'])->name('krs.show');
     Route::put('krs/{kr}/status', [App\Http\Controllers\Admin\KrsController::class, 'updateStatus'])->name('krs.updateStatus');
+    Route::post('krs/mahasiswa/{mahasiswa}/reopen', [App\Http\Controllers\Admin\KrsController::class, 'reopenForStudent'])->name('krs.reopen');
     Route::delete('krs/{kr}', [App\Http\Controllers\Admin\KrsController::class, 'destroy'])->name('krs.destroy');
 
     // QR management (optional admin toggles could be added later)

@@ -152,7 +152,7 @@
                         <i class="fas fa-user-graduate mr-2"></i>Mahasiswa
                     </th>
                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                        <i class="fas fa-book mr-2"></i>Mata Kuliah
+                        <i class="fas fa-building mr-2"></i>Prodi
                     </th>
                     <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-calendar-alt mr-2"></i>Semester
@@ -169,10 +169,32 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
+                @php
+                    $shownMahasiswa = [];
+                    $rowNo = ($krsData->currentPage() - 1) * $krsData->perPage();
+                @endphp
                 @forelse($krsData as $item)
+                    @php
+                        $mahasiswaId = $item->mahasiswa->id ?? $item->mahasiswa_id ?? null;
+                        if ($mahasiswaId && isset($shownMahasiswa) && in_array($mahasiswaId, $shownMahasiswa)) {
+                            continue;
+                        }
+                        if ($mahasiswaId) {
+                            $shownMahasiswa[] = $mahasiswaId;
+                        }
+
+                        // calculate total SKS for this mahasiswa
+                        $totalSks = 0;
+                        if (!empty($item->mahasiswa->krs)) {
+                            foreach ($item->mahasiswa->krs as $k) {
+                                $sks = optional(optional($k->kelas)->mataKuliah)->sks ?? optional($k->mataKuliah)->sks ?? 0;
+                                $totalSks += (int) $sks;
+                            }
+                        }
+                    @endphp
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                            {{ ($krsData->currentPage() - 1) * $krsData->perPage() + $loop->iteration }}
+                            {{ ++$rowNo }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
@@ -183,21 +205,13 @@
                                     <div class="text-sm font-semibold text-gray-900">{{ $item->mahasiswa->user->name }}</div>
                                     <div class="text-xs text-gray-500">
                                         <i class="fas fa-id-card text-gray-400 mr-1"></i>
-                                        NPM: {{ $item->mahasiswa->npm }}
+                                        NIM: {{ $item->mahasiswa->nim }}
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold mr-2 text-xs">
-                                    <i class="fas fa-book"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900">{{ optional(optional($item->kelas)->mataKuliah)->nama_mk ?? '-' }}</div>
-                                    <div class="text-xs text-gray-500">{{ optional(optional($item->kelas)->mataKuliah)->kode_mk ?? '-' }}</div>
-                                </div>
-                            </div>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                            {{ $item->mahasiswa->prodi ?? '-' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="text-sm text-gray-700">
@@ -217,7 +231,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-sm font-bold rounded-full bg-purple-100 text-purple-800">
                                 <i class="fas fa-calculator mr-1"></i>
-                                {{ optional(optional($item->kelas)->mataKuliah)->sks ? optional(optional($item->kelas)->mataKuliah)->sks . ' SKS' : '-' }}
+                                {{ $totalSks ? $totalSks . ' SKS' : '-' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -241,6 +255,17 @@
                                 <button type="button" onclick="document.getElementById('modal-krs-{{ $item->id }}').classList.remove('hidden')" class="text-blue-600 hover:text-blue-900 transition p-2 hover:bg-blue-50 rounded" title="Detail">
                                     <i class="fas fa-eye"></i>
                                 </button>
+                                @if(!empty($item->mahasiswa))
+                                    <form action="{{ route('admin.krs.reopen', $item->mahasiswa) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" 
+                                            class="text-yellow-600 hover:text-yellow-900 transition p-2 hover:bg-yellow-50 rounded" 
+                                            onclick="return confirm('Buka kembali pengisian KRS untuk mahasiswa ini? Mahasiswa akan dapat mengedit KRS.')"
+                                            title="Buka Kembali (Reopen)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </form>
+                                @endif
                                 @if($item->status == 'pending')
                                     <form action="{{ route('admin.krs.updateStatus', $item) }}" method="POST" class="inline">
                                         @csrf
@@ -264,15 +289,15 @@
                                         </button>
                                     </form>
                                 @endif
-                                <form action="{{ route('admin.krs.destroy', $item) }}" method="POST" class="inline">
+                                
+                                <button type="button" onclick="confirmDeleteKrs({{ $item->id }})" 
+                                    class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition" 
+                                    title="Hapus">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                <form id="delete-krs-form-{{ $item->id }}" action="{{ route('admin.krs.destroy', $item) }}" method="POST" class="hidden">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" 
-                                        class="text-gray-600 hover:text-gray-900 transition p-2 hover:bg-gray-50 rounded" 
-                                        onclick="return confirm('Yakin ingin menghapus KRS ini?')"
-                                        title="Hapus">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
                                 </form>
                             </div>
                         </td>
@@ -295,7 +320,7 @@
                             </div>
                             <div class="p-6 text-sm text-gray-700">
                                 <div class="grid grid-cols-1 gap-2">
-                                    <div><strong>Mahasiswa:</strong> {{ $item->mahasiswa->user->name }} (NPM: {{ $item->mahasiswa->npm }})</div>
+                                    <div><strong>Mahasiswa:</strong> {{ $item->mahasiswa->user->name }} (NIM: {{ $item->mahasiswa->nim }})</div>
                                     <div><strong>Mata Kuliah:</strong> {{ optional(optional($item->kelas)->mataKuliah)->nama_mk ?? '-' }}</div>
                                     @php
                                         $modalSemester = $item->semester?->nama_semester ?? null;
@@ -335,4 +360,26 @@
         </div>
     @endif
 </div>
+
+@push('scripts')
+<script>
+function confirmDeleteKrs(krsId) {
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Data KRS ini akan dihapus permanen!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#7a1621',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-krs-form-' + krsId).submit();
+        }
+    });
+}
+</script>
+@endpush
 @endsection

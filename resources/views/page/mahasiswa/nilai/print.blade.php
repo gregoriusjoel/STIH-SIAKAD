@@ -8,7 +8,7 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <h2 class="text-xl font-bold">Rangkuman Nilai - {{ $mahasiswa->nama ?? $mahasiswa->user->name }}</h2>
-            <p class="text-sm text-gray-600">NPM: {{ $mahasiswa->npm }}</p>
+            <p class="text-sm text-gray-600">NIM: {{ $mahasiswa->nim }}</p>
         </div>
         <div>
             <button onclick="window.print()" class="px-4 py-2 bg-maroon text-white rounded-lg">Cetak</button>

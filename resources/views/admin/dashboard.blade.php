@@ -141,7 +141,7 @@
                             </div>
                             <div class="flex-1">
                                 <h4 class="font-semibold text-gray-800">{{ $krs->mahasiswa->user->name }}</h4>
-                                <p class="text-sm text-gray-600">NPM: {{ $krs->mahasiswa->npm ?? '-' }} • Prodi: {{ $krs->mahasiswa->prodi ?? '-' }}</p>
+                                <p class="text-sm text-gray-600">NIM: {{ $krs->mahasiswa->nim ?? '-' }} • Prodi: {{ $krs->mahasiswa->prodi ?? '-' }}</p>
                                 <p class="text-xs text-gray-500 mt-1">
                                     <i class="fas fa-calendar mr-1"></i>
                                     {{ $krs->created_at->format('d M Y H:i') }}

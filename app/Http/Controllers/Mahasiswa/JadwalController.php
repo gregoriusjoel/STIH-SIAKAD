@@ -40,7 +40,6 @@ class JadwalController extends Controller
             'Kamis' => [],
             'Jumat' => [],
             'Sabtu' => [],
-            'Minggu' => []
         ];
         
         foreach($krsData as $krs) {

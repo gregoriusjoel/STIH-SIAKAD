@@ -52,10 +52,22 @@
                                     <span
                                         class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"><i
                                             class="fas fa-user-graduate mr-1"></i>Mahasiswa</span>
-                                @else
+                                @elseif($u->role == 'keuangan')
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800"><i
+                                            class="fas fa-money-bill-wave mr-1"></i>Keuangan</span>
+                                @elseif($u->role == 'perpustakaan')
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-teal-800"><i
+                                            class="fas fa-book mr-1"></i>Perpustakaan</span>
+                                @elseif($u->role == 'parent')
                                     <span
                                         class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800"><i
                                             class="fas fa-user mr-1"></i>Parent</span>
+                                @else
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"><i
+                                            class="fas fa-user mr-1"></i>{{ ucfirst($u->role) }}</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-center">
@@ -65,7 +77,7 @@
                                         title="Edit"><i class="fas fa-edit"></i></a>
                                     @if($u->id != auth()->id())
                                         <form action="{{ route('admin.users.destroy', $u) }}" method="POST"
-                                            onsubmit="return confirm('Hapus user ini?')">@csrf @method('DELETE')<button
+                                            class="delete-form">@csrf @method('DELETE')<button
                                                 type="submit"
                                                 class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition"
                                                 title="Hapus"><i class="fas fa-trash"></i></button></form>
@@ -88,4 +100,35 @@
             <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">{{ $users->links() }}</div>
         @endif
     </div>
+
+    @push('scripts')
+        <script>
+            // SweetAlert Delete Confirmation
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data user ini akan dihapus permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        background: '#ffffff',
+                        customClass: {
+                            confirmButton: 'btn btn-danger',
+                            cancelButton: 'btn btn-secondary'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

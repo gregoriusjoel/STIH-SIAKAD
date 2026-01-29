@@ -59,8 +59,10 @@
                                     $mk = $krs->kelasMataKuliah->mataKuliah;
                                     $jadwal = $krs->kelasMataKuliah->jadwal;
                                     $dosen = $krs->kelasMataKuliah->dosen->user->name ?? 'Dosen Belum Diatur';
-                                    $jenis = $mk->jenis ?? 'Teori';
-                                    $color = $jenis === 'Praktikum' ? 'blue' : 'orange';
+                                    $jenisRaw = $mk->jenis ?? 'Teori';
+                                    $jenisNorm = strtolower($jenisRaw);
+                                    $jenisLabel = ucwords(str_replace('_', ' ', $jenisNorm));
+                                    $color = $jenisNorm === 'praktikum' ? 'blue' : 'orange';
                                 @endphp
                                 <!-- Class Item -->
                                 <div class="flex gap-3 relative pl-3 hover:bg-gray-50/50 rounded-r-lg transition-colors p-2 -mx-2">
@@ -69,7 +71,7 @@
                                         <div class="flex justify-between items-start gap-2">
                                             <h4 class="font-bold text-[#111218] text-sm leading-tight">{{ $mk->nama_mk }}</h4>
                                             <span
-                                                class="bg-{{ $color }}-50 text-{{ $color }}-600 px-2 py-0.5 rounded text-[10px] font-bold shrink-0">{{ $jenis }}</span>
+                                                class="bg-{{ $color }}-50 text-{{ $color }}-600 px-2 py-0.5 rounded text-[10px] font-bold shrink-0">{{ $jenisLabel }}</span>
                                         </div>
 
                                         <div class="flex flex-wrap items-center gap-2 text-xs text-[#616889]">

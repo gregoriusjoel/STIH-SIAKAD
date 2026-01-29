@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+    @extends('layouts.admin')
 
 @section('title', 'Tambah Orang Tua/Wali')
 @section('page-title', 'Tambah Orang Tua/Wali')
@@ -51,9 +51,12 @@
                                 <i class="fas fa-lock text-gray-400 mr-1"></i>
                                 Password *
                             </label>
-                            <input type="password" name="password" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
-                                required>
+                            <div class="relative">
+                                <input id="parent_password" type="password" name="password" value="{{ old('password', 'parent123') }}" 
+                                    class="w-full pr-10 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
+                                    required>
+                                <button type="button" id="toggleParentPw" aria-pressed="false" class="absolute right-3 top-1/2 transform -translate-y-1/2 inline-flex items-center px-2 text-sm text-gray-500 hover:text-gray-700 bg-transparent border-0"><i class="fas fa-eye"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -77,7 +80,7 @@
                                 <option value="">Pilih Mahasiswa</option>
                                 @foreach($mahasiswas as $mhs)
                                     <option value="{{ $mhs->id }}" {{ old('mahasiswa_id') == $mhs->id ? 'selected' : '' }}>
-                                        {{ $mhs->user->name }} - {{ $mhs->npm }}
+                                        {{ $mhs->user->name }} - {{ $mhs->nim }}
                                     </option>
                                 @endforeach
                             </select>
@@ -144,3 +147,16 @@
     </div>
 </div>
 @endsection
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const pw = document.getElementById('parent_password');
+            const btn = document.getElementById('toggleParentPw');
+            if(btn && pw){
+                btn.addEventListener('click', function(){
+                    if(pw.type === 'password'){ pw.type = 'text'; btn.innerHTML = '<i class="fas fa-eye-slash"></i>'; btn.setAttribute('aria-pressed','true'); }
+                    else { pw.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; btn.setAttribute('aria-pressed','false'); }
+                });
+            }
+        });
+        </script>

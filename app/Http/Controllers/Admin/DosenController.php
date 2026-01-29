@@ -28,7 +28,7 @@ class DosenController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'password' => 'nullable|min:6',
             'nidn' => 'required|unique:dosens,nidn',
             'pendidikan' => 'required|string',
             'prodi' => 'required|string',
@@ -40,10 +40,11 @@ class DosenController extends Controller
 
         DB::beginTransaction();
         try {
+            $plainPassword = $request->filled('password') ? $request->password : 'dosen123';
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'password' => Hash::make($plainPassword),
                 'role' => 'dosen',
             ]);
 

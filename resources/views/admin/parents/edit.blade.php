@@ -77,7 +77,7 @@
                                 <option value="">Pilih Mahasiswa</option>
                                 @foreach($mahasiswas as $mhs)
                                     <option value="{{ $mhs->id }}" {{ old('mahasiswa_id', $parent->mahasiswa_id) == $mhs->id ? 'selected' : '' }}>
-                                        {{ $mhs->user->name }} - {{ $mhs->npm }}
+                                        {{ $mhs->user->name }} - {{ $mhs->nim }}
                                     </option>
                                 @endforeach
                             </select>

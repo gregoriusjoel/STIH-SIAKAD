@@ -119,7 +119,7 @@ class DatabaseSeeder extends Seeder
         $mhs1 = Mahasiswa::firstOrCreate(
             ['user_id' => $mhs1User->id],
             [
-                'npm' => '2024010001',
+                'nim' => '2024010001',
                 'prodi' => 'Hukum Tata Negara',
                 'angkatan' => '2024',
                 'phone' => '081234567894',
@@ -141,7 +141,7 @@ class DatabaseSeeder extends Seeder
         $mhs2 = Mahasiswa::firstOrCreate(
             ['user_id' => $mhs2User->id],
             [
-                'npm' => '2024010002',
+                'nim' => '2024010002',
                 'prodi' => 'Hukum Bisnis',
                 'angkatan' => '2024',
                 'phone' => '081234567895',
@@ -162,7 +162,7 @@ class DatabaseSeeder extends Seeder
         $mhs3 = Mahasiswa::firstOrCreate(
             ['user_id' => $mhs3User->id],
             [
-                'npm' => '2024010003',
+                'nim' => '2024010003',
                 'prodi' => 'Hukum Pidana',
                 'angkatan' => '2024',
                 'phone' => '081234567896',

@@ -30,7 +30,7 @@
                             <i class=""></i>No
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-id-card mr-2"></i>NPM
+                            <i class="fas fa-id-card mr-2"></i>NIM
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                             <i class="fas fa-user mr-2"></i>Nama
@@ -55,13 +55,13 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($mahasiswas as $mahasiswa)
                         <tr class="hover:bg-blue-50 transition cursor-pointer"
-                            @click='selectedMahasiswa = { npm: @js($mahasiswa->npm), name: @js($mahasiswa->user->name), email: @js($mahasiswa->user->email), no_hp: @js($mahasiswa->no_hp ?? "-"), prodi: @js($mahasiswa->prodi), angkatan: @js($mahasiswa->angkatan), status: @js(ucfirst($mahasiswa->status)), foto: @js($mahasiswa->foto ? asset("storage/" . $mahasiswa->foto) : null) }'
-                            :class="{ 'bg-blue-50': selectedMahasiswa && selectedMahasiswa.npm === '{{ $mahasiswa->npm }}' }">
+                            @click='selectedMahasiswa = { nim: @js($mahasiswa->nim), name: @js($mahasiswa->user->name), email: @js($mahasiswa->user->email), no_hp: @js($mahasiswa->no_hp ?? "-"), prodi: @js($mahasiswa->prodi), angkatan: @js($mahasiswa->angkatan), status: @js(ucfirst($mahasiswa->status)), foto: @js($mahasiswa->foto ? asset("storage/" . $mahasiswa->foto) : null) }'
+                            :class="{ 'bg-blue-50': selectedMahasiswa && selectedMahasiswa.nim === '{{ $mahasiswa->nim }}' }">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                                 {{ ($mahasiswas->currentPage() - 1) * $mahasiswas->perPage() + $loop->iteration }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-maroon">
-                                {{ $mahasiswa->npm }}
+                                {{ $mahasiswa->nim }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
@@ -106,11 +106,11 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('admin.mahasiswa.destroy', $mahasiswa) }}" method="POST"
-                                        class="inline">
+                                        class="inline delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-900 transition"
-                                            onclick="return confirm('Yakin ingin menghapus data ini?')" title="Hapus">
+                                            title="Hapus">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -133,5 +133,35 @@
             {{ $mahasiswas->links() }}
         </div>
     </div>
-    </div>
+
+    @push('scripts')
+        <script>
+            // SweetAlert Delete Confirmation
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data mahasiswa ini akan dihapus permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        background: '#ffffff',
+                        customClass: {
+                            confirmButton: 'btn btn-danger',
+                            cancelButton: 'btn btn-secondary'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

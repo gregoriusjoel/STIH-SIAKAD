@@ -218,6 +218,19 @@
                             </p>
                         </div>
 
+                        <!-- Semester (optional) -->
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Semester (opsional)</label>
+                            <select name="semester_id" id="event_semester"
+                                class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white text-sm">
+                                <option value="">-- Tidak terikat semester --</option>
+                                @foreach($semesters as $semester)
+                                    <option value="{{ $semester->id }}">{{ $semester->nama_semester }} {{ $semester->tahun_ajaran }}</option>
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-slate-500 mt-1">Pilih semester agar event hanya muncul saat filter semester tersebut dipilih. Jika dikosongkan, event akan muncul pada semua semester.</p>
+                        </div>
+
                         <!-- Dates -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -901,6 +914,11 @@
                     if (startStr) document.getElementById('event_start').value = startStr;
                     if (endStr) document.getElementById('event_end').value = endStr;
 
+                    // Preselect semester based on current filter
+                    const currentFilter = document.getElementById('filterSemester')?.value;
+                    const semSelectNew = document.getElementById('event_semester');
+                    if (semSelectNew) semSelectNew.value = currentFilter || '';
+
                     document.getElementById('eventModal').classList.remove('hidden');
                 }
 
@@ -930,6 +948,12 @@
 
                     document.getElementById('event_start').value = startStr;
                     document.getElementById('event_end').value = endStr;
+
+                    // Populate semester select if present
+                    const semSel = document.getElementById('event_semester');
+                    if (semSel) {
+                        semSel.value = event.extendedProps.semester_id || '';
+                    }
 
                     document.getElementById('deleteEventBtn').classList.remove('hidden');
                     document.getElementById('eventModal').classList.remove('hidden');

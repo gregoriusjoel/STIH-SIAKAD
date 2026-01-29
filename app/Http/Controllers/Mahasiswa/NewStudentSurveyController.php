@@ -17,7 +17,7 @@ class NewStudentSurveyController extends Controller
 
         $questions = SurveyQuestion::all();
 
-        return view('page.mahasiswa.survey_new.index', compact('mahasiswa', 'questions'));
+        return view('page.mahasiswa.survey.index', compact('mahasiswa', 'questions'));
     }
 
     public function store(Request $request)

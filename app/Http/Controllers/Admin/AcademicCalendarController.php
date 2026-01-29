@@ -50,9 +50,29 @@ class AcademicCalendarController extends Controller
 
         // Get Academic Events
         $query = AcademicEvent::active();
+
         if ($semesterId) {
-            $query->where('semester_id', $semesterId);
+            // Include events explicitly tied to the semester OR events with no semester_id
+            // whose date range overlaps the semester period (so calendar-created events
+            // without semester_id still show when filtering by that semester).
+            $semester = Semester::find($semesterId);
+            if ($semester) {
+                $start = $semester->tanggal_mulai;
+                $end = $semester->tanggal_selesai;
+
+                $query->where(function ($q) use ($semesterId, $start, $end) {
+                    $q->where('semester_id', $semesterId)
+                        ->orWhere(function ($q2) use ($start, $end) {
+                            $q2->whereNull('semester_id')
+                                ->whereRaw('? <= end_date AND ? >= start_date', [$start, $end]);
+                        });
+                });
+            } else {
+                // Fallback: if semester not found, filter by exact semester_id value
+                $query->where('semester_id', $semesterId);
+            }
         }
+
         $academicEvents = $query->get();
 
         foreach ($academicEvents as $event) {

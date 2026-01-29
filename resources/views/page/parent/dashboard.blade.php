@@ -46,8 +46,8 @@
                         <div class="flex items-center gap-3">
                             <i class="fas fa-fingerprint opacity-70"></i>
                             <div>
-                                <div class="opacity-80 text-xs">NPM</div>
-                                <div class="font-bold text-lg leading-tight">{{ $mahasiswa->npm }}</div>
+                                <div class="opacity-80 text-xs">NIM</div>
+                                <div class="font-bold text-lg leading-tight">{{ $mahasiswa->nim }}</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">

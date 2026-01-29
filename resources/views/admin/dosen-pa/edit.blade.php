@@ -29,7 +29,7 @@
                     <div class="text-sm text-gray-500">
                         <span class="font-mono text-maroon">{{ $dosen->nidn }}</span> • 
                         {{ $dosen->user->email }} •
-                        <span class="font-semibold">{{ $dosen->mahasiswaPa->count() }}/10 Mahasiswa</span>
+                        <span class="font-semibold">{{ $dosen->mahasiswaPa->count() }}/6 Mahasiswa</span>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                                                class="w-4 h-4 text-maroon border-gray-300 rounded focus:ring-maroon">
                                         <div class="ml-3 flex-1">
                                             <div class="text-sm font-medium text-gray-900">{{ $mahasiswa->user->name }}</div>
-                                            <div class="text-xs text-gray-500">NPM: {{ $mahasiswa->npm }}</div>
+                                            <div class="text-xs text-gray-500">NIM: {{ $mahasiswa->nim }}</div>
                                         </div>
                                     </label>
                                 @endforeach
@@ -113,20 +113,20 @@
                             @foreach($allDosens as $targetDosen)
                                 @php
                                     $count = $targetDosen->mahasiswa_pa_count;
-                                    $isFull = $count >= 10;
+                                    $isFull = $count >= 6;
                                 @endphp
                                 <option value="{{ $targetDosen->id }}" 
                                     {{ $isFull ? 'disabled' : '' }}
                                     {{ old('new_dosen_id') == $targetDosen->id ? 'selected' : '' }}
                                     class="{{ $isFull ? 'text-gray-400' : '' }}">
-                                    {{ $targetDosen->user->name }} ({{ $count }}/10){{ $isFull ? ' - PENUH' : '' }}
+                                    {{ $targetDosen->user->name }} ({{ $count }}/6){{ $isFull ? ' - PENUH' : '' }}
                                 </option>
                             @endforeach
                         </select>
                         @error('new_dosen_id')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
-                        <p class="text-xs text-gray-500 mt-1">Dosen dengan status "PENUH" sudah mencapai batas 10 mahasiswa.</p>
+                        <p class="text-xs text-gray-500 mt-1">Dosen dengan status "PENUH" sudah mencapai batas 6 mahasiswa.</p>
                     </div>
                 </div>
 
@@ -174,7 +174,7 @@
                                 <option value="">-- Pilih Mahasiswa --</option>
                                 @foreach($dosen->mahasiswaPa as $mahasiswa)
                                     <option value="{{ $mahasiswa->id }}" {{ old('remove_mahasiswa_id') == $mahasiswa->id ? 'selected' : '' }}>
-                                        {{ $mahasiswa->user->name }} ({{ $mahasiswa->npm }})
+                                        {{ $mahasiswa->user->name }} ({{ $mahasiswa->nim }})
                                     </option>
                                 @endforeach
                             </select>
@@ -207,7 +207,7 @@
                                 <option value="">-- Pilih Mahasiswa --</option>
                                 @foreach($availableMahasiswas as $mahasiswa)
                                     <option value="{{ $mahasiswa->id }}" {{ old('add_mahasiswa_id') == $mahasiswa->id ? 'selected' : '' }}>
-                                        {{ $mahasiswa->user->name }} ({{ $mahasiswa->npm }})
+                                        {{ $mahasiswa->user->name }} ({{ $mahasiswa->nim }})
                                     </option>
                                 @endforeach
                             </select>

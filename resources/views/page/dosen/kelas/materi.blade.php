@@ -36,7 +36,7 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">Materi {{ $meeting['label'] }}</h1>
-                        <p class="text-gray-500">{{ $kelas->mataKuliah->nama }} - Kelas {{ $kelas->section }}</p>
+                        <p class="text-gray-500">{{ $kelas->mataKuliah->nama_mk }} - Kelas {{ $kelas->section }}</p>
                     </div>
                 </div>
                 <div class="flex gap-3">

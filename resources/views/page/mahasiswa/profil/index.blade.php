@@ -92,7 +92,7 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 border-b pb-4">
                             <label class="text-xs font-bold text-gray-400 uppercase">NIM</label>
-                            <div class="md:col-span-2 font-mono text-gray-800">{{ $mahasiswa->npm }}</div>
+                            <div class="md:col-span-2 font-mono text-gray-800">{{ $mahasiswa->nim }}</div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 border-b pb-4">

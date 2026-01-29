@@ -25,7 +25,7 @@
                         <div class="text-sm text-blue-700">
                             <p class="font-semibold mb-1">Aturan Penetapan Dosen PA:</p>
                             <ul class="list-disc list-inside space-y-1">
-                                <li>Setiap Dosen PA dapat membimbing maksimal <strong>10 mahasiswa</strong>.</li>
+                                <li>Setiap Dosen PA dapat membimbing maksimal <strong>6 mahasiswa</strong>.</li>
                                 <li>Setiap Mahasiswa hanya dapat memiliki <strong>1 Dosen PA</strong>.</li>
                             </ul>
                         </div>
@@ -53,20 +53,21 @@
                                 @foreach($dosens as $dosen)
                                     @php
                                         $count = $dosen->mahasiswa_pa_count;
-                                        $isFull = $count >= 10;
+                                        $isFull = $count >= 6;
                                     @endphp
-                                    <option value="{{ $dosen->id }}" 
+                                    <option value="{{ $dosen->id }}"
+                                        data-count="{{ $count }}"
                                         {{ $isFull ? 'disabled' : '' }}
                                         {{ old('dosen_id') == $dosen->id ? 'selected' : '' }}
                                         class="{{ $isFull ? 'text-gray-400' : '' }}">
-                                        {{ $dosen->user->name }} ({{ $count }}/10){{ $isFull ? ' - PENUH' : '' }}
+                                        {{ $dosen->user->name }} ({{ $count }}/6){{ $isFull ? ' - PENUH' : '' }}
                                     </option>
                                 @endforeach
                             </select>
                             @error('dosen_id')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
-                            <p class="text-xs text-gray-500 mt-1">Dosen dengan status "PENUH" sudah mencapai batas 10 mahasiswa.</p>
+                            <p class="text-xs text-gray-500 mt-1">Dosen dengan status "PENUH" sudah mencapai batas 6 mahasiswa.</p>
                         </div>
 
                         <!-- Dropdown Mahasiswa -->
@@ -75,20 +76,37 @@
                                 <i class="fas fa-user-graduate text-gray-400 mr-1"></i>
                                 Pilih Mahasiswa *
                             </label>
-                            <select name="mahasiswa_id" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition @error('mahasiswa_id') border-red-500 @enderror" 
-                                required>
-                                <option value="">-- Pilih Mahasiswa --</option>
-                                @foreach($mahasiswas as $mahasiswa)
-                                    <option value="{{ $mahasiswa->id }}" {{ old('mahasiswa_id') == $mahasiswa->id ? 'selected' : '' }}>
-                                        {{ $mahasiswa->user->name }} ({{ $mahasiswa->npm }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('mahasiswa_id')
+                            <div id="mahasiswaContainer">
+                                <div class="mb-2 mahasiswa-row flex items-center gap-2">
+                                    <select name="mahasiswa_ids[]" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition mahasiswa-select" required>
+                                        <option value="">-- Pilih Mahasiswa --</option>
+                                        @foreach($mahasiswas as $mahasiswa)
+                                            <option value="{{ $mahasiswa->id }}" {{ (collect(old('mahasiswa_ids'))->contains($mahasiswa->id)) ? 'selected' : '' }}>
+                                                {{ $mahasiswa->user->name }} ({{ $mahasiswa->nim }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" class="remove-mahasiswa-btn inline-flex items-center gap-2 px-3 py-2 border border-maroon text-maroon rounded-md hover:bg-maroon hover:text-white transition text-sm">
+                                        <i class="fas fa-trash"></i>
+                                        <span>Hapus</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 mt-2">
+                                <button type="button" id="addMahasiswaBtn" class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm hover:bg-gray-50">+ Tambah Mahasiswa</button>
+                                <span id="slotsInfo" class="text-xs text-gray-500">Slot tersedia: 6</span>
+                            </div>
+                            @error('mahasiswa_ids')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
-                            <p class="text-xs text-gray-500 mt-1">Hanya menampilkan mahasiswa yang belum memiliki Dosen PA.</p>
+                            <p class="text-xs text-gray-500 mt-1">Tambah mahasiswa satu-per-satu hingga memenuhi kuota dosen (maks. sesuai kuota). Hanya menampilkan mahasiswa yang belum memiliki Dosen PA.</p>
+                            <!-- Hidden template for cloning -->
+                            <select id="mahasiswaTemplate" class="hidden">
+                                <option value="">-- Pilih Mahasiswa --</option>
+                                @foreach($mahasiswas as $mahasiswa)
+                                    <option value="{{ $mahasiswa->id }}">{{ $mahasiswa->user->name }} ({{ $mahasiswa->nim }})</option>
+                                @endforeach
+                            </select>
                             @if($mahasiswas->isEmpty())
                                 <p class="text-yellow-600 text-xs mt-1 font-semibold">
                                     <i class="fas fa-exclamation-triangle mr-1"></i>
@@ -116,4 +134,152 @@
         </form>
     </div>
 </div>
-@endsection
+    <style>
+        .remove-mahasiswa-btn {
+            transition: background-color .15s, color .15s, border-color .15s;
+        }
+        .remove-mahasiswa-btn:hover,
+        .remove-mahasiswa-btn:focus {
+            background-color: #8B1538 !important;
+            color: #fff !important;
+            border-color: #8B1538 !important;
+        }
+        .remove-mahasiswa-btn:disabled {
+            opacity: 0.45;
+            pointer-events: none;
+        }
+    </style>
+
+    @push('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const MAX_PER_DOSEN = 6;
+        const dosenSelect = document.querySelector('select[name="dosen_id"]');
+        const container = document.getElementById('mahasiswaContainer');
+        const addBtn = document.getElementById('addMahasiswaBtn');
+        const template = document.getElementById('mahasiswaTemplate');
+        const slotsInfo = document.getElementById('slotsInfo');
+        const form = document.querySelector('form');
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        function getDosenCount() {
+            const opt = dosenSelect.options[dosenSelect.selectedIndex];
+            return opt ? parseInt(opt.dataset.count || '0', 10) : 0;
+        }
+
+        function currentSelectedCount() {
+            return container.querySelectorAll('.mahasiswa-row').length;
+        }
+
+        function updateSlots() {
+            const occupied = getDosenCount();
+            const slotsLeft = Math.max(0, MAX_PER_DOSEN - occupied);
+            slotsInfo.textContent = `Slot tersedia: ${slotsLeft}`;
+
+            if (currentSelectedCount() > slotsLeft) {
+                submitBtn.disabled = true;
+                slotsInfo.textContent = `Slot tersedia: ${slotsLeft} — hapus beberapa pilihan untuk melanjutkan`;
+            } else {
+                submitBtn.disabled = false;
+            }
+            // Keep addBtn enabled so we can show an alert when user attempts to add beyond quota
+            addBtn.disabled = false;
+        }
+
+        function syncOptions() {
+            const selects = Array.from(container.querySelectorAll('select.mahasiswa-select'));
+            const selectedValues = selects.map(s => s.value).filter(v => v);
+
+            selects.forEach(s => {
+                Array.from(s.options).forEach(opt => {
+                    if (!opt.value) return;
+                    const isSelectedHere = s.value === opt.value;
+                    opt.disabled = !isSelectedHere && selectedValues.includes(opt.value);
+                });
+            });
+        }
+
+    function addMahasiswaSelect(prefill = '') {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mb-2 mahasiswa-row flex items-center gap-2';
+
+        const sel = document.createElement('select');
+        sel.name = 'mahasiswa_ids[]';
+        sel.className = 'flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition mahasiswa-select';
+        sel.innerHTML = template.innerHTML;
+        if (prefill) sel.value = prefill;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-mahasiswa-btn inline-flex items-center gap-2 px-3 py-2 border border-maroon text-maroon rounded-md hover:bg-maroon hover:text-white transition text-sm';
+        removeBtn.innerHTML = '<i class="fas fa-trash"></i> <span>Hapus</span>';
+        removeBtn.addEventListener('click', function () {
+            wrapper.remove();
+            updateSlots();
+            syncOptions();
+        });
+
+        sel.addEventListener('change', function () {
+            syncOptions();
+        });
+
+        wrapper.appendChild(sel);
+        wrapper.appendChild(removeBtn);
+        container.appendChild(wrapper);
+        syncOptions();
+        updateSlots();
+    }
+
+        const oldValues = @json(old('mahasiswa_ids', []));
+        if (oldValues && oldValues.length > 0) {
+            container.innerHTML = '';
+            oldValues.forEach(v => addMahasiswaSelect(String(v)));
+        }
+
+        addBtn.addEventListener('click', function () {
+            const occupied = getDosenCount();
+            const slotsLeft = Math.max(0, MAX_PER_DOSEN - occupied);
+            if (currentSelectedCount() >= slotsLeft) {
+                if (window.Swal) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Slot penuh',
+                        text: 'Slot sudah penuh untuk dosen ini. Hapus pilihan atau pilih dosen lain.',
+                        confirmButtonColor: '#8B1538'
+                    });
+                } else {
+                    alert('Slot sudah penuh untuk dosen ini. Hapus pilihan atau pilih dosen lain.');
+                }
+                return;
+            }
+            addMahasiswaSelect();
+        });
+
+        // Wire up any existing remove buttons (initial row)
+        document.querySelectorAll('.remove-mahasiswa-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const wrapper = btn.closest('.mahasiswa-row');
+                if (wrapper) wrapper.remove();
+                updateSlots();
+                syncOptions();
+            });
+        });
+
+        dosenSelect.addEventListener('change', function () {
+            updateSlots();
+        });
+
+        container.addEventListener('change', function (e) {
+            if (e.target && e.target.matches('select.mahasiswa-select')) {
+                syncOptions();
+                updateSlots();
+            }
+        });
+
+        updateSlots();
+        syncOptions();
+    });
+    </script>
+    @endpush
+
+    @endsection

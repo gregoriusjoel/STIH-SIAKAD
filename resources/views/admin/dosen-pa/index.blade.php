@@ -109,13 +109,13 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     @php
                                         $count = $dosen->mahasiswa_pa_count;
-                                        $badgeClass = $count >= 10 ? 'bg-red-100 text-red-800' : ($count >= 8 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
+                                        $badgeClass = $count >= 6 ? 'bg-red-100 text-red-800' : ($count >= 4 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
                                     @endphp
                                     <span
                                         class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $badgeClass }}">
                                         <i class="fas fa-users mr-1"></i>
-                                        {{ $count }}/10
-                                        @if($count >= 10)
+                                        {{ $count }}/6
+                                        @if($count >= 6)
                                             <span class="ml-1 font-bold">PENUH</span>
                                         @endif
                                     </span>
@@ -128,8 +128,7 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('admin.dosen-pa.destroy', $dosen->id) }}" method="POST"
-                                            class="inline"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus semua assignment mahasiswa dari Dosen PA ini?')">
+                                            class="inline delete-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -184,7 +183,7 @@
                                 <i class="fas fa-user-graduate mr-1"></i>Nama Mahasiswa
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                                <i class="fas fa-id-badge mr-1"></i>NPM
+                                <i class="fas fa-id-badge mr-1"></i>NIM
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                                 <i class="fas fa-graduation-cap mr-1"></i>Program Studi
@@ -227,7 +226,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm font-mono text-maroon font-bold" x-text="mhs.npm"></span>
+                                    <span class="text-sm font-mono text-maroon font-bold" x-text="mhs.nim"></span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="text-sm text-gray-900" x-text="mhs.program_studi || 'Ilmu Hukum'"></span>
@@ -247,4 +246,36 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/nim/sweetalert2@11"></script>
+        <script>
+            // SweetAlert Delete Confirmation
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Semua assignment mahasiswa dari Dosen PA ini akan dihapus permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        background: '#ffffff',
+                        customClass: {
+                            confirmButton: 'btn btn-danger',
+                            cancelButton: 'btn btn-secondary'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

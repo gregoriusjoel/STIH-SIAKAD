@@ -63,7 +63,7 @@
                     $studentSemester = $mahasiswa->semester ?? $mahasiswa->getCurrentSemester();
                 @endphp
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div><span class="opacity-80">NPM:</span> <span class="font-semibold">{{ $mahasiswa->npm }}</span></div>
+                    <div><span class="opacity-80">NIM:</span> <span class="font-semibold">{{ $mahasiswa->nim }}</span></div>
                     <div><span class="opacity-80">Prodi:</span> <span class="font-semibold">{{ $mahasiswa->prodi ?? 'Hukum' }}</span></div>
                     <div><span class="opacity-80">Angkatan:</span> <span class="font-semibold">{{ $mahasiswa->angkatan ?? '2023' }}</span></div>
                     <div class="mt-1"><span class="opacity-80">Semester:</span> <span class="font-semibold">{{ $studentSemester }}</span></div>

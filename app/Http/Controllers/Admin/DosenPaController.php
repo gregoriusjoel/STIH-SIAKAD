@@ -52,27 +52,40 @@ class DosenPaController extends Controller
     {
         $request->validate([
             'dosen_id' => 'required|exists:dosens,id',
-            'mahasiswa_id' => 'required|exists:mahasiswas,id',
+            'mahasiswa_ids' => 'required|array',
+            'mahasiswa_ids.*' => 'exists:mahasiswas,id',
         ]);
 
         $dosen = Dosen::findOrFail($request->dosen_id);
-        $mahasiswa = Mahasiswa::findOrFail($request->mahasiswa_id);
+        $mahasiswaIds = $request->input('mahasiswa_ids', []);
 
-        // Check if dosen already has 10 mahasiswa
-        if ($dosen->mahasiswaPa()->count() >= 10) {
-            return back()->with('error', 'Dosen ini sudah mencapai batas maksimal 10 mahasiswa.');
+        $currentCount = $dosen->mahasiswaPa()->count();
+        $toAdd = count($mahasiswaIds);
+
+        // Enforce 6-student limit per dosen
+        if ($currentCount + $toAdd > 6) {
+            return back()->with('error', 'Dosen ini tidak dapat menampung ' . $toAdd . ' mahasiswa. Slot tersedia: ' . (6 - $currentCount));
         }
 
-        // Check if mahasiswa already has a Dosen PA
-        if ($mahasiswa->dosenPa()->count() > 0) {
-            return back()->with('error', 'Mahasiswa ini sudah memiliki Dosen PA.');
+        // Verify none of the selected mahasiswa already have a Dosen PA
+        $conflicts = Mahasiswa::whereIn('id', $mahasiswaIds)->filter(function($m) {
+            return $m->dosenPa()->count() > 0;
+        });
+
+        // If using collections, check but simpler to loop
+        foreach ($mahasiswaIds as $mid) {
+            $m = Mahasiswa::find($mid);
+            if (!$m) continue;
+            if ($m->dosenPa()->count() > 0) {
+                return back()->with('error', 'Mahasiswa ' . $m->user->name . ' sudah memiliki Dosen PA. Pilih mahasiswa lain.');
+            }
         }
 
-        // Create the relationship
-        $dosen->mahasiswaPa()->attach($mahasiswa->id);
+        // Attach all selected mahasiswa
+        $dosen->mahasiswaPa()->attach($mahasiswaIds);
 
         return redirect()->route('admin.dosen-pa.index')
-            ->with('success', 'Dosen PA berhasil ditambahkan untuk ' . $mahasiswa->user->name);
+            ->with('success', 'Dosen PA berhasil ditambahkan untuk ' . count($mahasiswaIds) . ' mahasiswa');
     }
 
     /**
@@ -147,8 +160,8 @@ class DosenPaController extends Controller
         $currentCount = $newDosen->mahasiswaPa()->count();
         $toTransfer = count($request->mahasiswa_ids);
         
-        if ($currentCount + $toTransfer > 10) {
-            return back()->with('error', 'Dosen tujuan tidak dapat menampung ' . $toTransfer . ' mahasiswa. Slot tersedia: ' . (10 - $currentCount));
+        if ($currentCount + $toTransfer > 6) {
+            return back()->with('error', 'Dosen tujuan tidak dapat menampung ' . $toTransfer . ' mahasiswa. Slot tersedia: ' . (6 - $currentCount));
         }
 
         // Detach from current dosen and attach to new dosen
@@ -170,7 +183,7 @@ class DosenPaController extends Controller
             return [
                 'id' => $mahasiswa->id,
                 'name' => $mahasiswa->user->name,
-                'npm' => $mahasiswa->npm,
+                'nim' => $mahasiswa->nim,
                 'program_studi' => $mahasiswa->program_studi ?? 'Ilmu Hukum',
                 'semester' => $mahasiswa->semester ?? 1,
             ];

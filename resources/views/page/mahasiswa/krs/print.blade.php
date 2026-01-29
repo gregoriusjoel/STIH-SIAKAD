@@ -12,7 +12,7 @@
         </div>
         <div class="text-right">
             <p class="text-sm">Nama: <strong>{{ $mahasiswa->user->name }}</strong></p>
-            <p class="text-sm">NPM: <strong>{{ $mahasiswa->npm }}</strong></p>
+            <p class="text-sm">NIM: <strong>{{ $mahasiswa->nim }}</strong></p>
         </div>
     </div>
 

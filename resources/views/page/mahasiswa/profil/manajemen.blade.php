@@ -90,7 +90,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                         <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Username</label>
                         <div class="lg:col-span-9">
-                            <input type="text" value="{{ $mahasiswa->npm }}" readonly 
+                            <input type="text" value="{{ $mahasiswa->nim }}" readonly 
                                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm shadow-sm">
                         </div>
                     </div>
@@ -117,7 +117,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                         <label class="lg:col-span-3 text-sm text-gray-600 font-medium">NIM</label>
                         <div class="lg:col-span-9">
-                            <input type="text" value="{{ $mahasiswa->npm }}" readonly 
+                            <input type="text" value="{{ $mahasiswa->nim }}" readonly 
                                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm shadow-sm">
                         </div>
                     </div>

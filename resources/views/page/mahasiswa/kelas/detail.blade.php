@@ -9,16 +9,31 @@
             display: none !important;
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
+        rel="stylesheet" />
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+    </style>
 @endpush
 
 @section('content')
-    <div class="space-y-6" x-data="{ activeTab: 'pertemuan' }">
-        <!-- Breadcrumb -->
-        <nav class="flex items-center gap-2 text-sm text-gray-500">
-            <a href="{{ route('mahasiswa.kelas.index') }}" class="hover:text-maroon transition-colors">E-Learning</a>
-            <i class="fas fa-chevron-right text-xs"></i>
-            <span class="font-medium text-gray-800">{{ $classInfo['name'] }}</span>
+    @section('navbar_breadcrumb')
+        <nav class="flex items-center gap-2 text-sm text-[#616889]">
+            <a href="{{ route('mahasiswa.kelas.index') }}" class="hover:text-primary transition-colors">E-Learning</a>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-[#111218] font-medium">{{ $classInfo['name'] }}</span>
         </nav>
+    @endsection
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-24 2xl:px-48 py-6" x-data="{ activeTab: 'pertemuan' }">
+        <div class="mx-auto w-full max-w-[1800px] space-y-6">
 
         <!-- Header Card -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -93,11 +108,12 @@
                         :class="activeTab === 'pertemuan' ? 'text-maroon border-maroon' : 'text-gray-500 border-transparent hover:text-gray-700'">
                         Daftar Pertemuan
                     </button>
-                    <button @click="activeTab = 'materi'"
+                    {{-- Tab Materi Hidden as requested --}}
+                    {{-- <button @click="activeTab = 'materi'"
                         class="py-4 text-sm font-medium border-b-2 transition-colors relative"
                         :class="activeTab === 'materi' ? 'text-maroon border-maroon' : 'text-gray-500 border-transparent hover:text-gray-700'">
                         Materi Kuliah
-                    </button>
+                    </button> --}}
                 </div>
             </div>
         </div>
@@ -109,43 +125,108 @@
                 Timeline Pertemuan
             </h3>
 
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="divide-y divide-gray-100">
-                    @foreach($meetings as $meeting)
-                        <div
-                            class="p-4 hover:bg-gray-50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4 group">
-                            <div class="flex items-start gap-4">
+            <div class="space-y-4">
+                @foreach($meetings as $meeting)
+                    <div x-data="{ open: false }" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        {{-- Accordion Header --}}
+                        <button @click="open = !open"
+                            class="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-colors text-left">
+                            <div class="flex items-center gap-4">
                                 <div
-                                    class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold {{ $meeting['is_past'] ? 'bg-gray-100 text-gray-500' : 'bg-blue-50 text-blue-600' }}">
+                                    class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 font-bold {{ $meeting['is_past'] ? 'bg-gray-100 text-gray-500' : 'bg-maroon/10 text-maroon' }}">
                                     {{ $meeting['no'] }}
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold text-gray-800">{{ $meeting['label'] }}</p>
-                                    <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                                        <i class="far fa-calendar"></i> {{ $meeting['date'] }}
-                                    </p>
-                                    <p class="text-xs text-gray-500 mt-1 flex items-center gap-1 md:hidden">
-                                        <i class="far fa-clock"></i> {{ $meeting['time'] }}
-                                    </p>
+                                    <h4 class="font-bold text-gray-800">{{ $meeting['label'] }}</h4>
+                                    <div class="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                                        <span><i class="far fa-calendar-alt mr-1"></i> {{ $meeting['date'] }}</span>
+                                        <span class="hidden md:inline">•</span>
+                                        <span class="hidden md:inline"><i class="far fa-clock mr-1"></i>
+                                            {{ $meeting['time'] }}</span>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-gray-400 transition-transform duration-300"
+                                    :class="open ? 'rotate-180' : ''">expand_more</span>
+                            </div>
+                        </button>
 
-                            <div class="flex items-center gap-4 pl-16 md:pl-0">
-                                <div class="hidden md:block text-right mr-4">
-                                    <p class="text-xs text-gray-400 font-medium uppercase">Jam Kuliah</p>
-                                    <p class="text-sm font-medium text-gray-700">{{ $meeting['time'] }}</p>
-                                </div>
+                        {{-- Accordion Body --}}
+                        <div x-show="open" x-collapse>
+                            <div class="p-6 pt-0 border-t border-gray-50">
+                                <div class="mt-4 space-y-6">
+                                    {{-- Description --}}
+                                    <div>
+                                        <h5 class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                            <i class="fas fa-align-left text-maroon w-5"></i> Deskripsi
+                                        </h5>
+                                        <p class="text-sm text-gray-600 leading-relaxed pl-7">
+                                            {{ $meeting['description'] }}
+                                        </p>
+                                    </div>
 
-                                <div class="text-right">
-                                    <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold {{ $meeting['status_class'] }}">
-                                        {{ $meeting['status'] }}
-                                    </span>
+                                    {{-- Materials --}}
+                                    <div>
+                                        <h5 class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                            <i class="fas fa-file-alt text-maroon w-5"></i> Materi Pembelajaran
+                                        </h5>
+                                        <div class="pl-7 grid gap-3">
+                                            @foreach($meeting['materials'] as $material)
+                                                <a href="{{ $material['url'] }}" target="_blank"
+                                                    class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-maroon/30 hover:shadow-sm transition-all group">
+                                                    <div
+                                                        class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center">
+                                                        <i class="fas fa-file-pdf"></i>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <p
+                                                            class="text-sm font-bold text-gray-800 group-hover:text-maroon transition-colors">
+                                                            {{ $material['name'] }}
+                                                        </p>
+                                                        <p class="text-xs text-gray-500">Klik untuk membuka di tab baru</p>
+                                                    </div>
+                                                    <i class="fas fa-external-link-alt text-gray-300 group-hover:text-maroon"></i>
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    {{-- Assignments --}}
+                                    <div>
+                                        <h5 class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                            <i class="fas fa-tasks text-maroon w-5"></i> Tugas
+                                        </h5>
+                                        <div class="pl-7 space-y-3">
+                                            @foreach($meeting['assignments'] as $tugas)
+                                                <div class="p-4 rounded-xl border border-orange-100 bg-orange-50/50">
+                                                    <div class="flex items-start justify-between mb-3">
+                                                        <div>
+                                                            <p class="text-sm font-bold text-gray-800 mb-1">{{ $tugas['title'] }}</p>
+                                                            <p class="text-xs text-gray-600">Deadline: <span class="font-bold text-orange-700">{{ $tugas['deadline'] }}</span></p>
+                                                        </div>
+                                                        <span class="px-2 py-1 rounded text-[10px] font-bold bg-white border border-gray-200 text-gray-500">Belum Dikumpulkan</span>
+                                                    </div>
+                                                    
+                                                    <div class="flex gap-2">
+                                                        @if(isset($tugas['file_url']))
+                                                            <a href="{{ $tugas['file_url'] }}" target="_blank" class="flex-1 py-2 rounded-lg bg-orange-100/50 text-orange-700 border border-orange-200 text-xs font-bold text-center hover:bg-orange-100 transition-all flex items-center justify-center gap-2">
+                                                                <i class="fas fa-file-pdf"></i> Soal Tugas
+                                                            </a>
+                                                        @endif
+                                                        <button class="flex-1 py-2 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-600 hover:text-maroon hover:border-maroon transition-all flex items-center justify-center gap-2">
+                                                            <span class="material-symbols-outlined text-[16px]">upload_file</span> Upload Jawaban
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
-                </div>
+                    </div>
+                @endforeach
             </div>
         </div>
 
@@ -167,5 +248,6 @@
                 </p>
             </div>
         </div>
+    </div>
     </div>
 @endsection

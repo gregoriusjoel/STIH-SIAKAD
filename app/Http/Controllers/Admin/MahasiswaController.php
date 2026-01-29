@@ -18,7 +18,7 @@ class MahasiswaController extends Controller
     public function index()
     {
         // Admin listing of all mahasiswa with pagination
-        $mahasiswas = \App\Models\Mahasiswa::with('user')->orderBy('npm')->paginate(25);
+        $mahasiswas = \App\Models\Mahasiswa::with('user')->orderBy('nim')->paginate(25);
         return view('admin.mahasiswa.index', compact('mahasiswas'));
     }
 
@@ -38,8 +38,8 @@ class MahasiswaController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
-            'npm' => 'required|string|unique:mahasiswas,npm',
+            'password' => 'nullable|min:6',
+            'nim' => 'required|string|unique:mahasiswas,nim',
             'prodi' => 'required|string|max:255',
             'angkatan' => 'required|string|max:10',
             'semester' => 'required|integer|min:1|max:12',
@@ -49,17 +49,18 @@ class MahasiswaController extends Controller
         ]);
 
         // create user
+        $plainPassword = $request->filled('password') ? $request->input('password') : 'mahasiswa123';
         $user = \App\Models\User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
+            'password' => Hash::make($plainPassword),
             'role' => 'mahasiswa',
         ]);
 
         // create mahasiswa
         Mahasiswa::create([
             'user_id' => $user->id,
-            'npm' => $request->input('npm'),
+            'nim' => $request->input('nim'),
             'prodi' => $request->input('prodi'),
             'angkatan' => $request->input('angkatan'),
             'semester' => $request->input('semester'),
@@ -90,7 +91,7 @@ class MahasiswaController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'password' => 'nullable|string|min:6',
-            'npm' => 'required|string|max:50',
+            'nim' => 'required|string|max:50',
             'prodi' => 'required|string|max:255',
             'angkatan' => 'required|string|max:10',
             'jenis_kelamin' => 'nullable|string|max:50',
@@ -110,7 +111,7 @@ class MahasiswaController extends Controller
         $user->save();
 
         // Update mahasiswa fields
-        $mahasiswa->npm = $request->input('npm');
+        $mahasiswa->nim = $request->input('nim');
         $mahasiswa->prodi = $request->input('prodi');
         $mahasiswa->angkatan = $request->input('angkatan');
         $mahasiswa->jenis_kelamin = $request->input('jenis_kelamin');

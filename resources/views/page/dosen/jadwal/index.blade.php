@@ -97,11 +97,16 @@
                                 <div class="flex justify-between items-start">
                                     <h4 class="font-bold text-[#111218] dark:text-white text-sm">{{ $kelas->mataKuliah->nama_mk }}</h4>
                                     <div class="flex items-center gap-1">
-                                        @if($kelas->is_rescheduled)
-                                        <span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">RESCHEDULE</span>
-                                        @endif
-                                        <span class="bg-{{ $kelas->mataKuliah->jenis === 'pilihan' ? 'blue' : 'orange' }}-50 text-{{ $kelas->mataKuliah->jenis === 'pilihan' ? 'blue' : 'orange' }}-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase">{{ $kelas->mataKuliah->jenis }}</span>
-                                    </div>
+                                            @if($kelas->is_rescheduled)
+                                            <span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">RESCHEDULE</span>
+                                            @endif
+                                            @php
+                                                $jenisNorm = strtolower($kelas->mataKuliah->jenis ?? '');
+                                                $isPilihan = $jenisNorm === 'pilihan';
+                                                $jenisLabel = ucwords(str_replace('_', ' ', $jenisNorm));
+                                            @endphp
+                                            <span class="bg-{{ $isPilihan ? 'blue' : 'orange' }}-50 text-{{ $isPilihan ? 'blue' : 'orange' }}-600 px-2 py-0.5 rounded text-[10px] font-bold">{{ $jenisLabel }}</span>
+                                        </div>
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-[#616889]">
                                     <span class="bg-red-50 text-red-700 px-1.5 rounded font-bold">{{ $kelas->display_kelas }}</span>

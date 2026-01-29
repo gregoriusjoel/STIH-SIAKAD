@@ -61,7 +61,7 @@
             {{-- Info Mahasiswa --}}
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div><span class="text-gray-600">NPM:</span> <span class="font-semibold text-gray-800">{{ $mahasiswa->npm }}</span></div>
+                    <div><span class="text-gray-600">NIM:</span> <span class="font-semibold text-gray-800">{{ $mahasiswa->nim }}</span></div>
                     <div><span class="text-gray-600">Nama:</span> <span class="font-semibold text-gray-800">{{ $mahasiswa->user->name }}</span></div>
                     <div><span class="text-gray-600">Prodi:</span> <span class="font-semibold text-gray-800">{{ $mahasiswa->prodi ?? 'Hukum' }}</span></div>
                     <div><span class="text-gray-600">Angkatan:</span> <span class="font-semibold text-gray-800">{{ $mahasiswa->angkatan ?? '-' }}</span></div>

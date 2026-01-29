@@ -53,10 +53,13 @@
                                 <i class="fas fa-lock text-gray-400 mr-1"></i>
                                 Password *
                             </label>
-                            <input type="password" name="password" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
-                                placeholder="Minimal 6 karakter"
-                                required>
+                            <div class="relative">
+                                <input id="mahasiswa_password" type="password" name="password" value="{{ old('password', 'mahasiswa123') }}"
+                                    class="w-full pr-10 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
+                                    placeholder="Minimal 6 karakter"
+                                    required>
+                                <button type="button" id="toggleMahasiswaPw" aria-pressed="false" class="absolute right-3 top-1/2 transform -translate-y-1/2 inline-flex items-center px-2 text-sm text-gray-500 hover:text-gray-700 bg-transparent border-0"><i class="fas fa-eye"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,9 +75,9 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-id-card text-gray-400 mr-1"></i>
-                                NPM *
+                                NIM *
                             </label>
-                            <input type="text" name="npm" value="{{ old('npm') }}" 
+                            <input type="text" name="nim" value="{{ old('nim') }}" 
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
                                 placeholder="Contoh: 2024010001"
                                 required>
@@ -157,3 +160,16 @@
     </div>
 </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const pw = document.getElementById('mahasiswa_password');
+    const btn = document.getElementById('toggleMahasiswaPw');
+    if(btn && pw){
+        btn.addEventListener('click', function(){
+            if(pw.type === 'password'){ pw.type = 'text'; btn.innerHTML = '<i class="fas fa-eye-slash"></i>'; btn.setAttribute('aria-pressed','true'); }
+            else { pw.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; btn.setAttribute('aria-pressed','false'); }
+        });
+    }
+});
+</script>

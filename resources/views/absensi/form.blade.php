@@ -60,10 +60,10 @@
 
                     @if(! (auth()->check() && auth()->user()->mahasiswa))
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">NPM</label>
-                            <input type="text" name="npm" value="{{ old('npm') }}" placeholder="Contoh: 2023001"
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">NIM</label>
+                            <input type="text" name="nim" value="{{ old('nim') }}" placeholder="Contoh: 2023001"
                                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300 placeholder-gray-400 focus:ring-2 focus:ring-[#8B1538] focus:border-transparent transition duration-150 ease-in-out text-sm">
-                            @error('npm')<p class="text-xs text-red-600 mt-1">{{ $message }}</p>@enderror
+                            @error('nim')<p class="text-xs text-red-600 mt-1">{{ $message }}</p>@enderror
                         </div>
 
                         <div>

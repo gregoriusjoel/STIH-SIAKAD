@@ -42,8 +42,8 @@ class LecturerController extends Controller
         $today = now()->locale('id')->isoFormat('dddd'); // Senin, Selasa, etc
         $todaySchedules = $activeJadwals->where('hari', $today)->map(function ($jadwal) {
             return [
-                'subject' => $jadwal->kelas->mataKuliah->nama,
-                'code' => $jadwal->kelas->mataKuliah->kode,
+                'subject' => $jadwal->kelas->mataKuliah->nama_mk,
+                'code' => $jadwal->kelas->mataKuliah->kode_mk,
                 'class' => $jadwal->kelas->section,
                 'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
                 'room' => $jadwal->ruangan,
@@ -60,8 +60,8 @@ class LecturerController extends Controller
             'schedules' => $todaySchedules,
             'all_schedules' => $activeJadwals->map(function ($jadwal) {
                 return [
-                    'title' => $jadwal->kelas->mataKuliah->nama,
-                    'code' => $jadwal->kelas->mataKuliah->kode,
+                    'title' => $jadwal->kelas->mataKuliah->nama_mk,
+                    'code' => $jadwal->kelas->mataKuliah->kode_mk,
                     'section' => $jadwal->kelas->section,
                     'day' => $jadwal->hari,
                     'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
@@ -125,8 +125,8 @@ class LecturerController extends Controller
 
             return [
                 'id' => $kelas->id,
-                'name' => $kelas->mataKuliah->nama,
-                'code' => $kelas->mataKuliah->kode,
+                'name' => $kelas->mataKuliah->nama_mk,
+                'code' => $kelas->mataKuliah->kode_mk,
                 'section' => $kelas->section,
                 'students' => $krsCount,
                 'day' => $jadwal?->hari ?? '-',
@@ -151,7 +151,7 @@ class LecturerController extends Controller
         $classes = $kelasList->map(function ($kelas) {
             return [
                 'id' => $kelas->id,
-                'name' => $kelas->mataKuliah->nama . ' (' . $kelas->section . ')',
+                'name' => $kelas->mataKuliah->nama_mk . ' (' . $kelas->section . ')',
             ];
         })->toArray();
 
@@ -202,8 +202,8 @@ class LecturerController extends Controller
         }
 
         $class_info = [
-            'name' => $kelas->mataKuliah->nama,
-            'code' => $kelas->mataKuliah->kode,
+            'name' => $kelas->mataKuliah->nama_mk,
+            'code' => $kelas->mataKuliah->kode_mk,
             'section' => $kelas->section,
             'pertemuan' => $pertemuanKe,
             'topic' => 'Pertemuan Ke-' . $pertemuanKe,
@@ -258,8 +258,8 @@ class LecturerController extends Controller
         // Build a `class` array expected by the blade templates (includes QR token)
         $class = [
             'id' => $kelas->id,
-            'name' => $kelas->mataKuliah->nama,
-            'code' => $kelas->mataKuliah->kode,
+            'name' => $kelas->mataKuliah->nama_mk,
+            'code' => $kelas->mataKuliah->kode_mk,
             'section' => $kelas->section,
             'pertemuan' => $pertemuanKe,
             'topic' => 'Pertemuan Ke-' . $pertemuanKe,
@@ -352,8 +352,8 @@ class LecturerController extends Controller
         })->toArray();
 
         $class_info = [
-            'name' => $kelas->mataKuliah->nama,
-            'code' => $kelas->mataKuliah->kode,
+            'name' => $kelas->mataKuliah->nama_mk,
+            'code' => $kelas->mataKuliah->kode_mk,
             'sks' => $kelas->mataKuliah->sks,
             'semester' => $kelas->mataKuliah->semester,
             'section' => $kelas->section,

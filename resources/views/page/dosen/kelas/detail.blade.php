@@ -56,7 +56,7 @@
             <nav class="flex items-center gap-2 text-sm text-gray-500">
                 <a href="{{ route('dosen.kelas') }}" class="hover:text-primary transition-colors">Kelas</a>
                 <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                <span class="font-medium text-gray-800">Detail Kelas</span>
+                <span class="font-medium text-gray-800">{{ $class_info['name'] }}</span>
             </nav>
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">

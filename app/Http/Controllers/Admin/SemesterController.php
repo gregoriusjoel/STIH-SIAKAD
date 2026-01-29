@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Semester;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SemesterController extends Controller
 {
@@ -62,11 +65,25 @@ class SemesterController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_semester' => 'required|string|max:50',
-            'tahun_ajaran' => 'required|string|max:20',
-            'status' => 'required|in:aktif,non-aktif',
+            'nama_semester' => [
+                'required',
+                'in:Ganjil,Genap',
+                Rule::unique('semesters')->where(function ($query) use ($request) {
+                    return $query->where('tahun_ajaran', $request->input('tahun_ajaran'));
+                }),
+            ],
+            'tahun_ajaran' => ['required','string','max:20'],
+            'status' => ['required','in:aktif,non-aktif'],
 
-            'tanggal_mulai' => 'required|date',
+            'tanggal_mulai' => [
+                'required',
+                'date',
+                Rule::unique('semesters')->where(function ($query) use ($request) {
+                    return $query->where('nama_semester', $request->input('nama_semester'))
+                                 ->where('tahun_ajaran', $request->input('tahun_ajaran'))
+                                 ->where('tanggal_mulai', $request->input('tanggal_mulai'));
+                }),
+            ],
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
         ]);
 
@@ -87,10 +104,24 @@ class SemesterController extends Controller
     public function update(Request $request, Semester $semester)
     {
         $request->validate([
-            'nama_semester' => 'required|string|max:50',
-            'tahun_ajaran' => 'required|string|max:20',
-            'status' => 'required|in:aktif,non-aktif',
-            'tanggal_mulai' => 'required|date',
+            'nama_semester' => [
+                'required',
+                'in:Ganjil,Genap',
+                Rule::unique('semesters')->ignore($semester->id)->where(function ($query) use ($request) {
+                    return $query->where('tahun_ajaran', $request->input('tahun_ajaran'));
+                }),
+            ],
+            'tahun_ajaran' => ['required','string','max:20'],
+            'status' => ['required','in:aktif,non-aktif'],
+            'tanggal_mulai' => [
+                'required',
+                'date',
+                Rule::unique('semesters')->ignore($semester->id)->where(function ($query) use ($request) {
+                    return $query->where('nama_semester', $request->input('nama_semester'))
+                                 ->where('tahun_ajaran', $request->input('tahun_ajaran'))
+                                 ->where('tanggal_mulai', $request->input('tanggal_mulai'));
+                }),
+            ],
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
         ]);
 
@@ -110,5 +141,39 @@ class SemesterController extends Controller
         }
         $semester->delete();
         return redirect()->route('admin.krs.index')->with('success', 'Semester berhasil dihapus');
+    }
+
+    /**
+     * Return the tanggal_selesai for the Ganjil semester of the given tahun_ajaran.
+     *
+     * Response: { tanggal_selesai: 'YYYY-MM-DD' | null }
+     */
+    public function previousEnd(Request $request)
+    {
+        try {
+            Log::info('previousEnd called', ['query' => $request->query()]);
+
+            $request->validate([
+                'tahun_ajaran' => 'required|string',
+            ]);
+
+            $tahun = $request->input('tahun_ajaran');
+
+            // Only return a date when a Ganjil exists for the exact same tahun_ajaran.
+            $semester = Semester::where('nama_semester', 'Ganjil')
+                ->where('tahun_ajaran', $tahun)
+                ->orderBy('tanggal_selesai', 'desc')
+                ->first();
+
+            if (!$semester || !$semester->tanggal_selesai) {
+                return response()->json(['tanggal_selesai' => null]);
+            }
+
+            $dt = Carbon::parse($semester->tanggal_selesai)->format('Y-m-d');
+            return response()->json(['tanggal_selesai' => $dt]);
+        } catch (\Exception $e) {
+            Log::error('previousEnd error: '.$e->getMessage(), ['exception' => $e]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
     }
 }

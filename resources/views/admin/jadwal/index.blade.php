@@ -293,7 +293,7 @@
                                                         class="bg-yellow-500 text-white p-1.5 rounded hover:bg-yellow-600 transition"
                                                         title="Edit"><i class="fas fa-edit text-xs"></i></a>
                                                     <form action="{{ route('admin.kelas-mata-kuliah.destroy', $k) }}"
-                                                        method="POST" onsubmit="return confirm('Hapus jadwal ini?')">@csrf
+                                                        method="POST" class="delete-form">@csrf
                                                         @method('DELETE')<button type="submit"
                                                             class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition"
                                                             title="Hapus"><i class="fas fa-trash text-xs"></i></button></form>
@@ -513,6 +513,33 @@
                     modal.style.display = 'none';
                 }
             }
+
+            // SweetAlert Delete Confirmation
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data jadwal ini akan dihapus permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        background: '#ffffff',
+                        customClass: {
+                            confirmButton: 'btn btn-danger',
+                            cancelButton: 'btn btn-secondary'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
         </script>
     @endpush
 @endsection

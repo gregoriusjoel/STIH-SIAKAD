@@ -70,7 +70,7 @@
                             <tr>
                                 <td style="width:90px;">NIM</td>
                                 <td style="width:6px;">:</td>
-                                <td>{{ $mahasiswa->npm }}</td>
+                                <td>{{ $mahasiswa->nim }}</td>
                                 <td style="width:120px;"></td>
                                 <td style="width:120px;">Tahun Ajaran</td>
                                 <td style="width:6px;">:</td>

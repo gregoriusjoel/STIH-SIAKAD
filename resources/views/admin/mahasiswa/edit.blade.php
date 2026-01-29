@@ -76,9 +76,9 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-id-card text-gray-400 mr-1"></i>
-                                NPM *
+                                NIM *
                             </label>
-                            <input type="text" name="npm" value="{{ old('npm', $mahasiswa->npm) }}" 
+                            <input type="text" name="nim" value="{{ old('nim', $mahasiswa->nim) }}" 
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
                                 placeholder="Contoh: 2024010001"
                                 required>

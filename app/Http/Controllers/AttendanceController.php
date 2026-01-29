@@ -67,7 +67,7 @@ class AttendanceController extends Controller
         }
 
         $data = $request->validate([
-            'npm' => 'nullable|string',
+            'nim' => 'nullable|string',
             'name' => 'nullable|string',
             'kontak' => 'nullable|string',
             'keterangan' => 'nullable|string',
@@ -86,12 +86,12 @@ class AttendanceController extends Controller
             $mahasiswa = auth()->user()->mahasiswa;
             $krs = Krs::where('mahasiswa_id', $mahasiswa->id)->where('kelas_mata_kuliah_id', $kelas->id)->first();
         } else {
-            if (empty($data['npm'])) {
-                return back()->withErrors(['npm' => 'Masukkan NPM Anda jika tidak login.']);
+            if (empty($data['nim'])) {
+                return back()->withErrors(['nim' => 'Masukkan NIM Anda jika tidak login.']);
             }
-            $mahasiswa = Mahasiswa::where('npm', $data['npm'])->first();
+            $mahasiswa = Mahasiswa::where('nim', $data['nim'])->first();
             if (! $mahasiswa) {
-                return back()->withErrors(['npm' => 'Mahasiswa dengan NPM tersebut tidak ditemukan.']);
+                return back()->withErrors(['nim' => 'Mahasiswa dengan NIM tersebut tidak ditemukan.']);
             }
             $krs = Krs::where('mahasiswa_id', $mahasiswa->id)->where('kelas_mata_kuliah_id', $kelas->id)->first();
         }
@@ -147,7 +147,7 @@ class AttendanceController extends Controller
             'krs_id' => $krs->id,
             'mahasiswa_id' => $mahasiswa->id ?? null,
             'kelas_mata_kuliah_id' => $kelas->id ?? null,
-            'nama' => $data['name'] ?? $mahasiswa?->user?->name ?? $mahasiswa?->npm ?? null,
+            'nama' => $data['name'] ?? $mahasiswa?->user?->name ?? $mahasiswa?->nim ?? null,
             'kontak' => $mahasiswa?->phone ?? $mahasiswa?->no_hp ?? null,
             'tanggal' => Carbon::now()->toDateString(),
             'waktu' => Carbon::now(),

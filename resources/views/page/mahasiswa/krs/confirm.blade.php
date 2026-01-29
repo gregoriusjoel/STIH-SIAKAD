@@ -3,8 +3,8 @@
 @section('title', 'Konfirmasi KRS')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-    <div class="max-w-4xl w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl">
+<div class="pt-6 pb-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div class="max-w-4xl w-full mx-auto space-y-8 bg-white p-6 sm:p-8 rounded-2xl shadow-xl">
         
         <!-- Header Title -->
         <div class="text-center mb-8">
@@ -22,18 +22,19 @@
             <!-- Left: Profile Card -->
             <div class="w-full md:w-1/3 flex flex-col items-center justify-center p-6 border border-gray-200 rounded-xl bg-white shadow-sm">
                 <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-4 overflow-hidden">
-                    @if($mahasiswa->foto_profil)
-                        <img src="{{ asset('storage/' . $mahasiswa->foto_profil) }}" alt="Profile" class="w-full h-full object-cover">
+                    @php $foto = $mahasiswa->foto ?? null; @endphp
+                    @if(!empty($foto))
+                        <img src="{{ asset('storage/' . $foto) }}" alt="Profile" class="w-full h-full object-cover">
                     @else
                         <i class="fas fa-user text-4xl text-gray-400"></i>
                     @endif
                 </div>
                 <div class="text-center">
                     <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Nama</p>
-                    <h3 class="text-lg font-bold text-gray-900 mb-3">{{ $mahasiswa->nama }}</h3>
+                    <h3 class="text-lg font-bold text-gray-900 mb-3">{{ $mahasiswa->nama ?? $mahasiswa->user->name ?? '-' }}</h3>
                     
-                    <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">NPM</p>
-                    <p class="text-md font-medium text-gray-800">{{ $mahasiswa->npm }}</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">NIM</p>
+                    <p class="text-md font-medium text-gray-800">{{ $mahasiswa->nim ?? ($mahasiswa->user->nim ?? '-') }}</p>
                 </div>
             </div>
 

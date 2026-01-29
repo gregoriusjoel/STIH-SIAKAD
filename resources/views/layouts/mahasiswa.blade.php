@@ -81,7 +81,7 @@
                         <i class="fas fa-graduation-cap text-xl"></i>
                     </div>
                     <div class="flex flex-col">
-                        <h1 class="text-gray-800 text-lg font-bold leading-tight">SIAKAD Uni</h1>
+                        <h1 class="text-gray-800 text-lg font-bold leading-tight">STIH Adhyaksa
                         <p class="text-gray-500 text-xs font-normal">Student Portal</p>
                     </div>
                 </div>
@@ -233,7 +233,7 @@
                                 <p class="text-sm font-semibold text-gray-800">
                                     {{ Auth::user()->mahasiswa->nama ?? Auth::user()->name }}
                                 </p>
-                                <p class="text-xs text-gray-500">NPM: {{ Auth::user()->mahasiswa->npm ?? '-' }}</p>
+                                <p class="text-xs text-gray-500">NIM: {{ Auth::user()->mahasiswa->nim ?? '-' }}</p>
                             </div>
                             <div
                                 class="w-10 h-10 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center text-white font-bold shadow-md">

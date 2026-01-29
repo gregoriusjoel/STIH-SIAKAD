@@ -105,12 +105,12 @@
                                         title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('admin.dosen.destroy', $dosen) }}" method="POST" class="inline">
+                                    <form action="{{ route('admin.dosen.destroy', $dosen) }}" method="POST" class="inline delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
                                             class="text-red-600 hover:text-red-900 transition p-2 hover:bg-red-50 rounded"
-                                            onclick="return confirm('Yakin ingin menghapus dosen ini?')" title="Hapus">
+                                            title="Hapus">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -212,4 +212,35 @@
             </div>
         @endif
     </div>
+
+    @push('scripts')
+        <script>
+            // SweetAlert Delete Confirmation
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data dosen ini akan dihapus permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        background: '#ffffff',
+                        customClass: {
+                            confirmButton: 'btn btn-danger',
+                            cancelButton: 'btn btn-secondary'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection
