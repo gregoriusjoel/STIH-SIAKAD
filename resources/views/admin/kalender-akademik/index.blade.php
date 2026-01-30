@@ -2,6 +2,18 @@
 
 @section('title', 'Kalender Akademik')
 
+@section('breadcrumbs')
+    <a href="@if(Route::has('admin.dashboard')){{ route('admin.dashboard') }}@else{{ url('/admin') }}@endif" class="mr-2 muted">Home</a>
+    <i class="fas fa-chevron-right text-xs mr-2"></i>
+    @if(Route::has('admin.akademik.index'))
+        <a href="{{ route('admin.akademik.index') }}" class="mr-2 muted">Akademik</a>
+    @else
+        <span class="mr-2 muted">Akademik</span>
+    @endif
+    <i class="fas fa-chevron-right text-xs mr-2"></i>
+    <span class="font-semibold">Kalender Akademik</span>
+@endsection
+
 @section('content')
     <div class="h-full flex flex-col bg-slate-50">
         <!-- Header -->
@@ -179,17 +191,17 @@
         <div id="eventModal" tabindex="-1" aria-hidden="true"
             class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
             <div
-                class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto overflow-hidden transform transition-all scale-100">
+                class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-auto overflow-hidden transform transition-all scale-100">
                 <!-- Header -->
-                <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                    <h3 class="text-xl font-bold text-slate-800" id="eventModalTitle">Kelola Jadwal</h3>
+                <div class="px-6 py-4 flex justify-between items-center bg-gradient-to-r from-maroon to-red-700">
+                    <h3 class="text-xl font-bold text-white" id="eventModalTitle">Kelola Jadwal</h3>
                     <button onclick="closeEventModal()"
-                        class="text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100 transition-colors">
+                        class="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
 
-                <form id="eventForm" class="p-6 space-y-5">
+                <form id="eventForm" class="p-6 space-y-6">
                     <input type="hidden" name="event_id" id="event_id">
 
                     <div class="space-y-4">
@@ -218,17 +230,17 @@
                             </p>
                         </div>
 
-                        <!-- Semester (optional) -->
+                        <!-- Semester (required) -->
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Semester (opsional)</label>
-                            <select name="semester_id" id="event_semester"
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Semester</label>
+                            <select name="semester_id" id="event_semester" required
                                 class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white text-sm">
-                                <option value="">-- Tidak terikat semester --</option>
+                                <option value="" disabled selected>-- Pilih Semester --</option>
                                 @foreach($semesters as $semester)
                                     <option value="{{ $semester->id }}">{{ $semester->nama_semester }} {{ $semester->tahun_ajaran }}</option>
                                 @endforeach
                             </select>
-                            <p class="text-xs text-slate-500 mt-1">Pilih semester agar event hanya muncul saat filter semester tersebut dipilih. Jika dikosongkan, event akan muncul pada semua semester.</p>
+                            <p class="text-xs text-slate-500 mt-1">Pilih semester agar event hanya muncul saat filter semester tersebut dipilih.</p>
                         </div>
 
                         <!-- Dates -->
@@ -255,18 +267,18 @@
                     </div>
 
                     <!-- Footer Actions -->
-                    <div class="pt-4 flex justify-between items-center border-t border-slate-100 mt-2">
+                    <div class="pt-4 flex items-center justify-between border-t border-slate-100 mt-2">
                         <button type="button" id="deleteEventBtn"
-                            class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-semibold hidden flex items-center gap-2">
+                            class="px-4 py-2 text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-sm font-semibold hidden flex items-center gap-2">
                             <i class="fas fa-trash-alt"></i> Hapus
                         </button>
                         <div class="flex gap-3 ml-auto">
                             <button type="button" onclick="closeEventModal()"
-                                class="px-5 py-2.5 text-slate-600 hover:text-slate-800 font-medium text-sm">
+                                class="px-5 py-2.5 text-slate-700 bg-white border border-slate-200 rounded-full hover:bg-slate-50 font-medium text-sm">
                                 Batal
                             </button>
                             <button type="submit"
-                                class="px-6 py-2.5 bg-maroon text-white rounded-xl hover:bg-red-900 shadow-md hover:shadow-lg transition-all font-bold text-sm flex items-center gap-2">
+                                class="px-6 py-2.5 bg-maroon text-white rounded-full hover:bg-red-900 shadow-md hover:shadow-lg transition-all font-bold text-sm flex items-center gap-2">
                                 <i class="fas fa-save"></i>
                                 Simpan Jadwal
                             </button>

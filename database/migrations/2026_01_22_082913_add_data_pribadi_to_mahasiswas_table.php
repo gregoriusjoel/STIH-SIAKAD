@@ -29,8 +29,8 @@ return new class extends Migration
             $table->string('rt')->nullable()->after('alamat');
             $table->string('rw')->nullable()->after('rt');
             $table->string('kota')->nullable()->after('rw');
-            $table->string('propinsi')->nullable()->after('kota');
-            $table->string('negara')->nullable()->after('propinsi');
+            $table->string('provinsi')->nullable()->after('kota');
+            $table->string('negara')->nullable()->after('provinsi');
         });
     }
 
@@ -49,7 +49,7 @@ return new class extends Migration
                 'rt',
                 'rw',
                 'kota',
-                'propinsi',
+                'provinsi',
                 'negara'
             ]);
         });

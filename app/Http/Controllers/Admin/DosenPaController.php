@@ -68,16 +68,24 @@ class DosenPaController extends Controller
         }
 
         // Verify none of the selected mahasiswa already have a Dosen PA
-        $conflicts = Mahasiswa::whereIn('id', $mahasiswaIds)->filter(function($m) {
-            return $m->dosenPa()->count() > 0;
-        });
+        // and ensure they belong to the same prodi as the selected dosen
+        $dosenProdi = $dosen->prodi ?? [];
+        if (!is_array($dosenProdi)) $dosenProdi = json_decode($dosenProdi, true) ?: [];
 
-        // If using collections, check but simpler to loop
+        if (empty($dosenProdi)) {
+            return back()->with('error', 'Dosen belum memiliki Program Studi. Tambahkan prodi pada data dosen terlebih dahulu.');
+        }
+
         foreach ($mahasiswaIds as $mid) {
             $m = Mahasiswa::find($mid);
             if (!$m) continue;
             if ($m->dosenPa()->count() > 0) {
                 return back()->with('error', 'Mahasiswa ' . $m->user->name . ' sudah memiliki Dosen PA. Pilih mahasiswa lain.');
+            }
+            // check program studi
+            $mProdi = $m->prodi ?? null;
+            if ($mProdi && !in_array($mProdi, $dosenProdi)) {
+                return back()->with('error', 'Mahasiswa ' . $m->user->name . ' tidak berada di Program Studi yang sama dengan dosen.');
             }
         }
 
@@ -91,10 +99,10 @@ class DosenPaController extends Controller
     /**
      * Show form to edit Dosen PA assignment
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $dosen = Dosen::with(['user', 'mahasiswaPa.user'])->findOrFail($id);
-        
+
         // Get all Dosens with their mahasiswa count (for reassignment)
         $allDosens = Dosen::with('user')
             ->withCount('mahasiswaPa')
@@ -102,11 +110,37 @@ class DosenPaController extends Controller
             ->orderBy('mahasiswa_pa_count', 'asc')
             ->get();
 
-        // Get Mahasiswa who don't have a Dosen PA yet (for swap feature)
-        $availableMahasiswas = Mahasiswa::with('user')
-            ->whereDoesntHave('dosenPa')
-            ->orderBy('id', 'asc')
-            ->get();
+        // Get Mahasiswa who don't have a Dosen PA yet (for swap/add feature)
+        $query = Mahasiswa::with('user')->whereDoesntHave('dosenPa');
+
+        // Restrict available mahasiswa to the same prodi as this dosen
+        $dosenProdi = $dosen->prodi ?? [];
+        if (!is_array($dosenProdi)) $dosenProdi = json_decode($dosenProdi, true) ?: [];
+        if (!empty($dosenProdi)) {
+            $query->whereIn('prodi', $dosenProdi);
+        } else {
+            // if dosen has no prodi set, return empty set
+            $query->whereRaw('0 = 1');
+        }
+
+        // search by name or nim
+        $search = $request->query('search');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nim', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $availableMahasiswas = $query->orderBy('id', 'asc')->paginate(5);
+
+        // If AJAX requested, return rendered partial HTML
+        if ($request->ajax()) {
+            $html = view('admin.dosen-pa._available_list', compact('availableMahasiswas'))->render();
+            return response()->json(['html' => $html]);
+        }
 
         return view('admin.dosen-pa.edit', compact('dosen', 'allDosens', 'availableMahasiswas'));
     }
@@ -134,6 +168,14 @@ class DosenPaController extends Controller
                 return back()->with('error', 'Mahasiswa ' . $addMahasiswa->user->name . ' sudah memiliki Dosen PA.');
             }
 
+            // ensure prodi matches current dosen
+            $dosenProdi = $currentDosen->prodi ?? [];
+            if (!is_array($dosenProdi)) $dosenProdi = json_decode($dosenProdi, true) ?: [];
+            $mProdi = $addMahasiswa->prodi ?? null;
+            if ($mProdi && !empty($dosenProdi) && !in_array($mProdi, $dosenProdi)) {
+                return back()->with('error', 'Mahasiswa ' . $addMahasiswa->user->name . ' tidak berada di Program Studi yang sama dengan dosen ini.');
+            }
+
             // Check if remove_mahasiswa belongs to this dosen
             if (!$currentDosen->mahasiswaPa()->where('mahasiswas.id', $removeMahasiswa->id)->exists()) {
                 return back()->with('error', 'Mahasiswa ' . $removeMahasiswa->user->name . ' bukan bimbingan dosen ini.');
@@ -147,6 +189,46 @@ class DosenPaController extends Controller
                 ->with('success', 'Mahasiswa berhasil diganti: ' . $removeMahasiswa->user->name . ' → ' . $addMahasiswa->user->name);
         }
 
+        if ($action === 'add') {
+            $request->validate([
+                'mahasiswa_ids' => 'required|array',
+                'mahasiswa_ids.*' => 'exists:mahasiswas,id',
+            ]);
+
+            $toAddIds = $request->input('mahasiswa_ids', []);
+            $currentCount = $currentDosen->mahasiswaPa()->count();
+            $toAdd = count($toAddIds);
+
+            if ($currentCount + $toAdd > 6) {
+                return back()->with('error', 'Dosen ini tidak dapat menampung ' . $toAdd . ' mahasiswa. Slot tersedia: ' . (6 - $currentCount));
+            }
+
+            // Ensure none of the selected mahasiswa already have a Dosen PA
+            $conflicts = Mahasiswa::whereIn('id', $toAddIds)->whereHas('dosenPa')->pluck('id')->all();
+            if (!empty($conflicts)) {
+                $m = Mahasiswa::find($conflicts[0]);
+                return back()->with('error', 'Mahasiswa ' . ($m?->user->name ?? $conflicts[0]) . ' sudah memiliki Dosen PA. Pilih mahasiswa lain.');
+            }
+
+            // ensure all selected mahasiswa are from same prodi as current dosen
+            $dosenProdi = $currentDosen->prodi ?? [];
+            if (!is_array($dosenProdi)) $dosenProdi = json_decode($dosenProdi, true) ?: [];
+            if (!empty($dosenProdi)) {
+                $bad = Mahasiswa::whereIn('id', $toAddIds)->whereNotIn('prodi', $dosenProdi)->pluck('id')->first();
+                if ($bad) {
+                    $m = Mahasiswa::find($bad);
+                    return back()->with('error', 'Mahasiswa ' . ($m?->user->name ?? $bad) . ' tidak berada di Program Studi yang sama dengan dosen ini.');
+                }
+            } else {
+                return back()->with('error', 'Dosen belum memiliki Program Studi. Tambahkan prodi pada data dosen terlebih dahulu.');
+            }
+
+            // Attach
+            $currentDosen->mahasiswaPa()->attach($toAddIds);
+
+            return redirect()->route('admin.dosen-pa.edit', $currentDosen->id)
+                ->with('success', count($toAddIds) . ' mahasiswa berhasil ditambahkan ke ' . $currentDosen->user->name);
+        }
         // Default action: Transfer to another dosen
         $request->validate([
             'mahasiswa_ids' => 'required|array',
@@ -162,6 +244,19 @@ class DosenPaController extends Controller
         
         if ($currentCount + $toTransfer > 6) {
             return back()->with('error', 'Dosen tujuan tidak dapat menampung ' . $toTransfer . ' mahasiswa. Slot tersedia: ' . (6 - $currentCount));
+        }
+
+        // ensure all mahasiswa to transfer are in same prodi as new dosen
+        $newProdi = $newDosen->prodi ?? [];
+        if (!is_array($newProdi)) $newProdi = json_decode($newProdi, true) ?: [];
+        if (!empty($newProdi)) {
+            $bad = Mahasiswa::whereIn('id', $request->mahasiswa_ids)->whereNotIn('prodi', $newProdi)->pluck('id')->first();
+            if ($bad) {
+                $m = Mahasiswa::find($bad);
+                return back()->with('error', 'Mahasiswa ' . ($m?->user->name ?? $bad) . ' tidak berada di Program Studi yang sama dengan dosen tujuan.');
+            }
+        } else {
+            return back()->with('error', 'Dosen tujuan belum memiliki Program Studi.');
         }
 
         // Detach from current dosen and attach to new dosen
@@ -184,7 +279,7 @@ class DosenPaController extends Controller
                 'id' => $mahasiswa->id,
                 'name' => $mahasiswa->user->name,
                 'nim' => $mahasiswa->nim,
-                'program_studi' => $mahasiswa->program_studi ?? 'Ilmu Hukum',
+                'program_studi' => $mahasiswa->prodi ?? 'Ilmu Hukum',
                 'semester' => $mahasiswa->semester ?? 1,
             ];
         });

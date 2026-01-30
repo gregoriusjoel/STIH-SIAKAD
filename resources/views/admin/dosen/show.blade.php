@@ -20,7 +20,7 @@
                     <p class="text-sm text-gray-500">{{ $dosen->user->email }}</p>
                     <div class="mt-4 text-sm text-gray-700 space-y-2">
                         <div><strong>NIDN:</strong> {{ $dosen->nidn }}</div>
-                        <div><strong>Program Studi:</strong> {{ $dosen->prodi }}</div>
+                        <div><strong>Program Studi:</strong> {{ is_array($dosen->prodi) ? implode(', ', $dosen->prodi) : $dosen->prodi }}</div>
                         <div><strong>Pendidikan:</strong> {{ $dosen->pendidikan ?? '-' }}</div>
                         <div><strong>Telepon:</strong> {{ $dosen->phone ?? '-' }}</div>
                         <div><strong>Alamat:</strong> {{ $dosen->address ?? '-' }}</div>

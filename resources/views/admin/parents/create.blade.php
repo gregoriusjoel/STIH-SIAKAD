@@ -116,7 +116,9 @@
                                 No. Telepon
                             </label>
                             <input type="text" name="phone" value="{{ old('phone') }}" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
+                                inputmode="numeric" pattern="\d{1,13}" maxlength="13"
+                                oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)">
                         </div>
 
                         <div class="md:col-span-2">

@@ -104,14 +104,41 @@
                                 <i class="fas fa-university text-gray-400 mr-1"></i>
                                 Program Studi *
                             </label>
-                            <select name="prodi" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
-                                required>
-                                <option value="">Pilih Program Studi</option>
-                                <option value="Hukum Tata Negara" {{ old('prodi', $dosen->prodi) == 'Hukum Tata Negara' ? 'selected' : '' }}>Hukum Tata Negara</option>
-                                <option value="Hukum Bisnis" {{ old('prodi', $dosen->prodi) == 'Hukum Bisnis' ? 'selected' : '' }}>Hukum Bisnis</option>
-                                <option value="Hukum Pidana" {{ old('prodi', $dosen->prodi) == 'Hukum Pidana' ? 'selected' : '' }}>Hukum Pidana</option>
-                            </select>
+                            @php
+                                $selectedProdi = old('prodi', $dosen->prodi ?? []);
+                                if(!is_array($selectedProdi)) $selectedProdi = [$selectedProdi];
+                                $prodiOptions = ['Hukum Tata Negara', 'Hukum Bisnis', 'Hukum Pidana'];
+                            @endphp
+
+                            <div id="prodi-list" class="space-y-2">
+                                @if(count($selectedProdi) > 0)
+                                    @foreach($selectedProdi as $idx => $p)
+                                        <div class="flex items-center gap-3">
+                                            <select name="prodi[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                                                <option value="">Pilih Program Studi</option>
+                                                @foreach($prodiOptions as $opt)
+                                                    <option value="{{ $opt }}" {{ $p == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                                @endforeach
+                                            </select>
+                                            @if($idx == 0)
+                                                <button type="button" id="add-prodi" class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                            @else
+                                                <button type="button" class="remove-prodi px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="flex items-center gap-3">
+                                        <select name="prodi[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                                            <option value="">Pilih Program Studi</option>
+                                            @foreach($prodiOptions as $opt)
+                                                <option value="{{ $opt }}">{{ $opt }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="button" id="add-prodi" class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
 
                         <div>
@@ -163,8 +190,20 @@
                                 }
                             @endphp
 
-                            @if(count($dosenMkIds) > 0)
-                                @foreach($dosenMkIds as $mkId)
+                            {{-- First row always has + button --}}
+                            <div class="flex items-center gap-3">
+                                <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                    <option value="">Pilih Mata Kuliah</option>
+                                    @foreach($mataKuliahs as $mk)
+                                        <option value="{{ $mk->id }}" {{ count($dosenMkIds) > 0 && $mk->id == $dosenMkIds[0] ? 'selected' : '' }}>{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="button" id="add-mk" class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                            </div>
+
+                            {{-- Additional rows have - button --}}
+                            @if(count($dosenMkIds) > 1)
+                                @foreach(array_slice($dosenMkIds, 1) as $mkId)
                                     <div class="flex items-center gap-3">
                                         <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
                                             <option value="">Pilih Mata Kuliah</option>
@@ -175,16 +214,6 @@
                                         <button type="button" class="remove-mk px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
                                     </div>
                                 @endforeach
-                            @else
-                                <div class="flex items-center gap-3">
-                                    <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
-                                        <option value="">Pilih Mata Kuliah</option>
-                                        @foreach($mataKuliahs as $mk)
-                                            <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
-                                        @endforeach
-                                    </select>
-                                    <button type="button" id="add-mk" class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
-                                </div>
                             @endif
                         </div>
                         <p class="text-xs text-gray-400 mt-2">Tambahkan mata kuliah yang diampu oleh dosen. Klik + untuk menambah baris.</p>
@@ -207,31 +236,65 @@
         </form>
     </div>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-    const addBtn = document.getElementById('add-mk');
-    const list = document.getElementById('mata-kuliah-list');
-    addBtn?.addEventListener('click', function(){
-        const row = document.createElement('div');
-        row.className = 'flex items-center gap-3';
-        row.innerHTML = `
-            <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
-                <option value="">Pilih Mata Kuliah</option>
-                @foreach($mataKuliahs as $mk)
-                    <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
-                @endforeach
-            </select>
-            <button type="button" class="remove-mk px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
-        `;
-        list.appendChild(row);
-        row.querySelector('.remove-mk')?.addEventListener('click', function(){ row.remove(); });
-    });
+        <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            // Mata Kuliah add/remove
+            const addMkBtn = document.getElementById('add-mk');
+            const mkList = document.getElementById('mata-kuliah-list');
+            if(addMkBtn){
+                addMkBtn.addEventListener('click', function(){
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center gap-3';
+                    row.innerHTML = `
+                        <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                            <option value="">Pilih Mata Kuliah</option>
+                            @foreach($mataKuliahs as $mk)
+                                <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
+                            @endforeach
+                        </select>
+                        <button type="button" class="remove-mk px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+                    `;
+                    mkList.appendChild(row);
+                    row.querySelector('.remove-mk')?.addEventListener('click', function(){ row.remove(); });
+                });
+            }
+            document.querySelectorAll('.remove-mk').forEach(btn => btn.addEventListener('click', function(){
+                const row = this.closest('.flex'); if(row) row.remove();
+            }));
 
-    // wire up existing remove buttons
-    document.querySelectorAll('.remove-mk').forEach(btn => btn.addEventListener('click', function(){
-        const row = this.closest('.flex');
-        if(row) row.remove();
-    }));
-});
-</script>
+            // Program Studi add/remove
+            const addProdi = document.getElementById('add-prodi');
+            const prodiList = document.getElementById('prodi-list');
+            const prodiOptionsHtml = `
+                <option value="">Pilih Program Studi</option>
+                <option value="Hukum Tata Negara">Hukum Tata Negara</option>
+                <option value="Hukum Bisnis">Hukum Bisnis</option>
+                <option value="Hukum Pidana">Hukum Pidana</option>
+            `;
+
+            function makeProdiRow() {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3';
+                row.innerHTML = `
+                    <select name="prodi[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                        ${prodiOptionsHtml}
+                    </select>
+                    <button type="button" class="remove-prodi px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+                `;
+                row.querySelector('.remove-prodi')?.addEventListener('click', function(){ row.remove(); });
+                return row;
+            }
+
+            if(addProdi){
+                addProdi.addEventListener('click', function(){
+                    const row = makeProdiRow();
+                    prodiList.appendChild(row);
+                });
+            }
+
+            document.querySelectorAll('.remove-prodi').forEach(btn => btn.addEventListener('click', function(){
+                const row = this.closest('.flex'); if(row) row.remove();
+            }));
+        });
+        </script>
 @endsection

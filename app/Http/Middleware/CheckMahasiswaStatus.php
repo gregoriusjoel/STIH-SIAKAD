@@ -35,9 +35,9 @@ class CheckMahasiswaStatus
                 }
             }
 
-            // If mahasiswa is new (semester 1) and hasn't completed the new-student survey,
+            // If mahasiswa hasn't completed the new-student survey,
             // redirect to the survey page (except when already on survey routes or activation/profile routes)
-            if ((int)$mahasiswa->semester === 1 && empty($mahasiswa->new_survey_completed)) {
+            if (empty($mahasiswa->new_survey_completed)) {
                 $allowedSurveyRoutes = [
                     'mahasiswa.survey_new.index',
                     'mahasiswa.survey_new.store',

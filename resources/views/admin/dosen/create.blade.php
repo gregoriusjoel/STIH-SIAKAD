@@ -80,6 +80,8 @@
                             <input type="text" name="nidn" value="{{ old('nidn') }}" 
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
                                 placeholder="Contoh: 0123456789"
+                                inputmode="numeric" pattern="\d{1,10}" maxlength="10"
+                                oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,10)"
                                 required>
                         </div>
 
@@ -103,14 +105,42 @@
                                 <i class="fas fa-university text-gray-400 mr-1"></i>
                                 Program Studi *
                             </label>
-                            <select name="prodi" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
-                                required>
-                                <option value="">Pilih Program Studi</option>
-                                <option value="Hukum Tata Negara" {{ old('prodi') == 'Hukum Tata Negara' ? 'selected' : '' }}>Hukum Tata Negara</option>
-                                <option value="Hukum Bisnis" {{ old('prodi') == 'Hukum Bisnis' ? 'selected' : '' }}>Hukum Bisnis</option>
-                                <option value="Hukum Pidana" {{ old('prodi') == 'Hukum Pidana' ? 'selected' : '' }}>Hukum Pidana</option>
-                            </select>
+                            @php
+                                $oldProdi = old('prodi', []);
+                                if (!is_array($oldProdi)) $oldProdi = [$oldProdi];
+                                $prodiOptions = ['Hukum Tata Negara', 'Hukum Bisnis', 'Hukum Pidana'];
+                            @endphp
+
+                            <div id="prodi-list" class="space-y-2">
+                                @if(count($oldProdi) > 0)
+                                    @foreach($oldProdi as $idx => $p)
+                                        <div class="flex items-center gap-3">
+                                            <select name="prodi[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                                                <option value="">Pilih Program Studi</option>
+                                                @foreach($prodiOptions as $opt)
+                                                    <option value="{{ $opt }}" {{ $p == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                                @endforeach
+                                            </select>
+                                            @if($idx == 0)
+                                                <button type="button" id="add-prodi" class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                            @else
+                                                <button type="button" class="remove-prodi px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="flex items-center gap-3">
+                                        <select name="prodi[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                                            <option value="">Pilih Program Studi</option>
+                                            @foreach($prodiOptions as $opt)
+                                                <option value="{{ $opt }}">{{ $opt }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="button" id="add-prodi" class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                    </div>
+                                @endif
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2">Pilih satu atau lebih Program Studi. Klik + untuk menambah.</p>
                         </div>
 
                         <div>
@@ -120,7 +150,9 @@
                             </label>
                             <input type="text" name="phone" value="{{ old('phone') }}" 
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
-                                placeholder="08xxxxxxxxxx">
+                                placeholder="08xxxxxxxxxx"
+                                inputmode="numeric" pattern="\d{1,13}" maxlength="13"
+                                oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)">
                         </div>
 
                         <div class="md:col-span-2">
@@ -205,5 +237,40 @@ document.addEventListener('DOMContentLoaded', function(){
             else { pw.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; btn.setAttribute('aria-pressed','false'); }
         });
     }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const addProdi = document.getElementById('add-prodi');
+    const prodiList = document.getElementById('prodi-list');
+    const prodiOptionsHtml = `
+        <option value="">Pilih Program Studi</option>
+        <option value="Hukum Tata Negara">Hukum Tata Negara</option>
+        <option value="Hukum Bisnis">Hukum Bisnis</option>
+        <option value="Hukum Pidana">Hukum Pidana</option>
+    `;
+
+    function makeRow() {
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-3';
+        row.innerHTML = `
+            <select name="prodi[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                ${prodiOptionsHtml}
+            </select>
+            <button type="button" class="remove-prodi px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+        `;
+        row.querySelector('.remove-prodi')?.addEventListener('click', function(){ row.remove(); });
+        return row;
+    }
+
+    addProdi?.addEventListener('click', function(){
+        const row = makeRow();
+        prodiList.appendChild(row);
+    });
+
+    // wire up existing remove buttons if any
+    document.querySelectorAll('.remove-prodi').forEach(btn => btn.addEventListener('click', function(){
+        const row = this.closest('.flex'); if(row) row.remove();
+    }));
 });
 </script>

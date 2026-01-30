@@ -21,9 +21,10 @@
                             $currentYear = (int) date('Y');
                             $startYear = $currentYear - 2;
                             $endYear = $currentYear + 3;
-                            $selected = old('tahun_ajaran', $currentYear . '/' . ($currentYear + 1));
+                            $selected = old('tahun_ajaran', '');
                         @endphp
                         <select name="tahun_ajaran" id="tahun_ajaran" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition" required>
+                            <option value="">-- Pilih Tahun Ajaran --</option>
                             @for ($y = $startYear; $y <= $endYear; $y++)
                                 @php $label = $y . '/' . ($y + 1); @endphp
                                 <option value="{{ $label }}" {{ $selected == $label ? 'selected' : '' }}>{{ $label }}</option>

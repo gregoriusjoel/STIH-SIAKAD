@@ -189,5 +189,8 @@ class DatabaseSeeder extends Seeder
                 'address' => 'Jl. Orang Tua No. 1'
             ]
         );
+
+        // Import locations (countries/provinces/cities) from CSVs
+        $this->call(LocationsSeeder::class);
     }
 }

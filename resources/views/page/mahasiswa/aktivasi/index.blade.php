@@ -188,7 +188,7 @@
             {{-- Saran --}}
             <div>
                 <label class="block text-gray-800 font-semibold mb-2">
-                    Saran dan Masukan (Opsional)
+                    Saran dan Masukan
                 </label>
                 <textarea name="saran" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent" placeholder="Tuliskan saran atau masukan Anda untuk perbaikan kampus..."></textarea>
                 @error('saran')

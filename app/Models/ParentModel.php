@@ -26,7 +26,7 @@ class ParentModel extends Model
         'agama_ibu',
         'alamat_ortu',
         'kota_ortu',
-        'propinsi_ortu',
+        'provinsi_ortu',
         'negara_ortu',
         'handphone_ortu',
     ];

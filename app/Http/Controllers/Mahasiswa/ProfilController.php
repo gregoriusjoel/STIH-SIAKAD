@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Country;
 
 class ProfilController extends Controller
 {
@@ -26,7 +27,10 @@ class ProfilController extends Controller
         $user = Auth::user();
         $parent = $mahasiswa->parents()->first();
 
-        return view('page.mahasiswa.profil.manajemen', compact('mahasiswa', 'user', 'parent'));
+        // Load countries with provinces and cities for dropdowns
+        $countries = Country::with('provinces.cities')->get();
+
+        return view('page.mahasiswa.profil.manajemen', compact('mahasiswa', 'user', 'parent', 'countries'));
     }
 
     public function update(Request $request)
@@ -43,7 +47,6 @@ class ProfilController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'no_hp' => 'nullable|string|max:20',
             'alamat' => 'nullable|string',
             'tempat_lahir' => 'nullable|string|max:255',
             'tanggal_lahir' => 'nullable|date',
@@ -53,7 +56,7 @@ class ProfilController extends Controller
             'rt' => 'nullable|string|max:10',
             'rw' => 'nullable|string|max:10',
             'kota' => 'nullable|string|max:255',
-            'propinsi' => 'nullable|string|max:255',
+            'provinsi' => 'nullable|string|max:255',
             'negara' => 'nullable|string|max:255',
             'jenis_sekolah' => 'nullable|string|max:255',
             'jurusan_sekolah' => 'nullable|string|max:255',
@@ -69,9 +72,10 @@ class ProfilController extends Controller
             'agama_ibu' => 'nullable|string|max:255',
             'alamat_ortu' => 'nullable|string',
             'kota_ortu' => 'nullable|string|max:255',
-            'propinsi_ortu' => 'nullable|string|max:255',
+            'provinsi_ortu' => 'nullable|string|max:255',
             'negara_ortu' => 'nullable|string|max:255',
-            'handphone_ortu' => 'nullable|string|max:20',
+            'no_hp' => ['nullable','regex:/^[0-9]{1,13}$/'],
+                        'handphone_ortu' => ['nullable','regex:/^[0-9]{1,13}$/'],
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'password' => 'nullable|min:8'
         ]);
@@ -98,7 +102,7 @@ class ProfilController extends Controller
             'rt' => $request->rt,
             'rw' => $request->rw,
             'kota' => $request->kota,
-            'propinsi' => $request->propinsi,
+            'provinsi' => $request->provinsi,
             'negara' => $request->negara,
             'jenis_sekolah' => $request->jenis_sekolah,
             'jurusan_sekolah' => $request->jurusan_sekolah,
@@ -134,7 +138,7 @@ class ProfilController extends Controller
             'agama_ibu' => $request->agama_ibu,
             'alamat_ortu' => $request->alamat_ortu,
             'kota_ortu' => $request->kota_ortu,
-            'propinsi_ortu' => $request->propinsi_ortu,
+            'provinsi_ortu' => $request->provinsi_ortu,
             'negara_ortu' => $request->negara_ortu,
             'handphone_ortu' => $request->handphone_ortu,
         ];

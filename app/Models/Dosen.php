@@ -22,6 +22,7 @@ class Dosen extends Model
 
     protected $casts = [
         'mata_kuliah_ids' => 'array',
+        'prodi' => 'array',
     ];
 
     public function user(): BelongsTo

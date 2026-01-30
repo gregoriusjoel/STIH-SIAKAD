@@ -4,7 +4,7 @@
 @section('page-title', 'Edit Dosen PA')
 
 @section('content')
-<div class="max-w-6xl mx-auto" x-data="{ activeTab: 'transfer' }">
+<div class="max-w-6xl mx-auto" x-data='{ activeTab: @json(request()->get("tab", "transfer")) }'>
     <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon">
         <div class="p-6 border-b border-gray-200 bg-maroon text-white rounded-t-xl">
             <h3 class="text-xl font-bold flex items-center">
@@ -49,6 +49,12 @@
                         class="py-4 px-6 border-b-2 font-medium text-sm transition">
                     <i class="fas fa-sync-alt mr-2"></i>
                     Ganti Mahasiswa
+                </button>
+                <button @click="activeTab = 'add'" 
+                        :class="activeTab === 'add' ? 'border-maroon text-maroon' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="py-4 px-6 border-b-2 font-medium text-sm transition">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Tambah Mahasiswa
                 </button>
             </nav>
         </div>
@@ -237,10 +243,135 @@
                 </div>
             </form>
         </div>
+        
+        <!-- Tab: Add Mahasiswa -->
+        <div x-show="activeTab === 'add'" x-cloak>
+            <form action="{{ route('admin.dosen-pa.update', $dosen->id) }}" method="POST" class="p-6">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="current_dosen_id" value="{{ $dosen->id }}">
+                <input type="hidden" name="action" value="add">
+
+                <div>
+                    <div class="mb-4 flex items-center gap-3">
+                        <div class="w-full flex">
+                            <input id="search-add-input" type="search" name="search" value="{{ request('search') }}" placeholder="Cari nama atau NIM" class="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-maroon" />
+                            <button type="button" id="search-add-btn" class="px-4 py-2 bg-maroon text-white rounded-r-lg">Cari</button>
+                        </div>
+                    </div>
+
+                    
+                    <h4 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-user-plus text-green-600 mr-2"></i>
+                        Pilih Mahasiswa yang Akan Ditambahkan
+                    </h4>
+
+                    @if($availableMahasiswas->isEmpty())
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-700">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Tidak ada mahasiswa yang tersedia (semua sudah memiliki Dosen PA).
+                        </div>
+                    @else
+                        <div id="available-mahasiswa-container" class="bg-gray-50 rounded-lg border border-gray-200 max-h-64 overflow-y-auto">
+                            @include('admin.dosen-pa._available_list')
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Pilih satu atau beberapa mahasiswa untuk ditambahkan ke dosen ini.
+                        </p>
+                        @error('mahasiswa_ids')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    @endif
+                </div>
+
+                <div class="flex justify-end space-x-3 mt-8 pt-6 border-t">
+                    <a href="{{ route('admin.dosen-pa.index') }}" 
+                        class="px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition flex items-center">
+                        <i class="fas fa-times mr-2"></i>
+                        Batal
+                    </a>
+                    <button type="submit" 
+                        class="bg-maroon text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition flex items-center shadow-md transform hover:scale-105"
+                        {{ $availableMahasiswas->isEmpty() || $dosen->mahasiswaPa->count() >= 6 ? 'disabled' : '' }}>
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Tambah Mahasiswa
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <style>
     [x-cloak] { display: none !important; }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const searchBtn = document.getElementById('search-add-btn');
+    const searchInput = document.getElementById('search-add-input');
+    const container = document.getElementById('available-mahasiswa-container');
+
+    async function loadList(url) {
+        try {
+            const res = await fetch(url, {
+                credentials: 'same-origin',
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+            if (!res.ok) throw new Error('Network response was not ok');
+            const data = await res.json();
+            if (container) container.innerHTML = data.html;
+            bindPaginationLinks();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function bindPaginationLinks() {
+        if (!container) return;
+        container.querySelectorAll('a').forEach(a => {
+            a.addEventListener('click', function(e){
+                const href = this.getAttribute('href');
+                if (!href) return;
+                e.preventDefault();
+                const url = new URL(href, window.location.origin);
+                url.searchParams.set('tab', 'add');
+                loadList(url.toString());
+            });
+        });
+    }
+
+    if(searchBtn && searchInput){
+        searchBtn.addEventListener('click', function(){
+            const q = searchInput.value || '';
+            const base = "{{ route('admin.dosen-pa.edit', $dosen->id) }}";
+            const url = new URL(base, window.location.origin);
+            url.searchParams.set('tab', 'add');
+            if(q.trim() !== '') url.searchParams.set('search', q.trim());
+            loadList(url.toString());
+        });
+        // Prevent Enter key from submitting the surrounding form — trigger AJAX search instead
+        searchInput.addEventListener('keydown', function(e){
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchBtn.click();
+            }
+        });
+        // Debounced live search as the user types (no Enter required)
+        let searchTimeout = null;
+        searchInput.addEventListener('input', function(){
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function(){
+                searchBtn.click();
+            }, 300);
+        });
+    }
+
+    // bind links on initial render
+    bindPaginationLinks();
+});
+</script>
 @endsection

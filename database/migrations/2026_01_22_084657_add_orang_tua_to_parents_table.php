@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('agama_ibu')->nullable()->after('pekerjaan_ibu');
             $table->text('alamat_ortu')->nullable()->after('address');
             $table->string('kota_ortu')->nullable()->after('alamat_ortu');
-            $table->string('propinsi_ortu')->nullable()->after('kota_ortu');
-            $table->string('negara_ortu')->nullable()->after('propinsi_ortu');
+            $table->string('provinsi_ortu')->nullable()->after('kota_ortu');
+            $table->string('negara_ortu')->nullable()->after('provinsi_ortu');
             $table->string('handphone_ortu')->nullable()->after('phone');
         });
     }
@@ -45,7 +45,7 @@ return new class extends Migration
                 'agama_ibu',
                 'alamat_ortu',
                 'kota_ortu',
-                'propinsi_ortu',
+                'provinsi_ortu',
                 'negara_ortu',
                 'handphone_ortu'
             ]);

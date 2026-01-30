@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
     <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/nim/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -138,9 +138,7 @@
                             <i class="fas fa-bars text-xl"></i>
                         </button>
                         <nav class="text-sm breadcrumb">
-                            <span class="mr-2 muted">Home</span>
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>
-                            <span class="font-semibold">@yield('page-title', 'Dashboard')</span>
+                            @include('components.breadcrumbs')
                         </nav>
                         <div class="ml-4">
                             @php

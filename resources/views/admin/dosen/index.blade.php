@@ -143,7 +143,7 @@
                                         <div><strong>Nama:</strong> {{ $dosen->user->name }}</div>
                                         <div><strong>Email:</strong> {{ $dosen->user->email }}</div>
                                         <div><strong>NIDN:</strong> {{ $dosen->nidn }}</div>
-                                        <div><strong>Program Studi:</strong> {{ $dosen->prodi }}</div>
+                                        <div><strong>Program Studi:</strong> {{ is_array($dosen->prodi) ? implode(', ', $dosen->prodi) : $dosen->prodi }}</div>
                                         <div><strong>Telepon:</strong> {{ $dosen->phone ?? '-' }}</div>
                                         <div><strong>Status:</strong> {{ ucfirst($dosen->status) }}</div>
                                     </div>

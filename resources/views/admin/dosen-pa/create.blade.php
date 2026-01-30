@@ -57,6 +57,7 @@
                                     @endphp
                                     <option value="{{ $dosen->id }}"
                                         data-count="{{ $count }}"
+                                        data-prodi='@json($dosen->prodi)'
                                         {{ $isFull ? 'disabled' : '' }}
                                         {{ old('dosen_id') == $dosen->id ? 'selected' : '' }}
                                         class="{{ $isFull ? 'text-gray-400' : '' }}">
@@ -81,7 +82,7 @@
                                     <select name="mahasiswa_ids[]" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition mahasiswa-select" required>
                                         <option value="">-- Pilih Mahasiswa --</option>
                                         @foreach($mahasiswas as $mahasiswa)
-                                            <option value="{{ $mahasiswa->id }}" {{ (collect(old('mahasiswa_ids'))->contains($mahasiswa->id)) ? 'selected' : '' }}>
+                                            <option value="{{ $mahasiswa->id }}" data-prodi="{{ $mahasiswa->prodi }}" {{ (collect(old('mahasiswa_ids'))->contains($mahasiswa->id)) ? 'selected' : '' }}>
                                                 {{ $mahasiswa->user->name }} ({{ $mahasiswa->nim }})
                                             </option>
                                         @endforeach
@@ -104,7 +105,7 @@
                             <select id="mahasiswaTemplate" class="hidden">
                                 <option value="">-- Pilih Mahasiswa --</option>
                                 @foreach($mahasiswas as $mahasiswa)
-                                    <option value="{{ $mahasiswa->id }}">{{ $mahasiswa->user->name }} ({{ $mahasiswa->nim }})</option>
+                                    <option value="{{ $mahasiswa->id }}" data-prodi="{{ $mahasiswa->prodi }}">{{ $mahasiswa->user->name }} ({{ $mahasiswa->nim }})</option>
                                 @endforeach
                             </select>
                             @if($mahasiswas->isEmpty())
@@ -199,6 +200,38 @@
             });
         }
 
+        // normalized (trim, lower) prodi comparison to avoid formatting mismatches
+        let currentProdiList = [];
+        function normalizeList(list){
+            return (list || []).map(i => String(i || '').trim().toLowerCase());
+        }
+
+        function filterMahasiswaByProdi(prodiList) {
+            const normalized = normalizeList(prodiList);
+            currentProdiList = normalized;
+            const selects = Array.from(container.querySelectorAll('select.mahasiswa-select'));
+            const templateOptions = Array.from(template.querySelectorAll('option'));
+            selects.forEach(sel => {
+                const currentVal = sel.value;
+                sel.innerHTML = '';
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = '';
+                defaultOpt.textContent = '-- Pilih Mahasiswa --';
+                sel.appendChild(defaultOpt);
+                templateOptions.forEach(opt => {
+                    if (!opt.value) return;
+                    const optProdi = String(opt.dataset.prodi || '').trim().toLowerCase();
+                    if (normalized.length > 0 && normalized.includes(optProdi)) {
+                        const clone = opt.cloneNode(true);
+                        sel.appendChild(clone);
+                    }
+                });
+                // restore value if still present
+                sel.value = currentVal && Array.from(sel.options).some(o => o.value === currentVal) ? currentVal : '';
+            });
+            syncOptions();
+        }
+
     function addMahasiswaSelect(prefill = '') {
         const wrapper = document.createElement('div');
         wrapper.className = 'mb-2 mahasiswa-row flex items-center gap-2';
@@ -267,7 +300,39 @@
 
         dosenSelect.addEventListener('change', function () {
             updateSlots();
+            const opt = dosenSelect.options[dosenSelect.selectedIndex];
+            let prodiData = [];
+            try { prodiData = opt && opt.dataset && opt.dataset.prodi ? JSON.parse(opt.dataset.prodi) : []; } catch(e) { prodiData = []; }
+
+            if (!prodiData || prodiData.length === 0) {
+                // disable mahasiswa selection and adding
+                container.querySelectorAll('select.mahasiswa-select').forEach(s => { s.innerHTML = '<option value="">-- Pilih Mahasiswa --</option>'; });
+                addBtn.disabled = true;
+                submitBtn.disabled = true;
+                slotsInfo.textContent = 'Dosen belum memiliki Program Studi. Tambahkan prodi pada data dosen terlebih dahulu.';
+            } else {
+                addBtn.disabled = false;
+                submitBtn.disabled = false;
+                filterMahasiswaByProdi(prodiData);
+                updateSlots();
+            }
         });
+
+        // initialize filtering based on currently selected dosen (if any)
+        (function initDosenFilter(){
+            const evt = new Event('change');
+            dosenSelect.dispatchEvent(evt);
+        })();
+
+        // Ensure newly added rows are filtered according to current prodi
+        const originalAddMahasiswaSelect = addMahasiswaSelect;
+        addMahasiswaSelect = function(prefill = ''){
+            originalAddMahasiswaSelect(prefill);
+            // after adding, if currentProdiList set, apply filter to the newest select
+            if (currentProdiList && currentProdiList.length > 0) {
+                filterMahasiswaByProdi(currentProdiList);
+            }
+        }
 
         container.addEventListener('change', function (e) {
             if (e.target && e.target.matches('select.mahasiswa-select')) {

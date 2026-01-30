@@ -55,7 +55,7 @@
             x-bind:style="activeTab === 'data_pribadi' ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight: 600;' : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'"
             onmouseover="if(activeTab !== 'data_pribadi') { this.style.color='#374151'; this.style.backgroundColor='#f9fafb'; }"
             onmouseout="if(activeTab !== 'data_pribadi') { this.style.color='#6b7280'; this.style.backgroundColor='transparent'; }">
-            Data Pribadi
+            Data Lanjutan
         </button>
         <button @click="activeTab = 'orang_tua'"
             class="flex-1 min-w-[120px] py-4 text-center text-sm transition-all duration-200"
@@ -135,7 +135,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                         <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Handphone</label>
                         <div class="lg:col-span-9">
-                            <input type="text" name="no_hp" value="{{ $mahasiswa->no_hp }}" 
+                            <input type="text" name="no_hp" value="{{ $mahasiswa->no_hp }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" title="Masukkan maksimal 13 digit angka" oninput="this.value = this.value.replace(/\D/g,'')" 
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-sm transition-shadow">
                         </div>
                     </div>
@@ -236,32 +236,132 @@
                         </div>
                     </div>
 
-                    {{-- Kota --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Kota</label>
-                        <div class="lg:col-span-9">
-                            <input type="text" name="kota" value="{{ $mahasiswa->kota }}" 
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-sm transition-shadow">
-                        </div>
-                    </div>
-
-                    {{-- Propinsi --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Propinsi</label>
-                        <div class="lg:col-span-9">
-                            <input type="text" name="propinsi" value="{{ $mahasiswa->propinsi }}" 
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-sm transition-shadow">
-                        </div>
-                    </div>
-
-                    {{-- Negara --}}
+                    {{-- Negara (dropdown) --}}
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                         <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Negara</label>
                         <div class="lg:col-span-9">
-                            <input type="text" name="negara" value="{{ $mahasiswa->negara }}" 
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-sm transition-shadow">
+                            <select name="negara" id="negaraSelect" class="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-sm transition-shadow">
+                                <option value="">Pilih Negara</option>
+                                @foreach(($countries ?? []) as $country)
+                                    <option value="{{ $country->name }}" {{ $mahasiswa->negara === $country->name ? 'selected' : '' }}>{{ $country->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
+
+                    {{-- Provinsi (dropdown, populated based on negara) --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Provinsi</label>
+                        <div class="lg:col-span-9">
+                            <select name="provinsi" id="provinsiSelect" class="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-sm transition-shadow">
+                                <option value="">Pilih Provinsi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Kota (dropdown, populated based on provinsi) --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Kota</label>
+                        <div class="lg:col-span-9">
+                            <select name="kota" id="kotaSelect" class="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-sm transition-shadow">
+                                <option value="">Pilih Kota</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <script>
+                        (function(){
+                            const locations = @json($countries ?? []);
+                            console.debug('locations count', Array.isArray(locations) ? locations.length : 0);
+                            console.debug('country names', Array.isArray(locations) ? locations.map(c => c.name).slice(0,10) : locations);
+                            const negaraSelect = document.getElementById('negaraSelect');
+                            const provinsiSelect = document.getElementById('provinsiSelect');
+                            const kotaSelect = document.getElementById('kotaSelect');
+                            const selectedNegara = {!! json_encode($mahasiswa->negara) !!};
+                            const selectedProvinsi = {!! json_encode($mahasiswa->provinsi) !!};
+                            const selectedKota = {!! json_encode($mahasiswa->kota) !!};
+
+                            function clearSelect(sel, label = 'Pilih'){
+                                sel.innerHTML = `<option value="">${label}</option>`;
+                            }
+
+                            function populateProvinces(countryName){
+                                console.debug('populateProvinces called with', countryName);
+                                clearSelect(provinsiSelect, 'Pilih Provinsi');
+                                clearSelect(kotaSelect, 'Pilih Kota');
+                                provinsiSelect.disabled = true;
+                                kotaSelect.disabled = true;
+
+                                if(!countryName) return;
+
+                                const isIndonesia = String(countryName).trim().toLowerCase() === 'indonesia';
+                                console.debug('isIndonesia?', isIndonesia);
+                                if(!isIndonesia) {
+                                    // only show provinces/cities when Indonesia is selected
+                                    return;
+                                }
+
+                                const c = locations.find(x => String(x.name).trim().toLowerCase() === 'indonesia');
+                                console.debug('found indonesia object?', !!c, c && c.provinces ? c.provinces.length : 0);
+                                if(!c || !c.provinces) return;
+
+                                c.provinces.forEach(p => {
+                                    const opt = document.createElement('option');
+                                    const provName = p.province || p.name || p.province;
+                                    opt.value = provName;
+                                    opt.textContent = provName;
+                                    if(opt.value === selectedProvinsi) opt.selected = true;
+                                    provinsiSelect.appendChild(opt);
+                                });
+
+                                provinsiSelect.disabled = false;
+
+                                // if a province selected, populate cities
+                                if(provinsiSelect.value) populateCities(countryName, provinsiSelect.value);
+                            }
+
+                            function populateCities(countryName, provinceName){
+                                clearSelect(kotaSelect, 'Pilih Kota');
+                                kotaSelect.disabled = true;
+                                if(!countryName || !provinceName) return;
+
+                                const isIndonesia = String(countryName).trim().toLowerCase() === 'indonesia';
+                                if(!isIndonesia) return;
+
+                                const c = locations.find(x => String(x.name).trim().toLowerCase() === 'indonesia');
+                                if(!c || !c.provinces) return;
+                                const p = c.provinces.find(pp => (pp.province || pp.name) === provinceName || pp.province === provinceName || String(pp.province).trim() === String(provinceName).trim());
+                                if(!p || !p.cities) return;
+                                p.cities.forEach(ci => {
+                                    const opt = document.createElement('option');
+                                    const cityName = ci.city || ci.name || ci.city;
+                                    opt.value = cityName;
+                                    opt.textContent = cityName;
+                                    if(opt.value === selectedKota) opt.selected = true;
+                                    kotaSelect.appendChild(opt);
+                                });
+                                kotaSelect.disabled = false;
+                            }
+
+                            negaraSelect.addEventListener('change', function(){
+                                populateProvinces(this.value);
+                            });
+
+                            provinsiSelect.addEventListener('change', function(){
+                                populateCities(negaraSelect.value, this.value);
+                            });
+
+                            // Initialize selects on page load
+                            // disable provinsi/kota by default
+                            provinsiSelect.disabled = true;
+                            kotaSelect.disabled = true;
+
+                            if(selectedNegara){
+                                negaraSelect.value = selectedNegara;
+                                populateProvinces(selectedNegara);
+                            }
+                        })();
+                    </script>
 
                     {{-- Tempat Lahir --}}
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
@@ -472,9 +572,9 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Propinsi</label>
+                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Provinsi</label>
                         <div class="lg:col-span-9">
-                            <input type="text" name="propinsi_ortu" value="{{ $parent->propinsi_ortu ?? '' }}" 
+                            <input type="text" name="provinsi_ortu" value="{{ $parent->provinsi_ortu ?? '' }}" 
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-sm transition-shadow">
                         </div>
                     </div>
@@ -488,7 +588,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                         <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Handphone Ortu</label>
                         <div class="lg:col-span-9">
-                            <input type="text" name="handphone_ortu" value="{{ $parent->handphone_ortu ?? '' }}" 
+                            <input type="text" name="handphone_ortu" value="{{ $parent->handphone_ortu ?? '' }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" title="Masukkan maksimal 13 digit angka" oninput="this.value = this.value.replace(/\D/g,'')" 
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-sm transition-shadow">
                         </div>
                     </div>

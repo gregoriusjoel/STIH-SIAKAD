@@ -30,7 +30,7 @@ class NewStudentSurveyController extends Controller
         foreach ($questions as $q) {
             $rules[$q['key']] = 'required|in:4,3,2,1';
         }
-        $rules['saran'] = 'nullable|string|max:2000';
+        $rules['saran'] = 'required|string|max:2000';
 
         $validated = $request->validate($rules);
 

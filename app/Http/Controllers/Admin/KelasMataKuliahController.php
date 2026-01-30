@@ -223,7 +223,23 @@ class KelasMataKuliahController extends Controller
 
     public function destroy(KelasMataKuliah $kelasMataKuliah)
     {
+        // Find and delete related Kelas and Jadwal records
+        // This ensures the class no longer appears in lecturer's "Daftar Kelas Ajar"
+        $relatedKelas = Kelas::where('mata_kuliah_id', $kelasMataKuliah->mata_kuliah_id)
+            ->where('section', $kelasMataKuliah->kode_kelas)
+            ->first();
+        
+        if ($relatedKelas) {
+            // Delete all jadwal records for this kelas
+            Jadwal::where('kelas_id', $relatedKelas->id)->delete();
+            
+            // Delete the kelas record
+            $relatedKelas->delete();
+        }
+        
+        // Finally delete the KelasMataKuliah record
         $kelasMataKuliah->delete();
+        
         return redirect()->route('admin.jadwal.index')->with('success', 'Kelas mata kuliah berhasil dihapus');
     }
 }
