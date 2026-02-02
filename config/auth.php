@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'mahasiswa_absen' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
     ],
 
     /*

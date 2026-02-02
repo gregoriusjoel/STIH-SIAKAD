@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('mahasiswas', function (Blueprint $table) {
-            $table->string('jenis_sekolah')->nullable()->after('negara');
+            $table->string('jenis_sekolah')->nullable()->after('kabupaten');
             $table->string('jurusan_sekolah')->nullable()->after('jenis_sekolah');
             $table->string('tahun_lulus')->nullable()->after('jurusan_sekolah');
             $table->decimal('nilai_kelulusan', 5, 2)->nullable()->after('tahun_lulus');

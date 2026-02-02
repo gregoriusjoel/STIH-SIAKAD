@@ -14,10 +14,10 @@ class AttendanceController extends Controller
     public function showForm($token)
     {
         $kelas = KelasMataKuliah::where('qr_token', $token)->first();
-        if (! $kelas) {
+        if (!$kelas) {
             abort(404);
         }
-        if (! $kelas->qr_enabled) {
+        if (!$kelas->qr_enabled) {
             // If QR isn't enabled, show the thank-you/closed page to the scanner.
             return redirect()->route('absensi.thanks');
         }
@@ -46,10 +46,10 @@ class AttendanceController extends Controller
     public function store(Request $request, $token)
     {
         $kelas = KelasMataKuliah::where('qr_token', $token)->first();
-        if (! $kelas) {
+        if (!$kelas) {
             abort(404);
         }
-        if (! $kelas->qr_enabled) {
+        if (!$kelas->qr_enabled) {
             // If the QR is not enabled (or has been auto-disabled), send the user to thank-you
             return redirect()->route('absensi.thanks');
         }
@@ -90,17 +90,17 @@ class AttendanceController extends Controller
                 return back()->withErrors(['nim' => 'Masukkan NIM Anda jika tidak login.']);
             }
             $mahasiswa = Mahasiswa::where('nim', $data['nim'])->first();
-            if (! $mahasiswa) {
+            if (!$mahasiswa) {
                 return back()->withErrors(['nim' => 'Mahasiswa dengan NIM tersebut tidak ditemukan.']);
             }
             $krs = Krs::where('mahasiswa_id', $mahasiswa->id)->where('kelas_mata_kuliah_id', $kelas->id)->first();
         }
 
         // Prevent duplicate attendance: same mahasiswa can't submit twice for the same kelas
-        if (! empty($mahasiswa?->id)) {
+        if (!empty($mahasiswa?->id)) {
             $alreadyQuery = Presensi::where('mahasiswa_id', $mahasiswa->id)
                 ->where('kelas_mata_kuliah_id', $kelas->id);
-            if ($canRecordPertemuan && ! is_null($pertemuan)) {
+            if ($canRecordPertemuan && !is_null($pertemuan)) {
                 $alreadyQuery->where('pertemuan', $pertemuan);
             }
             $already = $alreadyQuery->exists();
@@ -110,7 +110,7 @@ class AttendanceController extends Controller
             }
         }
 
-        if (! $krs) {
+        if (!$krs) {
             \Log::warning('Absensi attempt without KRS — auto-creating KRS', [
                 'token' => $token,
                 'mahasiswa_id' => $mahasiswa?->id ?? null,
@@ -155,7 +155,7 @@ class AttendanceController extends Controller
             'keterangan' => $data['keterangan'] ?? null,
         ];
 
-        if ($canRecordPertemuan && ! is_null($pertemuan)) {
+        if ($canRecordPertemuan && !is_null($pertemuan)) {
             $createData['pertemuan'] = $pertemuan;
         }
 
@@ -176,11 +176,48 @@ class AttendanceController extends Controller
             ]);
         }
 
-        return redirect()->route('absensi.thanks');
+        return redirect()->route('absensi.thanks')->with([
+            'kelas_id' => $kelas->id,
+            'pertemuan' => $pertemuan ?? 1, // Default to 1 if null
+            'mata_kuliah' => $kelas->mataKuliah->nama
+        ]);
     }
 
     public function thanks()
     {
-        return view('absensi.thanks');
+        $kelasId = session('kelas_id');
+
+        // Dynamic Dummy ID Fallback
+        if (!$kelasId) {
+            $user = auth()->user();
+            if ($user && $user->role === 'dosen') {
+                $kelasId = \App\Models\KelasMataKuliah::where('dosen_id', $user->dosen->id ?? 0)->value('id');
+            } elseif ($user && $user->mahasiswa) {
+                // Get ANY active class for this student
+                $kelasId = \App\Models\Krs::where('mahasiswa_id', $user->mahasiswa->id)->value('kelas_mata_kuliah_id');
+            }
+
+            // Absolute fallback if no classes found
+            $kelasId = $kelasId ?? 1;
+        }
+
+        $pertemuan = session('pertemuan', 1);
+        $mataKuliah = session('mata_kuliah') ?? 'Hukum Pidana (Dummy)';
+
+        // Force Dummy Materials to always show
+        $materials = [
+            [
+                'name' => "Materi Pertemuan $pertemuan - Slide.pdf",
+                'url' => '#',
+                'type' => 'pdf'
+            ],
+            [
+                'name' => "Referensi Pertemuan $pertemuan.docx",
+                'url' => '#',
+                'type' => 'doc'
+            ]
+        ];
+
+        return view('absensi.thanks', compact('materials', 'pertemuan', 'mataKuliah', 'kelasId'));
     }
 }

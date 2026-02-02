@@ -218,7 +218,7 @@
         </div>
 
         <!-- Form -->
-        <form method="POST" :action="rescheduleFormAction" class="space-y-4">
+        <form method="POST" :action="rescheduleFormAction" enctype="multipart/form-data" class="space-y-4">
             @csrf
             <input type="hidden" name="kelas_mata_kuliah_id" :value="rescheduleData.id">
             <input type="hidden" name="week_offset" value="{{ $weekOffset }}">
@@ -282,8 +282,45 @@
             <!-- Hidden input for room (selected from availability card) -->
             <input type="hidden" name="new_ruang" :value="rescheduleData.ruang">
 
-            <!-- Room Availability Card -->
-            <div class="border rounded-lg p-3 bg-gray-50 dark:bg-slate-800 max-h-64 overflow-y-auto">
+            <!-- Metode Pengajaran -->
+            <div>
+                <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
+                    Metode Pengajaran <span class="text-red-500">*</span>
+                </label>
+                <select name="metode_pengajaran" x-model="rescheduleData.metode_pengajaran" @change="onMetodeChange()"
+                    class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-[#8B1538]">
+                    <option value="offline">Offline (Tatap Muka)</option>
+                    <option value="online">Online (Sesi Live)</option>
+                    <option value="asynchronous">Asynchronous (Tugas / Materi Mandiri)</option>
+                </select>
+            </div>
+
+            <!-- Online link input (visible when metode = online) -->
+            <div x-show="rescheduleData.metode_pengajaran === 'online'" x-cloak>
+                <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">Link Meeting (GMeet/Zoom) <span class="text-red-500">*</span></label>
+                <input type="url" name="online_link" x-model="rescheduleData.online_link"
+                    placeholder="https://meet.google.com/... atau https://zoom.us/meet/..."
+                    class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm">
+            </div>
+
+            <!-- Asynchronous task input (visible when metode = asynchronous) -->
+                <div x-show="rescheduleData.metode_pengajaran === 'asynchronous'" x-cloak>
+                <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">Tugas / Instruksi Asynchronous <span class="text-red-500">*</span></label>
+                <textarea name="asynchronous_tugas" x-model="rescheduleData.asynchronous_tugas" rows="3"
+                    class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm" placeholder="Deskripsikan tugas atau materi yang harus dikerjakan mahasiswa..."></textarea>
+            </div>
+
+                <!-- Optional PDF upload for asynchronous metode -->
+                <div x-show="rescheduleData.metode_pengajaran === 'asynchronous'" x-cloak class="mt-2">
+                    <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">Lampirkan PDF (opsional)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="file" name="asynchronous_file" accept="application/pdf" x-ref="asyncFile" @change="(e) => { const f = e.target.files[0]; rescheduleData.asynchronous_file_name = f ? f.name : ''; }" class="text-sm">
+                        <div class="text-sm text-gray-600" x-text="rescheduleData.asynchronous_file_name ? rescheduleData.asynchronous_file_name : 'Belum ada file yang dipilih'">Belum ada file yang dipilih</div>
+                    </div>
+                </div>
+
+            <!-- Room Availability Card (visible only for Offline metode) -->
+            <div x-show="rescheduleData.metode_pengajaran === 'offline'" x-cloak class="border rounded-lg p-3 bg-gray-50 dark:bg-slate-800 max-h-64 overflow-y-auto">
                 <div class="flex items-center justify-between mb-2">
                     <div class="text-xs font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">meeting_room</span>
@@ -328,8 +365,8 @@
                 </div>
             </div>
 
-            <!-- Selected Room Display -->
-            <div x-show="rescheduleData.ruang" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <!-- Selected Room Display (only for Offline metode) -->
+            <div x-show="rescheduleData.metode_pengajaran === 'offline' && rescheduleData.ruang" x-cloak class="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <div class="flex items-center gap-2 text-sm">
                     <span class="material-symbols-outlined text-blue-600 text-lg">check_circle</span>
                     <span class="text-blue-700">Ruangan dipilih: <strong x-text="rescheduleData.ruang"></strong></span>
@@ -346,8 +383,8 @@
                 </button>
 
                 <button type="submit"
-                    :disabled="!rescheduleData.ruang || !rescheduleData.hari || !rescheduleData.jam_mulai || !rescheduleData.jam_selesai"
-                    :class="{'opacity-50 cursor-not-allowed': !rescheduleData.ruang}"
+                    :disabled="!( (rescheduleData.metode_pengajaran !== 'offline' || rescheduleData.ruang) && rescheduleData.hari && rescheduleData.jam_mulai && rescheduleData.jam_selesai && (rescheduleData.metode_pengajaran !== 'online' || rescheduleData.online_link) && (rescheduleData.metode_pengajaran !== 'asynchronous' || rescheduleData.asynchronous_tugas) )"
+                    :class="{'opacity-50 cursor-not-allowed': !( (rescheduleData.metode_pengajaran !== 'offline' || rescheduleData.ruang) && rescheduleData.hari && rescheduleData.jam_mulai && rescheduleData.jam_selesai && (rescheduleData.metode_pengajaran !== 'online' || rescheduleData.online_link) && (rescheduleData.metode_pengajaran !== 'asynchronous' || rescheduleData.asynchronous_tugas) ) }"
                     class="px-5 py-2 rounded-lg bg-[#8B1538] text-white text-sm font-semibold shadow hover:opacity-90">
                     Ubah Jadwal
                 </button>
@@ -385,14 +422,33 @@
                 hari: '',
                 jam_mulai: '',
                 jam_selesai: '',
-                ruang: ''
+                ruang: '',
+                metode_pengajaran: 'offline',
+                online_link: '',
+                asynchronous_tugas: '',
+                asynchronous_file_name: ''
             },
             get rescheduleFormAction() {
                 return '/dosen/kelas/reschedule';
             },
             openRescheduleModal(kelas) {
-                this.rescheduleData = { ...kelas, ruang: '' };
+                this.rescheduleData = { ...kelas, ruang: '', metode_pengajaran: 'offline', online_link: '', asynchronous_tugas: '' };
                 this.showRescheduleModal = true;
+            },
+
+            onMetodeChange() {
+                // Clear fields when switching metode to avoid accidental submission
+                if (this.rescheduleData.metode_pengajaran !== 'online') {
+                    this.rescheduleData.online_link = '';
+                }
+                if (this.rescheduleData.metode_pengajaran !== 'asynchronous') {
+                    this.rescheduleData.asynchronous_tugas = '';
+                    this.rescheduleData.asynchronous_file_name = '';
+                    if (this.$refs && this.$refs.asyncFile) this.$refs.asyncFile.value = '';
+                }
+                if (this.rescheduleData.metode_pengajaran !== 'offline') {
+                    this.rescheduleData.ruang = '';
+                }
             },
             
             // Check if a room is available for the selected day and time

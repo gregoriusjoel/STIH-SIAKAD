@@ -82,7 +82,7 @@
                     </div>
                     <div class="flex flex-col">
                         <h1 class="text-gray-800 text-lg font-bold leading-tight">STIH Adhyaksa
-                        <p class="text-gray-500 text-xs font-normal">Student Portal</p>
+                            <p class="text-gray-500 text-xs font-normal">Student Portal</p>
                     </div>
                 </div>
 
@@ -122,7 +122,7 @@
                         </button>
 
                         <!-- Dropdown Content -->
-                        <div x-show="openAkademik" x-collapse class="bg-gray-50/50 rounded-b-lg mb-2">
+                        <div x-show="openAkademik" class="bg-gray-50/50 rounded-b-lg mb-2">
                             <a class="{{ Request::routeIs('mahasiswa.nilai.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
                                 href="{{ route('mahasiswa.nilai.index') }}">
                                 <i class="fas fa-chart-bar w-4 text-center text-xs opacity-70"></i>
@@ -164,7 +164,7 @@
                         </button>
 
                         <!-- Dropdown Content -->
-                        <div x-show="openPengajuan" x-collapse class="bg-gray-50/50 rounded-b-lg mb-2">
+                        <div x-show="openPengajuan" class="bg-gray-50/50 rounded-b-lg mb-2">
                             <a class="{{ Request::routeIs('mahasiswa.pengajuan.sidang.index') ? 'text-maroon font-semibold bg-red-50/50' : 'text-gray-500 hover:text-maroon hover:bg-gray-50' }} flex items-center gap-3 pl-12 pr-4 py-2.5 text-sm transition-colors"
                                 href="{{ route('mahasiswa.pengajuan.sidang.index') }}">
                                 <i class="fas fa-gavel w-4 text-center text-xs opacity-70"></i>
@@ -285,6 +285,7 @@
 
     @stack('scripts')
 
+    <x-ui.preloader />
 </body>
 
 </html>

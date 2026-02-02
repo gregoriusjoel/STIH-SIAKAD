@@ -107,7 +107,7 @@
                             @php
                                 $selectedProdi = old('prodi', $dosen->prodi ?? []);
                                 if(!is_array($selectedProdi)) $selectedProdi = [$selectedProdi];
-                                $prodiOptions = ['Hukum Tata Negara', 'Hukum Bisnis', 'Hukum Pidana'];
+                                $prodiOptions = ['Hukum Tata Kabupaten', 'Hukum Bisnis', 'Hukum Pidana'];
                             @endphp
 
                             <div id="prodi-list" class="space-y-2">
@@ -182,7 +182,10 @@
                             Mata Kuliah Pengajaran
                         </h4>
 
-                        <div id="mata-kuliah-list" class="space-y-3">
+                        @php
+                            $totalMataKuliah = count($mataKuliahs);
+                        @endphp
+                        <div id="mata-kuliah-list" class="space-y-3" data-total-mk="{{ $totalMataKuliah }}">
                             @php
                                 $dosenMkIds = $dosen->mata_kuliah_ids ?? [];
                                 if (!is_array($dosenMkIds)) {
@@ -190,22 +193,22 @@
                                 }
                             @endphp
 
-                            {{-- First row always has + button --}}
-                            <div class="flex items-center gap-3">
-                                <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                            {{-- First row --}}
+                            <div class="flex items-center gap-3 mk-row">
+                                <select name="mata_kuliah_ids[]" class="mk-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
                                     <option value="">Pilih Mata Kuliah</option>
                                     @foreach($mataKuliahs as $mk)
                                         <option value="{{ $mk->id }}" {{ count($dosenMkIds) > 0 && $mk->id == $dosenMkIds[0] ? 'selected' : '' }}>{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
                                     @endforeach
                                 </select>
-                                <button type="button" id="add-mk" class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                <button type="button" class="remove-mk px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200 {{ count($dosenMkIds) <= 1 ? 'hidden' : '' }}">-</button>
                             </div>
 
                             {{-- Additional rows have - button --}}
                             @if(count($dosenMkIds) > 1)
                                 @foreach(array_slice($dosenMkIds, 1) as $mkId)
-                                    <div class="flex items-center gap-3">
-                                        <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                    <div class="flex items-center gap-3 mk-row">
+                                        <select name="mata_kuliah_ids[]" class="mk-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
                                             <option value="">Pilih Mata Kuliah</option>
                                             @foreach($mataKuliahs as $mk)
                                                 <option value="{{ $mk->id }}" {{ $mk->id == $mkId ? 'selected' : '' }}>{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
@@ -216,7 +219,16 @@
                                 @endforeach
                             @endif
                         </div>
-                        <p class="text-xs text-gray-400 mt-2">Tambahkan mata kuliah yang diampu oleh dosen. Klik + untuk menambah baris.</p>
+                        
+                        {{-- Add button shown only if totalMataKuliah >= 2 --}}
+                        @if($totalMataKuliah >= 2)
+                            <div class="mt-3">
+                                <button type="button" id="add-mk" class="inline-flex items-center px-4 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200 text-sm font-medium text-gray-700">
+                                    <i class="fas fa-plus mr-2"></i> Tambah Mata Kuliah
+                                </button>
+                            </div>
+                        @endif
+                        <p class="text-xs text-gray-400 mt-2">Tambahkan mata kuliah yang diampu oleh dosen.{{ $totalMataKuliah >= 2 ? ' Klik + untuk menambah baris.' : '' }}</p>
                     </div>
                 </div>
             </div>
@@ -241,33 +253,136 @@
             // Mata Kuliah add/remove
             const addMkBtn = document.getElementById('add-mk');
             const mkList = document.getElementById('mata-kuliah-list');
+            const totalMk = parseInt(mkList?.dataset.totalMk || '0', 10);
+
+            // Get all mk options from first select
+            function getAllMkOptions() {
+                const firstSelect = mkList?.querySelector('.mk-select');
+                if (!firstSelect) return [];
+                return Array.from(firstSelect.options)
+                    .filter(opt => opt.value !== '')
+                    .map(opt => ({ value: opt.value, text: opt.textContent }));
+            }
+
+            // Get currently selected mk values
+            function getSelectedMkValues() {
+                const selects = mkList?.querySelectorAll('.mk-select') || [];
+                return Array.from(selects).map(s => s.value).filter(v => v !== '');
+            }
+
+            // Update add button visibility
+            function updateMkAddButtonVisibility() {
+                if (!addMkBtn) return;
+                const currentRowCount = mkList?.querySelectorAll('.mk-row').length || 0;
+                // Hide if we've used all available mata kuliah
+                if (currentRowCount >= totalMk) {
+                    addMkBtn.classList.add('hidden');
+                } else {
+                    addMkBtn.classList.remove('hidden');
+                }
+            }
+
+            // Update remove button visibility
+            function updateMkRemoveButtons() {
+                const rows = mkList?.querySelectorAll('.mk-row') || [];
+                rows.forEach(row => {
+                    const removeBtn = row.querySelector('.remove-mk');
+                    if (removeBtn) {
+                        if (rows.length === 1) {
+                            removeBtn.classList.add('hidden');
+                        } else {
+                            removeBtn.classList.remove('hidden');
+                        }
+                    }
+                });
+            }
+
+            // Sync options to disable already selected ones
+            function syncMkOptions() {
+                const selects = mkList?.querySelectorAll('.mk-select') || [];
+                const selectedValues = getSelectedMkValues();
+
+                selects.forEach(select => {
+                    const currentValue = select.value;
+                    Array.from(select.options).forEach(opt => {
+                        if (opt.value === '') return;
+                        opt.disabled = opt.value !== currentValue && selectedValues.includes(opt.value);
+                    });
+                });
+
+                updateMkAddButtonVisibility();
+            }
+
             if(addMkBtn){
                 addMkBtn.addEventListener('click', function(){
+                    const currentRowCount = mkList?.querySelectorAll('.mk-row').length || 0;
+                    if (currentRowCount >= totalMk) {
+                        if (window.Swal) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Batas Tercapai',
+                                text: 'Semua mata kuliah sudah ditambahkan.',
+                                confirmButtonColor: '#8B1538'
+                            });
+                        } else {
+                            alert('Semua mata kuliah sudah ditambahkan.');
+                        }
+                        return;
+                    }
+
+                    const allOptions = getAllMkOptions();
+                    const selectedValues = getSelectedMkValues();
+                    
+                    let optionsHtml = '<option value="">Pilih Mata Kuliah</option>';
+                    allOptions.forEach(opt => {
+                        const isDisabled = selectedValues.includes(opt.value) ? 'disabled' : '';
+                        optionsHtml += `<option value="${opt.value}" ${isDisabled}>${opt.text}</option>`;
+                    });
+
                     const row = document.createElement('div');
-                    row.className = 'flex items-center gap-3';
+                    row.className = 'flex items-center gap-3 mk-row';
                     row.innerHTML = `
-                        <select name="mata_kuliah_ids[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
-                            <option value="">Pilih Mata Kuliah</option>
-                            @foreach($mataKuliahs as $mk)
-                                <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
-                            @endforeach
+                        <select name="mata_kuliah_ids[]" class="mk-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                            ${optionsHtml}
                         </select>
                         <button type="button" class="remove-mk px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
                     `;
                     mkList.appendChild(row);
-                    row.querySelector('.remove-mk')?.addEventListener('click', function(){ row.remove(); });
+                    
+                    row.querySelector('.remove-mk')?.addEventListener('click', function(){ 
+                        row.remove(); 
+                        syncMkOptions();
+                        updateMkRemoveButtons();
+                    });
+                    row.querySelector('.mk-select')?.addEventListener('change', syncMkOptions);
+                    
+                    updateMkRemoveButtons();
+                    updateMkAddButtonVisibility();
                 });
             }
+            
             document.querySelectorAll('.remove-mk').forEach(btn => btn.addEventListener('click', function(){
-                const row = this.closest('.flex'); if(row) row.remove();
+                const row = this.closest('.mk-row'); 
+                if(row) row.remove();
+                syncMkOptions();
+                updateMkRemoveButtons();
             }));
+
+            // Wire up existing selects
+            document.querySelectorAll('.mk-select').forEach(select => {
+                select.addEventListener('change', syncMkOptions);
+            });
+
+            // Initial sync
+            syncMkOptions();
+            updateMkRemoveButtons();
 
             // Program Studi add/remove
             const addProdi = document.getElementById('add-prodi');
             const prodiList = document.getElementById('prodi-list');
             const prodiOptionsHtml = `
                 <option value="">Pilih Program Studi</option>
-                <option value="Hukum Tata Negara">Hukum Tata Negara</option>
+                <option value="Hukum Tata Kabupaten">Hukum Tata Kabupaten</option>
                 <option value="Hukum Bisnis">Hukum Bisnis</option>
                 <option value="Hukum Pidana">Hukum Pidana</option>
             `;

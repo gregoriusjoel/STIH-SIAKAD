@@ -68,7 +68,9 @@ class QrController extends Controller
             abort(410);
         }
 
-        // Redirect to the public attendance form for this kelas
-        return redirect()->route('absensi.form', ['token' => $kelas->qr_token]);
+        // Redirect to the absen login flow for this kelas (login-based attendance)
+        // This preserves the existing permission/expiry checks above but sends scanners
+        // to the login-only attendance flow instead of the manual form.
+        return redirect()->route('absen.login', ['token' => $kelas->qr_token]);
     }
 }

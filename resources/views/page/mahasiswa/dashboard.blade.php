@@ -79,6 +79,11 @@
     </div>
 
     {{-- Pengumuman (ganti 4 kartu stat) --}}
+    @php
+        if (!isset($pengumuman)) {
+            $pengumuman = \App\Models\Pengumuman::whereNotNull('published_at')->orderByDesc('published_at')->get();
+        }
+    @endphp
     <div class="bg-white rounded-xl shadow-md p-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-bold text-gray-800">Berita Terikini</h3>
@@ -187,16 +192,88 @@
         </div>
     </div>
 
-    {{-- Info Card --}}
-    <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
-        <div class="flex items-start gap-4">
-            <i class="fas fa-info-circle text-blue-600 text-2xl"></i>
-            <div>
-                <h4 class="font-bold text-blue-900 mb-2">Informasi Penting</h4>
-                <p class="text-sm text-blue-800">
-                    Pastikan Anda telah mengisi KRS sebelum batas waktu yang ditentukan. 
-                    Untuk informasi lebih lanjut, hubungi bagian akademik kampus.
-                </p>
+    {{-- Info + PA Row (50:50) --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- Informasi Penting (left) --}}
+        <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
+            <div class="flex items-start gap-4">
+                <i class="fas fa-info-circle text-blue-600 text-2xl"></i>
+                <div>
+                    <h4 class="font-bold text-blue-900 mb-2">Informasi Penting</h4>
+                    <p class="text-sm text-blue-800">
+                        Pastikan Anda telah mengisi KRS sebelum batas waktu yang ditentukan. 
+                        Untuk informasi lebih lanjut, hubungi bagian akademik kampus.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- PA Contact Box (right) --}}
+        <div class="bg-white border border-red-200 rounded-lg p-4">
+            <div class="bg-red-100 border border-red-200 rounded-t-lg p-4">
+                <h4 class="font-bold text-red-800">Kontak Layanan dan Konsultasi (PA):</h4>
+            </div>
+            <div class="p-4 text-sm text-gray-700">
+                @php
+                    $paList = $mahasiswa->dosenPa()->with('user')->get();
+                @endphp
+
+                @if($paList->isEmpty())
+                    <p class="text-gray-600">Kami menyediakan dosen Penasihat Akademik (PA) untuk membimbing dan melayani Anda apabila ada pertanyaan atau masalah saat melakukan pengisian KRS. Silakan menghubungi bagian akademik untuk penempatan PA.</p>
+                    <p class="mt-3 text-xs text-gray-500">Waktu pelayanan: <strong>Hari Kerja, JAM 09.00 - 15.00 WIB</strong></p>
+                @else
+                    <p class="text-gray-700 mb-3">Berikut kontak PA Anda. Klik nama untuk membuka chat WhatsApp.</p>
+                    <div class="space-y-3">
+                        @foreach($paList as $pa)
+                            @php
+                                $phoneRaw = $pa->phone ?? $pa->user->phone ?? $pa->user->no_hp ?? '';
+                                $phoneDigits = preg_replace('/\D+/', '', $phoneRaw);
+                                // Normalize Indonesian numbers: leading 0 or starting with 8
+                                if (str_starts_with($phoneDigits, '0')) {
+                                    $waNumber = '62' . ltrim($phoneDigits, '0');
+                                } elseif (str_starts_with($phoneDigits, '8')) {
+                                    $waNumber = '62' . $phoneDigits;
+                                } else {
+                                    $waNumber = $phoneDigits;
+                                }
+                                $waLink = $waNumber ? ('https://wa.me/' . $waNumber) : null;
+                            @endphp
+
+                            <div class="p-3 border rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-semibold text-gray-800">{{ $pa->user->name ?? ($pa->nidn ?? 'PA') }}</div>
+                                        <div class="text-xs text-gray-500">NIDN: {{ $pa->nidn ?? '-' }}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm text-gray-600">{{ $pa->pendidikan ?? '-' }}</div>
+                                        @if($waLink)
+                                            <a href="{{ $waLink }}" target="_blank" rel="noopener" class="inline-flex items-center mt-2 px-3 py-1 rounded-full bg-green-50 text-green-700 border border-green-100 text-sm hover:bg-green-100">
+                                                <i class="fab fa-whatsapp mr-2"></i>
+                                                Chat WA
+                                            </a>
+                                        @else
+                                            <div class="text-xs text-gray-400 mt-2">Nomor tidak tersedia</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-4 text-xs text-gray-500">
+                        <strong>WAKTU PELAYANAN (WA Only!):</strong><br>
+                        HARI KERJA, JAM 09.00 - 15.00 WIB
+                    </div>
+                @endif
+
+                <div class="mt-4">
+                    @if($paList->isNotEmpty())
+                        <a href="#" class="text-sm text-red-700 font-semibold">Klik disini untuk melihat kontak PA (WA Only!).</a>
+                    @else
+                        <a href="{{ route('mahasiswa.kontak.pa') ?? '#' }}" class="text-sm text-red-700 font-semibold">Klik disini untuk melihat kontak PA (WA Only!).</a>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

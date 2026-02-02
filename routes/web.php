@@ -41,10 +41,23 @@ Route::get('/', function () {
 Route::get('/qrcode/kelas/{token}/image', [App\Http\Controllers\QrController::class, 'image'])->name('qrcode.kelas.image');
 Route::get('/kelas/qr-redirect/{token}', [App\Http\Controllers\QrController::class, 'redirect'])->name('qrcode.kelas.redirect');
 
-// Public attendance form via QR
-Route::get('/absensi/kelas/{token}', [App\Http\Controllers\AttendanceController::class, 'showForm'])->name('absensi.form');
-Route::post('/absensi/kelas/{token}', [App\Http\Controllers\AttendanceController::class, 'store'])->name('absensi.submit');
+// Public attendance form via QR (legacy) — redirect to login-based absen flow
+Route::get('/absensi/kelas/{token}', function ($token) {
+    return redirect()->route('absen.login', ['token' => $token]);
+})->name('absensi.form');
+
+// If someone tries to POST to the old manual submit endpoint, redirect them to login flow
+Route::post('/absensi/kelas/{token}', function ($token) {
+    return redirect()->route('absen.login', ['token' => $token]);
+})->name('absensi.submit');
+
+// keep the legacy thank-you route mapping (optional)
 Route::get('/absensi/terima-kasih', [App\Http\Controllers\AttendanceController::class, 'thanks'])->name('absensi.thanks');
+
+// Absen berbasis login (separate flow)
+Route::get('/absen/login', [App\Http\Controllers\Absen\LoginController::class, 'showLoginForm'])->name('absen.login');
+Route::post('/absen/login', [App\Http\Controllers\Absen\LoginController::class, 'login'])->middleware('throttle:10,1')->name('absen.login.post');
+Route::get('/absen/thank-you', [App\Http\Controllers\Absen\LoginController::class, 'thankYou'])->middleware('auth:mahasiswa_absen')->name('absen.thankyou');
 
 // Dosen / Lecturer Portal Routes
 Route::prefix('dosen')->name('dosen.')->group(function () {
@@ -68,6 +81,9 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/krs', [LecturerController::class, 'krs'])->name('krs');
     Route::get('/input-nilai', [LecturerController::class, 'inputNilai'])->name('input-nilai');
     Route::get('/mahasiswa', [LecturerController::class, 'students'])->name('mahasiswa');
+    // Pengumuman untuk dosen
+    Route::get('/pengumuman', [App\Http\Controllers\Page\PengumumanController::class, 'index'])->name('pengumuman.index');
+    Route::get('/pengumuman/{pengumuman}', [App\Http\Controllers\Page\PengumumanController::class, 'show'])->name('pengumuman.show');
 });
 
 // Mahasiswa Portal Routes
@@ -83,6 +99,10 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
     // Routes yang memerlukan status check
     Route::middleware(['mahasiswa.status'])->group(function () {
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
+
+        // Pengumuman untuk mahasiswa
+        Route::get('/pengumuman', [App\Http\Controllers\Page\PengumumanController::class, 'index'])->name('pengumuman.index');
+        Route::get('/pengumuman/{pengumuman}', [App\Http\Controllers\Page\PengumumanController::class, 'show'])->name('pengumuman.show');
 
         // KRS
         Route::get('/krs', [KRSController::class, 'index'])->name('krs.index');
@@ -137,9 +157,16 @@ Route::prefix('parent')->name('parent.')->middleware(['auth'])->group(function (
 });
 
 // Admin Routes
+// Public template download for Dosen import (no auth required)
+Route::get('/admin/dosen/import-template', [App\Http\Controllers\Admin\DosenController::class, 'downloadTemplate'])
+    ->name('admin.dosen.import-template');
+
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    // Pengumuman (Admin CRUD)
+    Route::resource('pengumuman', App\Http\Controllers\Admin\PengumumanController::class);
 
     // User Management
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
@@ -149,6 +176,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Dosen Management
     Route::resource('dosen', App\Http\Controllers\Admin\DosenController::class);
+    Route::post('dosen/import', [App\Http\Controllers\Admin\DosenController::class, 'import'])->name('dosen.import');
     Route::resource('dosen-pa', App\Http\Controllers\Admin\DosenPaController::class);
     Route::get('dosen-pa/{id}/mahasiswa', [App\Http\Controllers\Admin\DosenPaController::class, 'getMahasiswa'])->name('dosen-pa.mahasiswa');
 

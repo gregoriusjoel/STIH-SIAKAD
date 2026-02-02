@@ -33,6 +33,12 @@
         <i class="fas fa-home w-5 mr-3"></i>
         <span class="text-sm font-medium">Dashboard</span>
     </a>
+    @if(Route::has('admin.pengumuman.index'))
+        <a href="{{ route('admin.pengumuman.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg mb-2 {{ request()->routeIs('admin.pengumuman.*') ? 'active' : '' }}">
+            <i class="fas fa-bullhorn w-5 mr-3"></i>
+            <span class="text-sm font-medium">Pengumuman</span>
+        </a>
+    @endif
     <!-- Manajemen Data -->
     <div class="mt-3">
         <button type="button" data-toggle="sidebar-section" data-section="manajemen-data" class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold section-toggle uppercase tracking-wide opacity-80">

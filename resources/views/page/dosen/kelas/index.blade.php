@@ -29,7 +29,7 @@
             <div class="flex items-center gap-3">
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">search</span>
-                    <input type="text" placeholder="Cari kelas..." class="pl-10 pr-4 py-2 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm w-64 text-gray-700 dark:text-gray-200 placeholder-gray-400">
+                    <input type="text" id="searchKelas" placeholder="Cari kelas..." class="pl-10 pr-4 py-2 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm w-64 text-gray-700 dark:text-gray-200 placeholder-gray-400">
                 </div>
                 <button class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 px-4 py-2 rounded-lg font-medium text-sm hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors">
                     <span class="material-symbols-outlined text-[18px]">filter_list</span>
@@ -39,9 +39,12 @@
         </div>
 
         <!-- Class Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="classGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($classes as $class)
-                <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-300 group">
+                @php
+                    $searchableText = strtolower($class['name'] . ' ' . $class['code'] . ' ' . $class['section'] . ' ' . $class['day'] . ' ' . ($class['time'] ?? ''));
+                @endphp
+                <div class="kelas-card bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-300 group" data-search="{{ $searchableText }}">
                     <div class="flex justify-between items-start">
                         <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-pink-50 text-[#8B1538] border border-pink-100 uppercase tracking-wider">{{ $class['section'] }}</span>
                         <button class="text-gray-300 hover:text-gray-500 transition-colors">
@@ -146,6 +149,45 @@
             }
 
             document.addEventListener('keydown', function(event) { if (event.key === 'Escape') closeAbsensiModal(); });
+
+            // Search functionality
+            const searchInput = document.getElementById('searchKelas');
+            const classCards = document.querySelectorAll('.kelas-card');
+            const classGrid = document.getElementById('classGrid');
+            
+            // Create "no results" message element
+            const noResultsMsg = document.createElement('div');
+            noResultsMsg.className = 'col-span-full text-center py-12 hidden';
+            noResultsMsg.innerHTML = `
+                <span class="material-symbols-outlined text-5xl text-gray-300 dark:text-slate-600 mb-3">search_off</span>
+                <p class="text-gray-500 dark:text-slate-400 font-medium">Tidak ada kelas yang ditemukan</p>
+                <p class="text-gray-400 dark:text-slate-500 text-sm mt-1">Coba kata kunci lain</p>
+            `;
+            classGrid.appendChild(noResultsMsg);
+
+            searchInput?.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                let visibleCount = 0;
+                
+                classCards.forEach(card => {
+                    const searchData = card.dataset.search || '';
+                    const isMatch = query === '' || searchData.includes(query);
+                    
+                    if (isMatch) {
+                        card.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0 && query !== '') {
+                    noResultsMsg.classList.remove('hidden');
+                } else {
+                    noResultsMsg.classList.add('hidden');
+                }
+            });
         </script>
     @endpush
 @endsection

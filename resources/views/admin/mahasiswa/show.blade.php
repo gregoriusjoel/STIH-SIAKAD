@@ -165,8 +165,8 @@
                         <div>{{ $mahasiswa->provinsi ?? 'Belum diisi' }}</div>
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
-                        <div>{{ $mahasiswa->negara ?? 'Belum diisi' }}</div>
+                        <label class="text-xs font-bold text-gray-400 uppercase">Kab/Desa</label>
+                        <div>{{ $mahasiswa->kabupaten ?? 'Belum diisi' }}</div>
                     </div>
                 </div>
             </div>
@@ -261,8 +261,8 @@
                             <div>{{ $parent->provinsi_ortu ?? 'Belum diisi' }}</div>
                         </div>
                         <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
-                            <div>{{ $parent->negara_ortu ?? 'Belum diisi' }}</div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Kabupaten</label>
+                            <div>{{ $parent->kabupaten_ortu ?? 'Belum diisi' }}</div>
                         </div>
                         <div>
                             <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>

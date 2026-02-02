@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
             ['user_id' => $dosen1User->id],
             [
                 'nidn' => '0101018501',
-                'prodi' => 'Hukum Tata Negara',
+                'prodi' => 'Hukum Tata Kabupaten',
                 'phone' => '081234567891',
                 'address' => 'Jl. Dosen No. 1',
                 'status' => 'aktif'
@@ -120,7 +120,7 @@ class DatabaseSeeder extends Seeder
             ['user_id' => $mhs1User->id],
             [
                 'nim' => '2024010001',
-                'prodi' => 'Hukum Tata Negara',
+                'prodi' => 'Hukum Tata Kabupaten',
                 'angkatan' => '2024',
                 'phone' => '081234567894',
                 'address' => 'Jl. Mahasiswa No. 1',
@@ -189,6 +189,10 @@ class DatabaseSeeder extends Seeder
                 'address' => 'Jl. Orang Tua No. 1'
             ]
         );
+
+        // Import locations (countries/provinces/cities) from CSVs
+        // Seed religions first so profile dropdowns can use them
+        $this->call(ReligionSeeder::class);
 
         // Import locations (countries/provinces/cities) from CSVs
         $this->call(LocationsSeeder::class);

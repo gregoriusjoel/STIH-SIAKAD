@@ -46,64 +46,72 @@
                             Jadwal Baru</div>
                     </div>
                     <form action="{{ route('admin.kelas-mata-kuliah.store') }}" method="POST" class="p-4" x-data="{
-                                                  mataKuliahId: '',
-                                                  dosens: [],
-                                                  selectedDosenId: '',
-                                                  loading: false,
+                                                              mataKuliahId: '',
+                                                              dosens: [],
+                                                              selectedDosenId: '',
+                                                              selectedDosenSks: 0,
+                                                              loading: false,
 
-                                                  // Room Validation
-                                                  hari: '',
-                                                  jamMulai: '',
-                                                  jamSelesai: '',
-                                                  ruangan: '',
-                                                  roomStatus: { available: true, message: '' },
-                                                  checkingRoom: false,
+                                                              // Room Validation
+                                                              hari: '',
+                                                              jamMulai: '',
+                                                              jamSelesai: '',
+                                                              ruangan: '',
+                                                              roomStatus: { available: true, message: '' },
+                                                              checkingRoom: false,
 
-                                                  async fetchDosens() {
-                                                      if (!this.mataKuliahId) {
-                                                          this.dosens = [];
-                                                          this.selectedDosenId = '';
-                                                          return;
-                                                      }
-                                                      this.loading = true;
-                                                      try {
-                                                          const response = await fetch(`/api/dosens-by-mata-kuliah/${this.mataKuliahId}`);
-                                                          this.dosens = await response.json();
-                                                          if (this.dosens.length === 1) {
-                                                              this.selectedDosenId = this.dosens[0].id;
-                                                          } else {
-                                                              this.selectedDosenId = '';
-                                                          }
-                                                      } catch (e) {
-                                                          console.error('Error fetching dosens:', e);
-                                                          this.dosens = [];
-                                                      }
-                                                      this.loading = false;
-                                                  },
+                                                              updateSks() {
+                                                                  const dosen = this.dosens.find(d => d.id == this.selectedDosenId);
+                                                                  this.selectedDosenSks = dosen ? dosen.total_sks : 0;
+                                                              },
 
-                                                  async checkRoom() {
-                                                      if (!this.hari || !this.jamMulai || !this.jamSelesai || !this.ruangan) {
-                                                          this.roomStatus = { available: true, message: '' };
-                                                          return;
-                                                      }
+                                                              async fetchDosens() {
+                                                                  if (!this.mataKuliahId) {
+                                                                      this.dosens = [];
+                                                                      this.selectedDosenId = '';
+                                                                      return;
+                                                                  }
+                                                                  this.loading = true;
+                                                                  try {
+                                                                      const response = await fetch(`/api/dosens-by-mata-kuliah/${this.mataKuliahId}`);
+                                                                      this.dosens = await response.json();
+                                                                      if (this.dosens.length === 1) {
+                                                                          this.selectedDosenId = this.dosens[0].id;
+                                                                          this.selectedDosenSks = this.dosens[0].total_sks;
+                                                                      } else {
+                                                                          this.selectedDosenId = '';
+                                                                          this.selectedDosenSks = 0;
+                                                                      }
+                                                                  } catch (e) {
+                                                                      console.error('Error fetching dosens:', e);
+                                                                      this.dosens = [];
+                                                                  }
+                                                                  this.loading = false;
+                                                              },
 
-                                                      this.checkingRoom = true;
-                                                      try {
-                                                          const params = new URLSearchParams({
-                                                              hari: this.hari,
-                                                              jam_mulai: this.jamMulai,
-                                                              jam_selesai: this.jamSelesai,
-                                                              ruangan: this.ruangan
-                                                          });
-                                                          const response = await fetch(`/api/check-room-availability?${params.toString()}`);
-                                                          const data = await response.json();
-                                                          this.roomStatus = data;
-                                                      } catch (e) {
-                                                          console.error('Error checking room:', e);
-                                                      }
-                                                      this.checkingRoom = false;
-                                                  }
-                                              }">
+                                                              async checkRoom() {
+                                                                  if (!this.hari || !this.jamMulai || !this.jamSelesai || !this.ruangan) {
+                                                                      this.roomStatus = { available: true, message: '' };
+                                                                      return;
+                                                                  }
+
+                                                                  this.checkingRoom = true;
+                                                                  try {
+                                                                      const params = new URLSearchParams({
+                                                                          hari: this.hari,
+                                                                          jam_mulai: this.jamMulai,
+                                                                          jam_selesai: this.jamSelesai,
+                                                                          ruangan: this.ruangan
+                                                                      });
+                                                                      const response = await fetch(`/api/check-room-availability?${params.toString()}`);
+                                                                      const data = await response.json();
+                                                                      this.roomStatus = data;
+                                                                  } catch (e) {
+                                                                      console.error('Error checking room:', e);
+                                                                  }
+                                                                  this.checkingRoom = false;
+                                                              }
+                                                          }">
                         @csrf
                         <div class="space-y-4">
                             <div>
@@ -165,7 +173,7 @@
                                 </template>
 
                                 {{-- Multiple dosens (dropdown) --}}
-                                <select x-show="!loading && dosens.length > 1" name="dosen_id" x-model="selectedDosenId"
+                                <select x-show="!loading && dosens.length > 1" name="dosen_id" x-model="selectedDosenId" @change="updateSks()"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
                                     :required="dosens.length > 1">
                                     <option value="">Pilih Dosen</option>
@@ -173,6 +181,16 @@
                                         <option :value="dosen.id" x-text="dosen.name"></option>
                                     </template>
                                 </select>
+
+                                {{-- Alert Low SKS --}}
+                                <div x-show="selectedDosenId && selectedDosenSks < 20" 
+                                     class="mt-2 bg-yellow-50 border border-yellow-200 text-yellow-800 px-3 py-2 rounded-lg text-sm flex items-start gap-2 animate-pulse">
+                                    <i class="fas fa-exclamation-triangle mt-0.5 text-yellow-600"></i>
+                                    <div>
+                                        <strong>Perhatian:</strong>
+                                        <span class="block text-xs">Total SKS dosen ini baru <span class="font-bold" x-text="selectedDosenSks"></span> SKS (Belum mencapai 20 SKS).</span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -280,12 +298,13 @@
                                                 </div>
                                             </td>
                                             <td class="px-4 py-3">
-                                                <div class="font-bold">{{ $k->mataKuliah->nama_mk }}</div>
-                                                <div class="text-xs text-gray-500">{{ $k->kode_kelas }} •
+                                                <div class="font-bold text-lg">{{ $k->mataKuliah->nama_mk }}</div>
+                                                <div class="text-sm font-bold text-gray-500">{{ $k->kode_kelas }} •
                                                     {{ $k->mataKuliah->sks }} SKS
                                                 </div>
                                             </td>
-                                            <td class="px-4 py-3">{{ $k->dosen->user->name ?? 'N/A' }}</td>
+                                            <td class="px-4 py-3 text-sm text-gray-600">{{ $k->dosen->user->name ?? 'N/A' }}
+                                            </td>
                                             <td class="px-4 py-3 font-medium">{{ $k->ruang ?: '-' }}</td>
                                             <td class="px-4 py-3 text-center">
                                                 <div class="flex justify-center space-x-1">
@@ -317,21 +336,21 @@
 
                 {{-- Card: Informasi Penggunaan Ruangan (New Feature) --}}
                 <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" x-data="{
-                                            selectedDay: '{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd') }}',
-                                            schedules: @js($allSchedules->map(function ($s) {
-                                                return [
-                                                    'id' => $s->id,
-                                                    'hari' => $s->hari,
-                                                    'ruang' => $s->ruang,
-                                                    'jam' => substr($s->jam_mulai, 0, 5) . '-' . substr($s->jam_selesai, 0, 5),
-                                                    'mk' => $s->mataKuliah->nama_mk ?? '',
-                                                    'dosen' => $s->dosen->user->name ?? ''
-                                                ];
-                                            })),
-                                            getRoomSchedules(room) {
-                                                return this.schedules.filter(s => s.ruang === room && s.hari === this.selectedDay);
-                                            }
-                                         }">
+                                                        selectedDay: '{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd') }}',
+                                                        schedules: @js($allSchedules->map(function ($s) {
+                                                            return [
+                                                                'id' => $s->id,
+                                                                'hari' => $s->hari,
+                                                                'ruang' => $s->ruang,
+                                                                'jam' => substr($s->jam_mulai, 0, 5) . '-' . substr($s->jam_selesai, 0, 5),
+                                                                'mk' => $s->mataKuliah->nama_mk ?? '',
+                                                                'dosen' => $s->dosen->user->name ?? ''
+                                                            ];
+                                                        })),
+                                                        getRoomSchedules(room) {
+                                                            return this.schedules.filter(s => s.ruang === room && s.hari === this.selectedDay);
+                                                        }
+                                                     }">
                     <div
                         class="p-6 border-b border-gray-200 bg-gradient-to-r from-maroon to-red-900 text-white flex items-center justify-between">
                         <div class="font-bold text-white text-xl flex items-center gap-3">
@@ -516,9 +535,9 @@
 
             // SweetAlert Delete Confirmation
             document.querySelectorAll('.delete-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', function (e) {
                     e.preventDefault();
-                    
+
                     Swal.fire({
                         title: 'Apakah Anda yakin?',
                         text: "Data jadwal ini akan dihapus permanen!",

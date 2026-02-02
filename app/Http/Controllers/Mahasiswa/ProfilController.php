@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Country;
 
 class ProfilController extends Controller
 {
@@ -27,10 +26,114 @@ class ProfilController extends Controller
         $user = Auth::user();
         $parent = $mahasiswa->parents()->first();
 
-        // Load countries with provinces and cities for dropdowns
-        $countries = Country::with('provinces.cities')->get();
+        // Read provinces from CSV
+        $provinces = collect();
+        $provincesPath = base_path('master/provinces.csv');
+        if (file_exists($provincesPath)) {
+            $handle = fopen($provincesPath, 'r');
+            $header = fgetcsv($handle); // skip header
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) >= 4 && !empty($row[3])) {
+                    $provinces->push([
+                        'id' => $row[0],
+                        'province_code' => $row[2],
+                        'name' => $row[3],
+                    ]);
+                }
+            }
+            fclose($handle);
+        }
+        $provinces = $provinces->sortBy('name')->values();
 
-        return view('page.mahasiswa.profil.manajemen', compact('mahasiswa', 'user', 'parent', 'countries'));
+        // Read cities from CSV
+        $cities = collect();
+        $citiesPath = base_path('master/cities.csv');
+        if (file_exists($citiesPath)) {
+            $handle = fopen($citiesPath, 'r');
+            $header = fgetcsv($handle); // skip header
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) >= 5 && !empty($row[4])) {
+                    $cities->push([
+                        'id' => $row[0],
+                        'province_code' => $row[2],
+                        'city_code' => $row[3],
+                        'name' => $row[4],
+                    ]);
+                }
+            }
+            fclose($handle);
+        }
+        $cities = $cities->sortBy('name')->values();
+
+        // Read religions if available
+        $religions = collect();
+        $religionsPath = base_path('master/religions.csv');
+        if (file_exists($religionsPath)) {
+            $handle = fopen($religionsPath, 'r');
+            $header = fgetcsv($handle); // skip header
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) >= 2 && !empty($row[1])) {
+                    $religions->push((object)['id' => $row[0], 'name' => $row[1]]);
+                }
+            }
+            fclose($handle);
+        }
+
+        // Read all villages from CSV
+        $villages = collect();
+        $villagesPath = base_path('master/villages.csv');
+        if (file_exists($villagesPath)) {
+            $handle = fopen($villagesPath, 'r');
+            $header = fgetcsv($handle); // skip header
+            while (($row = fgetcsv($handle)) !== false) {
+                // CSV format: id, province_code, city_code, district_code, village_code, village
+                if (count($row) >= 6 && !empty($row[5])) {
+                    $villages->push([
+                        'id' => $row[0],
+                        'name' => $row[5],
+                    ]);
+                }
+            }
+            fclose($handle);
+        }
+        $villages = $villages->sortBy('name')->values();
+
+        return view('page.mahasiswa.profil.manajemen', compact('mahasiswa', 'user', 'parent', 'provinces', 'cities', 'religions', 'villages'));
+    }
+
+    /**
+     * Get villages by city code (AJAX endpoint)
+     */
+    public function getVillages(Request $request)
+    {
+        $cityCode = $request->query('city_code');
+        
+        if (!$cityCode) {
+            return response()->json([]);
+        }
+
+        $villages = collect();
+        $villagesPath = base_path('master/villages.csv');
+        
+        if (file_exists($villagesPath)) {
+            $handle = fopen($villagesPath, 'r');
+            $header = fgetcsv($handle); // skip header
+            
+            while (($row = fgetcsv($handle)) !== false) {
+                // CSV format: id, province_code, city_code, district_code, village_code, village
+                if (count($row) >= 6 && $row[2] === $cityCode && !empty($row[5])) {
+                    $villages->push([
+                        'id' => $row[0],
+                        'city_code' => $row[2],
+                        'village_code' => $row[4],
+                        'name' => $row[5],
+                    ]);
+                }
+            }
+            fclose($handle);
+        }
+
+        return response()->json($villages->sortBy('name')->values());
     }
 
     public function update(Request $request)
@@ -47,6 +150,7 @@ class ProfilController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'no_hp' => 'nullable|string|max:20',
             'alamat' => 'nullable|string',
             'tempat_lahir' => 'nullable|string|max:255',
             'tanggal_lahir' => 'nullable|date',
@@ -56,8 +160,15 @@ class ProfilController extends Controller
             'rt' => 'nullable|string|max:10',
             'rw' => 'nullable|string|max:10',
             'kota' => 'nullable|string|max:255',
+            'desa' => 'nullable|string|max:255',
             'provinsi' => 'nullable|string|max:255',
             'negara' => 'nullable|string|max:255',
+            'alamat_ktp' => 'nullable|string',
+            'rt_ktp' => 'nullable|string|max:10',
+            'rw_ktp' => 'nullable|string|max:10',
+            'provinsi_ktp' => 'nullable|string|max:255',
+            'kota_ktp' => 'nullable|string|max:255',
+            'desa_ktp' => 'nullable|string|max:255',
             'jenis_sekolah' => 'nullable|string|max:255',
             'jurusan_sekolah' => 'nullable|string|max:255',
             'tahun_lulus' => 'nullable|string|max:4',
@@ -72,12 +183,32 @@ class ProfilController extends Controller
             'agama_ibu' => 'nullable|string|max:255',
             'alamat_ortu' => 'nullable|string',
             'kota_ortu' => 'nullable|string|max:255',
-            'provinsi_ortu' => 'nullable|string|max:255',
+            'propinsi_ortu' => 'nullable|string|max:255',
             'negara_ortu' => 'nullable|string|max:255',
-            'no_hp' => ['nullable','regex:/^[0-9]{1,13}$/'],
-                        'handphone_ortu' => ['nullable','regex:/^[0-9]{1,13}$/'],
+            'handphone_ortu' => 'nullable|string|max:20',
+            'tipe_wali' => 'nullable|in:orang_tua,wali',
+            'nama_wali' => 'nullable|string|max:255',
+            'hubungan_wali' => 'nullable|string|max:255',
+            'pendidikan_wali' => 'nullable|string|max:255',
+            'pekerjaan_wali' => 'nullable|string|max:255',
+            'agama_wali' => 'nullable|string|max:255',
+            'alamat_wali' => 'nullable|string',
+            'kota_wali' => 'nullable|string|max:255',
+            'provinsi_wali' => 'nullable|string|max:255',
+            'negara_wali' => 'nullable|string|max:255',
+            'handphone_wali' => 'nullable|string|max:20',
+            'keluarga' => 'nullable|array',
+            'keluarga.*.nama' => 'nullable|string|max:255',
+            'keluarga.*.hubungan' => 'nullable|string|max:255',
+            'keluarga.*.pendidikan' => 'nullable|string|max:255',
+            'keluarga.*.pekerjaan' => 'nullable|string|max:255',
+            'keluarga.*.agama' => 'nullable|string|max:255',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'password' => 'nullable|min:8'
+            'password' => 'nullable|min:8',
+            'file_ijazah.*' => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
+            'file_transkrip.*' => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
+            'file_kk.*' => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
+            'file_ktp.*' => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
         ]);
 
         // Update user
@@ -102,8 +233,15 @@ class ProfilController extends Controller
             'rt' => $request->rt,
             'rw' => $request->rw,
             'kota' => $request->kota,
+            'desa' => $request->desa,
             'provinsi' => $request->provinsi,
             'negara' => $request->negara,
+            'alamat_ktp' => $request->alamat_ktp,
+            'rt_ktp' => $request->rt_ktp,
+            'rw_ktp' => $request->rw_ktp,
+            'provinsi_ktp' => $request->provinsi_ktp,
+            'kota_ktp' => $request->kota_ktp,
+            'desa_ktp' => $request->desa_ktp,
             'jenis_sekolah' => $request->jenis_sekolah,
             'jurusan_sekolah' => $request->jurusan_sekolah,
             'tahun_lulus' => $request->tahun_lulus,
@@ -121,6 +259,28 @@ class ProfilController extends Controller
             $mahasiswaData['foto'] = $fotoPath;
         }
 
+        // Handle document uploads
+        $documentTypes = ['file_ijazah', 'file_transkrip', 'file_kk', 'file_ktp'];
+        foreach ($documentTypes as $docType) {
+            if ($request->hasFile($docType)) {
+                // Delete existing files first
+                $existingFiles = $mahasiswa->$docType ?? [];
+                foreach ($existingFiles as $existingFile) {
+                    Storage::disk('public')->delete($existingFile);
+                }
+                
+                // Upload new files
+                $uploadedFiles = [];
+                foreach ($request->file($docType) as $file) {
+                    $path = $file->store('mahasiswa/dokumen/' . $mahasiswa->nim, 'public');
+                    $uploadedFiles[] = $path;
+                }
+                
+                // Replace with new files only
+                $mahasiswaData[$docType] = $uploadedFiles;
+            }
+        }
+
         $mahasiswa->update($mahasiswaData);
 
         // Update or create parent data
@@ -128,6 +288,7 @@ class ProfilController extends Controller
         $parentData = [
             'user_id' => $user->id,
             'mahasiswa_id' => $mahasiswa->id,
+            'tipe_wali' => $request->tipe_wali ?? 'orang_tua',
             'nama_ayah' => $request->nama_ayah,
             'pendidikan_ayah' => $request->pendidikan_ayah,
             'pekerjaan_ayah' => $request->pekerjaan_ayah,
@@ -138,9 +299,20 @@ class ProfilController extends Controller
             'agama_ibu' => $request->agama_ibu,
             'alamat_ortu' => $request->alamat_ortu,
             'kota_ortu' => $request->kota_ortu,
-            'provinsi_ortu' => $request->provinsi_ortu,
+            'propinsi_ortu' => $request->propinsi_ortu,
             'negara_ortu' => $request->negara_ortu,
             'handphone_ortu' => $request->handphone_ortu,
+            'nama_wali' => $request->nama_wali,
+            'hubungan_wali' => $request->hubungan_wali,
+            'pendidikan_wali' => $request->pendidikan_wali,
+            'pekerjaan_wali' => $request->pekerjaan_wali,
+            'agama_wali' => $request->agama_wali,
+            'alamat_wali' => $request->alamat_wali,
+            'kota_wali' => $request->kota_wali,
+            'provinsi_wali' => $request->provinsi_wali,
+            'negara_wali' => $request->negara_wali,
+            'handphone_wali' => $request->handphone_wali,
+            'keluarga' => $request->keluarga,
         ];
 
         if ($parent) {

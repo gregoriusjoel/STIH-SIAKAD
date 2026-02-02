@@ -18,7 +18,7 @@ class MahasiswaController extends Controller
     public function index()
     {
         // Admin listing of all mahasiswa with pagination
-        $mahasiswas = \App\Models\Mahasiswa::with('user')->orderBy('nim')->paginate(25);
+        $mahasiswas = \App\Models\Mahasiswa::with('user')->orderBy('id', 'desc')->paginate(25);
         return view('admin.mahasiswa.index', compact('mahasiswas'));
     }
 

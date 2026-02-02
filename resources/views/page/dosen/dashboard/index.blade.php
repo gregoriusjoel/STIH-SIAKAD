@@ -18,7 +18,8 @@
 @endpush
 
 @section('content')
-    <div class="p-6 md:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6" x-data="calendarApp(@js($all_schedules ?? []))">
+    <div class="p-6 md:p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-6"
+        x-data="calendarApp(@js($all_schedules ?? []))">
         <!-- Force Tailwind JIT: grid grid-cols-7 gap-1 -->
 
         <!-- Welcome Section -->
@@ -35,7 +36,7 @@
 
             <!-- LEFT COLUMN: CALENDAR -->
             <div
-                class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm flex flex-col h-full">
+                class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm flex flex-col h-full lg:col-span-2">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-xl font-bold text-gray-800 dark:text-white" x-text="monthName + ' ' + year"></h3>
                     <div class="flex gap-1">
@@ -67,23 +68,25 @@
 
                     <!-- Days -->
                     <template x-for="date in daysInMonth">
-                        <div class="border border-gray-100 dark:border-slate-700 rounded-lg p-2 pb-10 min-h-[80px] flex flex-col gap-1 transition-all relative"
+                        <div class="border border-gray-100 dark:border-slate-700 rounded-lg p-2 pb-10 min-h-[100px] flex flex-col gap-1 transition-all relative"
                             :class="{ 'bg-blue-50 dark:bg-blue-900/20 ring-2 ring-primary ring-inset': isToday(date), 'hover:border-primary/30': !isToday(date) }">
                             <span class="relative z-30 text-sm font-semibold text-gray-700 dark:text-gray-300"
                                 :class="{ 'text-primary font-black text-lg': isToday(date) }" x-text="date"></span>
 
                             <!-- Day marker: small dot when there are events on this date (click to open day's events) -->
-                            <div class="absolute bottom-3 right-3 z-10 transform translate-y-1" x-show="getEvents(date).length > 0" @click.stop="openDay(date)">
+                            <div class="absolute bottom-3 right-3 z-10 transform translate-y-1"
+                                x-show="getEvents(date).length > 0" @click.stop="openDay(date)">
                                 <span class="inline-block w-2 h-2 bg-primary rounded-full"></span>
                             </div>
 
                             <!-- Events -->
-                            <div class="flex flex-col gap-1 overflow-y-auto max-h-[40px] custom-scrollbar">
+                            <div class="flex flex-col gap-1 overflow-y-auto max-h-[60px] custom-scrollbar">
                                 <template x-for="event in getEvents(date)">
                                     <div @click.stop="openEvent(event)"
                                         class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded leading-tight truncate cursor-pointer hover:opacity-90"
                                         :title="event.title + ' (' + event.time + ')'">
-                                        <span x-text="event.title.substr(0, 20) + (event.title.length>20? '...' : '')"></span>
+                                        <span
+                                            x-text="event.title.substr(0, 20) + (event.title.length>20? '...' : '')"></span>
                                     </div>
                                 </template>
                             </div>
@@ -93,185 +96,194 @@
             </div>
 
             <!-- RIGHT COLUMN: STATS & TODAY'S SCHEDULE -->
-            <div class="flex flex-col gap-8 lg:col-span-2">
+            <div class="flex flex-col gap-6">
 
-                <!-- Stats Grid (2x2) -->
-                <div class="grid grid-cols-2 gap-6">
+                <!-- Stats Grid (Responsive) -->
+                <div class="grid grid-cols-2 gap-3">
 
                     <!-- Stat Card 1 -->
                     <div
-                        class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-200">
+                        class="bg-white dark:bg-[#1a1d2e] rounded-xl border border-gray-100 dark:border-slate-800 p-4 flex flex-col gap-2 shadow-sm hover:shadow-md transition-all duration-200 group">
                         <div class="flex items-start justify-between">
                             <div
-                                class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-2xl">menu_book</span>
+                                class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-xl">menu_book</span>
                             </div>
                         </div>
                         <div class="flex flex-col">
-                            <p class="text-[#616889] dark:text-slate-400 text-sm font-medium mb-1">Total Mata Kuliah</p>
-                            <p class="text-3xl font-black text-[#111218] dark:text-white">{{ $total_mata_kuliah }}</p>
+                            <p
+                                class="text-[#616889] dark:text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                                Mata Kuliah</p>
+                            <p class="text-2xl font-black text-[#111218] dark:text-white mt-1">{{ $total_mata_kuliah }}</p>
                         </div>
                     </div>
 
                     <!-- Stat Card 2 -->
                     <div
-                        class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-200">
+                        class="bg-white dark:bg-[#1a1d2e] rounded-xl border border-gray-100 dark:border-slate-800 p-4 flex flex-col gap-2 shadow-sm hover:shadow-md transition-all duration-200 group">
                         <div class="flex items-start justify-between">
                             <div
-                                class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-900/20 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-2xl">meeting_room</span>
+                                class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 dark:bg-purple-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-xl">meeting_room</span>
                             </div>
                         </div>
                         <div class="flex flex-col">
-                            <p class="text-[#616889] dark:text-slate-400 text-sm font-medium mb-1">Total Kelas Aktif</p>
-                            <p class="text-3xl font-black text-[#111218] dark:text-white">{{ $total_kelas_aktif }}</p>
+                            <p
+                                class="text-[#616889] dark:text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                                Kelas Aktif</p>
+                            <p class="text-2xl font-black text-[#111218] dark:text-white mt-1">{{ $total_kelas_aktif }}</p>
                         </div>
                     </div>
 
                     <!-- Stat Card 3 -->
                     <div
-                        class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-200">
+                        class="bg-white dark:bg-[#1a1d2e] rounded-xl border border-gray-100 dark:border-slate-800 p-4 flex flex-col gap-2 shadow-sm hover:shadow-md transition-all duration-200 group">
                         <div class="flex items-start justify-between">
                             <div
-                                class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-900/20 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-2xl">workspace_premium</span>
+                                class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-xl">workspace_premium</span>
                             </div>
                         </div>
                         <div class="flex flex-col">
-                            <p class="text-[#616889] dark:text-slate-400 text-sm font-medium mb-1">Total Beban SKS</p>
-                            <p class="text-3xl font-black text-[#111218] dark:text-white">{{ $sks_load }}</p>
+                            <p
+                                class="text-[#616889] dark:text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                                Beban SKS</p>
+                            <p class="text-2xl font-black text-[#111218] dark:text-white mt-1">{{ $sks_load }}</p>
                         </div>
                     </div>
 
                     <!-- Stat Card 4 (Urgent) -->
                     <div
-                        class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-transparent dark:border-transparent p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-200">
-                        <div class="flex items-start justify-between">
+                        class="bg-white dark:bg-[#1a1d2e] rounded-xl border border-transparent dark:border-transparent p-4 flex flex-col gap-2 shadow-sm hover:shadow-md transition-all duration-200 group relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-16 h-16 bg-pink-500/10 rounded-bl-full -mr-2 -mt-2"></div>
+                        <div class="flex items-start justify-between relative z-10">
                             <div
-                                class="w-12 h-12 rounded-xl bg-pink-50 text-pink-600 dark:bg-pink-900/30 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-2xl">assignment_late</span>
+                                class="w-10 h-10 rounded-lg bg-pink-50 text-pink-600 dark:bg-pink-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-xl">assignment_late</span>
                             </div>
                         </div>
-                        <div class="flex flex-col">
-                            <p class="text-[#616889] dark:text-slate-400 text-sm font-medium mb-1">KRS Approval</p>
-                            <p class="text-3xl font-black text-pink-600">{{ $krs_approval }}</p>
+                        <div class="flex flex-col relative z-10">
+                            <p
+                                class="text-[#616889] dark:text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                                KRS Approval</p>
+                            <p class="text-2xl font-black text-pink-600 mt-1">{{ $krs_approval }}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Schedule Table -->
+                <!-- Schedule List (Replaced Table) -->
                 <div
-                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex-1">
+                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex-1 flex flex-col">
 
-                    <!-- Table Header Section -->
-                    <div class="px-6 py-5 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-2xl text-primary">event_note</span>
-                            <h3 class="text-lg font-black text-[#111218] dark:text-white">Jadwal Hari Ini</h3>
+                    <!-- Header -->
+                    <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl text-primary">event_note</span>
+                            <h3 class="text-base font-bold text-[#111218] dark:text-white">Jadwal Hari Ini</h3>
                         </div>
                         <a href="{{ route('dosen.jadwal') }}"
-                            class="inline-flex items-center gap-1 text-primary text-sm font-semibold hover:underline transition-colors">
+                            class="text-xs font-semibold text-primary hover:text-primary/80 transition-colors">
                             Lihat Semua
                         </a>
                     </div>
 
-                    <!-- Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-800">
-                                    <th
-                                        class="px-6 py-4 text-left text-xs font-bold text-[#616889] dark:text-slate-400 uppercase tracking-wider">
-                                        Mata Kuliah</th>
-                                    <th
-                                        class="px-6 py-4 text-left text-xs font-bold text-[#616889] dark:text-slate-400 uppercase tracking-wider">
-                                        Waktu</th>
-                                    <th
-                                        class="px-6 py-4 text-left text-xs font-bold text-[#616889] dark:text-slate-400 uppercase tracking-wider">
-                                        Ruangan</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-slate-800">
-                                @forelse($schedules as $schedule)
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors">
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col gap-0.5">
-                                                <span
-                                                    class="font-semibold text-[#111218] dark:text-white">{{ $schedule['subject'] }}</span>
-                                                <span class="text-xs text-[#616889] dark:text-slate-400">{{ $schedule['code'] }}
-                                                    • Kelas {{ $schedule['class'] }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-2 text-sm text-[#111218] dark:text-white">
-                                                <span class="material-symbols-outlined text-lg text-[#616889]">schedule</span>
-                                                <span>{{ $schedule['time'] }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-2 text-sm text-[#111218] dark:text-white">
-                                                <span
-                                                    class="material-symbols-outlined text-lg text-primary/70">location_on</span>
-                                                <span>{{ $schedule['room'] }}</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="px-6 py-8 text-center text-gray-500 italic">
-                                            Tidak ada jadwal mengajar hari ini.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                <!-- Event Detail Modal (inside x-data so Alpine has access) -->
-                <div x-cloak x-show="showModal" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-black/40" @click="closeModal"></div>
-                    <div x-transition class="bg-white dark:bg-[#0b1220] rounded-xl shadow-xl w-full max-w-md mx-4 p-6 z-50">
-                        <div class="flex items-start justify-between mb-4">
-                                <div>
-                                    <h3 class="text-lg font-bold text-[#111218] dark:text-white" x-text="selectedEvent?.title || ''"></h3>
-                                    <div class="flex items-center gap-3 mt-1">
-                                        <span class="text-sm font-semibold text-gray-600 dark:text-slate-400" x-text="selectedEvent?.section ? ('Kelas ' + selectedEvent.section) : ''"></span>
-                                        <span class="text-sm text-gray-500 dark:text-slate-400" x-text="selectedEvent ? (selectedEvent.time || '') : ''"></span>
+                    <!-- List Content -->
+                    <div class="flex-1 overflow-y-auto max-h-[400px] custom-scrollbar">
+                        @forelse($schedules as $schedule)
+                            <div
+                                class="p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group">
+                                <!-- Time Column -->
+                                <div class="flex flex-col items-center min-w-[50px] pt-1">
+                                    <span
+                                        class="text-sm font-bold text-[#111218] dark:text-white">{{ substr($schedule['time'], 0, 5) }}</span>
+                                    <span class="text-[10px] text-gray-400">{{ substr($schedule['time'], 8, 5) }}</span>
+                                </div>
+
+                                <!-- Content Column -->
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
+                                        title="{{ $schedule['subject'] }}">
+                                        {{ $schedule['subject'] }}
+                                    </h4>
+                                    <p class="text-xs text-gray-500 dark:text-slate-400 truncate mb-1.5">
+                                        {{ $schedule['code'] }} • Kelas {{ $schedule['class'] }}
+                                    </p>
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="flex items-center gap-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                                            <span class="material-symbols-outlined text-[10px]">location_on</span>
+                                            <span>{{ $schedule['room'] }}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-slate-400">
-                                <span class="material-symbols-outlined">close</span>
-                            </button>
-                        </div>
-
-                        <div class="space-y-2 text-sm text-[#111218] dark:text-white">
-                            <!-- If a single event selected, show details -->
-                            <template x-if="selectedEvent">
-                                <div class="space-y-2">
-                                    <div><strong>Matakuliah:</strong> <span x-text="selectedEvent?.title || '-' "></span></div>
-                                    <div><strong>Kode:</strong> <span x-text="selectedEvent?.code || '-' "></span></div>
-                                    <div><strong>Kelas:</strong> <span x-text="selectedEvent?.section || '-' "></span></div>
-                                    <div><strong>Ruangan:</strong> <span x-text="selectedEvent?.room || '-' "></span></div>
-                                    <div><strong>Waktu:</strong> <span x-text="selectedEvent?.time || '-' "></span></div>
+                            </div>
+                        @empty
+                            <div class="flex flex-col items-center justify-center py-10 text-center px-6">
+                                <div
+                                    class="w-16 h-16 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
+                                    <span class="material-symbols-outlined text-3xl text-gray-300">event_busy</span>
                                 </div>
-                            </template>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">Tidak ada jadwal</p>
+                                <p class="text-xs text-gray-500 mt-1">Anda tidak memiliki jadwal mengajar hari ini.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
 
-                            <!-- If multiple events on the day, list them -->
-                            <template x-if="!selectedEvent && dayEvents.length > 0">
-                                <div class="space-y-2">
-                                    <template x-for="(e, i) in dayEvents" :key="i">
-                                        <div @click="openEvent(e)" class="p-2 rounded hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer">
-                                            <div class="font-semibold" x-text="e.title"></div>
-                                            <div class="text-xs text-gray-500" x-text="e.time + ' • ' + (e.room || '-')"></div>
-                                        </div>
-                                    </template>
+            <!-- Event Detail Modal (inside x-data so Alpine has access) -->
+            <div x-cloak x-show="showModal" x-transition.opacity
+                class="fixed inset-0 z-50 flex items-center justify-center">
+                <div class="absolute inset-0 bg-black/40" @click="closeModal"></div>
+                <div x-transition class="bg-white dark:bg-[#0b1220] rounded-xl shadow-xl w-full max-w-md mx-4 p-6 z-50">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-[#111218] dark:text-white"
+                                x-text="selectedEvent?.title || ''"></h3>
+                            <div class="flex items-center gap-3 mt-1">
+                                <span class="text-sm font-semibold text-gray-600 dark:text-slate-400"
+                                    x-text="selectedEvent?.section ? ('Kelas ' + selectedEvent.section) : ''"></span>
+                                <span class="text-sm text-gray-500 dark:text-slate-400"
+                                    x-text="selectedEvent ? (selectedEvent.time || '') : ''"></span>
+                            </div>
+                        </div>
+                        <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-slate-400">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+
+                    <div class="space-y-2 text-sm text-[#111218] dark:text-white">
+                        <!-- If a single event selected, show details -->
+                        <template x-if="selectedEvent">
+                            <div class="space-y-2">
+                                <div><strong>Matakuliah:</strong> <span x-text="selectedEvent?.title || '-' "></span></div>
+                                <div><strong>Kode:</strong> <span x-text="selectedEvent?.code || '-' "></span></div>
+                                <div><strong>Kelas:</strong> <span x-text="selectedEvent?.section || '-' "></span>
                                 </div>
-                            </template>
-                        </div>
+                                <div><strong>Ruangan:</strong> <span x-text="selectedEvent?.room || '-' "></span>
+                                </div>
+                                <div><strong>Waktu:</strong> <span x-text="selectedEvent?.time || '-' "></span>
+                                </div>
+                            </div>
+                        </template>
 
-                        <div class="mt-6 text-right">
-                            <button @click="closeModal"
-                                class="px-4 py-2 bg-gray-100 dark:bg-slate-700 rounded-lg text-sm font-semibold">Tutup</button>
-                        </div>
+                        <!-- If multiple events on the day, list them -->
+                        <template x-if="!selectedEvent && dayEvents.length > 0">
+                            <div class="space-y-2">
+                                <template x-for="(e, i) in dayEvents" :key="i">
+                                    <div @click="openEvent(e)"
+                                        class="p-2 rounded hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer">
+                                        <div class="font-semibold" x-text="e.title"></div>
+                                        <div class="text-xs text-gray-500" x-text="e.time + ' • ' + (e.room || '-')"></div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="mt-6 text-right">
+                        <button @click="closeModal"
+                            class="px-4 py-2 bg-gray-100 dark:bg-slate-700 rounded-lg text-sm font-semibold">Tutup</button>
                     </div>
                 </div>
             </div>

@@ -39,7 +39,7 @@
                     <i class="fas fa-chevron-down transition-transform duration-300" :class="{ 'rotate-180': !open }"></i>
                 </button>
 
-                <div x-show="open" x-collapse>
+                <div x-show="open">
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead class="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase font-semibold">

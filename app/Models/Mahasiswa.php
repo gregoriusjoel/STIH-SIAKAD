@@ -30,12 +30,30 @@ class Mahasiswa extends Model
         'rt',
         'rw',
         'kota',
+        'desa',
         'provinsi',
         'negara',
         'jenis_sekolah',
         'jurusan_sekolah',
         'tahun_lulus',
         'nilai_kelulusan',
+        'file_ijazah',
+        'file_transkrip',
+        'file_kk',
+        'file_ktp',
+        'alamat_ktp',
+        'rt_ktp',
+        'rw_ktp',
+        'provinsi_ktp',
+        'kota_ktp',
+        'desa_ktp',
+    ];
+
+    protected $casts = [
+        'file_ijazah' => 'array',
+        'file_transkrip' => 'array',
+        'file_kk' => 'array',
+        'file_ktp' => 'array',
     ];
 
     public function user(): BelongsTo
@@ -163,7 +181,7 @@ class Mahasiswa extends Model
             'agama_ibu',
             'alamat_ortu',
             'kota_ortu',
-            'provinsi_ortu',
+            'propinsi_ortu',
             'negara_ortu',
             'handphone_ortu',
         ];

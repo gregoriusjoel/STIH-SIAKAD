@@ -198,7 +198,7 @@
                                         :class="open ? 'rotate-180 text-primary' : ''">expand_more</span>
                                 </button>
 
-                                <div x-show="open" x-collapse class="pl-5 pr-3 pb-3">
+                                <div x-show="open" class="pl-5 pr-3 pb-3">
                                     <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 mt-1">
                                         <div class="flex justify-between items-center text-xs mb-3">
                                             <div class="text-gray-500">Waktu</div>

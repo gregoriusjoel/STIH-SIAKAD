@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\DB;
-use App\Models\Country;
+use App\Models\Village;
 use App\Models\Province;
 use App\Models\City;
 
@@ -26,7 +26,11 @@ class ImportLocationsCommand extends Command
             return 1;
         }
 
-        $countryPath = $dir . DIRECTORY_SEPARATOR . 'Country-data.csv';
+        // Prefer villages.csv if provided; fall back to Country-data.csv for compatibility
+        $countryPath = $dir . DIRECTORY_SEPARATOR . 'villages.csv';
+        if (! $filesys->exists($countryPath)) {
+            $countryPath = $dir . DIRECTORY_SEPARATOR . 'Country-data.csv';
+        }
         $provincesPath = $dir . DIRECTORY_SEPARATOR . 'provinces.csv';
         $citiesPath = $dir . DIRECTORY_SEPARATOR . 'cities.csv';
 
@@ -37,23 +41,43 @@ class ImportLocationsCommand extends Command
 
         $this->info('Parsing CSVs...');
 
-        $countries = [];
+        $villages = [];
 
-        // Parse Country-data.csv (optional meta per country)
+        // Parse villages CSV (flexible header detection: village/name/country)
         if ($filesys->exists($countryPath)) {
             $content = $filesys->get($countryPath);
             $lines = preg_split('/\r?\n/', trim($content));
             $headers = [];
+            $nameKey = null;
+            $codeKey = null;
             foreach ($lines as $i => $line) {
                 $row = str_getcsv($line);
-                if ($i === 0) { $headers = $row; continue; }
+                if ($i === 0) { $headers = array_map('trim', $row); continue; }
                 if (count($row) === 0 || trim(implode('', $row)) === '') { continue; }
                 $assoc = array_combine($headers, $row);
-                $name = $assoc['country'] ?? null;
+
+                if (! $nameKey) {
+                    $lower = array_map('strtolower', $headers);
+                    foreach (['village','name','country'] as $k) {
+                        $idx = array_search($k, $lower);
+                        if ($idx !== false) { $nameKey = $headers[$idx]; break; }
+                    }
+                    if (! $nameKey) { $nameKey = $headers[0]; }
+                    foreach (['code','village_code','country_code'] as $k) {
+                        $idx = array_search($k, $lower);
+                        if ($idx !== false) { $codeKey = $headers[$idx]; break; }
+                    }
+                }
+
+                $name = $assoc[$nameKey] ?? null;
                 if (! $name) { continue; }
-                $countries[$this->normalize($name)] = [
+
+                $meta = $assoc;
+                if ($codeKey && isset($assoc[$codeKey])) { $meta['code'] = $assoc[$codeKey]; }
+
+                $villages[$this->normalize($name)] = [
                     'name' => $name,
-                    'meta' => $assoc,
+                    'meta' => $meta,
                     'provinces' => [],
                 ];
             }
@@ -105,25 +129,24 @@ class ImportLocationsCommand extends Command
             }
         }
 
-        // If countries is empty, create a default country 'Indonesia' and attach provinces
-        if (empty($countries)) {
-            $countries['indonesia'] = [
+        // If villages is empty, create a default entry 'Indonesia' and attach provinces
+        if (empty($villages)) {
+            $villages['indonesia'] = [
                 'name' => 'Indonesia',
                 'meta' => [],
                 'provinces' => [],
             ];
         }
 
-        // Attach provinces to appropriate country (best-effort: attach all provinces to Indonesia)
+        // Attach provinces to the default (best-effort: attach all provinces to Indonesia)
         foreach ($provinces as $prov) {
-            // try to detect country by province name? default to Indonesia
-            $countries['indonesia']['provinces'][] = $prov;
+            $villages['indonesia']['provinces'][] = $prov;
         }
 
         $outDir = dirname($out);
         if (! $filesys->exists($outDir)) { $filesys->makeDirectory($outDir, 0755, true); }
 
-        $json = array_values($countries);
+        $json = array_values($villages);
         $filesys->put($out, json_encode($json, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
 
         $this->info("Wrote locations to $out");
@@ -132,17 +155,17 @@ class ImportLocationsCommand extends Command
         $this->info('Importing locations into database...');
         DB::beginTransaction();
         try {
-            foreach ($json as $countryData) {
-                $country = Country::firstOrCreate(
-                    ['name' => $countryData['name']],
-                    ['code' => $countryData['meta']['country_code'] ?? null, 'meta' => $countryData['meta'] ?? null]
+            foreach ($json as $villageData) {
+                $village = Village::firstOrCreate(
+                    ['name' => $villageData['name']],
+                    ['code' => $villageData['meta']['country_code'] ?? null, 'meta' => $villageData['meta'] ?? null]
                 );
 
-                foreach ($countryData['provinces'] as $prov) {
-                    // Ensure province is created/updated with the correct country_id.
+                foreach ($villageData['provinces'] as $prov) {
+                    // Ensure province is created/updated with the correct country_id (kept as country_id in schema)
                     $provModel = Province::updateOrCreate(
                         ['code' => $prov['province_code'] ?? null],
-                        ['name' => $prov['province'] ?? null, 'country_id' => $country->id, 'region_code' => $prov['region_code'] ?? null, 'meta' => $prov]
+                        ['name' => $prov['province'] ?? null, 'country_id' => $village->id, 'region_code' => $prov['region_code'] ?? null, 'meta' => $prov]
                     );
 
                     if (! empty($prov['cities'])) {

@@ -70,10 +70,18 @@
                 <div class="space-y-6">
                     <!-- Mahasiswa List -->
                     <div>
-                        <h4 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-                            <i class="fas fa-users text-maroon mr-2"></i>
-                            Pilih Mahasiswa yang Akan Dipindahkan
-                        </h4>
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-semibold text-gray-700 flex items-center">
+                                <i class="fas fa-users text-maroon mr-2"></i>
+                                Pilih Mahasiswa yang Akan Dipindahkan
+                            </h4>
+                            @if(!$dosen->mahasiswaPa->isEmpty())
+                                    <label class="inline-flex items-center cursor-pointer text-sm font-medium text-gray-700">
+                                        <input type="checkbox" id="selectAllMahasiswa" class="w-4 h-4 text-maroon border-gray-300 rounded focus:ring-maroon mr-2 transition duration-150 ease-in-out">
+                                        Pilih Semua
+                                    </label>
+                                @endif
+                        </div>
                         
                         @if($dosen->mahasiswaPa->isEmpty())
                             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-700">
@@ -375,3 +383,31 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 @endsection
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCb = document.getElementById('selectAllMahasiswa');
+        const checkboxes = document.querySelectorAll('input[name="mahasiswa_ids[]"]');
+
+        if (selectAllCb) {
+            // Handle "Select All" click
+            selectAllCb.addEventListener('change', function() {
+                checkboxes.forEach(cb => {
+                    cb.checked = this.checked;
+                });
+            });
+
+            // Handle individual checkbox clicks to update "Select All" state
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const allChecked = Array.from(checkboxes).every(c => c.checked);
+                    const someChecked = Array.from(checkboxes).some(c => c.checked);
+                    
+                    selectAllCb.checked = allChecked;
+                    selectAllCb.indeterminate = someChecked && !allChecked;
+                });
+            });
+        }
+    });
+</script>
+@endpush

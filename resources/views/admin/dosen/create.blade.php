@@ -108,7 +108,7 @@
                             @php
                                 $oldProdi = old('prodi', []);
                                 if (!is_array($oldProdi)) $oldProdi = [$oldProdi];
-                                $prodiOptions = ['Hukum Tata Negara', 'Hukum Bisnis', 'Hukum Pidana'];
+                                $prodiOptions = ['Hukum Tata Kabupaten', 'Hukum Bisnis', 'Hukum Pidana'];
                             @endphp
 
                             <div id="prodi-list" class="space-y-2">
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const prodiList = document.getElementById('prodi-list');
     const prodiOptionsHtml = `
         <option value="">Pilih Program Studi</option>
-        <option value="Hukum Tata Negara">Hukum Tata Negara</option>
+        <option value="Hukum Tata Kabupaten">Hukum Tata Kabupaten</option>
         <option value="Hukum Bisnis">Hukum Bisnis</option>
         <option value="Hukum Pidana">Hukum Pidana</option>
     `;

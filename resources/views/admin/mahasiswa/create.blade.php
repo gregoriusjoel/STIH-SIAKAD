@@ -92,7 +92,7 @@
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
                                 required>
                                 <option value="">Pilih Program Studi</option>
-                                <option value="Hukum Tata Negara" {{ old('prodi') == 'Hukum Tata Negara' ? 'selected' : '' }}>Hukum Tata Negara</option>
+                                <option value="Hukum Tata Kabupaten" {{ old('prodi') == 'Hukum Tata Kabupaten' ? 'selected' : '' }}>Hukum Tata Kabupaten</option>
                                 <option value="Hukum Bisnis" {{ old('prodi') == 'Hukum Bisnis' ? 'selected' : '' }}>Hukum Bisnis</option>
                                 <option value="Hukum Pidana" {{ old('prodi') == 'Hukum Pidana' ? 'selected' : '' }}>Hukum Pidana</option>
                             </select>

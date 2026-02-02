@@ -32,7 +32,7 @@
                     x-bind:style="activeTab === 'orang_tua'
                                         ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
                                         : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
-                    Orang Tua
+                    Orang Tua / Wali
                 </button>
 
                 <button @click="activeTab = 'asal_sekolah'"
@@ -155,7 +155,7 @@
             {{-- TAB DATA PRIBADI --}}
             <div x-show="activeTab === 'data_pribadi'" x-cloak class="space-y-8">
                 <div>
-                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Informasi Alamat</h3>
+                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Domisili</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
                             <label class="text-xs font-bold text-gray-400 uppercase">Alamat Lengkap</label>
@@ -166,7 +166,11 @@
                             <div>{{ ($mahasiswa->rt ?? '-') . ' / ' . ($mahasiswa->rw ?? '-') }}</div>
                         </div>
                         <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Kota</label>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
+                            <div>{{ $mahasiswa->desa ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Kota/Kabupaten</label>
                             <div>{{ $mahasiswa->kota ?? 'Belum diisi' }}</div>
                         </div>
                         <div>
@@ -176,6 +180,32 @@
                         <div>
                             <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
                             <div>{{ $mahasiswa->negara ?? 'Belum diisi' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Sesuai KTP</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="text-xs font-bold text-gray-400 uppercase">Alamat Lengkap</label>
+                            <div>{{ $mahasiswa->alamat_ktp ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">RT / RW</label>
+                            <div>{{ ($mahasiswa->rt_ktp ?? '-') . ' / ' . ($mahasiswa->rw_ktp ?? '-') }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
+                            <div>{{ $mahasiswa->desa_ktp ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Kota/Kabupaten</label>
+                            <div>{{ $mahasiswa->kota_ktp ?? 'Belum diisi' }}</div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
+                            <div>{{ $mahasiswa->provinsi_ktp ?? 'Belum diisi' }}</div>
                         </div>
                     </div>
                 </div>
@@ -209,6 +239,68 @@
                         </div>
                     </div>
                 </div>
+
+                <div>
+                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Dokumen Pribadi</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Ijazah</label>
+                            <div>
+                                @if($mahasiswa->file_ijazah && count($mahasiswa->file_ijazah) > 0)
+                                    @foreach($mahasiswa->file_ijazah as $file)
+                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-cyan-600 hover:underline block text-sm">
+                                            <i class="fas fa-file-pdf mr-1"></i>{{ basename($file) }}
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <span class="text-gray-400">Belum diupload</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Transkrip Nilai</label>
+                            <div>
+                                @if($mahasiswa->file_transkrip && count($mahasiswa->file_transkrip) > 0)
+                                    @foreach($mahasiswa->file_transkrip as $file)
+                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-cyan-600 hover:underline block text-sm">
+                                            <i class="fas fa-file-pdf mr-1"></i>{{ basename($file) }}
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <span class="text-gray-400">Belum diupload</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Kartu Keluarga (KK)</label>
+                            <div>
+                                @if($mahasiswa->file_kk && count($mahasiswa->file_kk) > 0)
+                                    @foreach($mahasiswa->file_kk as $file)
+                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-cyan-600 hover:underline block text-sm">
+                                            <i class="fas fa-file-pdf mr-1"></i>{{ basename($file) }}
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <span class="text-gray-400">Belum diupload</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">KTP</label>
+                            <div>
+                                @if($mahasiswa->file_ktp && count($mahasiswa->file_ktp) > 0)
+                                    @foreach($mahasiswa->file_ktp as $file)
+                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-cyan-600 hover:underline block text-sm">
+                                            <i class="fas fa-file-pdf mr-1"></i>{{ basename($file) }}
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <span class="text-gray-400">Belum diupload</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {{-- TAB ORANG TUA --}}
@@ -216,6 +308,8 @@
                 @if($mahasiswa->parents()->exists())
                     @php $parent = $mahasiswa->parents()->first(); @endphp
 
+                    {{-- Orang Tua Display --}}
+                    @if($parent->nama_ayah || $parent->nama_ibu)
                     <div>
                         <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Ayah</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -273,7 +367,7 @@
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
-                                <div>{{ $parent->provinsi_ortu ?? 'Belum diisi' }}</div>
+                                <div>{{ $parent->propinsi_ortu ?? 'Belum diisi' }}</div>
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
@@ -285,8 +379,103 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Keluarga Lainnya Display --}}
+                    @if($parent->keluarga && count($parent->keluarga) > 0)
+                    <div>
+                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Keluarga Lainnya</h3>
+                        <div class="space-y-4">
+                            @foreach($parent->keluarga as $idx => $member)
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-400 uppercase">Nama</label>
+                                        <div>{{ $member['nama'] ?? 'Belum diisi' }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-400 uppercase">Hubungan</label>
+                                        <div>{{ $member['hubungan'] ?? 'Belum diisi' }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-400 uppercase">Pendidikan</label>
+                                        <div>{{ $member['pendidikan'] ?? 'Belum diisi' }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-400 uppercase">Pekerjaan</label>
+                                        <div>{{ $member['pekerjaan'] ?? 'Belum diisi' }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-400 uppercase">Agama</label>
+                                        <div>{{ $member['agama'] ?? 'Belum diisi' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                    @endif
+
+                    {{-- Wali Display --}}
+                    @if($parent->nama_wali)
+                    <div>
+                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Wali</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Nama Wali</label>
+                                <div>{{ $parent->nama_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Hubungan</label>
+                                <div>{{ $parent->hubungan_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Pendidikan Wali</label>
+                                <div>{{ $parent->pendidikan_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Pekerjaan Wali</label>
+                                <div>{{ $parent->pekerjaan_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Agama Wali</label>
+                                <div>{{ $parent->agama_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Wali</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Alamat</label>
+                                <div>{{ $parent->alamat_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Kota</label>
+                                <div>{{ $parent->kota_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
+                                <div>{{ $parent->provinsi_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
+                                <div>{{ $parent->negara_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>
+                                <div>{{ $parent->handphone_wali ?? 'Belum diisi' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(!$parent->nama_ayah && !$parent->nama_ibu && !$parent->nama_wali)
+                        <p class="text-sm text-gray-500">Informasi orang tua/wali belum dilengkapi.</p>
+                    @endif
                 @else
-                    <p class="text-sm text-gray-500">Informasi orang tua belum dilengkapi.</p>
+                    <p class="text-sm text-gray-500">Informasi orang tua/wali belum dilengkapi.</p>
                 @endif
             </div>
 

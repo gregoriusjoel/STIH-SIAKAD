@@ -153,7 +153,7 @@
                         </button>
 
                         {{-- Accordion Body --}}
-                        <div x-show="open" x-collapse>
+                        <div x-show="open">
                             <div class="p-6 pt-0 border-t border-gray-50">
                                 <div class="mt-4 space-y-6">
                                     {{-- Description --}}

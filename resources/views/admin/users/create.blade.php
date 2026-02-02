@@ -59,7 +59,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-graduation-cap text-gray-400 mr-1"></i>Program Studi *</label>
                             <select name="prodi" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
                                 <option value="">Pilih Prodi</option>
-                                <option value="Hukum Tata Negara" {{ old('prodi') == 'Hukum Tata Negara' ? 'selected' : '' }}>Hukum Tata Negara</option>
+                                <option value="Hukum Tata Kabupaten" {{ old('prodi') == 'Hukum Tata Kabupaten' ? 'selected' : '' }}>Hukum Tata Kabupaten</option>
                                 <option value="Hukum Bisnis" {{ old('prodi') == 'Hukum Bisnis' ? 'selected' : '' }}>Hukum Bisnis</option>
                                 <option value="Hukum Pidana" {{ old('prodi') == 'Hukum Pidana' ? 'selected' : '' }}>Hukum Pidana</option>
                             </select>

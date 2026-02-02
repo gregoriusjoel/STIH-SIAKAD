@@ -35,7 +35,7 @@ class JadwalController extends Controller
         // Fetch data for "Tambah Kelas Mata Kuliah Baru" form
         $mataKuliahs = MataKuliah::orderBy('nama_mk')->get();
         $dosens = \App\Models\Dosen::with('user')->get();
-        
+
         // Get list of unique rooms for filter/display (from KelasMataKuliah, column 'ruang')
         $rooms = \App\Models\KelasMataKuliah::whereNotNull('ruang')->distinct()->pluck('ruang')->sort()->values();
 
@@ -208,8 +208,12 @@ class JadwalController extends Controller
             if (empty($applyDate)) {
                 // compute next date for the requested new_hari by mapping Indonesian day to English
                 $dayMap = [
-                    'Senin' => 'Monday', 'Selasa' => 'Tuesday', 'Rabu' => 'Wednesday',
-                    'Kamis' => 'Thursday', 'Jumat' => 'Friday', 'Sabtu' => 'Saturday',
+                    'Senin' => 'Monday',
+                    'Selasa' => 'Tuesday',
+                    'Rabu' => 'Wednesday',
+                    'Kamis' => 'Thursday',
+                    'Jumat' => 'Friday',
+                    'Sabtu' => 'Saturday',
                 ];
                 $english = $dayMap[$reschedule->new_hari] ?? null;
                 if ($english) {
@@ -337,15 +341,24 @@ class JadwalController extends Controller
     {
         // Cari dosen yang memiliki mata_kuliah_id di dalam kolom JSON mata_kuliah_ids
         // Karena DosenController menyimpan data ke kolom JSON, bukan pivot table
-        $dosens = \App\Models\Dosen::whereJsonContains('mata_kuliah_ids', (string)$mataKuliahId)
-            ->orWhereJsonContains('mata_kuliah_ids', (int)$mataKuliahId)
+        $dosens = \App\Models\Dosen::whereJsonContains('mata_kuliah_ids', (string) $mataKuliahId)
+            ->orWhereJsonContains('mata_kuliah_ids', (int) $mataKuliahId)
             ->with('user')
             ->get();
 
-        return response()->json($dosens->map(function($dosen) {
+        return response()->json($dosens->map(function ($dosen) {
+            // Hitung total SKS yang sudah diampu dosen ini
+            $totalSks = \App\Models\KelasMataKuliah::where('dosen_id', $dosen->id)
+                ->with('mataKuliah')
+                ->get()
+                ->sum(function ($kelas) {
+                    return $kelas->mataKuliah?->sks ?? 0;
+                });
+
             return [
                 'id' => $dosen->id,
                 'name' => $dosen->user->name ?? 'N/A',
+                'total_sks' => $totalSks
             ];
         }));
     }
@@ -372,9 +385,9 @@ class JadwalController extends Controller
         // Cek clash: (StartA < EndB) && (EndA > StartB) using KelasMataKuliah
         $query = \App\Models\KelasMataKuliah::where('hari', $hari)
             ->where('ruang', $ruangan)
-            ->where(function($q) use ($mulai, $selesai) {
+            ->where(function ($q) use ($mulai, $selesai) {
                 $q->where('jam_mulai', '<', $selesai)
-                  ->where('jam_selesai', '>', $mulai);
+                    ->where('jam_selesai', '>', $mulai);
             });
 
         if ($ignoreId) {
@@ -386,10 +399,10 @@ class JadwalController extends Controller
         if ($conflict) {
             return response()->json([
                 'available' => false,
-                'message' => "Ruangan $ruangan sudah terpakai oleh " . 
-                             ($conflict->dosen->user->name ?? 'Dosen') . 
-                             " (" . ($conflict->mataKuliah->nama_mk ?? '-') . ") " .
-                             "pukul " . substr($conflict->jam_mulai,0,5) . "-" . substr($conflict->jam_selesai,0,5)
+                'message' => "Ruangan $ruangan sudah terpakai oleh " .
+                    ($conflict->dosen->user->name ?? 'Dosen') .
+                    " (" . ($conflict->mataKuliah->nama_mk ?? '-') . ") " .
+                    "pukul " . substr($conflict->jam_mulai, 0, 5) . "-" . substr($conflict->jam_selesai, 0, 5)
             ]);
         }
 

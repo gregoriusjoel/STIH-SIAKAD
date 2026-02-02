@@ -215,6 +215,7 @@
     </script>
 
     @stack('scripts')
+    <x-ui.preloader />
 </body>
 
 </html>

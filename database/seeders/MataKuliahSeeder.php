@@ -13,7 +13,7 @@ class MataKuliahSeeder extends Seeder
      */
     public function run(): void
     {
-        $csvFile = base_path('matkul_stih.csv');
+        $csvFile = base_path('master/matkul_stih.csv');
         
         if (!file_exists($csvFile)) {
             $this->command->error('File matkul_stih.csv tidak ditemukan!');

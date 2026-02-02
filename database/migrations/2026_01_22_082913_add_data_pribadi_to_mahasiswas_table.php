@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('rw')->nullable()->after('rt');
             $table->string('kota')->nullable()->after('rw');
             $table->string('provinsi')->nullable()->after('kota');
-            $table->string('negara')->nullable()->after('provinsi');
+            $table->string('kabupaten')->nullable()->after('provinsi');
         });
     }
 
@@ -50,7 +50,7 @@ return new class extends Migration
                 'rw',
                 'kota',
                 'provinsi',
-                'negara'
+                'kabupaten'
             ]);
         });
     }
