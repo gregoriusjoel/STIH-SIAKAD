@@ -65,15 +65,15 @@ class ProfilController extends Controller
         }
         $cities = $cities->sortBy('name')->values();
 
-        // Read religions if available
+        // Read religions if available (CSV uses semicolon delimiter)
         $religions = collect();
-        $religionsPath = base_path('master/religions.csv');
+        $religionsPath = base_path('master/Religion.csv');
         if (file_exists($religionsPath)) {
             $handle = fopen($religionsPath, 'r');
-            $header = fgetcsv($handle); // skip header
-            while (($row = fgetcsv($handle)) !== false) {
+            $header = fgetcsv($handle, 0, ';'); // skip header, semicolon delimiter
+            while (($row = fgetcsv($handle, 0, ';')) !== false) {
                 if (count($row) >= 2 && !empty($row[1])) {
-                    $religions->push((object)['id' => $row[0], 'name' => $row[1]]);
+                    $religions->push((object)['id' => $row[0], 'name' => trim($row[1])]);
                 }
             }
             fclose($handle);
@@ -98,7 +98,21 @@ class ProfilController extends Controller
         }
         $villages = $villages->sortBy('name')->values();
 
-        return view('page.mahasiswa.profil.manajemen', compact('mahasiswa', 'user', 'parent', 'provinces', 'cities', 'religions', 'villages'));
+        // Read pekerjaan (occupations) from CSV
+        $pekerjaans = collect();
+        $pekerjaanPath = base_path('master/pekerjaan.csv');
+        if (file_exists($pekerjaanPath)) {
+            $handle = fopen($pekerjaanPath, 'r');
+            $header = fgetcsv($handle); // skip header
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) >= 2 && !empty($row[1])) {
+                    $pekerjaans->push((object)['id' => $row[0], 'name' => trim($row[1])]);
+                }
+            }
+            fclose($handle);
+        }
+
+        return view('page.mahasiswa.profil.manajemen', compact('mahasiswa', 'user', 'parent', 'provinces', 'cities', 'religions', 'villages', 'pekerjaans'));
     }
 
     /**
@@ -107,18 +121,18 @@ class ProfilController extends Controller
     public function getVillages(Request $request)
     {
         $cityCode = $request->query('city_code');
-        
+
         if (!$cityCode) {
             return response()->json([]);
         }
 
         $villages = collect();
         $villagesPath = base_path('master/villages.csv');
-        
+
         if (file_exists($villagesPath)) {
             $handle = fopen($villagesPath, 'r');
             $header = fgetcsv($handle); // skip header
-            
+
             while (($row = fgetcsv($handle)) !== false) {
                 // CSV format: id, province_code, city_code, district_code, village_code, village
                 if (count($row) >= 6 && $row[2] === $cityCode && !empty($row[5])) {
@@ -268,14 +282,14 @@ class ProfilController extends Controller
                 foreach ($existingFiles as $existingFile) {
                     Storage::disk('public')->delete($existingFile);
                 }
-                
+
                 // Upload new files
                 $uploadedFiles = [];
                 foreach ($request->file($docType) as $file) {
                     $path = $file->store('mahasiswa/dokumen/' . $mahasiswa->nim, 'public');
                     $uploadedFiles[] = $path;
                 }
-                
+
                 // Replace with new files only
                 $mahasiswaData[$docType] = $uploadedFiles;
             }

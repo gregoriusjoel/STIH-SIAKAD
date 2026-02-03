@@ -36,63 +36,151 @@
 
             <!-- LEFT COLUMN: CALENDAR -->
             <div
-                class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm flex flex-col h-full lg:col-span-2">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-gray-800 dark:text-white" x-text="monthName + ' ' + year"></h3>
-                    <div class="flex gap-1">
+                class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm flex flex-col h-full lg:col-span-2 relative overflow-hidden">
+
+                <!-- Calendar Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <button @click="view = (view === 'calendar' ? 'months' : (view === 'months' ? 'years' : 'calendar'))"
+                            class="text-lg font-bold text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 group">
+                            <span x-text="monthName + ' ' + year"></span>
+                            <span class="material-symbols-outlined text-sm text-gray-400 group-hover:text-gray-600 dark:text-slate-500 dark:group-hover:text-slate-300 transition-transform" :class="view !== 'calendar' ? 'rotate-180' : ''">arrow_drop_down</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-1" x-show="view === 'calendar'">
                         <button @click="prevMonth"
-                            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-slate-400">
-                            <span class="material-symbols-outlined">chevron_left</span>
+                            class="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-slate-400 transition-colors">
+                            <span class="material-symbols-outlined text-xl">chevron_left</span>
                         </button>
                         <button @click="nextMonth"
-                            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-slate-400">
-                            <span class="material-symbols-outlined">chevron_right</span>
+                            class="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-slate-400 transition-colors">
+                            <span class="material-symbols-outlined text-xl">chevron_right</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-1" x-show="view === 'years'">
+                        <button @click="year -= 12"
+                            class="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-slate-400 transition-colors">
+                            <span class="material-symbols-outlined text-xl">chevron_left</span>
+                        </button>
+                        <button @click="year += 12"
+                            class="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-slate-400 transition-colors">
+                            <span class="material-symbols-outlined text-xl">chevron_right</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Calendar Grid -->
-                <div class="grid grid-cols-7 gap-1 mb-2"
-                    style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));">
-                    <template x-for="day in ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']">
-                        <div class="text-center text-xs font-bold text-gray-400 uppercase py-2" x-text="day"></div>
-                    </template>
-                </div>
+                <!-- Calendar View -->
+                <div x-show="view === 'calendar'" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                    
+                    <!-- Weekdays -->
+                    <div class="grid grid-cols-7 mb-2">
+                        <template x-for="day in ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']">
+                            <div class="text-center text-sm text-gray-400 font-medium py-2" x-text="day"></div>
+                        </template>
+                    </div>
 
-                <div class="grid grid-cols-7 gap-1 flex-1 auto-rows-fr"
-                    style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));">
-                    <!-- Empty cells for start of month -->
-                    <template x-for="blank in blankDays">
-                        <div class="p-2 border border-transparent"></div>
-                    </template>
+                    <!-- Days Grid -->
+                    <div class="grid grid-cols-7 gap-1 lg:gap-2">
+                        <!-- Empty cells -->
+                        <template x-for="blank in blankDays">
+                            <div class="aspect-square"></div>
+                        </template>
 
-                    <!-- Days -->
-                    <template x-for="date in daysInMonth">
-                        <div class="border border-gray-100 dark:border-slate-700 rounded-lg p-2 pb-10 min-h-[100px] flex flex-col gap-1 transition-all relative"
-                            :class="{ 'bg-blue-50 dark:bg-blue-900/20 ring-2 ring-primary ring-inset': isToday(date), 'hover:border-primary/30': !isToday(date) }">
-                            <span class="relative z-30 text-sm font-semibold text-gray-700 dark:text-gray-300"
-                                :class="{ 'text-primary font-black text-lg': isToday(date) }" x-text="date"></span>
-
-                            <!-- Day marker: small dot when there are events on this date (click to open day's events) -->
-                            <div class="absolute bottom-3 right-3 z-10 transform translate-y-1"
-                                x-show="getEvents(date).length > 0" @click.stop="openDay(date)">
-                                <span class="inline-block w-2 h-2 bg-primary rounded-full"></span>
-                            </div>
-
-                            <!-- Events -->
-                            <div class="flex flex-col gap-1 overflow-y-auto max-h-[60px] custom-scrollbar">
-                                <template x-for="event in getEvents(date)">
-                                    <div @click.stop="openEvent(event)"
-                                        class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded leading-tight truncate cursor-pointer hover:opacity-90"
-                                        :title="event.title + ' (' + event.time + ')'">
-                                        <span
-                                            x-text="event.title.substr(0, 20) + (event.title.length>20? '...' : '')"></span>
+                        <!-- Days -->
+                        <template x-for="date in daysInMonth">
+                            <div class="aspect-square relative flex items-center justify-center">
+                                <button @click="openDay(date)"
+                                    class="w-9 h-9 lg:w-11 lg:h-11 rounded-full flex flex-col items-center justify-center text-sm transition-all duration-200 relative group"
+                                    :class="{
+                                        'bg-primary text-white shadow-lg shadow-primary/30 font-bold': isToday(date),
+                                        'bg-primary/15 text-primary font-black border-2 border-primary/20': !isToday(date) && getEvents(date).length > 0,
+                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 font-medium': !isToday(date) && getEvents(date).length === 0,
+                                        'ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-900': selectedDate === date
+                                    }">
+                                    <span x-text="date"></span>
+                                    
+                                    <!-- Event Indicator Label (Optional/Micro) -->
+                                    <div x-show="getEvents(date).length > 0" 
+                                        class="absolute -bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
+                                        <template x-for="i in Math.min(getEvents(date).length, 3)">
+                                            <div class="w-1.5 h-1.5 rounded-full shadow-sm"
+                                                :class="isToday(date) ? 'bg-white' : 'bg-primary'"></div>
+                                        </template>
                                     </div>
-                                </template>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <!-- Legend -->
+                    <div class="mt-4 flex items-center gap-4 text-[10px] uppercase tracking-wider font-bold text-gray-500">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-primary"></div>
+                            <span>Hari Ini</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-primary/20 border border-primary/30"></div>
+                            <span>Ada Jadwal</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Selected Date Events Preview -->
+                     <div class="mt-6 border-t border-gray-100 dark:border-slate-800 pt-4" x-show="selectedDate">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-semibold text-gray-800 dark:text-white text-sm">
+                                Jadwal <span x-text="selectedDate + ' ' + monthName + ' ' + year"></span>
+                            </h4>
+                            <span class="text-xs text-gray-500" x-text="getEvents(selectedDate).length + ' Kelas'"></span>
+                        </div>
+                        
+                        <div class="space-y-2 max-h-[150px] overflow-y-auto custom-scrollbar">
+                             <template x-for="event in getEvents(selectedDate)">
+                                <div class="bg-gray-50 dark:bg-slate-800/50 p-3 rounded-xl border border-gray-100 dark:border-slate-800 flex items-center gap-3">
+                                    <div class="w-1 h-8 bg-primary rounded-full"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-800 dark:text-white truncate" x-text="event.subject"></p>
+                                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                                            <span x-text="event.time.substr(0, 5) + ' - ' + event.time.substr(8, 5)"></span>
+                                            <span>•</span>
+                                            <span x-text="'Kelas ' + event.class"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <div x-show="getEvents(selectedDate).length === 0" class="text-center py-4 text-gray-400 text-sm">
+                                Tidak ada jadwal mengajar
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Months View -->
+                <div x-show="view === 'months'" class="grid grid-cols-3 gap-4 h-full content-center"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                    <template x-for="(m, index) in monthNames">
+                        <button @click="month = index; view = 'calendar'"
+                            class="p-4 rounded-xl text-sm font-semibold transition-all"
+                            :class="month === index ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300'">
+                            <span x-text="m.substr(0, 3)"></span>
+                        </button>
                     </template>
                 </div>
+
+                <!-- Years View -->
+                <div x-show="view === 'years'" class="grid grid-cols-4 gap-2 h-full content-center overflow-y-auto max-h-[400px]"
+                     x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                    <template x-for="y in yearsList">
+                         <button @click="year = y; view = 'months'"
+                            class="p-3 rounded-xl text-sm font-semibold transition-all"
+                            :class="year === y ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300'">
+                            <span x-text="y"></span>
+                        </button>
+                    </template>
+                </div>
+
             </div>
 
             <!-- RIGHT COLUMN: STATS & TODAY'S SCHEDULE -->
@@ -294,24 +382,40 @@
         <script>
             function calendarApp(schedules) {
                 return {
+                    view: 'calendar', // calendar, months, years
                     showModal: false,
                     selectedEvent: null,
+                    selectedDate: new Date().getDate(),
                     dayEvents: [],
                     month: new Date().getMonth(),
                     year: new Date().getFullYear(),
                     schedules: schedules,
                     monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                    dayNames: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+                    // dayNames: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
 
                     get monthName() {
                         return this.monthNames[this.month];
+                    },
+
+                    get yearsList() {
+                        let years = [];
+                        for(let i = this.year - 11; i <= this.year; i++) {
+                            years.push(i);
+                        }
+                        return years;
                     },
 
                     get blankDays() {
                         let firstDay = new Date(this.year, this.month, 1).getDay();
                         // Adjust because Sunday is 0, but we want Monday as start (0)
                         // If Sunday (0), it should be 6 blanks. If Monday (1), 0 blanks.
-                        return firstDay === 0 ? 6 : firstDay - 1;
+                        // Wait, user wants standard calendar, typically Sunday start? 
+                        // HeroUI calendar starts on Sunday by default usually. 
+                        // Let's stick to Sunday start for HeroUI look, so no adjustment needed except ensuring grid header matches.
+                        // Original code had Monday start array: ['Sen', 'Sel'...]
+                        // My new code has ['Min', 'Sen'...] (Sunday start)
+                        // So straightforward Sunday = 0
+                        return firstDay;
                     },
 
                     get daysInMonth() {
@@ -344,8 +448,10 @@
                     },
 
                     getEvents(date) {
-                        const currentDayName = this.getDayName(date);
-                        return this.schedules.filter(s => s.day === currentDayName);
+                        // Need to map date to day name for current schedule logic which relies on "Senin", etc.
+                        const d = new Date(this.year, this.month, date);
+                        const dayName = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][d.getDay()];
+                        return this.schedules.filter(s => s.day === dayName);
                     },
 
                     openEvent(event) {
@@ -355,25 +461,15 @@
                     },
 
                     openDay(date) {
-                        const events = this.getEvents(date);
-                        this.dayEvents = events;
-                        if (events.length === 1) {
-                            this.openEvent(events[0]);
-                        } else {
-                            this.selectedEvent = null;
-                            this.showModal = true;
-                        }
+                       this.selectedDate = date;
+                       // Optional: if double click or specific UI requirement, show modal.
+                       // For now, we show the list below the calendar as per new design.
                     },
 
                     closeModal() {
                         this.showModal = false;
                         this.selectedEvent = null;
                     },
-
-                    getDayName(date) {
-                        const d = new Date(this.year, this.month, date);
-                        return this.dayNames[d.getDay()];
-                    }
                 }
             }
         </script>

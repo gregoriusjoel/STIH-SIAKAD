@@ -1,6 +1,13 @@
 <header class="bg-white dark:bg-[#1f1616] border-b border-[#dbdde6] dark:border-slate-800 px-4 sm:px-8 sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto w-full flex items-center gap-4 py-3 sm:py-0">
         <div class="flex items-center gap-4 flex-1 min-w-0">
+            {{-- Hamburger menu for mobile --}}
+            <button @click="sidebarOpen = !sidebarOpen" 
+                class="lg:hidden flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-[#616889] dark:text-slate-300" 
+                style="width:40px;height:40px;">
+                <span class="material-symbols-outlined text-2xl">menu</span>
+            </button>
+
             {{-- Mobile compact title --}}
             <div class="sm:hidden min-w-0">
                 <div class="text-sm font-medium text-gray-700 dark:text-white truncate">{{ trim($__env->yieldContent('page-title') ?: $__env->yieldContent('title')) }}</div>

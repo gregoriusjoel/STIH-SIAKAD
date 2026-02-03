@@ -45,67 +45,115 @@
                     <p class="text-sm text-[#616889]">No. HP: <span class="font-medium">{{ $teacherPhone }}</span></p>
                 </div>
 
-                <div id="qrCard" class="bg-white rounded-xl border border-gray-200 p-6 text-center">
-                    <h4 class="text-sm font-bold text-[#8B1538] mb-4">QR Absensi</h4>
-                    <div id="qrWrap" class="inline-block p-6 bg-white border rounded-lg shadow-sm">
-                        @php
-                            $token = $class['qr_token'] ?? ($class->qr_token ?? null);
-                            $qrEnabled = $class['qr_enabled'] ?? false;
-                            $qrExpires = $class['qr_expires_at'] ?? null;
-                        @endphp
+                <div id="qrCard" class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 text-center shadow-sm relative overflow-hidden" 
+                    x-data="{ 
+                        isLoaded: {{ ($token && $qrEnabled) ? 'true' : 'false' }},
+                        activating: false,
+                        showQr(formId) {
+                            this.isLoaded = false;
+                            this.activating = true;
+                            // Small delay to show the skeleton effect as requested
+                            setTimeout(() => {
+                                document.getElementById(formId).submit();
+                            }, 1000);
+                        }
+                    }">
+                    
+                    <h4 class="text-sm font-bold text-primary mb-6 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-lg">qr_code_2</span>
+                        QR Absensi
+                    </h4>
 
-                        @if($token && $qrEnabled)
-                            <img id="generatedQr" src="{{ route('qrcode.kelas.image', $token) }}" alt="QR Kelas" width="180" height="180" />
-                            @if($qrExpires)
-                                <div id="qrExpiryText" class="text-xs text-gray-500 mt-2">Berakhir: {{ \Illuminate\Support\Carbon::parse($qrExpires)->locale('id')->isoFormat('H:mm, D MMM') }}<span id="qrCountdown"></span></div>
-                            @else
-                                <div id="qrExpiryText" class="text-xs text-gray-500 mt-2"></div>
-                            @endif
-                        @else
-                            <!-- placeholder + dummy SVG for download fallback -->
-                            <div id="dummyQr" class="w-44 flex items-center justify-center">
-                                <div class="flex flex-col items-center">
-                                    <div class="-mt-8 mb-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="88" height="88" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
-                                            <rect x="3" y="3" width="8" height="8" rx="1"></rect>
-                                            <rect x="13" y="3" width="8" height="8" rx="1"></rect>
-                                            <rect x="3" y="13" width="8" height="8" rx="1"></rect>
-                                            <path d="M13 13h2v2h-2z"></path>
-                                            <path d="M17 17h2v2h-2z"></path>
-                                        </svg>
+                    <div class="relative flex flex-col items-center gap-5">
+                        <!-- Skeleton Wrapper (HeroUI Style) -->
+                        <div class="w-full max-w-[200px] flex flex-col gap-4 mx-auto">
+                            <!-- Main QR Area Skeleton -->
+                            <div class="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-slate-800" 
+                                :class="{ 'animate-pulse': !isLoaded || activating }">
+                                
+                                @if($token && $qrEnabled)
+                                    <div x-show="isLoaded && !activating" x-transition.opacity.duration.500>
+                                        <img id="generatedQr" src="{{ route('qrcode.kelas.image', $token) }}" 
+                                            alt="QR Kelas" class="w-full h-full p-4 bg-white" 
+                                            @load="isLoaded = true" />
                                     </div>
+                                @endif
+                                
+                                <!-- Skeleton Overlay -->
+                                <div x-show="!isLoaded || activating" 
+                                    class="absolute inset-0 bg-gray-200 dark:bg-slate-700 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-4xl text-gray-300 dark:text-slate-600">qr_code_scanner</span>
                                 </div>
                             </div>
-                            <div id="qrExpiryText" class="text-xs text-gray-500 mt-2">QR belum dibuat</div>
-                        @endif
-                    </div>
 
-                    <p class="text-xs text-gray-400 mt-3">Scan QR untuk mengisi absensi</p>
-
-                    <div class="mt-4 flex items-center justify-center gap-3">
-                        @if($token)
-                            @if($qrEnabled)
-                                <div class="flex items-center gap-2">
-                                    <a id="downloadBtn" href="{{ route('qrcode.kelas.image', $token) }}" class="px-3 py-2 rounded-md bg-green-600 text-white text-sm" download>Download QR</a>
-                                        <form id="deactivateForm" action="{{ route('dosen.kelas.deactivate_qr', ['id' => $id]) }}" method="POST" onsubmit="return confirm('Nonaktifkan QR sekarang?');">
-                                        @csrf
-                                        <button type="submit" class="px-3 py-2 rounded-md bg-red-600 text-white text-sm">Nonaktifkan QR</button>
-                                    </form>
+                            <!-- Text Skeletons -->
+                            <div class="space-y-3 px-2">
+                                <div class="h-3 w-3/5 rounded-lg bg-gray-200 dark:bg-slate-700 mx-auto" :class="{ 'animate-pulse': !isLoaded || activating }">
+                                    <div x-show="isLoaded && !activating" class="text-[10px] text-gray-500 font-medium">SCAN UNTUK HADIR</div>
                                 </div>
+                                <div class="h-3 w-4/5 rounded-lg bg-gray-200 dark:bg-slate-700 mx-auto" :class="{ 'animate-pulse': !isLoaded || activating }">
+                                    <div x-show="isLoaded && !activating" class="text-[10px] text-gray-400">Pastikan jarak cukup</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info & Expiry -->
+                        <div class="w-full pt-2">
+                            @if($token && $qrEnabled)
+                                @if($qrExpires)
+                                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-full text-[11px] font-bold">
+                                        <span class="material-symbols-outlined text-xs">timer</span>
+                                        Berakhir: {{ \Illuminate\Support\Carbon::parse($qrExpires)->locale('id')->isoFormat('H:mm') }}
+                                        <span id="qrCountdown"></span>
+                                    </div>
+                                @endif
                             @else
-                                    <form id="activateForm" action="{{ route('dosen.kelas.activate_qr', ['id' => $id]) }}" method="POST">
+                                <div class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">QR BELUM AKTIF</div>
+                            @endif
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="w-full flex flex-col gap-2 mt-2">
+                            @if($token)
+                                @if($qrEnabled)
+                                    <div class="grid grid-cols-1 gap-2">
+                                        <a href="{{ route('qrcode.kelas.image', $token) }}" 
+                                            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-green-600/20" 
+                                            download>
+                                            <span class="material-symbols-outlined text-lg">download</span>
+                                            Simpan QR
+                                        </a>
+                                        <form action="{{ route('dosen.kelas.deactivate_qr', ['id' => $id]) }}" method="POST" onsubmit="return confirm('Nonaktifkan QR sekarang?');">
+                                            @csrf
+                                            <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-600 dark:text-gray-300 hover:text-red-600 transition-all rounded-xl text-sm font-bold">
+                                                <span class="material-symbols-outlined text-lg">block</span>
+                                                Nonaktifkan
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <form id="activateQrForm" action="{{ route('dosen.kelas.activate_qr', ['id' => $id]) }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="pertemuan" value="{{ request('pertemuan', $class_info['pertemuan'] ?? 1) }}">
+                                        <button type="button" @click="showQr('activateQrForm')" 
+                                            class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-all shadow-xl shadow-primary/20 group">
+                                            <span class="material-symbols-outlined transition-transform group-hover:rotate-12">bolt</span>
+                                            Tampilkan QR Sekarang
+                                        </button>
+                                    </form>
+                                @endif
+                            @else
+                                <form id="generateQrForm" action="{{ route('dosen.kelas.generate_qr', ['id' => $id]) }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="pertemuan" value="{{ request('pertemuan', $class_info['pertemuan'] ?? 1) }}">
-                                    <button type="submit" class="px-4 py-2 rounded-md text-white text-sm bg-green-600">Tampilkan QR (5 menit)</button>
+                                    <button type="button" @click="showQr('generateQrForm')" 
+                                        class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-all shadow-xl shadow-primary/20">
+                                        <span class="material-symbols-outlined">add_box</span>
+                                        Buat QR Absensi
+                                    </button>
                                 </form>
                             @endif
-                        @else
-                            <form action="{{ route('dosen.kelas.generate_qr', ['id' => $id]) }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="pertemuan" value="{{ request('pertemuan', $class_info['pertemuan'] ?? 1) }}">
-                                <button type="submit" class="px-4 py-2 rounded-md text-white text-sm bg-green-600">Buat QR</button>
-                            </form>
-                        @endif
+                        </div>
                     </div>
                 </div>
 

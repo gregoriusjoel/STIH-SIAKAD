@@ -36,9 +36,22 @@ class LecturerController extends Controller
             ->get();
         $activeJadwals = Jadwal::whereHas('kelas', function ($q) use ($user) {
             $q->where('dosen_id', $user->id);
-        })->where('status', 'active')->with(['kelas.mataKuliah'])->get();
+        })
+        ->whereIn('status', ['active', 'scheduled', 'pending']) // Include other potential statuses
+        ->orWhere(function($query) use ($user) {
+             // specific fallback: if schedule is active but status might be null or different in older records
+             $query->whereHas('kelas', function ($q) use ($user) {
+                $q->where('dosen_id', $user->id);
+            });
+        })
+        ->with(['kelas.mataKuliah'])->get();
+        
+        // Filter out cancelled ones if any
+        $activeJadwals = $activeJadwals->filter(function($j) {
+            return $j->status !== 'cancelled' && $j->status !== 'inactive';
+        });
 
-        // Get today's schedules
+        // Fetch today's schedules
         $today = now()->locale('id')->isoFormat('dddd'); // Senin, Selasa, etc
         $todaySchedules = $activeJadwals->where('hari', $today)->map(function ($jadwal) {
             return [
@@ -51,24 +64,56 @@ class LecturerController extends Controller
             ];
         })->values()->toArray();
 
+        // Fetch explicit schedules from KelasMataKuliah (often used by Admin)
+        $kelasMataKuliahSchedules = \App\Models\KelasMataKuliah::where('dosen_id', $user->id)
+            ->whereNotNull('hari')
+            ->whereNotNull('jam_mulai')
+            ->whereNotNull('jam_selesai')
+            ->with('mataKuliah')
+            ->get();
+
+        // Merge both collections for the calendar
+        $mappedJadwals = $activeJadwals->map(function ($jadwal) {
+            return [
+                'title' => $jadwal->kelas->mataKuliah->nama_mk,
+                'code' => $jadwal->kelas->mataKuliah->kode_mk,
+                'section' => $jadwal->kelas->section,
+                'day' => $jadwal->hari,
+                'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
+                'class' => $jadwal->kelas->section,
+                'room' => $jadwal->ruangan,
+                'subject' => $jadwal->kelas->mataKuliah->nama_mk,
+                'color' => 'bg-blue-100 text-blue-700',
+            ];
+        });
+
+        $mappedKmk = $kelasMataKuliahSchedules->map(function ($kmk) {
+             return [
+                'title' => $kmk->mataKuliah->nama_mk,
+                'code' => $kmk->mataKuliah->kode_mk,
+                'section' => $kmk->kode_kelas ?? $kmk->section ?? '-',
+                'day' => $kmk->hari,
+                'time' => substr($kmk->jam_mulai, 0, 5) . ' - ' . substr($kmk->jam_selesai, 0, 5),
+                'class' => $kmk->kode_kelas ?? '-',
+                'room' => $kmk->ruang ?? '-',
+                'subject' => $kmk->mataKuliah->nama_mk,
+                'color' => 'bg-purple-100 text-purple-700',
+            ];
+        });
+
+        // Unique merge based on day + time + code
+        $allSchedules = $mappedJadwals->merge($mappedKmk)->unique(function ($item) {
+            return $item['day'] . $item['time'] . $item['code'];
+        })->values()->toArray();
+
         return view('page.dosen.dashboard.index', [
             'total_mata_kuliah' => $kelasList->count(),
             'total_kelas_aktif' => $kelasList->count(),
-            'total_students' => 0, // TODO: implement student count
+            'total_students' => 0, 
             'sks_load' => $kelasList->sum(fn($k) => $k->mataKuliah->sks ?? 0),
-            'krs_approval' => 0, // TODO: implement
+            'krs_approval' => 0,
             'schedules' => $todaySchedules,
-            'all_schedules' => $activeJadwals->map(function ($jadwal) {
-                return [
-                    'title' => $jadwal->kelas->mataKuliah->nama_mk,
-                    'code' => $jadwal->kelas->mataKuliah->kode_mk,
-                    'section' => $jadwal->kelas->section,
-                    'day' => $jadwal->hari,
-                    'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
-                    'room' => $jadwal->ruangan,
-                    'color' => 'bg-blue-100 text-blue-700', // Default color, can be randomized
-                ];
-            })->values()->toArray()
+            'all_schedules' => $allSchedules
         ]);
     }
 

@@ -58,8 +58,11 @@
 
 <body class="bg-gray-100">
     <div class="flex h-screen overflow-hidden">
+        <!-- Mobile Backdrop -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/50 z-40 hidden md:hidden transition-opacity"></div>
+
         <!-- Sidebar -->
-        <aside class="sidebar w-64 flex-shrink-0 hidden md:block overflow-y-auto">
+        <aside class="sidebar w-64 flex-shrink-0 overflow-y-auto fixed inset-y-0 left-0 z-50 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0 md:static md:block border-r border-maroon/20">
             <div class="p-6">
                 <h1 class="text-2xl font-bold text-white text-center">SIAKAD STIH</h1>
                 <p class="text-white text-center text-sm mt-1">Parent Panel</p>
@@ -173,16 +176,16 @@
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 <!-- Flash Messages -->
                 @if(session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-                        role="alert">
-                        <span class="block sm:inline">{{ session('success') }}</span>
-                    </div>
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+                    role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                        <span class="block sm:inline">{{ session('error') }}</span>
-                    </div>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
                 @endif
 
                 @yield('content')
@@ -192,26 +195,32 @@
 
     <script>
         // Auto-hide flash messages after 5 seconds
-        setTimeout(function () {
-            document.querySelectorAll('[role="alert"]').forEach(function (alert) {
+        setTimeout(function() {
+            document.querySelectorAll('[role="alert"]').forEach(function(alert) {
                 alert.style.transition = 'opacity 0.5s ease';
                 alert.style.opacity = '0';
-                setTimeout(function () {
+                setTimeout(function() {
                     alert.remove();
                 }, 500);
             });
         }, 5000);
 
         // Sidebar toggle for small screens
-        document.getElementById('sidebar-toggle')?.addEventListener('click', function () {
-            const aside = document.querySelector('aside.sidebar');
-            if (!aside) return;
-            aside.classList.toggle('hidden');
-            aside.classList.toggle('fixed');
-            aside.classList.toggle('inset-0');
-            aside.classList.toggle('z-50');
-            aside.classList.toggle('w-64');
-        });
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.querySelector('aside.sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+
+        function toggleMobileSidebar() {
+            if (!sidebar) return;
+            sidebar.classList.toggle('-translate-x-full');
+
+            if (backdrop) {
+                backdrop.classList.toggle('hidden');
+            }
+        }
+
+        sidebarToggle?.addEventListener('click', toggleMobileSidebar);
+        backdrop?.addEventListener('click', toggleMobileSidebar);
     </script>
 
     @stack('scripts')

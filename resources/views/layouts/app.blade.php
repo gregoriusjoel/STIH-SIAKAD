@@ -58,7 +58,7 @@
 <body id="page-top" class="bg-gray-100 dark:bg-gray-900 font-nunito">
 
     <!-- Page Wrapper -->
-    <div id="page-wrapper" class="flex h-screen overflow-hidden">
+    <div id="page-wrapper" class="flex h-screen overflow-hidden" x-data="{ sidebarOpen: false }">
 
         <!-- Sidebar -->
         @include('layouts.partials.sidebar')
