@@ -5,15 +5,17 @@
 
 @section('content')
     <div class="mb-6">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-gray-800 flex items-center"><i
                         class="fas fa-calendar-alt mr-3 text-maroon"></i>Semester & Tahun Ajaran</h2>
                 <p class="text-gray-600 text-sm mt-1">Kelola daftar semester dan atur semester aktif</p>
             </div>
-            <div>
+            <div class="flex-shrink-0">
                 <a href="{{ route('admin.semester.create') }}"
-                    class="px-4 py-2 bg-maroon text-white rounded-md hover:bg-red-900">Tambah Semester</a>
+                    class="inline-flex items-center px-4 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 shadow-sm transition-colors text-sm font-medium">
+                    <i class="fas fa-plus mr-2"></i>Tambah Semester
+                </a>
             </div>
         </div>
 

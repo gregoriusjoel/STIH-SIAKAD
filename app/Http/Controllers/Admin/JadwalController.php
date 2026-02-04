@@ -7,45 +7,122 @@ use App\Models\Jadwal;
 use App\Models\JadwalReschedule;
 use App\Models\Kelas;
 use App\Models\MataKuliah;
+use App\Models\JadwalProposal;
+use App\Models\Ruangan;
 use Illuminate\Http\Request;
 
 class JadwalController extends Controller
 {
     public function index()
     {
-        // Load active jadwals
+        // Load active jadwals from the new system
         $activeJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
             ->where('status', 'active')
-            ->orderBy('hari')
-            ->orderBy('jam_mulai')
-            ->paginate(10);
+            ->get()
+            ->map(function ($j) {
+                return (object)[
+                    'id' => $j->id,
+                    'db_id' => $j->id,
+                    'type' => 'jadwal',
+                    'hari' => $j->hari,
+                    'jam_mulai' => $j->jam_mulai,
+                    'jam_selesai' => $j->jam_selesai,
+                    'ruang' => $j->ruangan,
+                    'nama_mk' => $j->kelas->mataKuliah->nama_mk ?? '-',
+                    'sks' => $j->kelas->mataKuliah->sks ?? 0,
+                    'kode_kelas' => $j->kelas->section ?? '-',
+                    'dosen_name' => $j->kelas->dosen->name ?? 'N/A',
+                    'dosen_id' => $j->kelas->dosen_id ?? null,
+                    'mata_kuliah_id' => $j->kelas->mata_kuliah_id ?? null,
+                ];
+            });
 
-        // Load kelas mata kuliah for jadwal aktif display (paginated)
-        $kelasMataKuliahs = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])
-            ->orderBy('hari')
-            ->orderBy('jam_mulai')
-            ->paginate(10);
-
-        // Load ALL kelas mata kuliah for room visualization (not paginated)
-        $allSchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user'])
-            ->whereNotNull('ruang')
+        // Load schedules from the parallel KelasMataKuliah system
+        $legacySchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user'])
             ->whereNotNull('hari')
-            ->get();
+            ->get()
+            ->map(function ($k) {
+                return (object)[
+                    'id' => 'legacy-' . $k->id,
+                    'db_id' => $k->id,
+                    'type' => 'legacy',
+                    'hari' => $k->hari,
+                    'jam_mulai' => $k->jam_mulai,
+                    'jam_selesai' => $k->jam_selesai,
+                    'ruang' => $k->ruang,
+                    'nama_mk' => $k->mataKuliah->nama_mk ?? '-',
+                    'sks' => $k->mataKuliah->sks ?? 0,
+                    'kode_kelas' => $k->kode_kelas ?? '-',
+                    'dosen_name' => $k->dosen->user->name ?? 'N/A',
+                    'dosen_id' => $k->dosen_id ?? null,
+                    'mata_kuliah_id' => $k->mata_kuliah_id ?? null,
+                ];
+            });
 
-        // Fetch data for "Tambah Kelas Mata Kuliah Baru" form
+        // Merge and de-duplicate based on MK + Section + Dosen
+        $merged = $activeJadwals->concat($legacySchedules)
+            ->groupBy(function ($item) {
+                return $item->mata_kuliah_id . '-' . $item->kode_kelas . '-' . $item->dosen_id;
+            })
+            ->map(function ($group) {
+                // Prefer 'jadwal' type if both exist
+                return $group->sortBy(function ($item) {
+                    return $item->type === 'jadwal' ? 0 : 1;
+                })->first();
+            })
+            ->values();
+
+        // Sort by day and time
+        $hariOrder = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 7];
+        $sortedSchedules = $merged->sort(function ($a, $b) use ($hariOrder) {
+            $dayA = $hariOrder[$a->hari] ?? 99;
+            $dayB = $hariOrder[$b->hari] ?? 99;
+            if ($dayA != $dayB) return $dayA <=> $dayB;
+            return $a->jam_mulai <=> $b->jam_mulai;
+        });
+
+        // Pagination for the merged collection
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
+        $perPage = 10;
+        $currentPageItems = $sortedSchedules->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        $kelasMataKuliahs = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentPageItems,
+            $sortedSchedules->count(),
+            $perPage,
+            $currentPage,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+        );
+
+        // Load ALL schedules for room visualization (not paginated)
+        $allSchedules = $sortedSchedules;
+
+        // Fetch data for "Tambah Jadwal Baru" form
         $mataKuliahs = MataKuliah::orderBy('nama_mk')->get();
         $dosens = \App\Models\Dosen::with('user')->get();
 
-        // Get list of unique rooms for filter/display (from KelasMataKuliah, column 'ruang')
-        $rooms = \App\Models\KelasMataKuliah::whereNotNull('ruang')->distinct()->pluck('ruang')->sort()->values();
+        // Get list of unique rooms for filter/display
+        $rooms = $allSchedules->pluck('ruang')->filter()->unique()->sort()->values();
 
-        // Dummy room data for dropdown (R.100 - R.199)
-        $daftarRuangan = collect();
-        for ($i = 100; $i <= 199; $i++) {
-            $daftarRuangan->push('R.' . $i);
-        }
+        // Get actual ruangan data from database
+        $daftarRuangan = Ruangan::where('status', 'aktif')
+            ->orderBy('kode_ruangan')
+            ->get();
 
-        return view('admin.jadwal.index', compact('activeJadwals', 'kelasMataKuliahs', 'allSchedules', 'mataKuliahs', 'dosens', 'rooms', 'daftarRuangan'));
+        // Generator data (statistics + proposals)
+        $statistics = [
+            'total_proposals' => JadwalProposal::count(),
+            'pending_dosen' => JadwalProposal::where('status', 'pending_dosen')->count(),
+            'approved_dosen' => JadwalProposal::where('status', 'approved_dosen')->count(),
+            'pending_admin' => JadwalProposal::where('status', 'pending_admin')->count(),
+            'approved_admin' => JadwalProposal::where('status', 'approved_admin')->count(),
+            'rejected' => JadwalProposal::whereIn('status', ['rejected_dosen', 'rejected_admin'])->count(),
+        ];
+
+        $jadwalProposals = JadwalProposal::with(['mataKuliah', 'kelas', 'dosen', 'generatedBy'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('admin.jadwal.index', compact('kelasMataKuliahs', 'allSchedules', 'mataKuliahs', 'dosens', 'rooms', 'daftarRuangan', 'statistics', 'jadwalProposals'));
     }
 
     public function create()
@@ -62,15 +139,17 @@ class JadwalController extends Controller
             'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
-            'ruangan' => 'required|string|max:50',
+            'ruangan_id' => 'required|exists:ruangans,id',
         ]);
 
+        $ruangan = Ruangan::findOrFail($request->ruangan_id);
+        
         Jadwal::create([
             'kelas_id' => $request->kelas_id,
             'hari' => $request->hari,
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
-            'ruangan' => $request->ruangan,
+            'ruangan' => $ruangan->kode_ruangan,
             'status' => 'active',
         ]);
 
@@ -80,7 +159,25 @@ class JadwalController extends Controller
     public function edit(Jadwal $jadwal)
     {
         $kelasList = Kelas::with(['mataKuliah', 'dosen'])->get();
-        return view('admin.jadwal.edit', compact('jadwal', 'kelasList'));
+        $daftarRuangan = Ruangan::where('status', 'aktif')->orderBy('kode_ruangan')->get();
+
+        // Build a compatibility object expected by the edit view (legacy KelasMataKuliah-like)
+        $kelas = $jadwal->kelas;
+        $kelasMataKuliah = new \stdClass();
+        $kelasMataKuliah->id = $kelas->id ?? null;
+        $kelasMataKuliah->mata_kuliah_id = $kelas->mata_kuliah_id ?? ($kelas->mataKuliah->id ?? null);
+        $kelasMataKuliah->kode_kelas = $kelas->section ?? ($kelas->kode_kelas ?? null);
+        $kelasMataKuliah->kapasitas = $kelas->kapasitas ?? null;
+        $kelasMataKuliah->ruangan_id = $jadwal->ruangan_id ?? null;
+        $kelasMataKuliah->ruang = $jadwal->ruangan ?? null;
+        $kelasMataKuliah->hari = $jadwal->hari ?? null;
+        $kelasMataKuliah->jam_mulai = $jadwal->jam_mulai ?? null;
+        $kelasMataKuliah->jam_selesai = $jadwal->jam_selesai ?? null;
+
+        // Mata kuliah list for select
+        $mataKuliahs = MataKuliah::orderBy('nama_mk')->get();
+
+        return view('admin.jadwal.edit', compact('jadwal', 'kelasList', 'daftarRuangan', 'mataKuliahs', 'kelasMataKuliah'));
     }
 
     public function update(Request $request, Jadwal $jadwal)
@@ -90,10 +187,18 @@ class JadwalController extends Controller
             'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
-            'ruangan' => 'required|string|max:50',
+            'ruangan_id' => 'required|exists:ruangans,id',
         ]);
 
-        $jadwal->update($request->only(['kelas_id', 'hari', 'jam_mulai', 'jam_selesai', 'ruangan']));
+        $ruangan = Ruangan::findOrFail($request->ruangan_id);
+        
+        $jadwal->update([
+            'kelas_id' => $request->kelas_id,
+            'hari' => $request->hari,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'ruangan' => $ruangan->kode_ruangan,
+        ]);
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil diperbarui');
     }
 
@@ -155,7 +260,7 @@ class JadwalController extends Controller
     public function assignRoom(Request $request, Jadwal $jadwal)
     {
         $request->validate([
-            'ruangan' => 'required|string|max:100',
+            'ruangan_id' => 'required|exists:ruangans,id',
             'section' => 'required|string|max:10',
         ]);
 
@@ -164,6 +269,8 @@ class JadwalController extends Controller
                 ->with('error', 'Jadwal harus disetujui terlebih dahulu sebelum assign ruangan.');
         }
 
+        $ruangan = Ruangan::findOrFail($request->ruangan_id);
+
         // Update kelas section
         $jadwal->kelas->update([
             'section' => $request->input('section'),
@@ -171,7 +278,7 @@ class JadwalController extends Controller
 
         // Update jadwal with room and activate
         $jadwal->update([
-            'ruangan' => $request->input('ruangan'),
+            'ruangan' => $ruangan->kode_ruangan,
             'status' => 'active',
         ]);
 
@@ -318,16 +425,18 @@ class JadwalController extends Controller
     {
         $request->validate([
             'new_kelas' => 'required|string|max:50',
-            'new_ruang' => 'required|string|max:100',
+            'ruangan_id' => 'required|exists:ruangans,id',
         ]);
 
         if ($reschedule->status !== 'approved') {
             return redirect()->route('admin.jadwal.index')->with('error', 'Permintaan harus disetujui terlebih dahulu.');
         }
 
+        $ruangan = Ruangan::findOrFail($request->ruangan_id);
+
         $reschedule->update([
             'new_kelas' => $request->new_kelas,
-            'new_ruang' => $request->new_ruang,
+            'new_ruang' => $ruangan->kode_ruangan,
             'status' => 'room_assigned',
         ]);
 
@@ -364,7 +473,7 @@ class JadwalController extends Controller
     }
 
     /**
-     * Check room availability API (uses KelasMataKuliah model, column 'ruang')
+     * Check room availability API (uses ruangan_id or ruangan kode)
      */
     public function checkRoomAvailability(Request $request)
     {
@@ -372,19 +481,39 @@ class JadwalController extends Controller
             'hari' => 'required|string',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i',
-            'ruangan' => 'required|string',
+            'ruangan_id' => 'nullable|exists:ruangans,id',
+            'ruangan' => 'nullable|string',
             'ignore_id' => 'nullable|integer'
         ]);
 
         $hari = $request->hari;
         $mulai = $request->jam_mulai;
         $selesai = $request->jam_selesai;
-        $ruangan = $request->ruangan;
         $ignoreId = $request->ignore_id;
 
-        // Cek clash: (StartA < EndB) && (EndA > StartB) using KelasMataKuliah
+        // If ruangan_id is provided, get the kode_ruangan
+        if ($request->ruangan_id) {
+            $ruanganObj = Ruangan::find($request->ruangan_id);
+            $ruangan = $ruanganObj ? $ruanganObj->kode_ruangan : null;
+        } else {
+            $ruangan = $request->ruangan;
+        }
+
+        if (!$ruangan) {
+            return response()->json([
+                'available' => false,
+                'message' => 'Ruangan tidak valid'
+            ]);
+        }
+
+        // Cek clash: Check both old ruang field and new ruangan_id relationship
         $query = \App\Models\KelasMataKuliah::where('hari', $hari)
-            ->where('ruang', $ruangan)
+            ->where(function($q) use ($ruangan, $request) {
+                $q->where('ruang', $ruangan);
+                if ($request->ruangan_id) {
+                    $q->orWhere('ruangan_id', $request->ruangan_id);
+                }
+            })
             ->where(function ($q) use ($mulai, $selesai) {
                 $q->where('jam_mulai', '<', $selesai)
                     ->where('jam_selesai', '>', $mulai);

@@ -9,7 +9,18 @@ class PengumumanController extends Controller
 {
     public function index()
     {
-        $pengumumans = Pengumuman::whereNotNull('published_at')->orderByDesc('published_at')->paginate(10);
+        $query = Pengumuman::whereNotNull('published_at');
+
+        if (auth()->check()) {
+            $role = auth()->user()->role;
+            if ($role === 'dosen') {
+                $query->whereIn('target', ['semua', 'dosen']);
+            } elseif ($role === 'mahasiswa') {
+                $query->whereIn('target', ['semua', 'mahasiswa']);
+            }
+        }
+
+        $pengumumans = $query->orderByDesc('published_at')->paginate(10);
         return view('pengumuman.index', compact('pengumumans'));
     }
 

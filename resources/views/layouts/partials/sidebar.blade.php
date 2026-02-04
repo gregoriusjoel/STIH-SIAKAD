@@ -32,7 +32,16 @@
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-        
+        @php
+            $pendingApprovalCount = 0;
+            if (auth()->check() && auth()->user()->dosen) {
+                $dosen = auth()->user()->dosen;
+                $pendingApprovalCount = \App\Models\JadwalProposal::where('dosen_id', $dosen->id)
+                    ->where('status', 'pending_dosen')
+                    ->count();
+            }
+        @endphp
+
         <!-- Navigation -->
         <nav class="flex flex-col gap-1 grow">
             <a href="{{ route('dosen.dashboard') }}" @click="if(window.innerWidth < 1024) sidebarOpen = false" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors {{ Request::routeIs('dosen.dashboard') ? 'bg-primary/10 text-primary' : 'text-[#616889] dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-red-900/10 hover:text-primary' }}">
@@ -44,6 +53,14 @@
                 <span class="material-symbols-outlined text-[20px]">groups</span>
                 <p class="text-sm font-medium">Kelas Saya</p>
             </a>
+
+            @if($pendingApprovalCount > 0)
+                <a href="{{ route('dosen.jadwal_approval.index') }}" @click="if(window.innerWidth < 1024) sidebarOpen = false" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors {{ Request::routeIs('dosen.jadwal_approval.*') ? 'bg-primary/10 text-primary' : 'text-[#616889] dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-red-900/10 hover:text-primary' }}">
+                    <span class="material-symbols-outlined text-[20px]">assignment</span>
+                    <p class="text-sm font-medium">Approval Kelas</p>
+                    <span class="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium leading-none text-white bg-red-600 rounded">{{ $pendingApprovalCount }}</span>
+                </a>
+            @endif
 
             <a href="{{ route('dosen.jadwal') }}" @click="if(window.innerWidth < 1024) sidebarOpen = false" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors {{ Request::routeIs('dosen.jadwal') ? 'bg-primary/10 text-primary' : 'text-[#616889] dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-red-900/10 hover:text-primary' }}">
                 <span class="material-symbols-outlined text-[20px]">calendar_today</span>

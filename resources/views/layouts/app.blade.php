@@ -70,7 +70,7 @@
             @include('layouts.partials.navbar')
 
             <!-- Main Content -->
-            <main class="w-full flex-grow p-6 bg-gray-100 dark:bg-gray-900">
+            <main class="w-full flex-grow bg-gray-100 dark:bg-gray-900">
                 @yield('content')
             </main>
 

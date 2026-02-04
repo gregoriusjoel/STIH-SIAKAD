@@ -4,19 +4,23 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MataKuliah;
+use App\Models\Prodi;
+use App\Models\Fakultas;
 use Illuminate\Http\Request;
 
 class MataKuliahController extends Controller
 {
     public function index()
     {
-        $mataKuliahs = MataKuliah::paginate(10);
+        $mataKuliahs = MataKuliah::with(['prodi', 'fakultas'])->paginate(10);
         return view('admin.mata-kuliah.index', compact('mataKuliahs'));
     }
 
     public function create()
     {
-        return view('admin.mata-kuliah.create');
+        $prodis = Prodi::where('status', 'aktif')->get();
+        $fakultas = Fakultas::with('prodis')->where('status', 'aktif')->get();
+        return view('admin.mata-kuliah.create', compact('prodis', 'fakultas'));
     }
 
     public function store(Request $request)
@@ -28,7 +32,8 @@ class MataKuliahController extends Controller
             'semester' => 'required|integer|min:1|max:8',
             'praktikum' => 'nullable|integer|min:0|max:10',
             'jenis' => 'required|in:wajib_nasional,wajib_prodi,pilihan,peminatan',
-            'prodi' => 'required|string',
+            'prodi_id' => 'required|exists:prodis,id',
+            'fakultas_id' => 'required|exists:fakultas,id',
             'deskripsi' => 'nullable|string',
         ]);
 
@@ -40,13 +45,15 @@ class MataKuliahController extends Controller
 
     public function show(MataKuliah $mataKuliah)
     {
-        $mataKuliah->load('kelasMataKuliahs.dosen.user');
+        $mataKuliah->load(['kelasMataKuliahs.dosen.user', 'prodi', 'fakultas']);
         return view('admin.mata-kuliah.show', compact('mataKuliah'));
     }
 
     public function edit(MataKuliah $mataKuliah)
     {
-        return view('admin.mata-kuliah.edit', compact('mataKuliah'));
+        $prodis = Prodi::where('status', 'aktif')->get();
+        $fakultas = Fakultas::with('prodis')->where('status', 'aktif')->get();
+        return view('admin.mata-kuliah.edit', compact('mataKuliah', 'prodis', 'fakultas'));
     }
 
     public function update(Request $request, MataKuliah $mataKuliah)
@@ -58,7 +65,8 @@ class MataKuliahController extends Controller
             'semester' => 'required|integer|min:1|max:8',
             'praktikum' => 'nullable|integer|min:0|max:10',
             'jenis' => 'required|in:wajib_nasional,wajib_prodi,pilihan,peminatan',
-            'prodi' => 'required|string',
+            'prodi_id' => 'required|exists:prodis,id',
+            'fakultas_id' => 'required|exists:fakultas,id',
             'deskripsi' => 'nullable|string',
         ]);
 

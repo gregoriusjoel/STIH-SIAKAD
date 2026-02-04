@@ -243,15 +243,105 @@
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 <!-- Flash Messages -->
                 @if(session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-                        role="alert">
-                        <span class="block sm:inline">{{ session('success') }}</span>
+                    <div class="mb-4">
+                        <!-- Success Alert -->
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 shadow-sm"
+                            role="alert">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                                </div>
+                                <button type="button" onclick="this.closest('[role=alert]').parentElement.remove();" class="ml-auto inline-flex text-green-400 hover:text-green-600">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Failed Items Alert (Collapsible) -->
+                        @if(session('failed_items'))
+                            <div class="mt-4">
+                                <div class="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg overflow-hidden shadow-sm">
+                                    <button type="button" onclick="document.getElementById('failed-items-content').classList.toggle('hidden'); document.getElementById('failed-items-arrow').classList.toggle('rotate-180');" class="w-full px-4 py-4 flex items-center justify-between hover:bg-red-100/30 transition">
+                                        <div class="flex items-center">
+                                            <svg class="h-5 w-5 text-red-600 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                            </svg>
+                                            <div class="text-left">
+                                                <p class="font-semibold text-red-800">Data yang gagal di-generate</p>
+                                                <p class="text-sm text-red-600 mt-0.5">{{ count(session('failed_items')) }} item gagal diproses</p>
+                                            </div>
+                                        </div>
+                                        <svg id="failed-items-arrow" class="h-5 w-5 text-red-600 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    
+                                    <div id="failed-items-content" class="hidden border-t border-red-200 bg-white">
+                                        <div class="max-h-96 overflow-y-auto">
+                                            <table class="w-full text-sm">
+                                                @foreach(session('failed_items') as $key => $item)
+                                                    <tr class="border-b border-red-100 hover:bg-red-50/50 transition">
+                                                        <td class="px-4 py-3 text-red-700">
+                                                            <div class="flex items-start">
+                                                                <span class="inline-flex items-center justify-center h-5 w-5 rounded-full bg-red-100 text-red-600 flex-shrink-0 mr-3 mt-0.5 text-xs font-bold">{{ $key + 1 }}</span>
+                                                                <span class="break-words">{{ $item }}</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </table>
+                                        </div>
+                                        
+                                        <div class="border-t border-red-200 px-4 py-3 bg-red-50/50 flex items-center justify-between">
+                                            <p class="text-xs text-red-600 font-medium">Total gagal: {{ count(session('failed_items')) }} item</p>
+                                            <div class="flex gap-2">
+                                                <button type="button" onclick="downloadFailedItems()" class="px-3 py-1 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded transition">
+                                                    <svg class="h-3 w-3 inline-block mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zm3.172-5.172a1 1 0 011.414 0L9 10.586l1.414-1.414a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Download CSV
+                                                </button>
+                                                @if(auth()->check() && Route::has('admin.jadwal-generate-logs'))
+                                                    <a href="{{ route('admin.jadwal-generate-logs') }}" class="px-3 py-1 text-xs font-semibold text-red-600 border border-red-600 hover:bg-red-50 rounded transition">
+                                                        Lihat History
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                        <span class="block sm:inline">{{ session('error') }}</span>
+                    <div class="mb-4">
+                        <div class="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-lg p-4 shadow-sm"
+                            role="alert">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
+                                </div>
+                                <button type="button" onclick="this.closest('[role=alert]').parentElement.remove();" class="ml-auto inline-flex text-red-400 hover:text-red-600">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 @endif
 
@@ -403,6 +493,30 @@
                 }
             });
         })();
+
+        // Download failed items as CSV
+        function downloadFailedItems() {
+            const failedItems = @json(session('failed_items') ?? []);
+            if (!failedItems || failedItems.length === 0) {
+                alert('Tidak ada data gagal untuk didownload');
+                return;
+            }
+
+            let csv = 'No,Item Gagal\n';
+            failedItems.forEach((item, index) => {
+                csv += `${index + 1},"${item.replace(/"/g, '""')}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `jadwal-generate-failed-${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     </script>
     @stack('scripts')
     <x-ui.preloader />

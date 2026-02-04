@@ -81,6 +81,16 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/krs', [LecturerController::class, 'krs'])->name('krs');
     Route::get('/input-nilai', [LecturerController::class, 'inputNilai'])->name('input-nilai');
     Route::get('/mahasiswa', [LecturerController::class, 'students'])->name('mahasiswa');
+    
+    // Jadwal Approval Routes
+    Route::prefix('jadwal-approval')->name('jadwal_approval.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'index'])->name('index');
+        Route::get('/{id}', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'show'])->name('show');
+        Route::post('/{id}/approve', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'reject'])->name('reject');
+        Route::get('/available-slots/{hari}', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'getAvailableSlots'])->name('available_slots');
+    });
+    
     // Pengumuman untuk dosen
     Route::get('/pengumuman', [App\Http\Controllers\Page\PengumumanController::class, 'index'])->name('pengumuman.index');
     Route::get('/pengumuman/{pengumuman}', [App\Http\Controllers\Page\PengumumanController::class, 'show'])->name('pengumuman.show');
@@ -177,14 +187,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Dosen Management
     Route::resource('dosen', App\Http\Controllers\Admin\DosenController::class);
     Route::post('dosen/import', [App\Http\Controllers\Admin\DosenController::class, 'import'])->name('dosen.import');
+    Route::post('dosen/{dosen}/toggle-status', [App\Http\Controllers\Admin\DosenController::class, 'toggleStatus'])->name('dosen.toggle-status');
     Route::resource('dosen-pa', App\Http\Controllers\Admin\DosenPaController::class);
     Route::get('dosen-pa/{id}/mahasiswa', [App\Http\Controllers\Admin\DosenPaController::class, 'getMahasiswa'])->name('dosen-pa.mahasiswa');
 
     // Parent Management
     Route::resource('parents', App\Http\Controllers\Admin\ParentController::class);
 
+    // Master Data Management
+    Route::resource('prodi', App\Http\Controllers\Admin\ProdiController::class);
+    Route::resource('fakultas', App\Http\Controllers\Admin\FakultasController::class)->parameters([
+        'fakultas' => 'fakultas'
+    ]);
+
     // Mata Kuliah Management
     Route::resource('mata-kuliah', App\Http\Controllers\Admin\MataKuliahController::class);
+
+    // Ruangan Management
+    Route::resource('ruangan', App\Http\Controllers\Admin\RuanganController::class);
 
     // Kelas Mata Kuliah Management
     Route::resource('kelas-mata-kuliah', App\Http\Controllers\Admin\KelasMataKuliahController::class);
@@ -212,6 +232,32 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('semester/{semester}/krs-settings', [App\Http\Controllers\Admin\SemesterController::class, 'updateKrsSettings'])->name('semester.update-krs-settings');
     // Global search
     Route::get('search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
+
+    // Auto Generate Jadwal System
+    Route::prefix('jadwal-generator')->name('jadwal_generator.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\JadwalGeneratorController::class, 'index'])->name('index');
+        Route::post('/auto-generate', [App\Http\Controllers\Admin\JadwalGeneratorController::class, 'autoGenerate'])->name('auto_generate');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\JadwalGeneratorController::class, 'destroy'])->name('destroy');
+        Route::post('/bulk-delete', [App\Http\Controllers\Admin\JadwalGeneratorController::class, 'bulkDelete'])->name('bulk_delete');
+    });
+
+    // Jadwal Generate Logs System
+    Route::prefix('jadwal-generate-logs')->name('jadwal-generate-logs.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\JadwalGenerateLogController::class, 'index'])->name('index');
+        Route::get('/{log}', [App\Http\Controllers\Admin\JadwalGenerateLogController::class, 'show'])->name('show');
+        Route::get('/{log}/export', [App\Http\Controllers\Admin\JadwalGenerateLogController::class, 'export'])->name('export');
+    });
+
+    // Admin Jadwal Approval System
+    Route::prefix('jadwal-admin-approval')->name('jadwal_admin_approval.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\JadwalAdminApprovalController::class, 'index'])->name('index');
+        Route::get('/{id}', [App\Http\Controllers\Admin\JadwalAdminApprovalController::class, 'show'])->name('show');
+        Route::post('/{id}/approve', [App\Http\Controllers\Admin\JadwalAdminApprovalController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [App\Http\Controllers\Admin\JadwalAdminApprovalController::class, 'reject'])->name('reject');
+        Route::post('/{id}/approve-with-changes', [App\Http\Controllers\Admin\JadwalAdminApprovalController::class, 'approveWithChanges'])->name('approve_with_changes');
+        Route::post('/{id}/process-dosen-request', [App\Http\Controllers\Admin\JadwalAdminApprovalController::class, 'processDosenRequest'])->name('process_dosen_request');
+        Route::post('/{id}/process', [App\Http\Controllers\Admin\JadwalAdminApprovalController::class, 'process'])->name('process');
+    });
 
    // Academic Calendar Management
     Route::get('kalender-akademik', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'index'])->name('kalender.index');

@@ -13,6 +13,7 @@ class Jadwal extends Model
         'jam_mulai',
         'jam_selesai',
         'ruangan',
+        'ruangan_id',
         'status',
         'catatan_dosen',
         'catatan_admin',
@@ -46,5 +47,13 @@ class Jadwal extends Model
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Get the ruangan (room) for this schedule
+     */
+    public function ruangan(): BelongsTo
+    {
+        return $this->belongsTo(Ruangan::class);
     }
 }

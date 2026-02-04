@@ -4,7 +4,7 @@
 @section('page-title', 'Data Dosen')
 
 @section('content')
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                 <i class="fas fa-chalkboard-teacher mr-3 text-maroon"></i>
@@ -12,9 +12,9 @@
             </h2>
             <p class="text-gray-600 text-sm mt-1">Kelola data dosen pengajar di sistem</p>
         </div>
-        <div class="flex items-center space-x-3">
+        <div class="flex flex-row items-center gap-3">
             <button type="button" onclick="document.getElementById('modal-import-dosen').classList.remove('hidden')"
-                class="group bg-white text-maroon hover:bg-red-50 border-2 border-maroon/10 hover:border-maroon px-5 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-4 shadow-sm hover:shadow-lg hover:shadow-maroon/10">
+                class="group bg-white text-maroon hover:bg-red-50 border-2 border-maroon/10 hover:border-maroon px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-sm hover:shadow-lg hover:shadow-maroon/10 whitespace-nowrap">
                 <div class="w-6 h-6 rounded-lg bg-maroon/5 group-hover:bg-maroon/10 flex items-center justify-center transition-colors">
                     <i class="fas fa-file-import text-xs"></i>
                 </div>
@@ -22,7 +22,7 @@
             </button>
 
             <a href="{{ route('admin.dosen.create') }}"
-                class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
+                class="bg-maroon text-white hover:bg-red-900 px-4 py-2 rounded-lg transition flex items-center justify-center shadow-md transform hover:scale-105 text-sm font-medium whitespace-nowrap">
                 <i class="fas fa-plus mr-2"></i>
                 Tambah Dosen
             </a>
@@ -95,12 +95,19 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span
-                                    class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full 
-                                                                                        {{ $dosen->status == 'aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                    <i class="fas fa-circle text-xs mr-1"></i>
-                                    {{ ucfirst($dosen->status) }}
-                                </span>
+                                <form action="{{ route('admin.dosen.toggle-status', $dosen) }}" method="POST"
+                                    id="toggle-status-{{ $dosen->id }}">
+                                    @csrf
+                                    <button type="button"
+                                        onclick="confirmToggleStatus('{{ $dosen->id }}', '{{ $dosen->status }}', '{{ $dosen->user->name }}')"
+                                        class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full cursor-pointer hover:shadow-md transition-all
+                                                                        {{ $dosen->status == 'aktif' ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200' }}"
+                                        title="Klik untuk mengubah status">
+                                        <i
+                                            class="fas {{ $dosen->status == 'aktif' ? 'fa-check-circle' : 'fa-times-circle' }} text-xs mr-1"></i>
+                                        {{ ucfirst($dosen->status) }}
+                                    </button>
+                                </form>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                 <div class="flex items-center justify-center space-x-2">
@@ -227,6 +234,31 @@
 
     @push('scripts')
         <script>
+            // Flash Message SweetAlert
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 2000,
+                    background: '#ffffff',
+                    iconColor: '#1d7f35',
+                    color: '#333333'
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: "{{ session('error') }}",
+                    background: '#ffffff',
+                    iconColor: '#d33',
+                    confirmButtonColor: '#7a1621'
+                });
+            @endif
+
             // SweetAlert Delete Confirmation
             document.querySelectorAll('.delete-form').forEach(form => {
                 form.addEventListener('submit', function (e) {
@@ -253,6 +285,29 @@
                     });
                 });
             });
+
+            // SweetAlert Status Toggle Confirmation
+            function confirmToggleStatus(id, currentStatus, name) {
+                const isActive = currentStatus === 'aktif';
+                const actionText = isActive ? 'menonaktifkan' : 'mengaktifkan';
+                const confirmButtonColor = isActive ? '#d33' : '#1d7f35'; // Red for deactivate, Green for activate
+
+                Swal.fire({
+                    title: isActive ? 'Nonaktifkan Dosen?' : 'Aktifkan Dosen?',
+                    html: `Apakah Anda yakin ingin ${actionText} dosen <strong>${name}</strong>?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: confirmButtonColor,
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: isActive ? 'Ya, Nonaktifkan!' : 'Ya, Aktifkan!',
+                    cancelButtonText: 'Batal',
+                    background: '#ffffff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('toggle-status-' + id).submit();
+                    }
+                });
+            }
         </script>
         <script>
             // Ensure drag-and-drop handlers attach after DOM is ready

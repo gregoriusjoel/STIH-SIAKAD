@@ -7,79 +7,7 @@
         <div class="p-6 border-b border-gray-200 bg-maroon text-white rounded-t-xl">
             <h3 class="text-xl font-bold flex items-center"><i class="fas fa-edit mr-3 text-2xl"></i>Edit Jadwal</h3>
         </div>
-        <form action="{{ route('admin.kelas-mata-kuliah.update', $kelasMataKuliah) }}" method="POST" class="p-6"
-              x-data="{
-                  mataKuliahId: '{{ old('mata_kuliah_id', $kelasMataKuliah->mata_kuliah_id) }}',
-                  dosens: [],
-                  selectedDosenId: '{{ old('dosen_id', $kelasMataKuliah->dosen_id) }}',
-                  loading: false,
-                  hari: '{{ old('hari', $kelasMataKuliah->hari) }}',
-                  ruangan: '{{ old('ruangan', $kelasMataKuliah->ruang) }}',
-                  jamMulai: '{{ old('jam_mulai', $kelasMataKuliah->jam_mulai ? substr($kelasMataKuliah->jam_mulai, 0, 5) : '') }}',
-                  jamSelesai: '{{ old('jam_selesai', $kelasMataKuliah->jam_selesai ? substr($kelasMataKuliah->jam_selesai, 0, 5) : '') }}',
-                  roomStatus: { available: true, message: '' },
-                  checkingRoom: false,
-                  excludeId: {{ $kelasMataKuliah->id }},
-                  
-                  async fetchDosens() {
-                      if (!this.mataKuliahId) {
-                          this.dosens = [];
-                          this.selectedDosenId = '';
-                          return;
-                      }
-                      this.loading = true;
-                      try {
-                          const response = await fetch(`/api/dosens-by-mata-kuliah/${this.mataKuliahId}`);
-                          this.dosens = await response.json();
-                          // Keep selected dosen if still valid
-                          const currentDosenExists = this.dosens.find(d => d.id == this.selectedDosenId);
-                          if (!currentDosenExists) {
-                              if (this.dosens.length === 1) {
-                                  this.selectedDosenId = this.dosens[0].id;
-                              } else {
-                                  this.selectedDosenId = '';
-                              }
-                          }
-                      } catch (e) {
-                          console.error('Error fetching dosens:', e);
-                          this.dosens = [];
-                      }
-                      this.loading = false;
-                  },
-                  
-                  async checkRoom() {
-                      if (!this.hari || !this.jamMulai || !this.jamSelesai || !this.ruangan) {
-                          this.roomStatus = { available: true, message: '' };
-                          return;
-                      }
-                      
-                      this.checkingRoom = true;
-                      try {
-                          const params = new URLSearchParams({
-                              hari: this.hari,
-                              jam_mulai: this.jamMulai,
-                              jam_selesai: this.jamSelesai,
-                              ruangan: this.ruangan,
-                              ignore_id: this.excludeId
-                          });
-                          const response = await fetch(`/api/check-room-availability?${params.toString()}`);
-                          const data = await response.json();
-                          this.roomStatus = data;
-                      } catch (e) {
-                          console.error('Error checking room:', e);
-                      }
-                      this.checkingRoom = false;
-                  },
-                  
-                  init() {
-                      // Fetch dosens on load
-                      this.fetchDosens();
-                      // Check room on load if values exist
-                      if (this.hari && this.jamMulai && this.jamSelesai && this.ruangan) {
-                          this.checkRoom();
-                      }
-                  }
-              }">
+        <form action="{{ route('admin.jadwal.update', $jadwal) }}" method="POST" class="p-6">
             @csrf @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
@@ -138,10 +66,12 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-door-open text-gray-400 mr-1"></i>Ruangan <span class="text-red-500">*</span></label>
-                    <select name="ruangan" x-model="ruangan" @change="checkRoom()" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition" required>
+                    <select name="ruangan_id" x-model="ruangan" @change="checkRoom()" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition" required>
                         <option value="">Pilih Ruangan</option>
-                        @foreach($daftarRuangan as $r)
-                        <option value="{{ $r }}" {{ old('ruangan', $kelasMataKuliah->ruang) == $r ? 'selected' : '' }}>{{ $r }}</option>
+                        @foreach($daftarRuangan as $ruangan)
+                        <option value="{{ $ruangan->id }}" {{ old('ruangan_id', $kelasMataKuliah->ruangan_id) == $ruangan->id ? 'selected' : '' }}>
+                            {{ $ruangan->kode_ruangan }}
+                        </option>
                         @endforeach
                     </select>
                 </div>

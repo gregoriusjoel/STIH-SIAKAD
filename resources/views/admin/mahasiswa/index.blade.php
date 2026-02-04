@@ -4,7 +4,7 @@
 @section('page-title', 'Data Mahasiswa')
 
 @section('content')
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h3 class="text-2xl font-bold text-gray-800 flex items-center">
                 <i class="fas fa-user-graduate text-maroon mr-3 text-2xl"></i>
@@ -13,11 +13,13 @@
             <p class="text-sm text-gray-600 mt-1">Kelola data mahasiswa kampus STIH</p>
         </div>
 
-        <a href="{{ route('admin.mahasiswa.create') }}"
-            class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
-            <i class="fas fa-plus mr-2"></i>
-            Tambah Mahasiswa
-        </a>
+        <div class="flex-shrink-0">
+            <a href="{{ route('admin.mahasiswa.create') }}"
+                class="bg-maroon text-white hover:bg-red-900 px-4 py-2 rounded-lg transition flex items-center shadow-md transform hover:scale-105 text-sm font-medium">
+                <i class="fas fa-plus mr-2"></i>
+                Tambah Mahasiswa
+            </a>
+        </div>
     </div>
 
     <div x-data="{ selectedMahasiswa: null }"
@@ -151,6 +153,8 @@
                         confirmButtonText: 'Ya, Hapus!',
                         cancelButtonText: 'Batal',
                         background: '#ffffff',
+                        showLoaderOnConfirm: false,
+                        allowOutsideClick: true,
                         customClass: {
                             confirmButton: 'btn btn-danger',
                             cancelButton: 'btn btn-secondary'

@@ -5,8 +5,8 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon">
-        <div class="p-6 border-b border-gray-200 bg-maroon text-white rounded-t-xl">
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+        <div class="p-6 border-b border-gray-200 bg-maroon text-white">
             <h3 class="text-xl font-bold flex items-center">
                 <i class="fas fa-edit mr-3 text-2xl"></i>
                 Edit Data Mata Kuliah
@@ -124,4 +124,34 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fakultasSelect = document.getElementById('fakultas_id_edit');
+    const prodiSelect = document.getElementById('prodi_id_edit');
+    const allProdiOptions = Array.from(prodiSelect.options);
+
+    fakultasSelect.addEventListener('change', function() {
+        const selectedFakultasId = this.value;
+        
+        // Clear prodi select
+        prodiSelect.innerHTML = '<option value="">Pilih Program Studi</option>';
+        
+        if (selectedFakultasId) {
+            // Filter prodi based on fakultas
+            allProdiOptions.forEach(option => {
+                if (option.dataset.fakultasId === selectedFakultasId) {
+                    prodiSelect.appendChild(option.cloneNode(true));
+                }
+            });
+        }
+    });
+    
+    // Trigger change event if fakultas already selected (for old input)
+    if (fakultasSelect.value) {
+        fakultasSelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
+
 @endsection

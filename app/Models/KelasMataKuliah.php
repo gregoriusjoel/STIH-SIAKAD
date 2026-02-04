@@ -16,6 +16,7 @@ class KelasMataKuliah extends Model
         'kode_kelas',
         'kapasitas',
         'ruang',
+        'ruangan_id',
         'hari',
         'jam_mulai',
         'jam_selesai',
@@ -47,6 +48,11 @@ class KelasMataKuliah extends Model
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
+    }
+
+    public function ruangan(): BelongsTo
+    {
+        return $this->belongsTo(Ruangan::class);
     }
 
     public function jadwal(): HasOne

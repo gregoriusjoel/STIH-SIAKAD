@@ -5,8 +5,8 @@
 
 @section('content')
 <div class="max-w-6xl mx-auto" x-data='{ activeTab: @json(request()->get("tab", "transfer")) }'>
-    <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon">
-        <div class="p-6 border-b border-gray-200 bg-maroon text-white rounded-t-xl">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
+        <div class="p-6 border-b border-gray-200 bg-maroon text-white">
             <h3 class="text-xl font-bold flex items-center">
                 <i class="fas fa-user-tie mr-3 text-2xl"></i>
                 Edit Dosen PA

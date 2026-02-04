@@ -4,7 +4,7 @@
 @section('page-title', 'Data Mata Kuliah')
 
 @section('content')
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                 <i class="fas fa-book mr-3 text-maroon"></i>
@@ -12,11 +12,13 @@
             </h2>
             <p class="text-gray-600 text-sm mt-1">Kelola mata kuliah yang tersedia di sistem</p>
         </div>
-        <a href="{{ route('admin.mata-kuliah.create') }}"
-            class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
-            <i class="fas fa-plus mr-2"></i>
-            Tambah Mata Kuliah
-        </a>
+        <div class="flex-shrink-0">
+            <a href="{{ route('admin.mata-kuliah.create') }}"
+                class="bg-maroon text-white hover:bg-red-900 px-4 py-2 rounded-lg transition flex items-center shadow-md transform hover:scale-105 text-sm font-medium">
+                <i class="fas fa-plus mr-2"></i>
+                Tambah Mata Kuliah
+            </a>
+        </div>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
@@ -99,10 +101,21 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="text-sm text-gray-700">
-                                    <i class="fas fa-university text-gray-400 mr-1"></i>
-                                    {{ $mk->prodi }}
-                                </span>
+                                <div class="flex items-center">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                        {{ $mk->prodi->jenjang == 'S1' ? 'bg-blue-100 text-blue-800' : 
+                                           ($mk->prodi->jenjang == 'S2' ? 'bg-green-100 text-green-800' : 
+                                           ($mk->prodi->jenjang == 'S3' ? 'bg-purple-100 text-purple-800' : 'bg-yellow-100 text-yellow-800')) }}">
+                                        {{ $mk->prodi->jenjang }}
+                                    </span>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-gray-900">{{ $mk->prodi->nama_prodi }}</div>
+                                        <div class="text-xs text-gray-500">
+                                            <i class="fas fa-university mr-1"></i>
+                                            {{ $mk->fakultas->nama_fakultas }}
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                 <div class="flex items-center justify-center space-x-2">
@@ -207,6 +220,8 @@
                         confirmButtonText: 'Ya, Hapus!',
                         cancelButtonText: 'Batal',
                         background: '#ffffff',
+                        showLoaderOnConfirm: false,
+                        allowOutsideClick: true,
                         customClass: {
                             confirmButton: 'btn btn-danger',
                             cancelButton: 'btn btn-secondary'

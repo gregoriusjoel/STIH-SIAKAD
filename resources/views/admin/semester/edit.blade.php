@@ -29,15 +29,18 @@
                         @endfor
                     </select>
                 </div>
-                <div class="md:col-span-2 flex items-center gap-4">
-                    <div class="flex-1">
+                <div class="md:col-span-2 flex flex-col md:flex-row items-center gap-4">
+                    <div class="flex-1 w-full">
                         <label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-calendar-alt text-gray-400 mr-1"></i>Tanggal Mulai *</label>
                         <input type="date" name="tanggal_mulai" id="tanggal_mulai" value="{{ old('tanggal_mulai', optional($semester->tanggal_mulai)->format('Y-m-d')) }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition" required>
                     </div>
 
-                    <div class="text-center text-sm text-gray-500 px-2">— <strong>6 bulan</strong> —</div>
+                    <div class="text-center text-sm text-gray-500 px-2 py-2 md:py-0 w-full md:w-auto flex justify-center items-center">
+                        <span class="md:hidden transform rotate-90 mr-2"></span>
+                        <span>— <strong>6 bulan</strong> —</span>
+                    </div>
 
-                    <div class="flex-1">
+                    <div class="flex-1 w-full">
                         <label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-calendar-alt text-gray-400 mr-1"></i>Tanggal Selesai *</label>
                         <input type="date" name="tanggal_selesai" id="tanggal_selesai" value="{{ old('tanggal_selesai', optional($semester->tanggal_selesai)->format('Y-m-d')) }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition" required>
                     </div>

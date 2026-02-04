@@ -12,8 +12,13 @@ export default defineConfig({
     ],
     server: {
         host: '0.0.0.0',
+        cors: true,
+        headers: {
+            'Access-Control-Allow-Origin': 'http://192.168.1.7:8000',
+        },
         hmr: {
-            host: 'localhost',
+            host: '192.168.1.7',
+            protocol: 'ws',
         },
         watch: {
             ignored: ['**/storage/framework/views/**'],

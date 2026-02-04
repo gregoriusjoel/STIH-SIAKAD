@@ -31,6 +31,11 @@ class DosenController extends Controller
             'password' => 'nullable|min:6',
             'nidn' => 'required|digits_between:1,10|unique:dosens,nidn',
             'pendidikan' => 'required|string',
+            'pendidikan_terakhir' => 'nullable|array',
+            'pendidikan_terakhir.*' => 'string',
+            'dosen_tetap' => 'required|in:ya,tidak',
+            'jabatan_fungsional' => 'nullable|string|max:255',
+            'jabatan_fungsional_custom' => 'nullable|string|max:255',
             'prodi' => 'required|array|min:1',
             'prodi.*' => 'string',
             'phone' => 'nullable|string',
@@ -53,6 +58,9 @@ class DosenController extends Controller
                 'user_id' => $user->id,
                 'nidn' => $request->nidn,
                 'pendidikan' => $request->pendidikan,
+                'pendidikan_terakhir' => array_filter($request->pendidikan_terakhir ?? []),
+                'dosen_tetap' => $request->dosen_tetap === 'ya',
+                'jabatan_fungsional' => $request->filled('jabatan_fungsional') ? [$request->jabatan_fungsional] : [],
                 'prodi' => $request->prodi,
                 'phone' => $request->phone,
                 'address' => $request->address,
@@ -109,7 +117,11 @@ class DosenController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $dosen->user_id,
             'nidn' => 'required|digits_between:1,10|unique:dosens,nidn,' . $dosen->id,
-            'pendidikan' => 'required|string',
+            'pendidikan_terakhir' => 'nullable|array',
+            'pendidikan_terakhir.*' => 'string',
+            'dosen_tetap' => 'required|in:ya,tidak',
+            'jabatan_fungsional' => 'required|string|max:255',
+            'jabatan_fungsional_custom' => 'nullable|string|max:255',
             'prodi' => 'required|array|min:1',
             'prodi.*' => 'string',
             'phone' => 'nullable|string',
@@ -132,9 +144,16 @@ class DosenController extends Controller
                 ]);
             }
 
+            // Determine jabatan_fungsional value: use custom if "lainnya" was selected
+            $jabatanValue = $request->jabatan_fungsional === 'lainnya' 
+                ? $request->jabatan_fungsional_custom 
+                : $request->jabatan_fungsional;
+
             $dosen->update([
                 'nidn' => $request->nidn,
-                'pendidikan' => $request->pendidikan,
+                'pendidikan_terakhir' => array_filter($request->pendidikan_terakhir ?? []),
+                'dosen_tetap' => $request->dosen_tetap === 'ya',
+                'jabatan_fungsional' => !empty($jabatanValue) ? [$jabatanValue] : [],
                 'prodi' => $request->prodi,
                 'phone' => $request->phone,
                 'address' => $request->address,
@@ -371,6 +390,20 @@ class DosenController extends Controller
         return redirect()->route('admin.dosen.index')
             ->with('success', $message)
             ->with('import_errors', $detailedErrors);
+    }
+
+    public function toggleStatus(Dosen $dosen)
+    {
+        try {
+            $newStatus = $dosen->status === 'aktif' ? 'non-aktif' : 'aktif';
+            $dosen->update(['status' => $newStatus]);
+
+            $action = $newStatus === 'aktif' ? 'diaktifkan' : 'dinonaktifkan';
+            return redirect()->route('admin.dosen.index')
+                ->with('success', "Dosen {$dosen->user->name} berhasil {$action}");
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function downloadTemplate()

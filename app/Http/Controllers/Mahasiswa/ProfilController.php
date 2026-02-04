@@ -90,6 +90,7 @@ class ProfilController extends Controller
                 if (count($row) >= 6 && !empty($row[5])) {
                     $villages->push([
                         'id' => $row[0],
+                        'city_code' => $row[2],
                         'name' => $row[5],
                     ]);
                 }

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\JadwalException;
 use Carbon\Carbon;
 use App\Models\JadwalReschedule;
+use App\Models\Ruangan;
 
 class JadwalController extends Controller
 {
@@ -98,22 +99,61 @@ class JadwalController extends Controller
         // For backward compatibility
         $activeJadwals = $kelasMataKuliahs;
 
-        // Dummy room data for dropdown (R.100 - R.199)
-        $daftarRuangan = collect();
-        for ($i = 100; $i <= 199; $i++) {
-            $daftarRuangan->push('R.' . $i);
+        // Also include any active Jadwal records (separate jadwals table) for this dosen's classes
+        if ($dosen) {
+            $jadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
+                ->where('status', 'active')
+                ->whereHas('kelas', function($q) use ($dosen) {
+                    $q->where('dosen_id', $dosen->id);
+                })
+                ->get();
+
+            $mappedFromJadwals = $jadwals->map(function($j) {
+                $item = new \stdClass();
+                $item->id = 'jadwal-'.$j->id;
+                $item->mataKuliah = $j->kelas->mataKuliah ?? null;
+                $item->semester = null;
+                $item->hari = $j->hari;
+                $item->jam_mulai = $j->jam_mulai;
+                $item->jam_selesai = $j->jam_selesai;
+                $item->ruang = $j->ruangan ?? $j->ruang;
+                $item->kode_kelas = $j->kelas->section ?? ($j->kelas->kode_kelas ?? null);
+                $item->dosen = $j->kelas->dosen ?? null;
+                // display_* fields to match existing mapping
+                $item->display_hari = $j->hari;
+                $item->display_jam_mulai = $j->jam_mulai;
+                $item->display_jam_selesai = $j->jam_selesai;
+                $item->display_ruang = $j->ruangan ?? $j->ruang;
+                $item->display_kelas = $item->kode_kelas;
+                $item->is_rescheduled = false;
+                $item->has_pending_reschedule = false;
+                return $item;
+            });
+
+            // Merge mapped jadwals into collection used for rendering
+            $kelasMataKuliahs = $kelasMataKuliahs->concat($mappedFromJadwals);
+            $schedulesByDay = $kelasMataKuliahs->groupBy('display_hari');
+            $activeJadwals = $kelasMataKuliahs;
         }
 
+        // Get actual ruangan data from database
+        $daftarRuangan = Ruangan::where('status', 'aktif')
+            ->orderBy('kode_ruangan')
+            ->get();
+
         // Get all schedules for room availability checking
-        $allSchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user'])
-            ->whereNotNull('ruang')
+        $allSchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'ruangan'])
+            ->where(function($q) {
+                $q->whereNotNull('ruang')->orWhereNotNull('ruangan_id');
+            })
             ->whereNotNull('hari')
             ->get()
             ->map(function($s) {
                 return [
                     'id' => $s->id,
                     'hari' => $s->hari,
-                    'ruang' => $s->ruang,
+                    'ruang' => $s->ruangan ? $s->ruangan->kode_ruangan : $s->ruang, // Use new ruangan if available, fallback to old
+                    'ruangan_id' => $s->ruangan_id,
                     'jam_mulai' => substr($s->jam_mulai, 0, 5),
                     'jam_selesai' => substr($s->jam_selesai, 0, 5),
                     'mk' => $s->mataKuliah->nama_mk ?? '',
@@ -226,7 +266,7 @@ class JadwalController extends Controller
             'new_hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'new_jam_mulai' => 'required|date_format:H:i',
             'new_jam_selesai' => 'required|date_format:H:i|after:new_jam_mulai',
-            'new_ruang' => 'required|string|max:50',
+            'ruangan_id' => 'required|exists:ruangans,id',
             'week_offset' => 'nullable|integer|min:0',
         ]);
 
@@ -244,10 +284,13 @@ class JadwalController extends Controller
             return redirect()->back()->withErrors('Anda tidak memiliki izin untuk mereschedule kelas ini.');
         }
 
+        // Get the selected ruangan for validation
+        $ruangan = Ruangan::findOrFail($request->ruangan_id);
+
         // Check for room conflict (same day, same room, overlapping time)
         $conflict = \App\Models\KelasMataKuliah::where('id', '!=', $kelasMataKuliah->id)
             ->where('hari', $request->new_hari)
-            ->where('ruang', $request->new_ruang)
+            ->where('ruangan_id', $request->ruangan_id)
             ->where(function($q) use ($request) {
                 $q->where('jam_mulai', '<', $request->new_jam_selesai)
                   ->where('jam_selesai', '>', $request->new_jam_mulai);
@@ -259,7 +302,7 @@ class JadwalController extends Controller
             $conflictInfo = ($conflict->dosen->user->name ?? 'Dosen lain') . 
                            ' (' . ($conflict->mataKuliah->nama_mk ?? '-') . ') ' .
                            'pukul ' . substr($conflict->jam_mulai, 0, 5) . '-' . substr($conflict->jam_selesai, 0, 5);
-            return redirect()->back()->withErrors("Ruangan {$request->new_ruang} sudah terpakai oleh {$conflictInfo}. Silakan pilih ruangan atau waktu lain.");
+            return redirect()->back()->withErrors("Ruangan {$ruangan->kode_ruangan} sudah terpakai oleh {$conflictInfo}. Silakan pilih ruangan atau waktu lain.");
         }
 
         // Directly update the kelas mata kuliah
@@ -267,11 +310,12 @@ class JadwalController extends Controller
             'hari' => $request->new_hari,
             'jam_mulai' => $request->new_jam_mulai,
             'jam_selesai' => $request->new_jam_selesai,
-            'ruang' => $request->new_ruang,
+            'ruangan_id' => $request->ruangan_id,
+            'ruang' => $ruangan->kode_ruangan, // Keep legacy field updated for backward compatibility
         ]);
 
         $weekOffset = (int) $request->input('week_offset', 0);
 
-        return redirect()->route('dosen.jadwal', ['week' => $weekOffset])->with('success', 'Jadwal berhasil diubah ke ' . $request->new_hari . ' pukul ' . $request->new_jam_mulai . ' - ' . $request->new_jam_selesai . ' di ruang ' . $request->new_ruang . '.');
+        return redirect()->route('dosen.jadwal', ['week' => $weekOffset])->with('success', 'Jadwal berhasil diubah ke ' . $request->new_hari . ' pukul ' . $request->new_jam_mulai . ' - ' . $request->new_jam_selesai . ' di ruang ' . $ruangan->kode_ruangan . '.');
     }
 }

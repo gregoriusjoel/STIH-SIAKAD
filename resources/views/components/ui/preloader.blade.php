@@ -1,5 +1,6 @@
 <div id="global-loader" aria-hidden="true"
-    class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/70 transition-opacity duration-300" style="display:flex;opacity:1;">
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/70 transition-opacity duration-300"
+    style="display:flex;opacity:1;">
     <x-ui.spinner size="md" class="text-maroon" label="Memuat..." labelClass="text-sm text-maroon" />
 </div>
 
@@ -36,7 +37,7 @@
             showTimer = setTimeout(() => {
                 doShow();
                 showTimer = null;
-            }, 150);
+            }, 500);
         }
 
         function cancelShow() {
@@ -52,6 +53,14 @@
             const form = e.target;
             if (form && form.matches && form.matches('form')) {
                 if (form.hasAttribute('data-no-loader')) return;
+                // If a SweetAlert modal is currently open, avoid showing the global loader
+                if (document.querySelector && document.querySelector('.swal2-container')) return;
+                // If this form is an HTTP DELETE (common pattern for delete forms), do not show loader
+                try {
+                    if (form.querySelector && form.querySelector('input[name="_method"][value="DELETE"]')) return;
+                } catch (err) {
+                    // ignore
+                }
                 scheduleShow();
             }
         }, true);
@@ -77,5 +86,24 @@
         // If navigation completes / PJAX responses / other events, cancel
         window.addEventListener('pageshow', cancelShow);
         window.addEventListener('popstate', cancelShow);
+
+        // If a SweetAlert2 modal appears, cancel any pending or visible global loader
+        if (window.MutationObserver) {
+            const observer = new MutationObserver(function (mutations) {
+                for (const m of mutations) {
+                    for (const node of m.addedNodes) {
+                        try {
+                            if (node && node.classList && node.classList.contains('swal2-container')) {
+                                cancelShow();
+                                return;
+                            }
+                        } catch (err) {
+                            // ignore
+                        }
+                    }
+                }
+            });
+            observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
+        }
     })();
 </script>

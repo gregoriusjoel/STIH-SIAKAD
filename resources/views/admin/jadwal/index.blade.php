@@ -56,7 +56,7 @@
                                                               hari: '',
                                                               jamMulai: '',
                                                               jamSelesai: '',
-                                                              ruangan: '',
+                                                              ruanganId: '',
                                                               roomStatus: { available: true, message: '' },
                                                               checkingRoom: false,
 
@@ -90,7 +90,7 @@
                                                               },
 
                                                               async checkRoom() {
-                                                                  if (!this.hari || !this.jamMulai || !this.jamSelesai || !this.ruangan) {
+                                                                  if (!this.hari || !this.jamMulai || !this.jamSelesai || !this.ruanganId) {
                                                                       this.roomStatus = { available: true, message: '' };
                                                                       return;
                                                                   }
@@ -101,7 +101,7 @@
                                                                           hari: this.hari,
                                                                           jam_mulai: this.jamMulai,
                                                                           jam_selesai: this.jamSelesai,
-                                                                          ruangan: this.ruangan
+                                                                          ruangan_id: this.ruanganId
                                                                       });
                                                                       const response = await fetch(`/api/check-room-availability?${params.toString()}`);
                                                                       const data = await response.json();
@@ -205,12 +205,12 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-1"><i
                                             class="fas fa-door-open text-gray-400 mr-1"></i>Ruangan <span
                                             class="text-red-500">*</span></label>
-                                    <select name="ruangan" x-model="ruangan" @change="checkRoom()"
+                                    <select name="ruangan_id" x-model="ruanganId" @change="checkRoom()"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
                                         required>
                                         <option value="">Pilih Ruangan</option>
                                         @foreach($daftarRuangan as $r)
-                                            <option value="{{ $r }}">{{ $r }}</option>
+                                            <option value="{{ $r->id }}">{{ $r->kode_ruangan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -298,24 +298,35 @@
                                                 </div>
                                             </td>
                                             <td class="px-4 py-3">
-                                                <div class="font-bold text-lg">{{ $k->mataKuliah->nama_mk }}</div>
+                                                <div class="font-bold text-lg">{{ $k->nama_mk }}</div>
                                                 <div class="text-sm font-bold text-gray-500">{{ $k->kode_kelas }} •
-                                                    {{ $k->mataKuliah->sks }} SKS
+                                                    {{ $k->sks }} SKS
                                                 </div>
                                             </td>
-                                            <td class="px-4 py-3 text-sm text-gray-600">{{ $k->dosen->user->name ?? 'N/A' }}
+                                            <td class="px-4 py-3 text-sm text-gray-600">{{ $k->dosen_name }}
                                             </td>
                                             <td class="px-4 py-3 font-medium">{{ $k->ruang ?: '-' }}</td>
                                             <td class="px-4 py-3 text-center">
                                                 <div class="flex justify-center space-x-1">
-                                                    <a href="{{ route('admin.kelas-mata-kuliah.edit', $k) }}"
-                                                        class="bg-yellow-500 text-white p-1.5 rounded hover:bg-yellow-600 transition"
-                                                        title="Edit"><i class="fas fa-edit text-xs"></i></a>
-                                                    <form action="{{ route('admin.kelas-mata-kuliah.destroy', $k) }}"
-                                                        method="POST" class="delete-form">@csrf
-                                                        @method('DELETE')<button type="submit"
-                                                            class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition"
-                                                            title="Hapus"><i class="fas fa-trash text-xs"></i></button></form>
+                                                    @if($k->type === 'jadwal')
+                                                        <a href="{{ route('admin.jadwal.edit', $k->db_id) }}"
+                                                            class="bg-yellow-500 text-white p-1.5 rounded hover:bg-yellow-600 transition"
+                                                            title="Edit"><i class="fas fa-edit text-xs"></i></a>
+                                                        <form action="{{ route('admin.jadwal.destroy', $k->db_id) }}"
+                                                            method="POST" class="delete-form">@csrf
+                                                            @method('DELETE')<button type="submit"
+                                                                class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition"
+                                                                title="Hapus"><i class="fas fa-trash text-xs"></i></button></form>
+                                                    @else
+                                                        <a href="{{ route('admin.kelas-mata-kuliah.edit', $k->db_id) }}"
+                                                            class="bg-yellow-500 text-white p-1.5 rounded hover:bg-yellow-600 transition"
+                                                            title="Edit"><i class="fas fa-edit text-xs"></i></a>
+                                                        <form action="{{ route('admin.kelas-mata-kuliah.destroy', $k->db_id) }}"
+                                                            method="POST" class="delete-form">@csrf
+                                                            @method('DELETE')<button type="submit"
+                                                                class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition"
+                                                                title="Hapus"><i class="fas fa-trash text-xs"></i></button></form>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -333,6 +344,9 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- Generator: Auto Generate Jadwal (embedded) --}}
+                @include('admin.jadwal._generator_partial')
 
                 {{-- Card: Informasi Penggunaan Ruangan (New Feature) --}}
                 <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" x-data="{

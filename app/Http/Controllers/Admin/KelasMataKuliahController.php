@@ -35,7 +35,7 @@ class KelasMataKuliahController extends Controller
             'dosen_id' => 'required|exists:dosens,id',
             'nama_kelas' => 'required|string|max:10',
             'kuota' => 'required|integer|min:1',
-            'ruangan' => 'nullable|string|max:50',
+            'ruangan_id' => 'nullable|exists:ruangans,id',
             'hari' => 'nullable|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'nullable|date_format:H:i',
             'jam_selesai' => 'nullable|date_format:H:i',
@@ -66,7 +66,15 @@ class KelasMataKuliahController extends Controller
             ]);
         }
 
-        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kuota', 'ruangan', 'hari', 'jam_mulai', 'jam_selesai']);
+        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kuota', 'ruangan_id', 'hari', 'jam_mulai', 'jam_selesai']);
+        
+        // Get ruangan name from ruangan_id for backward compatibility
+        $ruanganName = null;
+        if ($data['ruangan_id']) {
+            $ruangan = \App\Models\Ruangan::find($data['ruangan_id']);
+            $ruanganName = $ruangan ? $ruangan->kode_ruangan : null;
+        }
+        
         // Map form field names to database column names
         $mapped = [
             'mata_kuliah_id' => $data['mata_kuliah_id'],
@@ -74,7 +82,8 @@ class KelasMataKuliahController extends Controller
             'semester_id' => $semester ? $semester->id : null,
             'kode_kelas' => $data['nama_kelas'],
             'kapasitas' => $data['kuota'],
-            'ruang' => $data['ruangan'] ?? null,
+            'ruang' => $ruanganName,
+            'ruangan_id' => $data['ruangan_id'],
             'hari' => $data['hari'] ?? null,
             'jam_mulai' => $data['jam_mulai'] ?? null,
             'jam_selesai' => $data['jam_selesai'] ?? null,
@@ -133,8 +142,8 @@ class KelasMataKuliahController extends Controller
         $dosens = Dosen::with('user')->get();
         $semesters = Semester::all();
         
-        // Generate room list R.100 - R.199
-        $daftarRuangan = collect(range(100, 199))->map(fn($n) => 'R.' . $n);
+        // Get actual ruangan data from database
+        $daftarRuangan = \App\Models\Ruangan::where('status', 'aktif')->orderBy('kode_ruangan')->get();
         
         return view('admin.jadwal.edit', compact('kelasMataKuliah', 'mataKuliahs', 'dosens', 'semesters', 'daftarRuangan'));
     }
@@ -146,7 +155,7 @@ class KelasMataKuliahController extends Controller
             'dosen_id' => 'required|exists:dosens,id',
             'nama_kelas' => 'required|string|max:10',
             'kuota' => 'required|integer|min:1',
-            'ruangan' => 'nullable|string|max:50',
+            'ruangan_id' => 'nullable|exists:ruangans,id',
             'hari' => 'nullable|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'nullable|date_format:H:i',
             'jam_selesai' => 'nullable|date_format:H:i',
@@ -156,14 +165,23 @@ class KelasMataKuliahController extends Controller
         $mataKuliah = MataKuliah::findOrFail($request->mata_kuliah_id);
         $semester = Semester::where('status', 'aktif')->first();
 
-        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kuota', 'ruangan', 'hari', 'jam_mulai', 'jam_selesai']);
+        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kuota', 'ruangan_id', 'hari', 'jam_mulai', 'jam_selesai']);
+        
+        // Get ruangan name from ruangan_id for backward compatibility
+        $ruanganName = null;
+        if ($data['ruangan_id']) {
+            $ruangan = \App\Models\Ruangan::find($data['ruangan_id']);
+            $ruanganName = $ruangan ? $ruangan->kode_ruangan : null;
+        }
+        
         $mapped = [
             'mata_kuliah_id' => $data['mata_kuliah_id'],
             'dosen_id' => $data['dosen_id'],
             'semester_id' => $semester ? $semester->id : $kelasMataKuliah->semester_id,
             'kode_kelas' => $data['nama_kelas'],
             'kapasitas' => $data['kuota'],
-            'ruang' => $data['ruangan'] ?? null,
+            'ruang' => $ruanganName,
+            'ruangan_id' => $data['ruangan_id'],
             'hari' => $data['hari'] ?? null,
             'jam_mulai' => $data['jam_mulai'] ?? null,
             'jam_selesai' => $data['jam_selesai'] ?? null,

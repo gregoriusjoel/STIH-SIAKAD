@@ -47,7 +47,7 @@
 
                 <div id="qrCard" class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 text-center shadow-sm relative overflow-hidden" 
                     x-data="{ 
-                        isLoaded: {{ ($token && $qrEnabled) ? 'true' : 'false' }},
+                        isLoaded: {{ (isset($token) && $token && $qrEnabled) ? 'true' : 'false' }},
                         activating: false,
                         showQr(formId) {
                             this.isLoaded = false;
@@ -71,7 +71,7 @@
                             <div class="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-slate-800" 
                                 :class="{ 'animate-pulse': !isLoaded || activating }">
                                 
-                                @if($token && $qrEnabled)
+                                @if(isset($token) && $token && $qrEnabled)
                                     <div x-show="isLoaded && !activating" x-transition.opacity.duration.500>
                                         <img id="generatedQr" src="{{ route('qrcode.kelas.image', $token) }}" 
                                             alt="QR Kelas" class="w-full h-full p-4 bg-white" 
@@ -99,7 +99,7 @@
 
                         <!-- Info & Expiry -->
                         <div class="w-full pt-2">
-                            @if($token && $qrEnabled)
+                            @if(isset($token) && $token && $qrEnabled)
                                 @if($qrExpires)
                                     <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-full text-[11px] font-bold">
                                         <span class="material-symbols-outlined text-xs">timer</span>
@@ -114,7 +114,7 @@
 
                         <!-- Action Buttons -->
                         <div class="w-full flex flex-col gap-2 mt-2">
-                            @if($token)
+                            @if(isset($token) && $token)
                                 @if($qrEnabled)
                                     <div class="grid grid-cols-1 gap-2">
                                         <a href="{{ route('qrcode.kelas.image', $token) }}" 
@@ -160,7 +160,7 @@
                 <div class="bg-white rounded-xl border border-gray-200 p-4">
                     <label class="text-xs text-gray-500">Link Absensi</label>
                     <div class="mt-2 flex items-center gap-2">
-                        <input id="absensiLink" type="text" readonly value="{{ $token ? route('absensi.form', ['token' => $token]) : 'N/A' }}" class="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" />
+                        <input id="absensiLink" type="text" readonly value="{{ (isset($token) && $token) ? route('absensi.form', ['token' => $token]) : 'N/A' }}" class="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" />
                         <button id="copyBtn" class="px-3 py-2 bg-[#8B1538] text-white rounded-lg text-sm">Copy</button>
                     </div>
                 </div>

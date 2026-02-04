@@ -5,8 +5,8 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon">
-        <div class="p-6 border-b border-gray-200 bg-maroon text-white rounded-t-xl">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
+        <div class="p-6 border-b border-gray-200 bg-maroon text-white">
             <h3 class="text-xl font-bold flex items-center">
                 <i class="fas fa-chalkboard-teacher mr-3 text-2xl"></i>
                 Form Tambah Dosen Baru
@@ -90,13 +90,33 @@
                                 <i class="fas fa-graduation-cap text-gray-400 mr-1"></i>
                                 Pendidikan Terakhir *
                             </label>
-                            <select name="pendidikan" 
+                            <div id="pendidikan-list" class="space-y-2">
+                                <div class="flex items-center gap-3">
+                                    <select name="pendidikan" 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
+                                        required>
+                                        <option value="">Pilih Pendidikan</option>
+                                        <option value="S1" {{ old('pendidikan') == 'S1' ? 'selected' : '' }}>S1</option>
+                                        <option value="S2" {{ old('pendidikan') == 'S2' ? 'selected' : '' }}>S2</option>
+                                        <option value="S3" {{ old('pendidikan') == 'S3' ? 'selected' : '' }}>S3</option>
+                                    </select>
+                                    <button type="button" id="add-pendidikan" class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2">Tambahkan satu atau lebih pendidikan. Klik + untuk menambah.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-id-card text-gray-400 mr-1"></i>
+                                Status Dosen Tetap *
+                            </label>
+                            <select name="dosen_tetap" 
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
                                 required>
-                                <option value="">Pilih Pendidikan</option>
-                                <option value="S1" {{ old('pendidikan') == 'S1' ? 'selected' : '' }}>S1</option>
-                                <option value="S2" {{ old('pendidikan') == 'S2' ? 'selected' : '' }}>S2</option>
-                                <option value="S3" {{ old('pendidikan') == 'S3' ? 'selected' : '' }}>S3</option>
+                                <option value="">Pilih Status</option>
+                                <option value="ya">Ya, Dosen Tetap</option>
+                                <option value="tidak">Tidak, Dosen Tidak Tetap</option>
                             </select>
                         </div>
 
@@ -141,6 +161,31 @@
                                 @endif
                             </div>
                             <p class="text-xs text-gray-400 mt-2">Pilih satu atau lebih Program Studi. Klik + untuk menambah.</p>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-briefcase text-gray-400 mr-1"></i>
+                                Jabatan Fungsional
+                            </label>
+                            <div class="flex gap-3">
+                                <select id="jabatan-dropdown" name="jabatan_fungsional" 
+                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                    <option value="">Pilih Jabatan Fungsional</option>
+                                    <option value="Lektor">Lektor</option>
+                                    <option value="Lektor Kepala">Lektor Kepala</option>
+                                    <option value="Profesor">Profesor</option>
+                                    <option value="Asisten Ahli">Asisten Ahli</option>
+                                    <option value="Tenaga Pengajar">Tenaga Pengajar</option>
+                                    <option value="lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            <div id="jabatan-custom-container" class="hidden mt-3">
+                                <input type="text" id="jabatan-custom" name="jabatan_fungsional_custom" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" 
+                                    placeholder="Masukkan jabatan fungsional lainnya">
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2">Pilih satu jabatan fungsional. Jika tidak ada di daftar, pilih "Lainnya" dan isi di kolom bawah.</p>
                         </div>
 
                         <div>
@@ -237,6 +282,67 @@ document.addEventListener('DOMContentLoaded', function(){
             else { pw.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; btn.setAttribute('aria-pressed','false'); }
         });
     }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    // Pendidikan Terakhir handler
+    const addPendidikanBtn = document.getElementById('add-pendidikan');
+    const pendidikanList = document.getElementById('pendidikan-list');
+    const pendidikanOptionsHtml = `
+        <option value="">Pilih Pendidikan</option>
+        <option value="S1">S1</option>
+        <option value="S2">S2</option>
+        <option value="S3">S3</option>
+    `;
+
+    function makePendidikanRow() {
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-3';
+        row.innerHTML = `
+            <select name="pendidikan_terakhir[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                ${pendidikanOptionsHtml}
+            </select>
+            <button type="button" class="remove-pendidikan px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+        `;
+        row.querySelector('.remove-pendidikan')?.addEventListener('click', function(){ row.remove(); });
+        return row;
+    }
+
+    addPendidikanBtn?.addEventListener('click', function(){
+        const row = makePendidikanRow();
+        pendidikanList.appendChild(row);
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    // Jabatan Fungsional handler
+    const jabatanDropdown = document.getElementById('jabatan-dropdown');
+    const jabatanCustomContainer = document.getElementById('jabatan-custom-container');
+    const jabatanCustomInput = document.getElementById('jabatan-custom');
+
+    jabatanDropdown?.addEventListener('change', function(){
+        if(this.value === 'lainnya'){
+            jabatanCustomContainer.classList.remove('hidden');
+            jabatanCustomInput.focus();
+        } else {
+            jabatanCustomContainer.classList.add('hidden');
+            jabatanCustomInput.value = '';
+        }
+    });
+
+    // Form submit handler to merge values
+    const form = document.querySelector('form');
+    form?.addEventListener('submit', function(e){
+        const dropdownVal = jabatanDropdown.value;
+        const customVal = jabatanCustomInput.value.trim();
+
+        // If "Lainnya" is selected, use custom value instead
+        if(dropdownVal === 'lainnya' && customVal){
+            jabatanDropdown.value = customVal;
+        }
+    });
 });
 </script>
 <script>

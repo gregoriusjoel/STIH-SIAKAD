@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Presensi;
+use App\Models\Dosen;
 use Illuminate\Support\Facades\Schema;
 
 class LecturerController extends Controller
@@ -27,27 +28,30 @@ class LecturerController extends Controller
         }
 
         $user = Auth::user();
+        $dosen = \App\Models\Dosen::where('user_id', $user->id)->first();
 
         // Get data from database
         // Only consider kelas that have an active jadwal assigned
         $kelasList = Kelas::where('dosen_id', $user->id)
-            ->whereHas('jadwals', function($q){ $q->where('status', 'active'); })
+            ->whereHas('jadwals', function ($q) {
+                $q->where('status', 'active');
+            })
             ->with('mataKuliah')
             ->get();
         $activeJadwals = Jadwal::whereHas('kelas', function ($q) use ($user) {
             $q->where('dosen_id', $user->id);
         })
-        ->whereIn('status', ['active', 'scheduled', 'pending']) // Include other potential statuses
-        ->orWhere(function($query) use ($user) {
-             // specific fallback: if schedule is active but status might be null or different in older records
-             $query->whereHas('kelas', function ($q) use ($user) {
-                $q->where('dosen_id', $user->id);
-            });
-        })
-        ->with(['kelas.mataKuliah'])->get();
-        
+            ->whereIn('status', ['active', 'scheduled', 'pending']) // Include other potential statuses
+            ->orWhere(function ($query) use ($user) {
+                // specific fallback: if schedule is active but status might be null or different in older records
+                $query->whereHas('kelas', function ($q) use ($user) {
+                    $q->where('dosen_id', $user->id);
+                });
+            })
+            ->with(['kelas.mataKuliah'])->get();
+
         // Filter out cancelled ones if any
-        $activeJadwals = $activeJadwals->filter(function($j) {
+        $activeJadwals = $activeJadwals->filter(function ($j) {
             return $j->status !== 'cancelled' && $j->status !== 'inactive';
         });
 
@@ -64,13 +68,52 @@ class LecturerController extends Controller
             ];
         })->values()->toArray();
 
+        // Fetch upcoming schedules (ordered by nearest day)
+        $dayMap = [
+            'Minggu' => 0,
+            'Senin' => 1,
+            'Selasa' => 2,
+            'Rabu' => 3,
+            'Kamis' => 4,
+            'Jumat' => 5,
+            'Sabtu' => 6
+        ];
+        $todayIndex = now()->dayOfWeek; // 0 (Sunday) - 6 (Saturday)
+
+        $upcomingSchedules = $activeJadwals->filter(function ($j) use ($today) {
+            return $j->hari !== $today;
+        })->map(function ($jadwal) use ($dayMap, $todayIndex) {
+            $dayIndex = $dayMap[$jadwal->hari] ?? 0;
+            $diff = ($dayIndex - $todayIndex + 7) % 7;
+            if ($diff === 0)
+                $diff = 7; // Should not happen due to filter, but safe guard
+
+            return [
+                'subject' => $jadwal->kelas->mataKuliah->nama_mk,
+                'code' => $jadwal->kelas->mataKuliah->kode_mk,
+                'class' => $jadwal->kelas->section,
+                'day' => $jadwal->hari,
+                'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
+                'room' => $jadwal->ruangan,
+                'sks' => $jadwal->kelas->mataKuliah->sks,
+                'diff' => $diff,
+                'raw_time' => $jadwal->jam_mulai
+            ];
+        })->sortBy([
+                    ['diff', 'asc'],
+                    ['raw_time', 'asc']
+                ])->take(5)->values()->toArray();
+
         // Fetch explicit schedules from KelasMataKuliah (often used by Admin)
-        $kelasMataKuliahSchedules = \App\Models\KelasMataKuliah::where('dosen_id', $user->id)
-            ->whereNotNull('hari')
-            ->whereNotNull('jam_mulai')
-            ->whereNotNull('jam_selesai')
-            ->with('mataKuliah')
-            ->get();
+        $kelasMataKuliahSchedules = collect();
+        if ($dosen) {
+            $kelasMataKuliahSchedules = \App\Models\KelasMataKuliah::where('dosen_id', $dosen->id)
+                ->whereNotNull('hari')
+                ->whereNotNull('jam_mulai')
+                ->whereNotNull('jam_selesai')
+                ->with('mataKuliah')
+                ->get();
+        }
 
         // Merge both collections for the calendar
         $mappedJadwals = $activeJadwals->map(function ($jadwal) {
@@ -88,7 +131,7 @@ class LecturerController extends Controller
         });
 
         $mappedKmk = $kelasMataKuliahSchedules->map(function ($kmk) {
-             return [
+            return [
                 'title' => $kmk->mataKuliah->nama_mk,
                 'code' => $kmk->mataKuliah->kode_mk,
                 'section' => $kmk->kode_kelas ?? $kmk->section ?? '-',
@@ -109,10 +152,11 @@ class LecturerController extends Controller
         return view('page.dosen.dashboard.index', [
             'total_mata_kuliah' => $kelasList->count(),
             'total_kelas_aktif' => $kelasList->count(),
-            'total_students' => 0, 
+            'total_students' => 0,
             'sks_load' => $kelasList->sum(fn($k) => $k->mataKuliah->sks ?? 0),
             'krs_approval' => 0,
             'schedules' => $todaySchedules,
+            'upcomingSchedules' => $upcomingSchedules,
             'all_schedules' => $allSchedules
         ]);
     }
@@ -120,69 +164,115 @@ class LecturerController extends Controller
     public function classes()
     {
         $user = Auth::user();
+        $dosen = Dosen::where('user_id', $user->id)->first();
 
-        // Get classes from database - only classes with an active jadwal
+        // 1. Get classes from 'kelas' table (current system)
+        // Relaxing the constraint: show even if no active schedule yet
         $kelasList = Kelas::where('dosen_id', $user->id)
-            ->whereHas('jadwals', function($q){ $q->where('status','active'); })
-            ->with([
-                'mataKuliah',
-                'jadwals' => function ($q) {
-                    $q->where('status', 'active');
-                }
-            ])
+            ->with(['mataKuliah', 'jadwals'])
             ->get();
 
-        $classes = $kelasList->map(function ($kelas) {
-            $jadwal = $kelas->jadwals->first();
+        // 2. Get classes from 'kelas_mata_kuliahs' table (often used for manual scheduling)
+        $kmkList = collect();
+        if ($dosen) {
+            $kmkList = KelasMataKuliah::where('dosen_id', $dosen->id)
+                ->with(['mataKuliah', 'jadwal'])
+                ->get();
+        }
 
-            // Calculate student count manually: consider KRS rows that reference either
-            // `kelas_mata_kuliah_id` (old system) or `kelas_id` (current system).
-            $kelasMkRecord = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-                ->where('kode_kelas', $kelas->section)
-                ->where('dosen_id', $kelas->dosen_id)
+        // Map Kelas records
+        $mappedKelas = $kelasList->map(function ($kelas) {
+            $jadwal = $kelas->jadwals->first();
+            
+            // Find KMK counterpart to aggregate student counts
+            $kmk = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+                ->where(function($q) use ($kelas) {
+                    $q->where('kode_kelas', $kelas->section)
+                      ->orWhere('kode_kelas', $kelas->section . '');
+                })->first();
+
+            // Calculate student count from both possible foreign keys
+            $krsCount = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+                ->where(function ($q) use ($kelas, $kmk) {
+                    $q->where('kelas_id', $kelas->id);
+                    if ($kmk) {
+                        $q->orWhere('kelas_mata_kuliah_id', $kmk->id);
+                    }
+                })->count();
+
+            return [
+                'id' => $kelas->id,
+                'source' => 'kelas',
+                'name' => $kelas->mataKuliah->nama_mk ?? 'N/A',
+                'code' => $kelas->mataKuliah->kode_mk ?? 'N/A',
+                'section' => $kelas->section,
+                'students' => $krsCount,
+                'day' => $jadwal?->hari ?? '-',
+                'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
+                'room' => $jadwal?->ruangan ?? '-',
+                'sks' => $kelas->mataKuliah->sks ?? 0,
+                'progress' => $this->calculateProgress(),
+            ];
+        });
+
+        // Map KelasMataKuliah records
+        $mappedKmk = $kmkList->map(function ($kmk) {
+            // Find if there's a Kelas counterpart
+            $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
+                ->where('section', $kmk->kode_kelas)
                 ->first();
 
-            if ($kelasMkRecord) {
-                $krsCount = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
-                    ->where(function ($q) use ($kelasMkRecord, $kelas) {
-                        $q->where('kelas_mata_kuliah_id', $kelasMkRecord->id)
-                          ->orWhere('kelas_id', $kelas->id);
-                    })->count();
-            } else {
-                $krsCount = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
-                    ->where('kelas_id', $kelas->id)
-                    ->count();
-            }
+            // Calculate student count from both possible foreign keys
+            $krsCount = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+                ->where(function ($q) use ($kmk, $kelas) {
+                    $q->where('kelas_mata_kuliah_id', $kmk->id);
+                    if ($kelas) {
+                        $q->orWhere('kelas_id', $kelas->id);
+                    }
+                })->count();
 
-            // Calculate progress percentage
-            $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
-                ?? \App\Models\Semester::latest()->first();
+            return [
+                'id' => $kelas ? $kelas->id : $kmk->id, // Prefer Kelas ID for routing
+                'source' => $kelas ? 'kelas' : 'kmk',
+                'name' => $kmk->mataKuliah->nama_mk ?? 'N/A',
+                'code' => $kmk->mataKuliah->kode_mk ?? 'N/A',
+                'section' => $kmk->kode_kelas ?? $kmk->section ?? '-',
+                'students' => $krsCount,
+                'day' => $kmk->hari ?? '-',
+                'time' => ($kmk->jam_mulai && $kmk->jam_selesai) ? substr($kmk->jam_mulai, 0, 5) . ' - ' . substr($kmk->jam_selesai, 0, 5) : '-',
+                'room' => $kmk->ruang ?? $kmk->ruangan_id ?? '-',
+                'sks' => $kmk->mataKuliah->sks ?? 0,
+                'progress' => $this->calculateProgress(),
+            ];
+        });
 
-            $progress = 0;
-            if ($semesterAktif && $semesterAktif->tanggal_mulai) {
+        // Unique merge based on Subject Code + Section
+        $classes = $mappedKelas->concat($mappedKmk)->unique(function ($item) {
+            return $item['code'] . '|' . $item['section'];
+        })->values()->toArray();
+
+        return view('page.dosen.kelas.index', compact('classes'));
+    }
+
+    private function calculateProgress()
+    {
+        $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
+            ?? \App\Models\Semester::latest()->first();
+
+        $progress = 0;
+        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
+            try {
                 $start = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
                 $now = \Carbon\Carbon::now();
                 if ($now->gte($start)) {
                     $weeks = $start->diffInWeeks($now);
                     $progress = min(100, round(($weeks / 16) * 100));
                 }
+            } catch (\Exception $e) {
+                $progress = 0;
             }
-
-            return [
-                'id' => $kelas->id,
-                'name' => $kelas->mataKuliah->nama_mk,
-                'code' => $kelas->mataKuliah->kode_mk,
-                'section' => $kelas->section,
-                'students' => $krsCount,
-                'day' => $jadwal?->hari ?? '-',
-                'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
-                'room' => $jadwal?->ruangan ?? '-',
-                'sks' => $kelas->mataKuliah->sks,
-                'progress' => $progress,
-            ];
-        })->toArray();
-
-        return view('page.dosen.kelas.index', compact('classes'));
+        }
+        return $progress;
     }
 
     public function inputNilai(Request $request)
@@ -391,7 +481,7 @@ class LecturerController extends Controller
                 'nim' => $m->npm ?? null,
                 'prodi' => $m->prodi ?? null,
                 'semester' => $m->semester ?? null,
-                'ipk' => $m->ipk !== null ? number_format((float)$m->ipk, 2) : '-',
+                'ipk' => $m->ipk !== null ? number_format((float) $m->ipk, 2) : '-',
                 'status' => 'Aktif',
             ];
         })->toArray();
@@ -600,7 +690,7 @@ class LecturerController extends Controller
                     ->orWhere('kode_kelas', $kelas->section . '');
             })->first();
 
-        if (! $kelasMataKuliah) {
+        if (!$kelasMataKuliah) {
             return back()->with('error', 'Tidak dapat menemukan record kelas mata kuliah untuk menonaktifkan QR.');
         }
 

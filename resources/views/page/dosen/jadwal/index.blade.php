@@ -348,19 +348,19 @@
                 </div>
                 <div class="max-h-64 overflow-y-auto">
                     <div class="grid auto-rows-fr gap-2" style="grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));">
-                        @foreach($daftarRuangan as $room)
-                        <div x-show="roomFilter === 'all' || (roomFilter === 'available' && isRoomAvailable('{{ $room }}')) || (roomFilter === 'occupied' && !isRoomAvailable('{{ $room }}'))"
-                             class="p-2 rounded-md text-sm font-semibold cursor-pointer transition-all text-center flex items-center justify-center"
-                             :class="{
-                                'bg-green-50 text-green-800 border border-green-200 hover:bg-green-100': isRoomAvailable('{{ $room }}') && rescheduleData.ruang !== '{{ $room }}',
-                                'bg-red-50 text-red-800 border border-red-200 opacity-90': !isRoomAvailable('{{ $room }}') && rescheduleData.ruang !== '{{ $room }}',
-                                'bg-blue-600 text-white ring-2 ring-blue-400': rescheduleData.ruang === '{{ $room }}'
-                             }"
-                             @click="if(isRoomAvailable('{{ $room }}')) { rescheduleData.ruang = '{{ $room }}' }"
-                             :title="isRoomAvailable('{{ $room }}') ? 'Tersedia - Klik untuk memilih' : getRoomConflict('{{ $room }}')">
-                            <span>{{ $room }}</span>
-                        </div>
-                        @endforeach
+                                @foreach($daftarRuangan as $room)
+                                <div x-show="roomFilter === 'all' || (roomFilter === 'available' && isRoomAvailable('{{ $room->kode_ruangan }}')) || (roomFilter === 'occupied' && !isRoomAvailable('{{ $room->kode_ruangan }}'))"
+                                      class="p-2 rounded-md text-sm font-semibold cursor-pointer transition-all text-center flex items-center justify-center"
+                                      :class="{
+                                          'bg-green-50 text-green-800 border border-green-200 hover:bg-green-100': isRoomAvailable('{{ $room->kode_ruangan }}') && rescheduleData.ruang !== '{{ $room->kode_ruangan }}',
+                                          'bg-red-50 text-red-800 border border-red-200 opacity-90': !isRoomAvailable('{{ $room->kode_ruangan }}') && rescheduleData.ruang !== '{{ $room->kode_ruangan }}',
+                                          'bg-blue-600 text-white ring-2 ring-blue-400': rescheduleData.ruang === '{{ $room->kode_ruangan }}'
+                                      }"
+                                      @click="if(isRoomAvailable('{{ $room->kode_ruangan }}')) { rescheduleData.ruang = '{{ $room->kode_ruangan }}' }"
+                                      :title="isRoomAvailable('{{ $room->kode_ruangan }}') ? 'Tersedia - Klik untuk memilih' : getRoomConflict('{{ $room->kode_ruangan }}')">
+                                     <span>{{ $room->kode_ruangan }}</span>
+                                </div>
+                                @endforeach
                     </div>
                 </div>
             </div>

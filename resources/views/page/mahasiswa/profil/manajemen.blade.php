@@ -42,11 +42,6 @@ $isLocked = $mahasiswa->isProfileComplete();
 }">
 
     {{-- Tabs Header --}}
-    <div class="flex border-b border-gray-200 mb-8 overflow-x-auto">
-        <button @click="activeTab = 'akademik'"
-            class="flex-1 min-w-[120px] py-4 text-center text-sm transition-all duration-200 font-semibold"
-            style="border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb;"
-            x-bind:style="activeTab === 'akademik' ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb;' : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
     <div class="mb-8 border-b border-gray-200">
         <div class="flex overflow-x-auto no-scrollbar -mb-px">
             @foreach([
@@ -55,7 +50,7 @@ $isLocked = $mahasiswa->isProfileComplete();
                 'orang_tua' => 'Orang Tua / Wali',
                 'asal_sekolah' => 'Asal Sekolah'
             ] as $key => $label)
-            <button @click="activeTab = '{{ $key }}'"
+            <button @click="activeTab = '{{ $key }}'" type="button"
                 class="whitespace-nowrap px-8 py-4 text-sm font-bold transition-all duration-200 border-b-2"
                 :class="activeTab === '{{ $key }}' 
                     ? 'border-[#8B1538] text-[#8B1538]' 
@@ -70,6 +65,29 @@ $isLocked = $mahasiswa->isProfileComplete();
         @csrf
         @method('PUT')
 
+        {{-- Tab Content: Akademik --}}
+        <div x-show="activeTab === 'akademik'" x-cloak class="space-y-12">
+            <div>
+                <div class="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
+                    <h3 class="text-[#1A1A1A] font-bold text-base tracking-tight">Data Akademik</h3>
+                    <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Academic Info</span>
+                </div>
+                <div class="space-y-8">
+
+                    {{-- Photo Preview --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start mb-6">
+                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Foto Profil</label>
+                        <div class="lg:col-span-9">
+                            <div class="w-32 h-40 border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                                <template x-if="photoPreview">
+                                    <img :src="photoPreview" class="w-full h-full object-cover" alt="Preview">
+                                </template>
+                                <template x-if="!photoPreview">
+                                    <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                        <i class="fas fa-user text-4xl"></i>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </div>
 
@@ -79,14 +97,47 @@ $isLocked = $mahasiswa->isProfileComplete();
                         <div class="lg:col-span-9 flex items-center gap-3">
                             <label class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-700 cursor-pointer hover:bg-gray-50 transition shadow-sm font-medium">
                                 Choose File
-                                <input type="file" name="foto" class="hidden" @change="const file = $event.target.files[0]; if(file){ const reader = new FileReader(); reader.onload = (e) => photoPreview = e.target.result; reader.readAsDataURL(file); }">
+                                <input type="file" name="foto" class="hidden" accept=".jpg,.jpeg,.png,image/jpeg,image/png" @change="const file = $event.target.files[0]; if(file){ const reader = new FileReader(); reader.onload = (e) => photoPreview = e.target.result; reader.readAsDataURL(file); }">
                             </label>
                             <span class="text-xs text-gray-500 italic">Format: JPG/PNG, Max: 2MB</span>
                         </div>
                     </div>
 
+                    {{-- Nama Lengkap --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Nama Lengkap <span class="text-red-500">*</span></label>
+                        <div class="lg:col-span-9">
+                            <input type="text" name="name" value="{{ $user->name }}"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                        </div>
+                    </div>
+
+                    {{-- Email --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Email <span class="text-red-500">*</span></label>
+                        <div class="lg:col-span-9">
+                            <input type="email" name="email" value="{{ $user->email }}"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                        </div>
+                    </div>
+
+                    {{-- No HP --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">No. HP <span class="text-red-500">*</span></label>
+                        <div class="lg:col-span-9">
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
+                                    <span class="text-sm font-bold opacity-50">+62</span>
+                                </div>
+                                <input type="text" name="no_hp" value="{{ $mahasiswa->no_hp }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
+                                    class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Readonly Information --}}
                     @foreach([
+                    'NIM' => $mahasiswa->nim,
                     'Jurusan' => $mahasiswa->prodi,
                     'Program' => '1 - REGULER',
                     'Kurikulum' => '32 - Kurikulum ' . $mahasiswa->prodi . ' ' . $mahasiswa->angkatan,
@@ -163,13 +214,124 @@ $isLocked = $mahasiswa->isProfileComplete();
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                         <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
                         <div class="lg:col-span-9">
-                            <select name="desa" id="desaSelect" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                <option value="">Pilih Desa</option>
-                                @foreach($villages as $village)
-                                <option value="{{ $village['name'] }}" {{ ($mahasiswa->desa ?? '') === $village['name'] ? 'selected' : '' }}>{{ $village['name'] }}</option>
-                                @endforeach
-                            </select>
+                            <!-- Custom Searchable Dropdown -->
+                            <div x-data="desaDropdown()" class="relative" x-init="init()">
+                                <!-- Hidden input for form submission -->
+                                <input type="hidden" name="desa" :value="selected">
+                                
+                                <!-- Dropdown Trigger -->
+                                <button type="button" @click="open = !open; if(open) $nextTick(() => $refs.searchInput.focus())" 
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
+                                    <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
+                                    <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Dropdown Panel -->
+                                <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
+                                    <!-- Search Input Inside Dropdown -->
+                                    <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                        <input type="text" x-model="search" x-ref="searchInput" @click.stop @keydown.escape="open = false"
+                                            placeholder="Cari desa/kelurahan..." 
+                                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
+                                    </div>
+                                    <!-- Options List -->
+                                    <div class="max-h-52 overflow-y-auto">
+                                        <!-- No City Selected Message -->
+                                        <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
+                                            <div class="text-orange-400 mb-1">
+                                                <i class="fas fa-exclamation-circle text-xl"></i>
+                                            </div>
+                                            <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                        </div>
+                                        <!-- Hint Message -->
+                                        <div x-show="showHint" class="px-4 py-8 text-center">
+                                            <div class="text-gray-400 mb-1">
+                                                <i class="fas fa-search text-xl"></i>
+                                            </div>
+                                            <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
+                                        </div>
+
+                                        <template x-for="(opt, index) in filteredOptions" :key="index">
+                                            <div @click="selectOption(opt)" 
+                                                class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
+                                                :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
+                                                <span x-text="opt.text"></span>
+                                            </div>
+                                        </template>
+                                        <div x-show="!showHint && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
+                                            Tidak ditemukan
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <script>
+                                function desaDropdown() {
+                                    return {
+                                        open: false,
+                                        search: '',
+                                        selected: @json($mahasiswa->desa ?? ''),
+                                        selectedText: @json($mahasiswa->desa ?? 'Pilih Desa'),
+                                        allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
+                                        currentCityCode: '',
+                                        isLoading: false,
+                                        noCitySelected: true,
+                                        init() {
+                                            if (!this.selected) {
+                                                this.selectedText = 'Pilih Desa';
+                                            }
+                                            // Listen to Kota/Kabupaten dropdown changes
+                                            const kotaSelect = document.getElementById('kotaSelect');
+                                            if (kotaSelect) {
+                                                // Initial city code
+                                                const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
+                                                if (initialOpt && initialOpt.dataset.cityCode) {
+                                                    this.currentCityCode = initialOpt.dataset.cityCode;
+                                                    this.noCitySelected = false;
+                                                } else {
+                                                    this.noCitySelected = true;
+                                                }
+                                                // On change
+                                                kotaSelect.addEventListener('change', (e) => {
+                                                    const opt = e.target.options[e.target.selectedIndex];
+                                                    this.currentCityCode = opt?.dataset?.cityCode || '';
+                                                    this.noCitySelected = !this.currentCityCode;
+                                                    // Reset selection when city changes
+                                                    this.selected = '';
+                                                    this.selectedText = 'Pilih Desa';
+                                                    this.search = '';
+                                                });
+                                            }
+                                        },
+                                        get options() {
+                                            if (!this.currentCityCode) return [];
+                                            return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                        },
+                                        get filteredOptions() {
+                                            // Only show options when user types at least 2 characters
+                                            if (!this.search || this.search.trim().length < 2) return [];
+                                            const term = this.search.toLowerCase().trim();
+                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                        },
+                                        get showHint() {
+                                            if (this.noCitySelected) return false;
+                                            return !this.search || this.search.trim().length < 2;
+                                        },
+                                        get showNoCityMessage() {
+                                            return this.noCitySelected;
+                                        },
+                                        selectOption(opt) {
+                                            this.selected = opt.value;
+                                            this.selectedText = opt.text;
+                                            this.open = false;
+                                            this.search = '';
+                                        }
+                                    }
+                                }
+                            </script>
                         </div>
                     </div>
                 </div>
@@ -224,15 +386,126 @@ $isLocked = $mahasiswa->isProfileComplete();
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa</label>
+                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
                         <div class="lg:col-span-9">
-                            <select name="desa_ktp" id="desaKtpSelect" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                <option value="">Pilih Desa</option>
-                                @foreach($villages as $village)
-                                <option value="{{ $village['name'] }}" {{ ($mahasiswa->desa_ktp ?? '') === $village['name'] ? 'selected' : '' }}>{{ $village['name'] }}</option>
-                                @endforeach
-                            </select>
+                            <!-- Custom Searchable Dropdown for KTP -->
+                            <div x-data="desaKtpDropdown()" class="relative" x-init="init()">
+                                <!-- Hidden input for form submission -->
+                                <input type="hidden" name="desa_ktp" :value="selected">
+                                
+                                <!-- Dropdown Trigger -->
+                                <button type="button" @click="open = !open; if(open) $nextTick(() => $refs.searchInputKtp.focus())" 
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
+                                    <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
+                                    <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Dropdown Panel -->
+                                <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
+                                    <!-- Search Input Inside Dropdown -->
+                                    <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                        <input type="text" x-model="search" x-ref="searchInputKtp" @click.stop @keydown.escape="open = false"
+                                            placeholder="Cari desa/kelurahan..." 
+                                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
+                                    </div>
+                                    <!-- Options List -->
+                                    <div class="max-h-52 overflow-y-auto">
+                                        <!-- No City Selected Message -->
+                                        <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
+                                            <div class="text-orange-400 mb-1">
+                                                <i class="fas fa-exclamation-circle text-xl"></i>
+                                            </div>
+                                            <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                        </div>
+                                        <!-- Hint Message -->
+                                        <div x-show="showHint" class="px-4 py-8 text-center">
+                                            <div class="text-gray-400 mb-1">
+                                                <i class="fas fa-search text-xl"></i>
+                                            </div>
+                                            <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
+                                        </div>
+
+                                        <template x-for="(opt, index) in filteredOptions" :key="index">
+                                            <div @click="selectOption(opt)" 
+                                                class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
+                                                :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
+                                                <span x-text="opt.text"></span>
+                                            </div>
+                                        </template>
+                                        <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
+                                            Tidak ditemukan
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <script>
+                                function desaKtpDropdown() {
+                                    return {
+                                        open: false,
+                                        search: '',
+                                        selected: @json($mahasiswa->desa_ktp ?? ''),
+                                        selectedText: @json($mahasiswa->desa_ktp ?? 'Pilih Desa'),
+                                        allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
+                                        currentCityCode: '',
+                                        isLoading: false,
+                                        noCitySelected: true,
+                                        init() {
+                                            if (!this.selected) {
+                                                this.selectedText = 'Pilih Desa';
+                                            }
+                                            // Listen to Kota KTP dropdown changes
+                                            const kotaSelect = document.getElementById('kotaKtpSelect');
+                                            if (kotaSelect) {
+                                                // Initial city code
+                                                const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
+                                                if (initialOpt && initialOpt.dataset.cityCode) {
+                                                    this.currentCityCode = initialOpt.dataset.cityCode;
+                                                    this.noCitySelected = false;
+                                                } else {
+                                                    this.noCitySelected = true;
+                                                }
+                                                // On change
+                                                kotaSelect.addEventListener('change', (e) => {
+                                                    const opt = e.target.options[e.target.selectedIndex];
+                                                    this.currentCityCode = opt?.dataset?.cityCode || '';
+                                                    this.noCitySelected = !this.currentCityCode;
+                                                    // Reset selection when city changes
+                                                    this.selected = '';
+                                                    this.selectedText = 'Pilih Desa';
+                                                    this.search = '';
+                                                });
+                                            }
+                                        },
+                                        get options() {
+                                            if (!this.currentCityCode) return [];
+                                            return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                        },
+                                        get filteredOptions() {
+                                            // Only show options when user types at least 2 characters
+                                            if (!this.search || this.search.trim().length < 2) return [];
+                                            const term = this.search.toLowerCase().trim();
+                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                        },
+                                        get showHint() {
+                                            if (this.noCitySelected) return false;
+                                            return !this.search || this.search.trim().length < 2;
+                                        },
+                                        get showNoCityMessage() {
+                                            return this.noCitySelected;
+                                        },
+                                        selectOption(opt) {
+                                            this.selected = opt.value;
+                                            this.selectedText = opt.text;
+                                            this.open = false;
+                                            this.search = '';
+                                        }
+                                    }
+                                }
+                            </script>
                         </div>
                     </div>
                 </div>
@@ -248,7 +521,7 @@ $isLocked = $mahasiswa->isProfileComplete();
                         const kotaSelect = document.getElementById(kotaId);
 
                         function populateCities(provinceCode) {
-                            kotaSelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
+                            kotaSelect.innerHTML = '<option value=\"\">Pilih Kota/Kabupaten</option>';
                             if (!provinceCode) {
                                 kotaSelect.disabled = true;
                                 return;
@@ -258,6 +531,7 @@ $isLocked = $mahasiswa->isProfileComplete();
                                 const opt = document.createElement('option');
                                 opt.value = city.name;
                                 opt.textContent = city.name;
+                                opt.dataset.cityCode = city.city_code; // Add city_code for desa filtering
                                 if (city.name === initialKota) opt.selected = true;
                                 kotaSelect.appendChild(opt);
                             });
@@ -277,6 +551,15 @@ $isLocked = $mahasiswa->isProfileComplete();
 
                     setupAddressGroup('provinsiSelect', 'kotaSelect', @json($mahasiswa->kota ?? ''));
                     setupAddressGroup('provinsiKtpSelect', 'kotaKtpSelect', @json($mahasiswa->kota_ktp ?? ''));
+                    
+                    // Setup for Orang Tua and Wali sections (delayed to ensure elements exist)
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Small delay to ensure Alpine.js has rendered the elements
+                        setTimeout(function() {
+                            setupAddressGroup('provinsiOrtuSelect', 'kotaOrtuSelect', @json($parent->kota_ortu ?? ''));
+                            setupAddressGroup('provinsiWaliSelect', 'kotaWaliSelect', @json($parent->kota_wali ?? ''));
+                        }, 100);
+                    });
                 })();
             </script>
 
@@ -376,6 +659,8 @@ $isLocked = $mahasiswa->isProfileComplete();
                         </div>
                         <div class="relative group">
                             <input type="file" name="{{ $doc['name'] }}[]" multiple
+                                accept=".pdf,.jpeg,.jpg,.png,application/pdf,image/jpeg,image/png"
+                                onchange="validateDocumentFiles(this)"
                                 class="w-full px-4 py-3 bg-[#F9FAFB] border border-[#E5E7EB] border-dashed rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-[#8B1538] file:text-white hover:file:bg-[#6D1029]">
                         </div>
                         @if($doc['data'] && count($doc['data']) > 0)
@@ -554,24 +839,138 @@ $isLocked = $mahasiswa->isProfileComplete();
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota</label>
-                            <div class="lg:col-span-9">
-                                <input type="text" name="kota_ortu" value="{{ $parent->kota_ortu ?? '' }}"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                             <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
                             <div class="lg:col-span-9">
-                                <input type="text" name="provinsi_ortu" value="{{ $parent->provinsi_ortu ?? '' }}"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                                <select name="propinsi_ortu" id="provinsiOrtuSelect"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                                    <option value="">Pilih Provinsi</option>
+                                    @foreach($provinces as $prov)
+                                    <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->propinsi_ortu ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kab/Desa</label>
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
                             <div class="lg:col-span-9">
-                                <input type="text" name="kabdesa_ortu" value="{{ $parent->kabupaten_ortu ?? '' }}"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                                <select name="kota_ortu" id="kotaOrtuSelect"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                    <option value="">Pilih Kota/Kabupaten</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
+                            <div class="lg:col-span-9">
+                                <div x-data="desaOrtuDropdown()" class="relative">
+                                    <input type="hidden" name="desa_ortu" :value="selected">
+                                    <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputOrtu.focus())"
+                                        class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
+                                        <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
+                                        <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
+                                    </button>
+                                    <!-- Dropdown Panel -->
+                                    <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                        class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
+                                        <!-- Search Input Inside Dropdown -->
+                                        <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                            <input type="text" x-model="search" x-ref="searchInputOrtu" @click.stop @keydown.escape="open = false"
+                                                placeholder="Cari desa/kelurahan..." 
+                                                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
+                                        </div>
+                                        <!-- Options List -->
+                                        <div class="max-h-52 overflow-y-auto">
+                                            <!-- No City Selected Message -->
+                                            <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
+                                                <div class="text-orange-400 mb-1">
+                                                    <i class="fas fa-exclamation-circle text-xl"></i>
+                                                </div>
+                                                <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                            </div>
+                                            <!-- Hint Message -->
+                                            <div x-show="showHint" class="px-4 py-8 text-center">
+                                                <div class="text-gray-400 mb-1">
+                                                    <i class="fas fa-search text-xl"></i>
+                                                </div>
+                                                <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
+                                            </div>
+
+                                            <template x-for="(opt, index) in filteredOptions" :key="index">
+                                                <div @click="selectOption(opt)" 
+                                                    class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
+                                                    :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
+                                                    <span x-text="opt.text"></span>
+                                                </div>
+                                            </template>
+                                            <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
+                                                Tidak ditemukan
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <script>
+                                    function desaOrtuDropdown() {
+                                        return {
+                                            open: false,
+                                            search: '',
+                                            selected: @json($parent->desa_ortu ?? ''),
+                                            selectedText: @json($parent->desa_ortu ?? 'Pilih Desa'),
+                                            allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
+                                            currentCityCode: '',
+                                            noCitySelected: true,
+                                            init() {
+                                                if (!this.selected) {
+                                                    this.selectedText = 'Pilih Desa';
+                                                }
+                                                // Listen to Kota Ortu dropdown changes
+                                                const kotaSelect = document.getElementById('kotaOrtuSelect');
+                                                if (kotaSelect) {
+                                                    // Initial city code
+                                                    const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
+                                                    if (initialOpt && initialOpt.dataset.cityCode) {
+                                                        this.currentCityCode = initialOpt.dataset.cityCode;
+                                                        this.noCitySelected = false;
+                                                    } else {
+                                                        this.noCitySelected = true;
+                                                    }
+                                                    // On change
+                                                    kotaSelect.addEventListener('change', (e) => {
+                                                        const opt = e.target.options[e.target.selectedIndex];
+                                                        this.currentCityCode = opt?.dataset?.cityCode || '';
+                                                        this.noCitySelected = !this.currentCityCode;
+                                                        // Reset selection when city changes
+                                                        this.selected = '';
+                                                        this.selectedText = 'Pilih Desa';
+                                                        this.search = '';
+                                                    });
+                                                }
+                                            },
+                                            get options() {
+                                                if (!this.currentCityCode) return [];
+                                                return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                            },
+                                            get filteredOptions() {
+                                                if (!this.search || this.search.trim().length < 2) return [];
+                                                const term = this.search.toLowerCase().trim();
+                                                return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                            },
+                                            get showHint() {
+                                                if (this.noCitySelected) return false;
+                                                return !this.search || this.search.trim().length < 2;
+                                            },
+                                            get showNoCityMessage() {
+                                                return this.noCitySelected;
+                                            },
+                                            selectOption(opt) {
+                                                this.selected = opt.value;
+                                                this.selectedText = opt.text;
+                                                this.open = false;
+                                                this.search = '';
+                                            }
+                                        }
+                                    }
+                                </script>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
@@ -678,24 +1077,138 @@ $isLocked = $mahasiswa->isProfileComplete();
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota</label>
-                            <div class="lg:col-span-9">
-                                <input type="text" name="kota_wali" value="{{ $parent->kota_wali ?? '' }}"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                             <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
                             <div class="lg:col-span-9">
-                                <input type="text" name="provinsi_wali" value="{{ $parent->provinsi_wali ?? '' }}"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                                <select name="provinsi_wali" id="provinsiWaliSelect"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                                    <option value="">Pilih Provinsi</option>
+                                    @foreach($provinces as $prov)
+                                    <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->provinsi_wali ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Negara</label>
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
                             <div class="lg:col-span-9">
-                                <input type="text" name="negara_wali" value="{{ $parent->negara_wali ?? '' }}"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                                <select name="kota_wali" id="kotaWaliSelect"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                    <option value="">Pilih Kota/Kabupaten</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
+                            <div class="lg:col-span-9">
+                                <div x-data="desaWaliDropdown()" class="relative">
+                                    <input type="hidden" name="desa_wali" :value="selected">
+                                    <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputWali.focus())"
+                                        class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
+                                        <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
+                                        <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
+                                    </button>
+                                    <!-- Dropdown Panel -->
+                                    <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                        class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
+                                        <!-- Search Input Inside Dropdown -->
+                                        <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                            <input type="text" x-model="search" x-ref="searchInputWali" @click.stop @keydown.escape="open = false"
+                                                placeholder="Cari desa/kelurahan..." 
+                                                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
+                                        </div>
+                                        <!-- Options List -->
+                                        <div class="max-h-52 overflow-y-auto">
+                                            <!-- No City Selected Message -->
+                                            <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
+                                                <div class="text-orange-400 mb-1">
+                                                    <i class="fas fa-exclamation-circle text-xl"></i>
+                                                </div>
+                                                <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                            </div>
+                                            <!-- Hint Message -->
+                                            <div x-show="showHint" class="px-4 py-8 text-center">
+                                                <div class="text-gray-400 mb-1">
+                                                    <i class="fas fa-search text-xl"></i>
+                                                </div>
+                                                <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
+                                            </div>
+
+                                            <template x-for="(opt, index) in filteredOptions" :key="index">
+                                                <div @click="selectOption(opt)" 
+                                                    class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
+                                                    :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
+                                                    <span x-text="opt.text"></span>
+                                                </div>
+                                            </template>
+                                            <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
+                                                Tidak ditemukan
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <script>
+                                    function desaWaliDropdown() {
+                                        return {
+                                            open: false,
+                                            search: '',
+                                            selected: @json($parent->desa_wali ?? ''),
+                                            selectedText: @json($parent->desa_wali ?? 'Pilih Desa'),
+                                            allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
+                                            currentCityCode: '',
+                                            noCitySelected: true,
+                                            init() {
+                                                if (!this.selected) {
+                                                    this.selectedText = 'Pilih Desa';
+                                                }
+                                                // Listen to Kota Wali dropdown changes
+                                                const kotaSelect = document.getElementById('kotaWaliSelect');
+                                                if (kotaSelect) {
+                                                    // Initial city code
+                                                    const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
+                                                    if (initialOpt && initialOpt.dataset.cityCode) {
+                                                        this.currentCityCode = initialOpt.dataset.cityCode;
+                                                        this.noCitySelected = false;
+                                                    } else {
+                                                        this.noCitySelected = true;
+                                                    }
+                                                    // On change
+                                                    kotaSelect.addEventListener('change', (e) => {
+                                                        const opt = e.target.options[e.target.selectedIndex];
+                                                        this.currentCityCode = opt?.dataset?.cityCode || '';
+                                                        this.noCitySelected = !this.currentCityCode;
+                                                        // Reset selection when city changes
+                                                        this.selected = '';
+                                                        this.selectedText = 'Pilih Desa';
+                                                        this.search = '';
+                                                    });
+                                                }
+                                            },
+                                            get options() {
+                                                if (!this.currentCityCode) return [];
+                                                return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                            },
+                                            get filteredOptions() {
+                                                if (!this.search || this.search.trim().length < 2) return [];
+                                                const term = this.search.toLowerCase().trim();
+                                                return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                            },
+                                            get showHint() {
+                                                if (this.noCitySelected) return false;
+                                                return !this.search || this.search.trim().length < 2;
+                                            },
+                                            get showNoCityMessage() {
+                                                return this.noCitySelected;
+                                            },
+                                            selectOption(opt) {
+                                                this.selected = opt.value;
+                                                this.selectedText = opt.text;
+                                                this.open = false;
+                                                this.search = '';
+                                            }
+                                        }
+                                    }
+                                </script>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
@@ -898,6 +1411,36 @@ $isLocked = $mahasiswa->isProfileComplete();
     });
 </script>
 @endif
+<script>
+    function validateDocumentFiles(input) {
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+        const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png'];
+        const files = input.files;
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileName = file.name.toLowerCase();
+            const fileType = file.type;
+            
+            // Check if file type is allowed
+            const isValidType = allowedTypes.includes(fileType);
+            const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+            
+            if (!isValidType && !isValidExtension) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format File Tidak Valid!',
+                    html: 'File yang diizinkan: <strong>PDF, JPEG, atau PNG</strong>.<br><br>File "<strong>' + file.name + '</strong>" tidak dapat diupload.',
+                    confirmButtonColor: '#8B1538',
+                    confirmButtonText: 'OK'
+                });
+                input.value = ''; // Clear the input
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Fields to require and which tab they belong to

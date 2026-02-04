@@ -11,6 +11,7 @@ class Pengumuman extends Model
     protected $fillable = [
         'judul',
         'isi',
+        'target',
         'published_at',
     ];
 

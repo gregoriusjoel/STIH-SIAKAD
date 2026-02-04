@@ -13,21 +13,37 @@ class Dosen extends Model
         'user_id',
         'nidn',
         'pendidikan',
+        'pendidikan_terakhir',
         'prodi',
         'phone',
         'address',
         'status',
         'mata_kuliah_ids',
+        'dosen_tetap',
+        'jabatan_fungsional',
     ];
 
     protected $casts = [
         'mata_kuliah_ids' => 'array',
         'prodi' => 'array',
+        'pendidikan_terakhir' => 'array',
+        'jabatan_fungsional' => 'array',
+        'dosen_tetap' => 'boolean',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getNamaAttribute()
+    {
+        return $this->user->name ?? 'Unknown';
+    }
+
+    public function jadwalProposals()
+    {
+        return $this->hasMany(JadwalProposal::class);
     }
 
     public function kelasMataKuliahs(): HasMany

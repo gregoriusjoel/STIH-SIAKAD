@@ -2,15 +2,18 @@
 @section('title', 'Manajemen User')
 @section('page-title', 'Manajemen User')
 @section('content')
-    <div class="mb-6 flex items-start justify-between">
+    <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i
                     class="fas fa-users-cog text-maroon mr-2"></i>Manajemen User</h3>
             <p class="text-sm text-gray-600 mt-1">Kelola akses dan peran pengguna sistem</p>
         </div>
-        <a href="{{ route('admin.users.create') }}"
-            class="bg-maroon text-white hover:bg-maroon-700 px-6 py-3 rounded-lg transition shadow-md transform hover:scale-105 flex items-center"><i
-                class="fas fa-user-plus mr-2"></i>Tambah User</a>
+        <div class="flex-shrink-0">
+            <a href="{{ route('admin.users.create') }}"
+                class="bg-maroon text-white hover:bg-maroon-700 px-6 py-3 rounded-lg transition shadow-md transform hover:scale-105 flex items-center text-sm font-medium">
+                <i class="fas fa-user-plus mr-2"></i>Tambah User
+            </a>
+        </div>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">

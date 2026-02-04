@@ -122,63 +122,57 @@
 
 <!-- KRS Terbaru & Menu Cepat -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- KRS Terbaru -->
+    <!-- Kalender Akademik -->
     <div class="lg:col-span-2 bg-white rounded-xl shadow-md border-t-4 border-maroon">
         <div class="p-6 border-b border-gray-200">
             <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                <i class="fas fa-clock text-maroon mr-2"></i>
-                KRS Terbaru
+                <i class="fas fa-calendar-alt text-maroon mr-2"></i>
+                Kalender Akademik
             </h3>
         </div>
         <div class="p-6">
-            @if($recent_krs->count() > 0)
-                <div class="space-y-4">
-                    @foreach($recent_krs as $krs)
-                        <div class="flex items-center p-4 bg-gray-50 rounded-lg border-l-4 
-                            {{ $krs->status == 'pending' ? 'border-yellow-500' : ($krs->status == 'disetujui' ? 'border-green-500' : 'border-red-500') }}">
-                            <div class="h-12 w-12 rounded-full bg-maroon flex items-center justify-center text-white font-bold mr-4">
-                                {{ strtoupper(substr($krs->mahasiswa->user->name, 0, 1)) }}
+            @if($academic_events->count() > 0)
+                <div class="space-y-3">
+                    @foreach($academic_events as $event)
+                        <div class="flex items-start p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500 hover:bg-gray-100 transition">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-blue-100">
+                                    <i class="fas fa-calendar-check text-blue-600 text-lg"></i>
+                                </div>
                             </div>
                             <div class="flex-1">
-                                <h4 class="font-semibold text-gray-800">{{ $krs->mahasiswa->user->name }}</h4>
-                                <p class="text-sm text-gray-600">NIM: {{ $krs->mahasiswa->nim ?? '-' }} • Prodi: {{ $krs->mahasiswa->prodi ?? '-' }}</p>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    <i class="fas fa-calendar mr-1"></i>
-                                    {{ $krs->created_at->format('d M Y H:i') }}
+                                <h4 class="font-semibold text-gray-800">{{ $event->title ?? $event->name }}</h4>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    @if($event->start_date && $event->end_date)
+                                        {{ \Carbon\Carbon::parse($event->start_date)->format('d M Y') }} - {{ \Carbon\Carbon::parse($event->end_date)->format('d M Y') }}
+                                    @else
+                                        {{ $event->date ? \Carbon\Carbon::parse($event->date)->format('d M Y') : 'Tanggal tidak ditentukan' }}
+                                    @endif
                                 </p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm text-gray-700 font-semibold">
-                                    {{ optional(optional($krs->kelas)->mataKuliah)->sks ?? optional($krs->mataKuliah)->sks ?? '-' }} SKS
-                                </p>
-                                @if($krs->status == 'pending')
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 inline-block mt-2">
-                                        <i class="fas fa-clock mr-1"></i>Pending
-                                    </span>
-                                @elseif($krs->status == 'disetujui')
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 inline-block mt-2">
-                                        <i class="fas fa-check-circle mr-1"></i>Sudah di ambil
-                                    </span>
-                                @else
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 inline-block mt-2">
-                                        <i class="fas fa-times-circle mr-1"></i>Ditolak
-                                    </span>
+                                @if($event->description)
+                                    <p class="text-xs text-gray-500 mt-2">{{ Str::limit($event->description, 80) }}</p>
                                 @endif
+                            </div>
+                            <div class="flex-shrink-0 text-right">
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 inline-block">
+                                    {{ $event->category ?? 'Akademik' }}
+                                </span>
                             </div>
                         </div>
                     @endforeach
                 </div>
                 <div class="mt-4 text-center">
-                    <a href="{{ route('admin.krs.index') }}" class="text-maroon font-semibold hover:underline inline-flex items-center">
-                        Lihat Semua KRS
+                    <a href="#" class="text-maroon font-semibold hover:underline inline-flex items-center">
+                        Lihat Semua Acara
                         <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
             @else
                 <div class="text-center py-12">
-                    <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
-                    <p class="text-gray-500 font-medium">Belum ada data KRS</p>
-                    <p class="text-gray-400 text-sm mt-1">Data KRS akan muncul setelah mahasiswa mengisi</p>
+                    <i class="fas fa-calendar text-6xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 font-medium">Belum ada acara akademik</p>
+                    <p class="text-gray-400 text-sm mt-1">Acara akademik akan ditampilkan di sini</p>
                 </div>
             @endif
         </div>

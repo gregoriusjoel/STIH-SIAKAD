@@ -24,6 +24,7 @@ class PengumumanController extends Controller
         $data = $request->validate([
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
+            'target' => 'required|in:semua,dosen,mahasiswa',
             'published_at' => 'nullable|date',
         ]);
 
@@ -42,6 +43,7 @@ class PengumumanController extends Controller
         $data = $request->validate([
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
+            'target' => 'required|in:semua,dosen,mahasiswa',
             'published_at' => 'nullable|date',
         ]);
 

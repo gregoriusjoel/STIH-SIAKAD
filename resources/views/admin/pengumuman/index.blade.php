@@ -4,10 +4,20 @@
 @section('page-title', 'Pengumuman')
 
 @section('content')
-<div class="mb-6 flex justify-between items-center">
-    <h2 class="text-2xl font-bold">Pengumuman</h2>
-    <a href="{{ route('admin.pengumuman.create') }}" class="bg-maroon text-white px-4 py-2 rounded-lg">Buat Pengumuman</a>
-</div>
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-bullhorn mr-3 text-maroon"></i>
+                Daftar Pengumuman
+            </h2>
+            <p class="text-gray-600 text-sm mt-1">Kelola informasi dan pengumuman untuk sistem</p>
+        </div>
+        <a href="{{ route('admin.pengumuman.create') }}"
+            class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md">
+            <i class="fas fa-plus mr-2"></i>
+            Buat Pengumuman
+        </a>
+    </div>
 
 <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
     
@@ -25,6 +35,9 @@
                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                         <i class="fas fa-calendar-alt mr-2"></i>TANGGAL PUBLIKASI
                     </th>
+                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-users mr-2"></i>TARGET
+                    </th>
                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tr-xl">
                         <i class="fas fa-cog mr-2"></i>AKSI
                     </th>
@@ -36,6 +49,15 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{{ $loop->iteration }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-maroon">{{ $p->judul }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $p->published_at ? \Carbon\Carbon::parse($p->published_at)->format('d M Y H:i') : '-' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">
+                        @if($p->target == 'semua')
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">Semua</span>
+                        @elseif($p->target == 'dosen')
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Dosen</span>
+                        @elseif($p->target == 'mahasiswa')
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">Mahasiswa</span>
+                        @endif
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div class="flex items-center space-x-2">
                             <a href="{{ route('admin.pengumuman.edit', $p) }}"

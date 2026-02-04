@@ -39,8 +39,70 @@
             <span class="text-sm font-medium">Pengumuman</span>
         </a>
     @endif
-    <!-- Manajemen Data -->
+    <!-- Master Data -->
     <div class="mt-3">
+        <button type="button" data-toggle="sidebar-section" data-section="master-data" class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold section-toggle uppercase tracking-wide opacity-80">
+            <span>Master Data</span>
+            <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <ul class="mt-1 space-y-1 pb-2 sidebar-section hidden">
+            <li>
+                @if(Route::has('admin.prodi.index'))
+                    <a href="{{ route('admin.prodi.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.prodi.*') ? 'active' : '' }}">
+                        <i class="fas fa-graduation-cap w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Prodi</span>
+                    </a>
+                @else
+                    <a href="{{ url('/admin/prodi') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
+                        <i class="fas fa-graduation-cap w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Prodi</span>
+                    </a>
+                @endif
+            </li>
+            <li>
+                @if(Route::has('admin.fakultas.index'))
+                    <a href="{{ route('admin.fakultas.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.fakultas.*') ? 'active' : '' }}">
+                        <i class="fas fa-university w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Fakultas</span>
+                    </a>
+                @else
+                    <a href="{{ url('/admin/fakultas') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
+                        <i class="fas fa-university w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Fakultas</span>
+                    </a>
+                @endif
+            </li>
+            <li>
+                @if(Route::has('admin.mata-kuliah.index'))
+                    <a href="{{ route('admin.mata-kuliah.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.mata-kuliah.*') ? 'active' : '' }}">
+                        <i class="fas fa-book w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Mata Kuliah</span>
+                    </a>
+                @else
+                    <a href="{{ url('/admin/mata-kuliah') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
+                        <i class="fas fa-book w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Mata Kuliah</span>
+                    </a>
+                @endif
+            </li>
+            <li>
+                @if(Route::has('admin.ruangan.index'))
+                    <a href="{{ route('admin.ruangan.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.ruangan.*') ? 'active' : '' }}">
+                        <i class="fas fa-door-open w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Ruangan Kelas</span>
+                    </a>
+                @else
+                    <a href="{{ url('/admin/ruangan') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
+                        <i class="fas fa-door-open w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Ruangan Kelas</span>
+                    </a>
+                @endif
+            </li>
+        </ul>
+    </div>
+
+    <!-- Manajemen Data -->
+    <div class="mt-2">
         <button type="button" data-toggle="sidebar-section" data-section="manajemen-data" class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold section-toggle uppercase tracking-wide opacity-80">
             <span>Manajemen Data</span>
             <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
@@ -109,19 +171,6 @@
         </button>
         <ul class="mt-1 space-y-1 pb-2 sidebar-section hidden">
             <li>
-                    @if(Route::has('admin.mata-kuliah.index'))
-                    <a href="{{ route('admin.mata-kuliah.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.mata-kuliah.*') ? 'active' : '' }}">
-                        <i class="fas fa-book w-5 mr-3"></i>
-                        <span class="text-sm font-medium">Mata Kuliah</span>
-                    </a>
-                @else
-                    <a href="{{ url('/admin/mata-kuliah') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40">
-                        <i class="fas fa-book w-5 mr-3"></i>
-                        <span class="text-sm font-medium">Mata Kuliah</span>
-                    </a>
-                @endif
-            </li>
-            <li>
                     @if(Route::has('admin.kelas-mata-kuliah.index'))
                     <a href="{{ route('admin.kelas-mata-kuliah.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.kelas-mata-kuliah.*') ? 'active' : '' }}">
                         <i class="fas fa-building w-5 mr-3"></i>
@@ -147,6 +196,7 @@
                     </a>
                 @endif
             </li>
+            <!-- Persetujuan Jadwal ditiadakan: otomatis approve jika dosen menyetujui -->
             <li>
                 @if(Route::has('admin.krs.index'))
                     <a href="{{ route('admin.krs.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.krs.*') ? 'active' : '' }}">

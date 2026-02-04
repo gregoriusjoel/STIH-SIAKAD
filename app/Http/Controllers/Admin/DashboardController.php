@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AcademicEvent;
 use App\Models\Dosen;
 use App\Models\KelasMataKuliah;
 use App\Models\Krs;
@@ -25,6 +26,10 @@ class DashboardController extends Controller
             'krs_pending' => Krs::where('status', 'pending')->count(),
             'recent_krs' => Krs::with(['mahasiswa.user', 'kelas.mataKuliah'])
                 ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get(),
+            'academic_events' => AcademicEvent::active()
+                ->orderBy('start_date', 'asc')
                 ->limit(5)
                 ->get(),
         ];
