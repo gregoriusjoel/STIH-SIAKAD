@@ -108,6 +108,11 @@ class JadwalController extends Controller
             ->orderBy('kode_ruangan')
             ->get();
 
+        // Get jam perkuliahan data
+        $jamPerkuliahan = \App\Models\JamPerkuliahan::where('is_active', true)
+            ->orderBy('jam_ke')
+            ->get();
+
         // Generator data (statistics + proposals)
         $statistics = [
             'total_proposals' => JadwalProposal::count(),
@@ -122,7 +127,7 @@ class JadwalController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('admin.jadwal.index', compact('kelasMataKuliahs', 'allSchedules', 'mataKuliahs', 'dosens', 'rooms', 'daftarRuangan', 'statistics', 'jadwalProposals'));
+        return view('admin.jadwal.index', compact('kelasMataKuliahs', 'allSchedules', 'mataKuliahs', 'dosens', 'rooms', 'daftarRuangan', 'jamPerkuliahan', 'statistics', 'jadwalProposals'));
     }
 
     public function create()

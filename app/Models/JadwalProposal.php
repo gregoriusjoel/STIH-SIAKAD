@@ -28,8 +28,6 @@ class JadwalProposal extends Model
 
     protected $casts = [
         'generated_at' => 'datetime',
-        'jam_mulai' => 'datetime',
-        'jam_selesai' => 'datetime',
     ];
 
     public function mataKuliah(): BelongsTo

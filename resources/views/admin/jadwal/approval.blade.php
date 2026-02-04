@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+    @extends('layouts.admin')
 
 @section('title', 'Persetujuan Jadwal - Admin')
 @section('page-title', 'Persetujuan Jadwal')
@@ -75,7 +75,7 @@
                 Butuh Persetujuan ({{ $needingApproval->count() }})
             </button>
             <button @click="activeTab = 'in_review'" :class="activeTab === 'in_review' ? 'border-maroon text-maroon bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'" class="px-6 py-4 text-sm font-medium border-b-2 transition">
-                Sedang Direview ({{ $inReview->count() }})
+                Histori Ditolak Dosen ({{ $proposals->where('status','rejected_dosen')->count() }})
             </button>
         </div>
 
@@ -94,6 +94,9 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse($needingApproval as $proposal)
+                            @php
+                                $dosenApproval = $proposal->approvals->where('role', 'dosen')->sortByDesc('created_at')->first();
+                            @endphp
                             <tr class="hover:bg-gray-50/50 transition duration-200">
                                 <td class="px-6 py-4">
                                     <div class="font-bold text-gray-900">{{ $proposal->mataKuliah->nama_mk }}</div>
@@ -110,18 +113,62 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm font-medium text-gray-700">
-                                    <div class="flex items-center">
-                                        <i class="far fa-calendar-alt mr-2 text-gray-400"></i>
-                                        {{ $proposal->hari }}
-                                    </div>
-                                    <div class="flex items-center mt-1 text-xs text-gray-500">
-                                        <i class="far fa-clock mr-2 text-gray-400"></i>
-                                        {{ substr($proposal->jam_mulai, 0, 5) }} - {{ substr($proposal->jam_selesai, 0, 5) }}
-                                    </div>
-                                    <div class="flex items-center mt-1 text-xs text-gray-500">
-                                        <i class="fas fa-door-open mr-2 text-gray-400"></i>
-                                        {{ $proposal->ruangan ?: 'Belum ditentukan' }}
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col xl:flex-row gap-6 items-start">
+                                        <!-- Original Schedule -->
+                                        <div class="bg-gray-50/50 rounded-lg p-3 border border-gray-100 min-w-[150px]">
+                                            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 flex items-center h-4">
+                                                Jadwal Saat Ini
+                                            </div>
+                                            <div class="space-y-1">
+                                                <div class="flex items-center text-gray-900 font-medium text-sm">
+                                                    <div class="w-6 flex justify-center mr-1.5 text-gray-400"><i class="far fa-calendar-alt"></i></div>
+                                                    {{ $proposal->hari }}
+                                                </div>
+                                                <div class="flex items-center text-gray-600 text-sm">
+                                                    <div class="w-6 flex justify-center mr-1.5 text-gray-400"><i class="far fa-clock"></i></div>
+                                                    {{ substr($proposal->jam_mulai, 0, 5) }} - {{ substr($proposal->jam_selesai, 0, 5) }}
+                                                </div>
+                                                <div class="flex items-center text-gray-600 text-sm">
+                                                    <div class="w-6 flex justify-center mr-1.5 text-gray-400"><i class="fas fa-door-open"></i></div>
+                                                    {{ $proposal->ruangan ?: 'Belum ditentukan' }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Lecturer Proposal (Usulan Dosen) -->
+                                        @if($dosenApproval && ($dosenApproval->hari_pengganti || $dosenApproval->jam_mulai_pengganti || $dosenApproval->ruangan_pengganti))
+                                            <div class="hidden xl:flex items-center self-center text-gray-300 mt-4">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </div>
+                                            
+                                            <div class="bg-red-50/50 rounded-lg p-3 border border-red-100 min-w-[150px]">
+                                                <div class="text-[10px] font-bold text-maroon uppercase tracking-wider mb-1.5 flex items-center h-4">
+                                                    Usulan Perubahan
+                                                    <span class="ml-2 w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                                                </div>
+                                                <div class="space-y-1">
+                                                    @if($dosenApproval->hari_pengganti)
+                                                        <div class="flex items-center text-gray-900 font-medium text-sm">
+                                                            <div class="w-6 flex justify-center mr-1.5 text-maroon/60"><i class="far fa-calendar-alt"></i></div>
+                                                            {{ $dosenApproval->hari_pengganti }}
+                                                        </div>
+                                                    @endif
+                                                    @if(!empty($dosenApproval->jam_mulai_pengganti))
+                                                        <div class="flex items-center text-gray-600 text-sm">
+                                                            <div class="w-6 flex justify-center mr-1.5 text-maroon/60"><i class="far fa-clock"></i></div>
+                                                            {{ substr($dosenApproval->jam_mulai_pengganti, 0, 5) }} - {{ substr($dosenApproval->jam_selesai_pengganti, 0, 5) }}
+                                                        </div>
+                                                    @endif
+                                                    <div class="flex items-center text-gray-600 text-sm">
+                                                        <div class="w-6 flex justify-center mr-1.5 text-maroon/60"><i class="fas fa-door-open"></i></div>
+                                                        <span class="{{ !$dosenApproval->ruangan_pengganti ? 'italic text-gray-400' : '' }}">
+                                                            {{ $dosenApproval->ruangan_pengganti ?: 'Sama / Belum ada' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-center">
@@ -133,6 +180,9 @@
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                             <i class="fas fa-times-circle mr-1"></i> Ditolak
                                         </span>
+                                        @if($dosenApproval && !empty($dosenApproval->alasan_penolakan))
+                                            <div class="mt-2 text-xs text-gray-500 max-w-[220px] truncate" title="{{ $dosenApproval->alasan_penolakan }}">Alasan: {{ Str::limit($dosenApproval->alasan_penolakan, 80) }}</div>
+                                        @endif
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-center">
@@ -176,7 +226,8 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        @forelse($inReview as $proposal)
+                        @php $rejected = $proposals->where('status', 'rejected_dosen'); @endphp
+                        @forelse($rejected as $proposal)
                             <tr class="hover:bg-gray-50/50 transition duration-200">
                                 <td class="px-6 py-4">
                                     <div class="font-bold text-gray-900">{{ $proposal->mataKuliah->nama_mk }}</div>
@@ -190,8 +241,8 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            <i class="fas fa-user-edit mr-1"></i> Sedang Direview
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-times-circle mr-1"></i> Ditolak Dosen
                                         </span>
                                     </div>
                                 </td>
@@ -204,7 +255,7 @@
                         @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                                    <p class="font-medium">Tidak ada proposal yang dalam review Admin.</p>
+                                    <p class="font-medium">Tidak ada histori dosen yang menolak.</p>
                                 </td>
                             </tr>
                         @endforelse

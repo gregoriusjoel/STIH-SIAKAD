@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Detail Proposal Jadwal - Admin')
 
@@ -162,35 +162,48 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Keputusan</label>
                         <select name="status" id="status_select" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-maroon focus:border-transparent transition text-sm font-semibold" required onchange="toggleChangesFields()">
-                            <option value="approved">Setujui Proposal</option>
-                            <option value="approved_with_changes">Setujui dengan Perubahan</option>
-                            <option value="rejected">Tolak Proposal</option>
+                            @php $defaultStatus = $proposal->status === 'rejected_dosen' ? 'approved_with_changes' : 'approved'; @endphp
+                            <option value="approved" {{ $defaultStatus === 'approved' ? 'selected' : '' }}>Setujui Proposal</option>
+                            <option value="approved_with_changes" {{ $defaultStatus === 'approved_with_changes' ? 'selected' : '' }}>Setujui dengan Perubahan</option>
+                            <option value="rejected" {{ $defaultStatus === 'rejected' ? 'selected' : '' }}>Tolak Proposal</option>
                         </select>
                     </div>
 
                     <div id="changes_fields" class="space-y-4 pt-4 border-t border-gray-100 mt-4" style="display: none;">
                         <p class="text-xs font-bold text-maroon uppercase">Perubahan Jadwal</p>
+                        @if(isset($dosenApproval) && ($dosenApproval->hari_pengganti || $dosenApproval->jam_mulai_pengganti))
+                            <div class="mb-3">
+                                <button type="button" id="use_dosen_suggestion" class="px-3 py-2 bg-green-50 text-green-700 border border-green-200 rounded-lg text-sm font-semibold">Gunakan Usulan Dosen</button>
+                                <span class="text-xs text-gray-500 ml-2">(Isi form dengan usulan dosen)</span>
+                            </div>
+                        @endif
                         <div>
                             <label class="block text-xs font-medium text-gray-500 mb-1">Hari</label>
+                            @php
+                                $selectedHari = $proposal->hari;
+                                if(isset($dosenApproval) && $proposal->status === 'rejected_dosen' && !empty($dosenApproval->hari_pengganti)) {
+                                    $selectedHari = $dosenApproval->hari_pengganti;
+                                }
+                            @endphp
                             <select name="hari" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $h)
-                                    <option value="{{ $h }}" {{ $proposal->hari == $h ? 'selected' : '' }}>{{ $h }}</option>
-                                @endforeach
-                            </select>
+                                    @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $h)
+                                        <option value="{{ $h }}" {{ $selectedHari == $h ? 'selected' : '' }}>{{ $h }}</option>
+                                    @endforeach
+                                </select>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Jam Mulai</label>
-                                <input type="time" name="jam_mulai" value="{{ substr($proposal->jam_mulai, 0, 5) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                <input type="time" name="jam_mulai" id="admin_jam_mulai" value="{{ substr($proposal->jam_mulai, 0, 5) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Jam Selesai</label>
-                                <input type="time" name="jam_selesai" value="{{ substr($proposal->jam_selesai, 0, 5) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                <input type="time" name="jam_selesai" id="admin_jam_selesai" value="{{ substr($proposal->jam_selesai, 0, 5) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-500 mb-1">Ruangan</label>
-                            <input type="text" name="ruangan" value="{{ $proposal->ruangan }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Contoh: R.401">
+                            <input type="text" name="ruangan" id="admin_ruangan" value="{{ $proposal->ruangan }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Contoh: R.401">
                         </div>
                     </div>
 
@@ -203,6 +216,48 @@
                         <i class="fas fa-save mr-2"></i> Simpan Keputusan
                     </button>
                 </form>
+                <script>
+                    // Intercept form submit when admin is responding to a dosen rejection
+                    (function(){
+                        const originalStatus = '{{ $proposal->status }}';
+                        const form = document.querySelector('form[action="{{ route('admin.jadwal_admin_approval.process', $proposal->id) }}"]');
+                        if (!form) return;
+
+                        form.addEventListener('submit', function(e){
+                            // If original proposal came from a dosen rejection, and admin chose "approved_with_changes",
+                            // we should send the changes back to dosen (pending_dosen) via process-dosen-request route.
+                            const statusSelect = document.getElementById('status_select');
+                            if (originalStatus === 'rejected_dosen' && statusSelect && statusSelect.value === 'approved_with_changes') {
+                                e.preventDefault();
+                                const fd = new FormData();
+                                fd.append('_token', '{{ csrf_token() }}');
+                                fd.append('action', 'propose_new');
+                                fd.append('hari', form.querySelector('[name="hari"]').value);
+                                fd.append('jam_mulai', form.querySelector('[name="jam_mulai"]').value);
+                                fd.append('jam_selesai', form.querySelector('[name="jam_selesai"]').value);
+                                fd.append('ruangan', form.querySelector('[name="ruangan"]').value);
+                                // map comments -> catatan
+                                fd.append('catatan', form.querySelector('[name="comments"]').value || '');
+
+                                fetch('{{ route('admin.jadwal_admin_approval.process_dosen_request', $proposal->id) }}', {
+                                    method: 'POST',
+                                    body: fd,
+                                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                                }).then(r => r.json()).then(data => {
+                                    if (data.success) {
+                                        // reload to reflect status change
+                                        location.reload();
+                                    } else {
+                                        alert(data.error || 'Gagal mengirim usulan perubahan');
+                                    }
+                                }).catch(err => alert('Error: ' + err.message));
+                                // ensure changes fields visibility is updated after page load
+                                setTimeout(function(){ if (typeof toggleChangesFields === 'function') toggleChangesFields(); }, 100);
+                            }
+                            // otherwise, let the form submit normally to existing process route
+                        });
+                    })();
+                </script>
             </div>
 
             <!-- Status Alert -->
@@ -234,6 +289,49 @@
             fields.style.display = 'none';
         }
     }
+    document.addEventListener('DOMContentLoaded', function(){
+        // Ensure fields visibility matches selected decision on load
+        try { toggleChangesFields(); } catch (e) { /* ignore */ }
+    });
+    
+    // Apply dosen suggestion into the changes fields when button clicked
+    (function(){
+        const btn = document.getElementById('use_dosen_suggestion');
+        if (!btn) return;
+        btn.addEventListener('click', function(){
+            try {
+                // Values from server-side variables
+                const sugHari = '{{ $dosenApproval->hari_pengganti ?? '' }}';
+                const sugMulai = '{{ isset($dosenApproval->jam_mulai_pengganti) ? substr($dosenApproval->jam_mulai_pengganti,0,5) : '' }}';
+                const sugSelesai = '{{ isset($dosenApproval->jam_selesai_pengganti) ? substr($dosenApproval->jam_selesai_pengganti,0,5) : '' }}';
+                const sugRuangan = '{{ $dosenApproval->ruangan_pengganti ?? '' }}';
+
+                if (sugHari) {
+                    const hariSelect = document.querySelector('[name="hari"]');
+                    if (hariSelect) hariSelect.value = sugHari;
+                }
+                if (sugMulai) {
+                    const jamMulai = document.getElementById('admin_jam_mulai');
+                    if (jamMulai) jamMulai.value = sugMulai;
+                }
+                if (sugSelesai) {
+                    const jamSelesai = document.getElementById('admin_jam_selesai');
+                    if (jamSelesai) jamSelesai.value = sugSelesai;
+                }
+                if (sugRuangan) {
+                    const ruangan = document.getElementById('admin_ruangan');
+                    if (ruangan) ruangan.value = sugRuangan;
+                }
+
+                // ensure changes fields visible and set decision
+                const statusSelect = document.getElementById('status_select');
+                if (statusSelect) statusSelect.value = 'approved_with_changes';
+                try { toggleChangesFields(); } catch(e){}
+            } catch (e) {
+                console.error('Failed to apply suggestion', e);
+            }
+        });
+    })();
 </script>
 @endpush
 

@@ -25,8 +25,6 @@ class JadwalApproval extends Model
 
     protected $casts = [
         'approved_at' => 'datetime',
-        'jam_mulai_pengganti' => 'datetime',
-        'jam_selesai_pengganti' => 'datetime',
     ];
 
     public function jadwalProposal(): BelongsTo

@@ -7,6 +7,7 @@ use App\Models\JadwalProposal;
 use App\Models\JadwalApproval;
 use App\Models\Jadwal;
 use App\Models\Ruangan;
+use App\Models\KelasMataKuliah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -60,9 +61,14 @@ class JadwalApprovalController extends Controller
                 return response()->json(['error' => 'Unauthorized'], 403);
             }
             
-            // Validasi status
-            if ($proposal->status !== 'pending_dosen') {
-                return response()->json(['error' => 'Proposal tidak dalam status pending'], 400);
+            // Idempotency: jika sudah ditolak oleh dosen sebelumnya, kembalikan sukses supaya UI tidak mencoba mengirim ulang
+            if ($proposal->status === 'rejected_dosen') {
+                return response()->json(['success' => true, 'message' => 'Proposal sudah ditolak sebelumnya'], 200);
+            }
+
+            // Validasi status (terima baik jika masih menunggu dosen atau sedang menunggu admin setelah perubahan)
+            if (!in_array($proposal->status, ['pending_dosen', 'pending_admin'])) {
+                return response()->json(['error' => 'Proposal tidak dalam status pending_dosen (saat ini: ' . $proposal->status . ')'], 400);
             }
             
             // Create record approval
@@ -107,6 +113,39 @@ class JadwalApprovalController extends Controller
             // Mark proposal as fully approved so admin review is skipped
             $proposal->update(['status' => 'approved_admin']);
 
+            // Upsert into kelas_mata_kuliahs so the active schedule is reflected there as well
+            try {
+                $kelas = $proposal->kelas;
+                $kodeKelas = $kelas?->section ?? null;
+
+                $kmkData = [
+                    'mata_kuliah_id' => $proposal->mata_kuliah_id,
+                    'dosen_id' => $proposal->dosen_id,
+                    'kode_kelas' => $kodeKelas,
+                    'ruang' => $ruangKode,
+                    'ruangan_id' => $ruanganId ?? null,
+                    'hari' => $proposal->hari,
+                    'jam_mulai' => $proposal->jam_mulai,
+                    'jam_selesai' => $proposal->jam_selesai,
+                ];
+
+                if ($kodeKelas) {
+                    $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)
+                        ->where('kode_kelas', $kodeKelas)
+                        ->first();
+                } else {
+                    $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)->first();
+                }
+
+                if ($existingKmk) {
+                    $existingKmk->update($kmkData);
+                } else {
+                    KelasMataKuliah::create($kmkData);
+                }
+            } catch (\Exception $e) {
+                // ignore upsert errors
+            }
+
             DB::commit();
 
             return response()->json([
@@ -124,10 +163,9 @@ class JadwalApprovalController extends Controller
     {
         $request->validate([
             'alasan_penolakan' => 'required|string|max:500',
-            'hari_pengganti' => 'nullable|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
-            'jam_mulai_pengganti' => 'nullable|date_format:H:i',
-            'jam_selesai_pengganti' => 'nullable|date_format:H:i|after:jam_mulai_pengganti',
-            'ruangan_pengganti' => 'nullable|string|max:100'
+            'hari_pengganti' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+            'jam_mulai_pengganti' => 'required|date_format:H:i',
+            'jam_selesai_pengganti' => 'required|date_format:H:i|after:jam_mulai_pengganti'
         ]);
         
         try {
@@ -143,9 +181,14 @@ class JadwalApprovalController extends Controller
                 return response()->json(['error' => 'Unauthorized'], 403);
             }
             
-            // Validasi status
-            if ($proposal->status !== 'pending_dosen') {
-                return response()->json(['error' => 'Proposal tidak dalam status pending'], 400);
+            // Idempotency: jika sudah ditolak oleh dosen sebelumnya, kembalikan sukses sehingga aksi tidak error
+            if ($proposal->status === 'rejected_dosen') {
+                return response()->json(['success' => true, 'message' => 'Proposal sudah ditolak sebelumnya'], 200);
+            }
+
+            // Validasi status (izinkan reject jika proposal masih menunggu dosen atau menunggu admin)
+            if (!in_array($proposal->status, ['pending_dosen', 'pending_admin'])) {
+                return response()->json(['error' => 'Proposal tidak dalam status pending_dosen (saat ini: ' . $proposal->status . ')'], 400);
             }
             
             // Update status proposal

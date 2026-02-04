@@ -98,6 +98,19 @@
                     </a>
                 @endif
             </li>
+            <li>
+                @if(Route::has('admin.jam-perkuliahan.index'))
+                    <a href="{{ route('admin.jam-perkuliahan.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.jam-perkuliahan.*') ? 'active' : '' }}">
+                        <i class="fas fa-clock w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Jam Perkuliahan</span>
+                    </a>
+                @else
+                    <a href="{{ url('/admin/jam-perkuliahan') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
+                        <i class="fas fa-clock w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Jam Perkuliahan</span>
+                    </a>
+                @endif
+            </li>
         </ul>
     </div>
 

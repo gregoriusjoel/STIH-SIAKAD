@@ -5,11 +5,12 @@
 @section('page-title', 'Pencarian')
 
 @section('content')
-    <div class="max-w-6xl mx-auto">
+    <div class="w-full">
         <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
             <form action="{{ route('admin.search') }}" method="GET">
                 <div class="flex">
-                    <input name="q" value="{{ $q }}" class="flex-1 border rounded-l px-3 py-2" placeholder="Ketik kata kunci dan tekan Enter" />
+                    <input name="q" value="{{ $q }}" class="flex-1 border rounded-l px-3 py-2"
+                        placeholder="Ketik kata kunci dan tekan Enter" />
                     <button class="bg-maroon text-white px-4 rounded-r" type="submit">Cari</button>
                 </div>
             </form>
@@ -65,17 +66,23 @@
                                             @php
                                                 // Pick a sensible display value
                                                 $display = null;
-                                                foreach (['name','nama','nama_semester','title','email','nrp','kode','nidn','ruang','hari'] as $c) {
-                                                    if (isset($item->$c) && $item->$c) { $display = $item->$c; break; }
+                                                foreach (['name', 'nama', 'nama_semester', 'title', 'email', 'nrp', 'kode', 'nidn', 'ruang', 'hari'] as $c) {
+                                                    if (isset($item->$c) && $item->$c) {
+                                                        $display = $item->$c;
+                                                        break;
+                                                    }
                                                 }
-                                                if (!$display) { $display = 'ID: ' . ($item->id ?? '-'); }
+                                                if (!$display) {
+                                                    $display = 'ID: ' . ($item->id ?? '-');
+                                                }
                                             @endphp
                                             {{ $display }}
                                         </div>
                                         <div>
                                             @php $prefix = $routeMap[$table] ?? null; @endphp
                                             @if($prefix)
-                                                <a href="{{ url('/admin/' . $prefix . '/' . ($item->id ?? '')) }}" class="text-maroon hover:underline text-sm">Lihat</a>
+                                                <a href="{{ url('/admin/' . $prefix . '/' . ($item->id ?? '')) }}"
+                                                    class="text-maroon hover:underline text-sm">Lihat</a>
                                             @endif
                                         </div>
                                     </li>

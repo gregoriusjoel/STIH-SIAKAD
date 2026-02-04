@@ -10,7 +10,6 @@
     hariPengganti: '',
     jamMulaiPengganti: '',
     jamSelesaiPengganti: '',
-    ruanganPengganti: '',
     alasanPenolakan: '',
     availableSlots: [],
     
@@ -26,7 +25,6 @@
         this.hariPengganti = '';
         this.jamMulaiPengganti = '';
         this.jamSelesaiPengganti = '';
-        this.ruanganPengganti = '';
     },
     
     fetchSlots() {
@@ -72,29 +70,57 @@
     
     submitRejection() {
         if (!this.rejectProposalId) return;
-        
+        // Validate alternative schedule is provided
+        if (!this.hariPengganti || !this.jamMulaiPengganti || !this.jamSelesaiPengganti) {
+            alert('Mohon lengkapi Usulan Jadwal Alternatif (hari, jam mulai, dan jam selesai).');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('_token', '{{ csrf_token() }}');
         formData.append('alasan_penolakan', this.alasanPenolakan);
         formData.append('hari_pengganti', this.hariPengganti);
         formData.append('jam_mulai_pengganti', this.jamMulaiPengganti);
         formData.append('jam_selesai_pengganti', this.jamSelesaiPengganti);
-        formData.append('ruangan_pengganti', this.ruanganPengganti);
-
         fetch(`{{ route('dosen.jadwal_approval.reject', ':id') }}`.replace(':id', this.rejectProposalId), {
             method: 'POST',
             body: formData,
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Gagal menolak proposal: ' + data.message);
-            }
+        .then(res => {
+            return res.text().then(text => {
+                // Try to parse JSON, otherwise return raw text
+                try { return JSON.parse(text); } catch (e) { return { __raw: text, ok: res.ok }; }
+            });
         })
-        .catch(err => alert('Error: ' + err.message));
+        .then(data => {
+            if (data && data.success) {
+                location.reload();
+                return;
+            }
+
+            // Determine message from possible keys
+            let msg = 'Terjadi kesalahan';
+            if (!data) msg = 'No response from server';
+            else if (data.message) msg = data.message;
+            else if (data.error) msg = data.error;
+            else if (data.errors) {
+                // Laravel validation errors
+                const errs = Object.values(data.errors).flat();
+                msg = errs.join(', ');
+            } else if (data.__raw) {
+                msg = data.__raw;
+            }
+
+            alert('Gagal menolak proposal: ' + msg);
+        })
+        .catch(err => {
+            let msg = 'Error';
+            if (err && typeof err === 'object') {
+                msg = err.message || err.error || JSON.stringify(err);
+            } else msg = String(err);
+            alert('Gagal menolak proposal: ' + msg);
+        });
     }
 }">
     <!-- Header Section -->
@@ -353,9 +379,9 @@
                 </div>
 
                 <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <h4 class="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">Usulan Jadwal Alternatif (Opsional)</h4>
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <select x-model="hariPengganti" @change="fetchSlots" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    <h4 class="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">Usulan Jadwal Alternatif (Wajib)</h4>
+                    <div class="grid grid-cols-1 gap-3 mb-3">
+                        <select x-model="hariPengganti" @change="fetchSlots" required class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                             <option value="">Pilih Hari</option>
                             <option value="Senin">Senin</option>
                             <option value="Selasa">Selasa</option>
@@ -364,16 +390,15 @@
                             <option value="Jumat">Jumat</option>
                             <option value="Sabtu">Sabtu</option>
                         </select>
-                        <input x-model="ruanganPengganti" type="text" placeholder="Ruangan" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                         <select x-model="jamMulaiPengganti" @change="updateSelesai" :disabled="!hariPengganti" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 disabled:bg-gray-100">
+                         <select x-model="jamMulaiPengganti" @change="updateSelesai" :disabled="!hariPengganti" required class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 disabled:bg-gray-100">
                             <option value="">Jam Mulai</option>
                             <template x-for="slot in availableSlots" :key="slot.jam_mulai">
                                 <option :value="slot.jam_mulai" x-text="slot.label"></option>
                             </template>
                         </select>
-                        <input x-model="jamSelesaiPengganti" type="text" readonly placeholder="Jam Selesai" class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-500 cursor-not-allowed">
+                        <input x-model="jamSelesaiPengganti" type="text" readonly placeholder="Jam Selesai" required class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-500 cursor-not-allowed">
                     </div>
                 </div>
 

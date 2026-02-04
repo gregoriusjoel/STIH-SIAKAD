@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JadwalProposal;
 use App\Models\JadwalApproval;
 use App\Models\Jadwal;
+use App\Models\KelasMataKuliah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -66,11 +67,35 @@ class JadwalAdminApprovalController extends Controller
             
             $proposal = JadwalProposal::findOrFail($id);
             
-            // Validasi status - harus sudah disetujui dosen atau sedang pending admin
-            if (!in_array($proposal->status, ['approved_dosen', 'pending_admin'])) {
+            // Validasi status - boleh disetujui bila sudah disetujui dosen, sedang pending admin,
+            // atau ketika dosen menolak namun memberikan usulan alternatif (rejected_dosen)
+            if (!in_array($proposal->status, ['approved_dosen', 'pending_admin', 'rejected_dosen'])) {
                 return response()->json([
                     'error' => 'Proposal tidak dalam status yang dapat disetujui admin'
                 ], 400);
+            }
+
+            // Jika proposal berada pada 'rejected_dosen', coba terapkan usulan dosen sebelum approve
+            if ($proposal->status === 'rejected_dosen') {
+                $dosenApproval = $proposal->approvals()
+                    ->where('role', 'dosen')
+                    ->where('action', 'reject')
+                    ->latest()
+                    ->first();
+
+                if (!$dosenApproval || (empty($dosenApproval->hari_pengganti) && empty($dosenApproval->jam_mulai_pengganti))) {
+                    return response()->json([
+                        'error' => 'Dosen tidak memberikan usulan alternatif — gunakan opsi "Usulkan Baru" atau tinjau manual'
+                    ], 400);
+                }
+
+                // Terapkan usulan dosen ke proposal sementara agar pengecekan konflik dan pembuatan jadwal menggunakan nilai tersebut
+                $proposal->update([
+                    'hari' => $dosenApproval->hari_pengganti ?? $proposal->hari,
+                    'jam_mulai' => $dosenApproval->jam_mulai_pengganti ?? $proposal->jam_mulai,
+                    'jam_selesai' => $dosenApproval->jam_selesai_pengganti ?? $proposal->jam_selesai,
+                    'ruangan' => $dosenApproval->ruangan_pengganti ?? $proposal->ruangan,
+                ]);
             }
             
             // Cek konflik jadwal sebelum approve
@@ -285,27 +310,36 @@ class JadwalAdminApprovalController extends Controller
                     break;
                     
                 case 'propose_new':
-                    // Admin memberikan usulan baru
+                    // Admin memberikan usulan baru — kirim kembali ke dosen untuk konfirmasi
                     $proposal->update([
                         'hari' => $request->hari,
                         'jam_mulai' => $request->jam_mulai,
                         'jam_selesai' => $request->jam_selesai,
                         'ruangan' => $request->ruangan,
-                        'status' => 'pending_admin'
+                        'status' => 'pending_dosen'
                     ]);
-                    $message = 'Usulan jadwal baru telah dibuat, menunggu konfirmasi';
+                    $message = 'Usulan jadwal baru telah dibuat dan dikirim ke dosen untuk konfirmasi';
                     break;
             }
             
-            // Buat record approval admin
-            JadwalApproval::create([
+            // Buat record approval admin. Jika admin mengusulkan jadwal baru, simpan juga nilai pengganti
+            $approvalData = [
                 'jadwal_proposal_id' => $proposal->id,
                 'approved_by' => Auth::id(),
                 'role' => 'admin',
                 'action' => in_array($request->action, ['approve_alternative', 'propose_new']) ? 'approve' : 'reject',
                 'alasan_penolakan' => $request->catatan,
                 'approved_at' => now()
-            ]);
+            ];
+
+            if ($request->action === 'propose_new') {
+                $approvalData['hari_pengganti'] = $request->hari;
+                $approvalData['jam_mulai_pengganti'] = $request->jam_mulai;
+                $approvalData['jam_selesai_pengganti'] = $request->jam_selesai;
+                $approvalData['ruangan_pengganti'] = $request->ruangan;
+            }
+
+            JadwalApproval::create($approvalData);
             
             DB::commit();
             
@@ -403,6 +437,39 @@ class JadwalAdminApprovalController extends Controller
                 'approved_by' => Auth::id(),
                 'approved_at' => now()
             ]);
+        }
+
+        // Upsert into kelas_mata_kuliahs so the active schedule is reflected there as well
+        try {
+            $kelas = $proposal->kelas;
+            $kodeKelas = $kelas?->section ?? null;
+
+            $kmkData = [
+                'mata_kuliah_id' => $proposal->mata_kuliah_id,
+                'dosen_id' => $proposal->dosen_id,
+                'kode_kelas' => $kodeKelas,
+                'ruang' => $proposal->ruangan,
+                'ruangan_id' => $proposal->ruangan_id ?? null,
+                'hari' => $proposal->hari,
+                'jam_mulai' => $proposal->jam_mulai,
+                'jam_selesai' => $proposal->jam_selesai,
+            ];
+
+            if ($kodeKelas) {
+                $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)
+                    ->where('kode_kelas', $kodeKelas)
+                    ->first();
+            } else {
+                $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)->first();
+            }
+
+            if ($existingKmk) {
+                $existingKmk->update($kmkData);
+            } else {
+                KelasMataKuliah::create($kmkData);
+            }
+        } catch (\Exception $e) {
+            // don't block activation on KMK upsert failure
         }
     }
 }

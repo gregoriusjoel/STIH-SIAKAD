@@ -206,6 +206,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Ruangan Management
     Route::resource('ruangan', App\Http\Controllers\Admin\RuanganController::class);
 
+    // Jam Perkuliahan Management
+    Route::resource('jam-perkuliahan', App\Http\Controllers\Admin\JamPerkuliahanController::class);
+
     // Kelas Mata Kuliah Management
     Route::resource('kelas-mata-kuliah', App\Http\Controllers\Admin\KelasMataKuliahController::class);
 

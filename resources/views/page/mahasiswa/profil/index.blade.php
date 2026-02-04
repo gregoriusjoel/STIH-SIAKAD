@@ -177,10 +177,6 @@
                             <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
                             <div>{{ $mahasiswa->provinsi ?? 'Belum diisi' }}</div>
                         </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
-                            <div>{{ $mahasiswa->negara ?? 'Belum diisi' }}</div>
-                        </div>
                     </div>
                 </div>
 
@@ -355,27 +351,53 @@
                     </div>
 
                     <div>
-                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Orang Tua</h3>
+                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Ayah</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="text-xs font-bold text-gray-400 uppercase">Alamat</label>
-                                <div>{{ $parent->alamat_ortu ?? 'Belum diisi' }}</div>
+                                <div>{{ $parent->alamat_ayah ?? $parent->alamat_ortu ?? 'Belum diisi' }}</div>
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 uppercase">Kota</label>
-                                <div>{{ $parent->kota_ortu ?? 'Belum diisi' }}</div>
+                                <div>{{ $parent->kota_ayah ?? $parent->kota_ortu ?? 'Belum diisi' }}</div>
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
-                                <div>{{ $parent->propinsi_ortu ?? 'Belum diisi' }}</div>
+                                <div>{{ $parent->propinsi_ayah ?? $parent->propinsi_ortu ?? 'Belum diisi' }}</div>
                             </div>
                             <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
-                                <div>{{ $parent->negara_ortu ?? 'Belum diisi' }}</div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
+                                <div>{{ $parent->desa_ayah ?? $parent->desa_ortu ?? 'Belum diisi' }}</div>
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>
-                                <div>{{ $parent->handphone_ortu ?? 'Belum diisi' }}</div>
+                                <div>{{ $parent->handphone_ayah ?? $parent->handphone_ortu ?? 'Belum diisi' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Ibu</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Alamat</label>
+                                <div>{{ $parent->alamat_ibu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Kota</label>
+                                <div>{{ $parent->kota_ibu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
+                                <div>{{ $parent->propinsi_ibu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
+                                <div>{{ $parent->desa_ibu ?? 'Belum diisi' }}</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>
+                                <div>{{ $parent->handphone_ibu ?? 'Belum diisi' }}</div>
                             </div>
                         </div>
                     </div>
@@ -460,8 +482,8 @@
                                 <div>{{ $parent->provinsi_wali ?? 'Belum diisi' }}</div>
                             </div>
                             <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Negara</label>
-                                <div>{{ $parent->negara_wali ?? 'Belum diisi' }}</div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
+                                <div>{{ $parent->desa_wali ?? 'Belum diisi' }}</div>
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>

@@ -556,7 +556,8 @@ $isLocked = $mahasiswa->isProfileComplete();
                     document.addEventListener('DOMContentLoaded', function() {
                         // Small delay to ensure Alpine.js has rendered the elements
                         setTimeout(function() {
-                            setupAddressGroup('provinsiOrtuSelect', 'kotaOrtuSelect', @json($parent->kota_ortu ?? ''));
+                            setupAddressGroup('provinsiAyahSelect', 'kotaAyahSelect', @json($parent->kota_ayah ?? $parent->kota_ortu ?? ''));
+                            setupAddressGroup('provinsiIbuSelect', 'kotaIbuSelect', @json($parent->kota_ibu ?? ''));
                             setupAddressGroup('provinsiWaliSelect', 'kotaWaliSelect', @json($parent->kota_wali ?? ''));
                         }, 100);
                     });
@@ -824,28 +825,28 @@ $isLocked = $mahasiswa->isProfileComplete();
                     </div>
                 </div>
 
-                {{-- Data Alamat Orang Tua --}}
+                {{-- Data Alamat Ayah --}}
                 <div>
                     <div class="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
-                        <h3 class="text-[#1A1A1A] font-bold text-base tracking-tight">Alamat Orang Tua</h3>
-                        <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Parent's Residence</span>
+                        <h3 class="text-[#1A1A1A] font-bold text-base tracking-tight">Alamat Ayah</h3>
+                        <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Father's Residence</span>
                     </div>
                     <div class="space-y-5">
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start">
                             <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider pt-3">Alamat Lengkap</label>
                             <div class="lg:col-span-9">
-                                <textarea name="alamat_ortu" rows="3"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $parent->alamat_ortu ?? '' }}</textarea>
+                                <textarea name="alamat_ayah" rows="3"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $parent->alamat_ayah ?? $parent->alamat_ortu ?? '' }}</textarea>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                             <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
                             <div class="lg:col-span-9">
-                                <select name="propinsi_ortu" id="provinsiOrtuSelect"
+                                <select name="propinsi_ayah" id="provinsiAyahSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Provinsi</option>
                                     @foreach($provinces as $prov)
-                                    <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->propinsi_ortu ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                                    <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->propinsi_ayah ?? $parent->propinsi_ortu ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -853,7 +854,7 @@ $isLocked = $mahasiswa->isProfileComplete();
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                             <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
                             <div class="lg:col-span-9">
-                                <select name="kota_ortu" id="kotaOrtuSelect"
+                                <select name="kota_ayah" id="kotaAyahSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
                                     <option value="">Pilih Kota/Kabupaten</option>
                                 </select>
@@ -862,39 +863,29 @@ $isLocked = $mahasiswa->isProfileComplete();
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                             <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
                             <div class="lg:col-span-9">
-                                <div x-data="desaOrtuDropdown()" class="relative">
-                                    <input type="hidden" name="desa_ortu" :value="selected">
-                                    <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputOrtu.focus())"
+                                <div x-data="desaAyahDropdown()" class="relative">
+                                    <input type="hidden" name="desa_ayah" :value="selected">
+                                    <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputAyah.focus())"
                                         class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
                                         <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
                                         <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
                                     </button>
-                                    <!-- Dropdown Panel -->
                                     <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                                         class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
-                                        <!-- Search Input Inside Dropdown -->
                                         <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
-                                            <input type="text" x-model="search" x-ref="searchInputOrtu" @click.stop @keydown.escape="open = false"
+                                            <input type="text" x-model="search" x-ref="searchInputAyah" @click.stop @keydown.escape="open = false"
                                                 placeholder="Cari desa/kelurahan..." 
                                                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
                                         </div>
-                                        <!-- Options List -->
                                         <div class="max-h-52 overflow-y-auto">
-                                            <!-- No City Selected Message -->
                                             <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
-                                                <div class="text-orange-400 mb-1">
-                                                    <i class="fas fa-exclamation-circle text-xl"></i>
-                                                </div>
+                                                <div class="text-orange-400 mb-1"><i class="fas fa-exclamation-circle text-xl"></i></div>
                                                 <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
                                             </div>
-                                            <!-- Hint Message -->
                                             <div x-show="showHint" class="px-4 py-8 text-center">
-                                                <div class="text-gray-400 mb-1">
-                                                    <i class="fas fa-search text-xl"></i>
-                                                </div>
+                                                <div class="text-gray-400 mb-1"><i class="fas fa-search text-xl"></i></div>
                                                 <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
                                             </div>
-
                                             <template x-for="(opt, index) in filteredOptions" :key="index">
                                                 <div @click="selectOption(opt)" 
                                                     class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
@@ -902,31 +893,24 @@ $isLocked = $mahasiswa->isProfileComplete();
                                                     <span x-text="opt.text"></span>
                                                 </div>
                                             </template>
-                                            <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
-                                                Tidak ditemukan
-                                            </div>
+                                            <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">Tidak ditemukan</div>
                                         </div>
                                     </div>
                                 </div>
-                                
                                 <script>
-                                    function desaOrtuDropdown() {
+                                    function desaAyahDropdown() {
                                         return {
                                             open: false,
                                             search: '',
-                                            selected: @json($parent->desa_ortu ?? ''),
-                                            selectedText: @json($parent->desa_ortu ?? 'Pilih Desa'),
+                                            selected: @json($parent->desa_ayah ?? $parent->desa_ortu ?? ''),
+                                            selectedText: @json($parent->desa_ayah ?? $parent->desa_ortu ?? 'Pilih Desa'),
                                             allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
                                             currentCityCode: '',
                                             noCitySelected: true,
                                             init() {
-                                                if (!this.selected) {
-                                                    this.selectedText = 'Pilih Desa';
-                                                }
-                                                // Listen to Kota Ortu dropdown changes
-                                                const kotaSelect = document.getElementById('kotaOrtuSelect');
+                                                if (!this.selected) this.selectedText = 'Pilih Desa';
+                                                const kotaSelect = document.getElementById('kotaAyahSelect');
                                                 if (kotaSelect) {
-                                                    // Initial city code
                                                     const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
                                                     if (initialOpt && initialOpt.dataset.cityCode) {
                                                         this.currentCityCode = initialOpt.dataset.cityCode;
@@ -934,12 +918,10 @@ $isLocked = $mahasiswa->isProfileComplete();
                                                     } else {
                                                         this.noCitySelected = true;
                                                     }
-                                                    // On change
                                                     kotaSelect.addEventListener('change', (e) => {
                                                         const opt = e.target.options[e.target.selectedIndex];
                                                         this.currentCityCode = opt?.dataset?.cityCode || '';
                                                         this.noCitySelected = !this.currentCityCode;
-                                                        // Reset selection when city changes
                                                         this.selected = '';
                                                         this.selectedText = 'Pilih Desa';
                                                         this.search = '';
@@ -974,13 +956,13 @@ $isLocked = $mahasiswa->isProfileComplete();
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Handphone Ortu</label>
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Handphone Ayah</label>
                             <div class="lg:col-span-9">
                                 <div class="relative group">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
                                         <span class="text-sm font-bold opacity-50">+62</span>
                                     </div>
-                                    <input type="text" name="handphone_ortu" value="{{ $parent->handphone_ortu ?? '' }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
+                                    <input type="text" name="handphone_ayah" value="{{ $parent->handphone_ayah ?? $parent->handphone_ortu ?? '' }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
                                         class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
                                 </div>
                             </div>
@@ -988,7 +970,150 @@ $isLocked = $mahasiswa->isProfileComplete();
                     </div>
                 </div>
 
-
+                {{-- Data Alamat Ibu --}}
+                <div class="border-t border-gray-100 pt-8 mt-8">
+                    <div class="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
+                        <h3 class="text-[#1A1A1A] font-bold text-base tracking-tight">Alamat Ibu</h3>
+                        <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Mother's Residence</span>
+                    </div>
+                    <div class="space-y-5">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider pt-3">Alamat Lengkap</label>
+                            <div class="lg:col-span-9">
+                                <textarea name="alamat_ibu" rows="3"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $parent->alamat_ibu ?? '' }}</textarea>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
+                            <div class="lg:col-span-9">
+                                <select name="propinsi_ibu" id="provinsiIbuSelect"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                                    <option value="">Pilih Provinsi</option>
+                                    @foreach($provinces as $prov)
+                                    <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->propinsi_ibu ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
+                            <div class="lg:col-span-9">
+                                <select name="kota_ibu" id="kotaIbuSelect"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                    <option value="">Pilih Kota/Kabupaten</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
+                            <div class="lg:col-span-9">
+                                <div x-data="desaIbuDropdown()" class="relative">
+                                    <input type="hidden" name="desa_ibu" :value="selected">
+                                    <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputIbu.focus())"
+                                        class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
+                                        <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
+                                        <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
+                                    </button>
+                                    <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                        class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
+                                        <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                            <input type="text" x-model="search" x-ref="searchInputIbu" @click.stop @keydown.escape="open = false"
+                                                placeholder="Cari desa/kelurahan..." 
+                                                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
+                                        </div>
+                                        <div class="max-h-52 overflow-y-auto">
+                                            <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
+                                                <div class="text-orange-400 mb-1"><i class="fas fa-exclamation-circle text-xl"></i></div>
+                                                <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                            </div>
+                                            <div x-show="showHint" class="px-4 py-8 text-center">
+                                                <div class="text-gray-400 mb-1"><i class="fas fa-search text-xl"></i></div>
+                                                <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
+                                            </div>
+                                            <template x-for="(opt, index) in filteredOptions" :key="index">
+                                                <div @click="selectOption(opt)" 
+                                                    class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
+                                                    :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
+                                                    <span x-text="opt.text"></span>
+                                                </div>
+                                            </template>
+                                            <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">Tidak ditemukan</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    function desaIbuDropdown() {
+                                        return {
+                                            open: false,
+                                            search: '',
+                                            selected: @json($parent->desa_ibu ?? ''),
+                                            selectedText: @json($parent->desa_ibu ?? 'Pilih Desa'),
+                                            allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
+                                            currentCityCode: '',
+                                            noCitySelected: true,
+                                            init() {
+                                                if (!this.selected) this.selectedText = 'Pilih Desa';
+                                                const kotaSelect = document.getElementById('kotaIbuSelect');
+                                                if (kotaSelect) {
+                                                    const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
+                                                    if (initialOpt && initialOpt.dataset.cityCode) {
+                                                        this.currentCityCode = initialOpt.dataset.cityCode;
+                                                        this.noCitySelected = false;
+                                                    } else {
+                                                        this.noCitySelected = true;
+                                                    }
+                                                    kotaSelect.addEventListener('change', (e) => {
+                                                        const opt = e.target.options[e.target.selectedIndex];
+                                                        this.currentCityCode = opt?.dataset?.cityCode || '';
+                                                        this.noCitySelected = !this.currentCityCode;
+                                                        this.selected = '';
+                                                        this.selectedText = 'Pilih Desa';
+                                                        this.search = '';
+                                                    });
+                                                }
+                                            },
+                                            get options() {
+                                                if (!this.currentCityCode) return [];
+                                                return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                            },
+                                            get filteredOptions() {
+                                                if (!this.search || this.search.trim().length < 2) return [];
+                                                const term = this.search.toLowerCase().trim();
+                                                return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                            },
+                                            get showHint() {
+                                                if (this.noCitySelected) return false;
+                                                return !this.search || this.search.trim().length < 2;
+                                            },
+                                            get showNoCityMessage() {
+                                                return this.noCitySelected;
+                                            },
+                                            selectOption(opt) {
+                                                this.selected = opt.value;
+                                                this.selectedText = opt.text;
+                                                this.open = false;
+                                                this.search = '';
+                                            }
+                                        }
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Handphone Ibu</label>
+                            <div class="lg:col-span-9">
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
+                                        <span class="text-sm font-bold opacity-50">+62</span>
+                                    </div>
+                                    <input type="text" name="handphone_ibu" value="{{ $parent->handphone_ibu ?? '' }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
+                                        class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div> {{-- End Orang Tua Section --}}
 
             {{-- Wali Section --}}
@@ -1461,8 +1586,10 @@ $isLocked = $mahasiswa->isProfileComplete();
             // orang_tua
             'nama_ayah': 'orang_tua',
             'nama_ibu': 'orang_tua',
-            'alamat_ortu': 'orang_tua',
-            'handphone_ortu': 'orang_tua'
+            'alamat_ayah': 'orang_tua',
+            'handphone_ayah': 'orang_tua',
+            'alamat_ibu': 'orang_tua',
+            'handphone_ibu': 'orang_tua'
         };
 
         const form = document.querySelector('form');

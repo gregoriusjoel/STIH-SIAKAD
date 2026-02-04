@@ -4,7 +4,7 @@
 @section('page-title', 'Edit Dosen PA')
 
 @section('content')
-<div class="max-w-6xl mx-auto" x-data='{ activeTab: @json(request()->get("tab", "transfer")) }'>
+<div class="w-full" x-data='{ activeTab: @json(request()->get("tab", "transfer")) }'>
     <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
         <div class="p-6 border-b border-gray-200 bg-maroon text-white">
             <h3 class="text-xl font-bold flex items-center">

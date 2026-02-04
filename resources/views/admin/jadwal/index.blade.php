@@ -57,12 +57,25 @@
                                                               jamMulai: '',
                                                               jamSelesai: '',
                                                               ruanganId: '',
+                                                              jamPerkuliahanId: '',
                                                               roomStatus: { available: true, message: '' },
                                                               checkingRoom: false,
 
                                                               updateSks() {
                                                                   const dosen = this.dosens.find(d => d.id == this.selectedDosenId);
                                                                   this.selectedDosenSks = dosen ? dosen.total_sks : 0;
+                                                              },
+
+                                                              updateJamFromPerkuliahan() {
+                                                                  if (!this.jamPerkuliahanId) {
+                                                                      this.jamMulai = '';
+                                                                      this.jamSelesai = '';
+                                                                      return;
+                                                                  }
+                                                                  const select = document.querySelector('select[name=jam_perkuliahan_id]');
+                                                                  const option = select.options[select.selectedIndex];
+                                                                  this.jamMulai = option.dataset.mulai || '';
+                                                                  this.jamSelesai = option.dataset.selesai || '';
                                                               },
 
                                                               async fetchDosens() {
@@ -233,23 +246,22 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1"><i
-                                            class="fas fa-clock text-gray-400 mr-1"></i>Mulai <span
-                                            class="text-red-500">*</span></label>
-                                    <input type="time" name="jam_mulai" x-model="jamMulai" @change="checkRoom()"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
-                                        required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1"><i
-                                            class="fas fa-clock text-gray-400 mr-1"></i>Selesai <span
-                                            class="text-red-500">*</span></label>
-                                    <input type="time" name="jam_selesai" x-model="jamSelesai" @change="checkRoom()"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
-                                        required>
-                                </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
+                                        class="fas fa-clock text-gray-400 mr-1"></i>Jam Perkuliahan <span
+                                        class="text-red-500">*</span></label>
+                                <select name="jam_perkuliahan_id" x-model="jamPerkuliahanId" @change="updateJamFromPerkuliahan(); checkRoom();"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    required>
+                                    <option value="">Pilih Jam Perkuliahan</option>
+                                    @foreach($jamPerkuliahan as $jp)
+                                        <option value="{{ $jp->id }}" data-mulai="{{ date('H:i', strtotime($jp->jam_mulai)) }}" data-selesai="{{ date('H:i', strtotime($jp->jam_selesai)) }}">
+                                            Jam ke-{{ $jp->jam_ke }} ({{ date('H.i', strtotime($jp->jam_mulai)) }} - {{ date('H.i', strtotime($jp->jam_selesai)) }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <input type="hidden" name="jam_mulai" x-model="jamMulai">
+                                <input type="hidden" name="jam_selesai" x-model="jamSelesai">
                             </div>
                             <button type="submit" :disabled="!roomStatus.available || checkingRoom"
                                 :class="{'opacity-50 cursor-not-allowed': !roomStatus.available || checkingRoom, 'hover:bg-maroon-700': roomStatus.available && !checkingRoom}"
