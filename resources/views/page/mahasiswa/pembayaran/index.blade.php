@@ -4,7 +4,7 @@
 @section('page-title', 'Pembayaran')
 
 @section('content')
-    <div class="max-w-7xl mx-auto space-y-8">
+    <div class="space-y-8">
 
         {{-- TABLE 1: PEMBAYARAN KULIAH --}}
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">

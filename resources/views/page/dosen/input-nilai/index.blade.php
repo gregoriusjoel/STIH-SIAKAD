@@ -1,10 +1,10 @@
-@extends('layouts.dosen')
+@extends('layouts.app')
 
 @section('title', 'Input Nilai | Portal Dosen')
 @section('header_title', 'Input Nilai')
 
 @section('content')
-    <div class="space-y-6">
+    <div class="px-6 md:px-8 w-full flex flex-col gap-6 pt-6">
 
         <!-- Class Selection Card -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

@@ -6,23 +6,53 @@
 @section('content')
 @php
 $isLocked = $mahasiswa->isProfileComplete();
+$missingFields = session('missing_fields', []);
+$highlightMissing = session('highlight_missing', false);
+
+// Count missing fields per tab
+$missingByTab = [
+    'akademik' => 0,
+    'data_pribadi' => 0,
+    'orang_tua' => 0,
+    'asal_sekolah' => 0, // Keep for backwards compatibility
+];
+foreach ($missingFields as $field => $info) {
+    if (isset($info['tab']) && isset($missingByTab[$info['tab']])) {
+        $missingByTab[$info['tab']]++;
+    }
+}
 @endphp
 
 {{-- Flash Warning Message (from redirect) --}}
 @if(session('warning'))
 <div class="bg-orange-50 border-l-4 border-orange-500 p-4 mb-6 rounded-md">
-    <div class="flex items-center">
-        <i class="fas fa-exclamation-circle text-orange-600 mr-3"></i>
-        <p class="text-sm text-orange-800 font-medium">{{ session('warning') }}</p>
+    <div class="flex items-start gap-3">
+        <i class="fas fa-exclamation-circle text-orange-600 mt-0.5"></i>
+        <div class="flex-1">
+            <p class="text-sm text-orange-800 font-medium">{{ session('warning') }}</p>
+            @if($highlightMissing && count($missingFields) > 0)
+            <div class="mt-3 p-3 bg-white/50 rounded-lg border border-orange-200">
+                <p class="text-xs font-bold text-orange-700 uppercase mb-2">Data yang belum lengkap:</p>
+                <div class="flex flex-wrap gap-2">
+                    @foreach($missingFields as $field => $info)
+                    <span class="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">
+                        <i class="fas fa-times-circle"></i>
+                        {{ $info['label'] }}
+                    </span>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+        </div>
     </div>
 </div>
 @endif
 
 @if($isLocked)
-<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-md">
+<div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md">
     <div class="flex items-center">
-        <i class="fas fa-lock text-yellow-600 mr-3"></i>
-        <p class="text-sm text-yellow-800 font-medium">Data profil Anda sudah lengkap dan terkunci. Anda hanya dapat melihat data tanpa melakukan perubahan.</p>
+        <i class="fas fa-check-circle text-green-600 mr-3"></i>
+        <p class="text-sm text-green-800 font-medium">Data profil Anda sudah lengkap. Anda masih dapat memperbarui data profil jika diperlukan.</p>
     </div>
 </div>
 @else
@@ -37,7 +67,7 @@ $isLocked = $mahasiswa->isProfileComplete();
 
 
 <div class="bg-white rounded-lg shadow-sm p-8" x-data="{ 
-    activeTab: 'akademik', 
+    activeTab: '{{ $highlightMissing && count($missingFields) > 0 ? (collect($missingFields)->first()['tab'] ?? 'akademik') : 'akademik' }}', 
     photoPreview: '{{ $mahasiswa->foto ? asset("storage/" . $mahasiswa->foto) : "" }}' 
 }">
 
@@ -47,15 +77,19 @@ $isLocked = $mahasiswa->isProfileComplete();
             @foreach([
                 'akademik' => 'Akademik',
                 'data_pribadi' => 'Data Lanjutan',
-                'orang_tua' => 'Orang Tua / Wali',
-                'asal_sekolah' => 'Asal Sekolah'
+                'orang_tua' => 'Orang Tua / Wali'
             ] as $key => $label)
             <button @click="activeTab = '{{ $key }}'" type="button"
-                class="whitespace-nowrap px-8 py-4 text-sm font-bold transition-all duration-200 border-b-2"
+                class="whitespace-nowrap px-8 py-4 text-sm font-bold transition-all duration-200 border-b-2 relative"
                 :class="activeTab === '{{ $key }}' 
                     ? 'border-[#8B1538] text-[#8B1538]' 
                     : 'border-transparent text-[#9CA3AF] hover:text-[#1A1A1A] hover:border-gray-300'">
                 {{ $label }}
+                @if($highlightMissing && $missingByTab[$key] > 0)
+                <span class="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full">
+                    {{ $missingByTab[$key] }}
+                </span>
+                @endif
             </button>
             @endforeach
         </div>
@@ -541,6 +575,8 @@ $isLocked = $mahasiswa->isProfileComplete();
                         provSelect.addEventListener('change', function() {
                             const code = this.options[this.selectedIndex].dataset.code || '';
                             populateCities(code);
+                            // Trigger change on Kota to reset Desa
+                            kotaSelect.dispatchEvent(new Event('change'));
                         });
 
                         // Init
@@ -656,6 +692,10 @@ $isLocked = $mahasiswa->isProfileComplete();
                                 <span class="text-[10px] font-bold text-green-600 uppercase flex items-center gap-1">
                                     <i class="fas fa-check-circle"></i> Terupload
                                 </span>
+                            @else
+                                <span class="text-[10px] font-bold text-red-500 uppercase flex items-center gap-1">
+                                    <i class="fas fa-exclamation-circle"></i> Belum Upload
+                                </span>
                             @endif
                         </div>
                         <div class="relative group">
@@ -677,6 +717,54 @@ $isLocked = $mahasiswa->isProfileComplete();
                         @endif
                     </div>
                     @endforeach
+                </div>
+            </div>
+
+            {{-- Data Asal Sekolah (inside Data Lanjutan tab) --}}
+            <div>
+                <div class="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
+                    <h3 class="text-[#1A1A1A] font-bold text-base tracking-tight">Data Asal Sekolah</h3>
+                    <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Previous Education</span>
+                </div>
+                <div class="space-y-5">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Jenis Sekolah</label>
+                        <div class="lg:col-span-9">
+                            <select name="jenis_sekolah"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                                <option value="">Pilih Jenis Sekolah</option>
+                                <option value="1 - Umum" {{ $mahasiswa->jenis_sekolah === '1 - Umum' ? 'selected' : '' }}>1 - Umum</option>
+                                <option value="2 - Kejuruan" {{ $mahasiswa->jenis_sekolah === '2 - Kejuruan' ? 'selected' : '' }}>2 - Kejuruan</option>
+                                <option value="3 - Umum" {{ $mahasiswa->jenis_sekolah === '3 - Umum' ? 'selected' : '' }}>3 - Umum</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Jurusan</label>
+                        <div class="lg:col-span-9">
+                            <select name="jurusan_sekolah"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                                <option value="">Pilih Jurusan</option>
+                                @foreach(['SMU - IPA', 'SMU - IPS', 'SMU - Bahasa', 'SMK - Teknik Informatika', 'SMK - Teknik Mesin', 'SMK - Akuntansi', 'SMK - Lainnya'] as $j)
+                                <option value="{{ $j }}" {{ $mahasiswa->jurusan_sekolah === $j ? 'selected' : '' }}>{{ $j }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Tahun Lulus</label>
+                        <div class="lg:col-span-9">
+                            <input type="text" name="tahun_lulus" value="{{ $mahasiswa->tahun_lulus ?? '' }}" placeholder="Contoh: 2020"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Nilai Kelulusan</label>
+                        <div class="lg:col-span-9">
+                            <input type="number" name="nilai_kelulusan" value="{{ $mahasiswa->nilai_kelulusan ?? '' }}" step="0.01" min="0" max="100" placeholder="Contoh: 81.56"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1446,96 +1534,31 @@ $isLocked = $mahasiswa->isProfileComplete();
                     </template>
                 </div>
             </div>
-        </div>
 
-        {{-- Tab: Asal Sekolah --}}
-        <div x-show="activeTab === 'asal_sekolah'" x-cloak class="space-y-12 animate-fade-in">
-            <div>
-                <div class="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
-                    <h3 class="text-[#1A1A1A] font-bold text-base tracking-tight">Data Asal Sekolah</h3>
-                    <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Previous Education</span>
-                </div>
-                <div class="space-y-5">
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Jenis Sekolah</label>
-                        <div class="lg:col-span-9">
-                            <select name="jenis_sekolah"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                <option value="">Pilih Jenis Sekolah</option>
-                                <option value="1 - Umum" {{ $mahasiswa->jenis_sekolah === '1 - Umum' ? 'selected' : '' }}>1 - Umum</option>
-                                <option value="2 - Kejuruan" {{ $mahasiswa->jenis_sekolah === '2 - Kejuruan' ? 'selected' : '' }}>2 - Kejuruan</option>
-                                <option value="3 - Umum" {{ $mahasiswa->jenis_sekolah === '3 - Umum' ? 'selected' : '' }}>3 - Umum</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Jurusan</label>
-                        <div class="lg:col-span-9">
-                            <select name="jurusan_sekolah"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                <option value="">Pilih Jurusan</option>
-                                @foreach(['SMU - IPA', 'SMU - IPS', 'SMU - Bahasa', 'SMK - Teknik Informatika', 'SMK - Teknik Mesin', 'SMK - Akuntansi', 'SMK - Lainnya'] as $j)
-                                <option value="{{ $j }}" {{ $mahasiswa->jurusan_sekolah === $j ? 'selected' : '' }}>{{ $j }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Tahun Lulus</label>
-                        <div class="lg:col-span-9">
-                            <input type="text" name="tahun_lulus" value="{{ $mahasiswa->tahun_lulus ?? '' }}" placeholder="Contoh: 2020"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Nilai Kelulusan</label>
-                        <div class="lg:col-span-9">
-                            <input type="number" name="nilai_kelulusan" value="{{ $mahasiswa->nilai_kelulusan ?? '' }}" step="0.01" min="0" max="100" placeholder="Contoh: 81.56"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
-                        </div>
-                    </div>
-                </div>
+            {{-- Actions (inside Orang Tua/Wali tab) --}}
+            <div class="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-end gap-3">
+                <a href="{{ route('mahasiswa.profil.index') }}" 
+                    class="w-full sm:w-auto px-8 py-3 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#4B5563] text-sm font-bold rounded-xl transition-all hover:-translate-y-0.5 text-center">
+                    <i class="fas fa-times mr-2 font-medium"></i> Batal
+                </a>
+                
+                @if(!$isLocked)
+                <button type="submit" 
+                    class="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] hover:from-[#6D1029] hover:to-[#550c20] text-white text-sm font-bold rounded-xl shadow-lg shadow-maroon/20 transition-all hover:-translate-y-0.5 flex items-center justify-center">
+                    <i class="fas fa-save mr-2 font-medium"></i> Update Profil Mahasiswa
+                </button>
+                @else
+                <button type="submit" 
+                    class="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] hover:from-[#6D1029] hover:to-[#550c20] text-white text-sm font-bold rounded-xl shadow-lg shadow-maroon/20 transition-all hover:-translate-y-0.5 flex items-center justify-center">
+                    <i class="fas fa-save mr-2 font-medium"></i> Update Profil Mahasiswa
+                </button>
+                @endif
             </div>
-        </div>
-
-        {{-- Actions --}}
-        <div class="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-end gap-3">
-            <a href="{{ route('mahasiswa.profil.index') }}" 
-                class="w-full sm:w-auto px-8 py-3 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#4B5563] text-sm font-bold rounded-xl transition-all hover:-translate-y-0.5 text-center">
-                <i class="fas fa-times mr-2 font-medium"></i> Batal
-            </a>
-            
-            @if(!$isLocked)
-            <button type="submit" 
-                class="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] hover:from-[#6D1029] hover:to-[#550c20] text-white text-sm font-bold rounded-xl shadow-lg shadow-maroon/20 transition-all hover:-translate-y-0.5 flex items-center justify-center">
-                <i class="fas fa-save mr-2 font-medium"></i> Update Profil Mahasiswa
-            </button>
-            @else
-            <div class="flex items-center gap-3 px-8 py-3 bg-gray-50 text-[#9CA3AF] rounded-xl border border-gray-100 cursor-not-allowed">
-                <i class="fas fa-lock"></i>
-                <span class="text-xs font-bold uppercase tracking-wider">Data Terkunci</span>
-            </div>
-            @endif
         </div>
 
     </form>
 </div>
 
-@if($isLocked)
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Disable all input, select, and textarea fields
-        const form = document.querySelector('form');
-        if (form) {
-            const fields = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
-            fields.forEach(field => {
-                field.disabled = true;
-                field.classList.add('bg-gray-50', 'cursor-not-allowed');
-            });
-        }
-    });
-</script>
-@endif
 <script>
     function validateDocumentFiles(input) {
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -1712,5 +1735,212 @@ $isLocked = $mahasiswa->isProfileComplete();
             }
         });
     });
+
 </script>
+
+{{-- Highlight Missing Fields Script --}}
+@if($highlightMissing && count($missingFields) > 0)
+<style>
+    .missing-field {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+        animation: pulse-red 2s ease-in-out;
+    }
+    .missing-field:focus {
+        border-color: #ef4444 !important;
+        ring-color: rgba(239, 68, 68, 0.2) !important;
+    }
+    @keyframes pulse-red {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+        50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); }
+    }
+    .missing-label {
+        color: #ef4444 !important;
+    }
+    .missing-label::after {
+        content: ' (Belum diisi)';
+        font-size: 10px;
+        font-weight: normal;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const missingFields = @json(array_keys($missingFields));
+        
+        // Map field names to their input selectors
+        const fieldSelectors = {
+            'no_hp': 'input[name="no_hp"]',
+            'alamat': 'textarea[name="alamat"]',
+            'rt': 'input[name="rt"]',
+            'rw': 'input[name="rw"]',
+            'tempat_lahir': 'input[name="tempat_lahir"]',
+            'tanggal_lahir': 'input[name="tanggal_lahir"]',
+            'jenis_kelamin': 'select[name="jenis_kelamin"]',
+            'agama': 'select[name="agama"]',
+            'status_sipil': 'select[name="status_sipil"]',
+            'kota': 'select[name="kota"]',
+            'provinsi': 'select[name="provinsi"]',
+            'desa': 'input[name="desa"]',
+            'jenis_sekolah': 'select[name="jenis_sekolah"]',
+            'jurusan_sekolah': 'select[name="jurusan_sekolah"]',
+            'tahun_lulus': 'input[name="tahun_lulus"]',
+            'nilai_kelulusan': 'input[name="nilai_kelulusan"]',
+            'file_ijazah': 'input[name="file_ijazah[]"]',
+            'file_transkrip': 'input[name="file_transkrip[]"]',
+            'file_kk': 'input[name="file_kk[]"]',
+            'file_ktp': 'input[name="file_ktp[]"]',
+            'nama_ayah': 'input[name="nama_ayah"]',
+            'pendidikan_ayah': 'select[name="pendidikan_ayah"]',
+            'pekerjaan_ayah': 'select[name="pekerjaan_ayah"]',
+            'agama_ayah': 'select[name="agama_ayah"]',
+            'nama_ibu': 'input[name="nama_ibu"]',
+            'pendidikan_ibu': 'select[name="pendidikan_ibu"]',
+            'pekerjaan_ibu': 'select[name="pekerjaan_ibu"]',
+            'agama_ibu': 'select[name="agama_ibu"]',
+            'alamat_ayah': 'textarea[name="alamat_ayah"]',
+            'kota_ayah': 'select[name="kota_ayah"]',
+            'propinsi_ayah': 'select[name="propinsi_ayah"]',
+            'desa_ayah': 'input[name="desa_ayah"]',
+            'handphone_ayah': 'input[name="handphone_ayah"]',
+            'alamat_ibu': 'textarea[name="alamat_ibu"]',
+            'kota_ibu': 'select[name="kota_ibu"]',
+            'propinsi_ibu': 'select[name="propinsi_ibu"]',
+            'desa_ibu': 'input[name="desa_ibu"]',
+            'handphone_ibu': 'input[name="handphone_ibu"]',
+            // Alamat Sesuai KTP fields
+            'alamat_ktp': 'textarea[name="alamat_ktp"]',
+            'rt_ktp': 'input[name="rt_ktp"]',
+            'rw_ktp': 'input[name="rw_ktp"]',
+            'provinsi_ktp': 'select[name="provinsi_ktp"]',
+            'kota_ktp': 'select[name="kota_ktp"]',
+            'desa_ktp': 'input[name="desa_ktp"]',
+            // Wali (Guardian) fields
+            'nama_wali': 'input[name="nama_wali"]',
+            'hubungan_wali': 'select[name="hubungan_wali"]',
+            'pendidikan_wali': 'select[name="pendidikan_wali"]',
+            'pekerjaan_wali': 'select[name="pekerjaan_wali"]',
+            'agama_wali': 'select[name="agama_wali"]',
+            'alamat_wali': 'textarea[name="alamat_wali"]',
+            'provinsi_wali': 'select[name="provinsi_wali"]',
+            'kota_wali': 'select[name="kota_wali"]',
+            'desa_wali': 'input[name="desa_wali"]',
+            'handphone_wali': 'input[name="handphone_wali"]',
+        };
+
+        // Helper to toggle missing-field class and label
+        // Handles shared labels (e.g., RT / RW share one label) and nested grids
+        function toggleMissingState(element, field, isEmpty) {
+            // Find container that holds the label (traverse up if needed)
+            let container = element.closest('.grid');
+            let label = container ? container.querySelector('label') : null;
+            
+            // If we found a grid but no label, it might be a nested grid (like RT/RW case)
+            // Traverse up to find the parent grid that contains the label
+            if (container && !label) {
+                let parent = container.parentElement;
+                while (parent && !parent.matches('body')) {
+                    if (parent.classList.contains('grid') && parent.querySelector('label')) {
+                        container = parent;
+                        label = parent.querySelector('label');
+                        break;
+                    }
+                    parent = parent.parentElement;
+                }
+            }
+
+            if (isEmpty) {
+                element.classList.add('missing-field');
+                if (label) label.classList.add('missing-label');
+                
+                // Handle hidden inputs for custom dropdowns
+                if (element.type === 'hidden' && element.nextElementSibling && element.nextElementSibling.tagName === 'BUTTON') {
+                    element.nextElementSibling.classList.remove('border-[#E5E7EB]');
+                    element.nextElementSibling.classList.add('border-red-500', 'bg-red-50', 'missing-field-button');
+                }
+            } else {
+                element.classList.remove('missing-field');
+                // Handle hidden inputs for custom dropdowns
+                if (element.type === 'hidden' && element.nextElementSibling && element.nextElementSibling.tagName === 'BUTTON') {
+                    element.nextElementSibling.classList.remove('border-red-500', 'bg-red-50', 'missing-field-button');
+                    element.nextElementSibling.classList.add('border-[#E5E7EB]');
+                }
+
+                // Only remove label class if ALL inputs in this container are filled
+                if (label && container) {
+                    const allInputs = container.querySelectorAll('input, select, textarea');
+                    const anyMissing = Array.from(allInputs).some(inp => inp.classList.contains('missing-field'));
+                    if (!anyMissing) {
+                        label.classList.remove('missing-label');
+                    }
+                }
+            }
+        }
+        
+        missingFields.forEach(field => {
+            let selector = fieldSelectors[field];
+            
+            // Handle dynamic family fields: keluarga.0.nama -> input[name="keluarga[0][nama]"]
+            if (!selector && field.startsWith('keluarga.')) {
+                const parts = field.split('.');
+                if (parts.length === 3) {
+                    const index = parts[1];
+                    const subField = parts[2];
+                    // subField can be nama, hubungan, pendidikan, pekerjaan, agama
+                    // Selector structure matches: name="keluarga[0][pekerjaan]"
+                    // Note: Alpine uses :name binding but DOM will have resolved name attribute
+                    selector = `[name="keluarga[${index}][${subField}]"]`; 
+                }
+            }
+
+            if (selector) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    // Initially mark as missing
+                    element.classList.add('missing-field');
+                    
+                    // Find container that holds the label using the same logic as toggleMissingState
+                    let container = element.closest('.grid');
+                    let label = container ? container.querySelector('label') : null;
+                    
+                    if (container && !label) {
+                        let parent = container.parentElement;
+                        while (parent && !parent.matches('body')) {
+                            if (parent.classList.contains('grid') && parent.querySelector('label')) {
+                                container = parent;
+                                label = parent.querySelector('label');
+                                break;
+                            }
+                            parent = parent.parentElement;
+                        }
+                    }
+
+                    if (label) {
+                        label.classList.add('missing-label');
+                    }
+
+                    // Attach event listeners for dynamic updates
+                    const eventType = (element.tagName === 'SELECT' || element.type === 'file') ? 'change' : 'input';
+                    element.addEventListener(eventType, function() {
+                        let hasValue = false;
+                        if (element.type === 'file') {
+                            hasValue = element.files && element.files.length > 0;
+                        } else {
+                            hasValue = element.value.trim() !== '';
+                        }
+                        toggleMissingState(element, field, !hasValue);
+                    });
+                }
+            }
+        });
+        
+        // Scroll to first missing field after a short delay
+        setTimeout(() => {
+            const firstMissing = document.querySelector('.missing-field');
+            if (firstMissing) {
+                firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 500);
+    });
+</script>
+@endif
 @endsection

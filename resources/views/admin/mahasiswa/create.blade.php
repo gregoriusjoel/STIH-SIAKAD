@@ -105,9 +105,13 @@
                                     <i class="fas fa-calendar-alt text-gray-400 mr-1"></i>
                                     Angkatan *
                                 </label>
-                                <input type="text" name="angkatan" value="{{ old('angkatan', date('Y')) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="Contoh: 2024" required>
+                                
+                                <select name="angkatan" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                                    <option value="">Pilih Angkatan</option>
+                                    @for ($year = date('Y'); $year >= 1960; $year--)
+                                        <option value="{{ $year }}" {{ old('angkatan', date('Y')) == $year ? 'selected' : '' }}>{{ $year }}</option>
+                                    @endfor
+                                </select>
                             </div>
 
                             <div>

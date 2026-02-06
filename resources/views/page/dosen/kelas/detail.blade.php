@@ -53,10 +53,10 @@
 
         {{-- BREADCRUMB & HEADER --}}
         <div class="flex flex-col gap-4">
-            <nav class="flex items-center gap-2 text-sm text-gray-500">
+            <nav class="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
                 <a href="{{ route('dosen.kelas') }}" class="hover:text-primary transition-colors">Kelas</a>
                 <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                <span class="font-medium text-gray-800">{{ $class_info['name'] }}</span>
+                <span class="font-medium text-gray-800 dark:text-white">{{ $class_info['name'] }}</span>
             </nav>
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -67,23 +67,25 @@
                     </div>
                     <div>
                         <div class="flex items-center gap-3 mb-1">
-                            <h1 class="text-3xl font-black text-[#111218] tracking-tight">{{ $class_info['name'] }}</h1>
+                            <h1 class="text-3xl font-black text-[#111218] dark:text-white tracking-tight">
+                                {{ $class_info['name'] }}</h1>
                             <span
                                 class="px-2.5 py-0.5 rounded text-xs font-bold bg-green-50 text-green-700 border border-green-100 uppercase tracking-wide">
                                 Aktif
                             </span>
                         </div>
-                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-slate-400">
                             <div class="flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[18px]">class</span>
-                                <span class="font-medium text-gray-700">Kelas {{ $class_info['section'] }}</span>
+                                <span class="font-medium text-gray-700 dark:text-slate-300">Kelas
+                                    {{ $class_info['section'] }}</span>
                             </div>
-                            <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                            <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600"></span>
                             <div class="flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
                                 <span>{{ $class_info['code'] }}</span>
                             </div>
-                            <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                            <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600"></span>
                             <div>{{ $class_info['sks'] }} SKS</div>
                         </div>
                     </div>
@@ -91,7 +93,7 @@
 
                 <div class="flex gap-3">
                     <button
-                        class="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all shadow-sm">
+                        class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                         <span class="material-symbols-outlined text-[20px]">share</span>
                         Bagikan
                     </button>
@@ -108,49 +110,60 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <!-- Time -->
             <div
-                class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-                <div class="size-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                <div
+                    class="size-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                     <span class="material-symbols-outlined">schedule</span>
                 </div>
                 <div>
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Waktu</p>
-                    <p class="text-sm font-bold text-gray-800">{{ $class_info['day'] }}, {{ $class_info['time'] }}</p>
+                    <p class="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">Waktu
+                    </p>
+                    <p class="text-sm font-bold text-gray-800 dark:text-white">{{ $class_info['day'] }},
+                        {{ $class_info['time'] }}</p>
                 </div>
             </div>
 
             <!-- Room -->
             <div
-                class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-                <div class="size-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                <div
+                    class="size-12 rounded-xl bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center">
                     <span class="material-symbols-outlined">location_on</span>
                 </div>
                 <div>
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Ruangan</p>
-                    <p class="text-sm font-bold text-gray-800">{{ $class_info['room'] }}</p>
+                    <p class="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">
+                        Ruangan</p>
+                    <p class="text-sm font-bold text-gray-800 dark:text-white">{{ $class_info['room'] }}</p>
                 </div>
             </div>
 
             <!-- Total Students -->
             <div
-                class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-                <div class="size-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                <div
+                    class="size-12 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center">
                     <span class="material-symbols-outlined">group</span>
                 </div>
                 <div>
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Mahasiswa</p>
-                    <p class="text-sm font-bold text-gray-800">{{ $class_info['students_count'] }} Terdaftar</p>
+                    <p class="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">
+                        Mahasiswa</p>
+                    <p class="text-sm font-bold text-gray-800 dark:text-white">{{ $class_info['students_count'] }} Terdaftar
+                    </p>
                 </div>
             </div>
 
             <!-- Progress -->
             <div
-                class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-                <div class="size-12 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center">
+                class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                <div
+                    class="size-12 rounded-xl bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 flex items-center justify-center">
                     <span class="material-symbols-outlined">timeline</span>
                 </div>
                 <div>
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Pertemuan</p>
-                    <p class="text-sm font-bold text-gray-800">3 / {{ $class_info['total_pertemuan'] }} Selesai</p>
+                    <p class="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">
+                        Pertemuan</p>
+                    <p class="text-sm font-bold text-gray-800 dark:text-white">3 / {{ $class_info['total_pertemuan'] }}
+                        Selesai</p>
                 </div>
             </div>
         </div>
@@ -158,12 +171,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {{-- LEFT: MEETING TIMELINE --}}
             <div class="col-span-12 lg:col-span-3 space-y-4">
-                <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+                <h3 class="font-bold text-gray-800 dark:text-white text-lg flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary">event_note</span>
                     Daftar Pertemuan
                 </h3>
 
-                <div class="bg-white rounded-2xl border border-gray-100 p-2 shadow-sm">
+                <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-100 dark:border-slate-800 p-2 shadow-sm">
                     <div class="flex flex-col gap-1 min-h-[400px]">
                         @foreach($meetings as $m)
                             <div x-data="{ open: false }" class="group"
@@ -173,23 +186,23 @@
                                 x-transition:enter-end="opacity-100 transform scale-100">
                                 <button @click="open = !open"
                                     class="w-full flex items-start gap-4 p-3 rounded-xl transition-colors text-left relative overflow-hidden"
-                                    :class="open ? 'bg-gray-50' : 'hover:bg-gray-50'">
+                                    :class="open ? 'bg-gray-50 dark:bg-slate-800' : 'hover:bg-gray-50 dark:hover:bg-slate-800'">
 
                                     {{-- Status Indicator Line --}}
-                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-200"
-                                        :class="open ? 'bg-primary' : 'bg-gray-200'"></div>
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-200 dark:bg-slate-700"
+                                        :class="open ? 'bg-primary' : 'bg-gray-200 dark:bg-slate-700'"></div>
 
                                     <div class="pl-2 flex-1">
                                         <div class="flex justify-between items-start">
-                                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">
                                                 {{ $m['label'] }}
                                             </span>
                                         </div>
-                                        <h4 class="font-bold text-gray-800 text-sm mt-0.5">{{ $m['date'] }}</h4>
+                                        <h4 class="font-bold text-gray-800 dark:text-white text-sm mt-0.5">{{ $m['date'] }}</h4>
 
-                                        <div x-show="!open" class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                        <div x-show="!open" class="text-xs text-gray-500 dark:text-slate-400 mt-1 flex items-center gap-1">
                                             <span class="material-symbols-outlined text-[16px]">schedule</span>
-                                            <span class="font-semibold text-gray-700">{{ $m['time'] }}</span>
+                                            <span class="font-semibold text-gray-700 dark:text-slate-300">{{ $m['time'] }}</span>
                                         </div>
                                     </div>
 
@@ -199,10 +212,10 @@
                                 </button>
 
                                 <div x-show="open" class="pl-5 pr-3 pb-3">
-                                    <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 mt-1">
+                                    <div class="bg-gray-50 dark:bg-slate-800 rounded-lg p-3 border border-gray-100 dark:border-slate-700 mt-1">
                                         <div class="flex justify-between items-center text-xs mb-3">
-                                            <div class="text-gray-500">Waktu</div>
-                                            <div class="font-bold text-gray-800">{{ $m['time'] }}</div>
+                                            <div class="text-gray-500 dark:text-slate-400">Waktu</div>
+                                            <div class="font-bold text-gray-800 dark:text-white">{{ $m['time'] }}</div>
                                         </div>
 
                                         <div class="grid grid-cols-2 gap-2">
@@ -212,7 +225,7 @@
                                                 Absen
                                             </a>
                                             <a href="{{ route('dosen.kelas.pertemuan.detail', ['id' => $id, 'pertemuan' => $m['no']]) }}"
-                                                class="flex items-center justify-center gap-1.5 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-50 transition-all">
+                                                class="flex items-center justify-center gap-1.5 py-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 rounded-lg text-xs font-semibold hover:bg-gray-50 dark:hover:bg-slate-600 transition-all">
                                                 Lihat Rincian
                                             </a>
                                         </div>
@@ -223,19 +236,19 @@
                     </div>
 
                     {{-- Pagination Controls --}}
-                    <div class="flex justify-between items-center px-2 py-3 border-t border-gray-100 mt-2"
+                    <div class="flex justify-between items-center px-2 py-3 border-t border-gray-100 dark:border-slate-800 mt-2"
                         x-show="totalMeetings > perPage">
                         <button @click="prevPage" :disabled="meetingPage === 1"
-                            class="size-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                            class="size-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
                         </button>
 
-                        <span class="text-xs font-bold text-gray-400">
-                            Page <span class="text-gray-800" x-text="meetingPage"></span>
+                        <span class="text-xs font-bold text-gray-400 dark:text-slate-500">
+                            Page <span class="text-gray-800 dark:text-white" x-text="meetingPage"></span>
                         </span>
 
                         <button @click="nextPage" :disabled="meetingPage === totalPages"
-                            class="size-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                            class="size-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                         </button>
                     </div>
@@ -245,37 +258,37 @@
             {{-- RIGHT: STUDENTS TABLE --}}
             <div class="col-span-12 lg:col-span-9 space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+                    <h3 class="font-bold text-gray-800 dark:text-white text-lg flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary">school</span>
                         Daftar Mahasiswa
                     </h3>
-                    <div class="text-sm text-gray-500">
-                        Total <span class="font-bold text-gray-800">{{ count($students) }}</span> mahasiswa terdaftar
+                    <div class="text-sm text-gray-500 dark:text-slate-400">
+                        Total <span class="font-bold text-gray-800 dark:text-white">{{ count($students) }}</span> mahasiswa terdaftar
                     </div>
                 </div>
 
                 {{-- FILTERS --}}
-                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4">
+                <div class="bg-white dark:bg-[#1a1d2e] p-4 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-4">
                     <div class="relative flex-1">
                         <span
-                            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">search</span>
+                            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 material-symbols-outlined text-[20px]">search</span>
                         <input type="text" x-model="searchQuery" placeholder="     Cari nama mahasiswa atau NIM..."
-                            class="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm text-gray-800 placeholder-gray-400">
+                            class="w-full pl-11 pr-4 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50/50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-700 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-slate-500">
                     </div>
                     <div class="flex gap-3">
                         <div class="relative w-full md:w-48">
                             <select x-model="filterProdi"
-                                class="w-full appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-sm text-gray-700 cursor-pointer font-medium">
+                                class="w-full appearance-none pl-4 pr-10 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-sm text-gray-700 dark:text-slate-300 cursor-pointer font-medium">
                                 <option value="">Semua Prodi</option>
                                 <option value="Informatika">Informatika</option>
                                 <option value="Sistem Informasi">Sistem Informasi</option>
                             </select>
                             <span
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none material-symbols-outlined text-[20px]">expand_more</span>
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 pointer-events-none material-symbols-outlined text-[20px]">expand_more</span>
                         </div>
                         <div class="relative w-full md:w-48">
                             <select x-model="filterStatus"
-                                class="w-full appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-sm text-gray-700 cursor-pointer font-medium">
+                                class="w-full appearance-none pl-4 pr-10 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-sm text-gray-700 dark:text-slate-300 cursor-pointer font-medium">
                                 <option value="">Semua Status</option>
                                 <option value="Aktif">Aktif</option>
                                 <option value="Cuti">Cuti</option>
@@ -287,12 +300,12 @@
                 </div>
 
                 {{-- TABLE --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr
-                                    class="bg-gray-50/80 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold">
+                                    class="bg-gray-50/80 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-800 text-xs uppercase tracking-wider text-gray-500 dark:text-slate-400 font-bold">
                                     <th class="px-6 py-4">Mahasiswa</th>
                                     <th class="px-6 py-4">Prodi</th>
                                     <th class="px-6 py-4 text-center">Semester</th>
@@ -301,10 +314,10 @@
                                     <th class="px-6 py-4 text-right">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
                                 @if(count($students) > 0)
                                     @foreach($students as $student)
-                                        <tr class="hover:bg-blue-50/30 transition-colors group"
+                                        <tr class="hover:bg-blue-50/30 dark:hover:bg-slate-800/50 transition-colors group"
                                             x-show="filterStudent('{{ $student['name'] }}', '{{ $student['nim'] }}', '{{ $student['prodi'] }}', '{{ $student['status'] }}')">
 
                                             <td class="px-6 py-4">
@@ -314,22 +327,23 @@
                                                         {{ strtoupper(substr($student['name'], 0, 2)) }}
                                                     </div>
                                                     <div>
-                                                        <p class="text-gray-900 font-bold text-sm">{{ $student['name'] }}</p>
-                                                        <p class="text-gray-500 text-xs font-medium font-mono">{{ $student['nim'] }}
+                                                    <p class="text-gray-900 dark:text-white font-bold text-sm">{{ $student['name'] }}</p>
+                                                        <p class="text-gray-500 dark:text-slate-400 text-xs font-medium font-mono">{{ $student['nim'] }}
                                                         </p>
                                                     </div>
                                                 </div>
                                             </td>
 
-                                            <td class="px-6 py-4 text-gray-600 font-medium text-sm">{{ $student['prodi'] }}</td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-slate-300 font-medium text-sm">{{ $student['prodi'] }}</td>
 
                                             <td class="px-6 py-4 text-center">
                                                 <span
-                                                    class="inline-flex items-center justify-center size-6 rounded bg-gray-100 text-xs font-bold text-gray-600">{{ $student['semester'] }}</span>
+                                                    class="inline-flex items-center justify-center size-6 rounded bg-gray-100 dark:bg-slate-700 text-xs font-bold text-gray-600 dark:text-slate-300">{{ $student['semester'] }}</span>
                                             </td>
 
                                             <td class="px-6 py-4 text-center">
-                                                <span class="text-gray-900 font-bold">{{ is_numeric($student['ipk']) ? number_format((float) $student['ipk'], 2) : '-' }}</span>
+                                                <span
+                                                    class="text-gray-900 dark:text-white font-bold">{{ is_numeric($student['ipk']) ? number_format((float) $student['ipk'], 2) : '-' }}</span>
                                             </td>
 
                                             <td class="px-6 py-4">
@@ -380,16 +394,16 @@
                         </table>
                     </div>
 
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                        <p class="text-xs text-gray-500">
-                            Menampilkan <span class="font-bold text-gray-800" x-text="filteredCount"></span> mahasiswa
+                    <div class="px-6 py-4 border-t border-gray-100 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-800/30 flex items-center justify-between">
+                        <p class="text-xs text-gray-500 dark:text-slate-400">
+                            Menampilkan <span class="font-bold text-gray-800 dark:text-white" x-text="filteredCount"></span> mahasiswa
                         </p>
                         <div class="flex gap-1">
                             <button
-                                class="px-3 py-1 rounded border border-gray-200 text-xs font-bold text-gray-500 hover:bg-white hover:text-gray-800 disabled:opacity-50"
+                                class="px-3 py-1 rounded border border-gray-200 dark:border-slate-700 text-xs font-bold text-gray-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:text-gray-800 dark:hover:text-white disabled:opacity-50"
                                 disabled>Prev</button>
                             <button
-                                class="px-3 py-1 rounded border border-gray-200 text-xs font-bold text-gray-500 hover:bg-white hover:text-gray-800 disabled:opacity-50"
+                                class="px-3 py-1 rounded border border-gray-200 dark:border-slate-700 text-xs font-bold text-gray-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:text-gray-800 dark:hover:text-white disabled:opacity-50"
                                 disabled>Next</button>
                         </div>
                     </div>

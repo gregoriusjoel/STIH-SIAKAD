@@ -20,6 +20,9 @@ class TugasController extends Controller
             'max_score' => 'nullable|integer|min:0'
         ]);
 
+        // Get kelas to extract mata_kuliah_id
+        $kelas = \App\Models\Kelas::findOrFail($kelasId);
+
         $filePath = null;
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('tugas', 'public');
@@ -28,7 +31,8 @@ class TugasController extends Controller
         $dosen = Auth::user()->dosen ?? null;
 
         $tugas = Tugas::create([
-            'kelas_id' => $kelasId,
+            'kelas_id' => $kelasId, // Keep for backward compatibility
+            'mata_kuliah_id' => $kelas->mata_kuliah_id, // Share across all classes
             'pertemuan' => (int) $pertemuan,
             'title' => $request->input('title'),
             'description' => $request->input('description'),
@@ -38,12 +42,16 @@ class TugasController extends Controller
             'max_score' => $request->input('max_score')
         ]);
 
-        return back()->with('success', 'Tugas berhasil dibuat.');
+        return back()->with('success', 'Tugas berhasil dibuat dan akan ditampilkan di semua kelas untuk mata kuliah ini.');
     }
 
     public function index(Request $request, $kelasId, $pertemuan)
     {
-        $tugas = Tugas::where('kelas_id', $kelasId)
+        // Get kelas to extract mata_kuliah_id
+        $kelas = \App\Models\Kelas::findOrFail($kelasId);
+        
+        // Get tugas for this mata kuliah and pertemuan (shared across all classes)
+        $tugas = Tugas::where('mata_kuliah_id', $kelas->mata_kuliah_id)
             ->where('pertemuan', $pertemuan)
             ->orderBy('created_at', 'desc')
             ->get();

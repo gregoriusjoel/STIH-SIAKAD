@@ -156,12 +156,6 @@ class ProfilController extends Controller
         $user = Auth::user();
         $mahasiswa = $user->mahasiswa;
 
-        // Prevent updates if profile is already complete
-        if ($mahasiswa->isProfileComplete()) {
-            return redirect()->route('mahasiswa.profil.index')
-                ->with('error', 'Data profil sudah lengkap dan tidak dapat diubah lagi.');
-        }
-
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
@@ -256,7 +250,6 @@ class ProfilController extends Controller
             'kota' => $request->kota,
             'desa' => $request->desa,
             'provinsi' => $request->provinsi,
-            'negara' => $request->negara,
             'alamat_ktp' => $request->alamat_ktp,
             'rt_ktp' => $request->rt_ktp,
             'rw_ktp' => $request->rw_ktp,

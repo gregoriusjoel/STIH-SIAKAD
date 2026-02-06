@@ -4,528 +4,201 @@
 @section('page-title', 'Profil Mahasiswa')
 
 @section('content')
-    <div class="bg-white rounded-lg shadow-sm p-8" x-data="{ activeTab: 'akademik' }">
+    <div class="space-y-6">
 
-        {{-- Header with Edit Button --}}
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            {{-- Tabs Header --}}
-            <div class="flex border-b border-gray-200 overflow-x-auto w-full md:w-auto">
-                <button @click="activeTab = 'akademik'"
-                    class="flex-1 min-w-[120px] py-4 text-center text-sm transition-all duration-200 font-semibold"
-                    style="border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb;"
-                    x-bind:style="activeTab === 'akademik'
-                                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb;'
-                                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
-                    Akademik
-                </button>
-
-                <button @click="activeTab = 'data_pribadi'"
-                    class="flex-shrink-0 px-6 py-4 text-center text-sm transition-all duration-200 whitespace-nowrap"
-                    x-bind:style="activeTab === 'data_pribadi'
-                                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
-                                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
-                    Data Pribadi
-                </button>
-
-                <button @click="activeTab = 'orang_tua'"
-                    class="flex-shrink-0 px-6 py-4 text-center text-sm transition-all duration-200 whitespace-nowrap"
-                    x-bind:style="activeTab === 'orang_tua'
-                                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
-                                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
-                    Orang Tua / Wali
-                </button>
-
-                <button @click="activeTab = 'asal_sekolah'"
-                    class="flex-shrink-0 px-6 py-4 text-center text-sm transition-all duration-200 whitespace-nowrap"
-                    x-bind:style="activeTab === 'asal_sekolah'
-                                        ? 'border-bottom: 2px solid #8B1538; color: #8B1538; background-color: #f9fafb; font-weight:600;'
-                                        : 'border-bottom: 2px solid transparent; color: #6b7280; background-color: transparent;'">
-                    Asal Sekolah
-                </button>
+        @if(session('success'))
+            <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                </div>
             </div>
+        @endif
 
-            @if(isset($mahasiswa) && $mahasiswa->isProfileComplete())
-                <button disabled
-                    class="inline-flex items-center gap-2 px-6 py-2.5 font-medium rounded-full shadow-sm transition-all text-sm whitespace-nowrap cursor-not-allowed text-white bg-green-600 opacity-90">
-                    <i class="fas fa-check-circle"></i> Data Sudah Lengkap
-                </button>
-            @else
-                <a href="{{ route('mahasiswa.profil.manajemen') }}"
-                    class="inline-flex items-center gap-2 px-6 py-2.5 text-white font-medium rounded-full shadow-sm transition-all text-sm whitespace-nowrap"
-                    style="background-color:#8B1538;" onmouseover="this.style.backgroundColor='#6D1029'"
-                    onmouseout="this.style.backgroundColor='#8B1538'">
-                    <i class="fas fa-edit"></i> Edit Profil
-                </a>
-            @endif
-        </div>
+        @if(session('error'))
+            <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
+                    <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
+                </div>
+            </div>
+        @endif
 
-        <div class="max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            {{-- TAB AKADEMIK --}}
-            <div x-show="activeTab === 'akademik'" x-cloak class="space-y-8">
-
-                <div class="flex flex-col md:flex-row gap-8 items-start border-b border-gray-100 pb-8">
-                    <div class="shrink-0 mx-auto md:mx-0">
-                        <div class="border-2 border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm"
-                            style="width:160px; height:208px; min-width:160px; min-height:208px; max-width:160px; max-height:208px;">
+            {{-- Left Column: Photo & Basic Identity --}}
+            <div class="space-y-6">
+                <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-6 text-center h-full">
+                    <div class="relative w-40 h-40 mx-auto mb-6 group">
+                        <div
+                            class="w-40 h-40 rounded-full overflow-hidden border-4 border-gray-100 dark:border-slate-700 shadow-sm relative">
                             @if($mahasiswa->foto)
-                                <img src="{{ asset('storage/' . $mahasiswa->foto) }}" alt="Foto Mahasiswa" loading="lazy" style="
-                                                            width:160px;
-                                                            height:208px;
-                                                            object-fit:cover;
-                                                            display:block;
-                                                        ">
+                                <img src="{{ asset('storage/' . $mahasiswa->foto) }}" alt="Foto Profil"
+                                    class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center text-gray-300">
-                                    <i class="fas fa-user text-5xl"></i>
+                                <div
+                                    class="w-full h-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-400 dark:text-slate-500">
+                                    <i class="fas fa-user text-6xl"></i>
                                 </div>
                             @endif
                         </div>
-
                     </div>
 
-                    <div class="grow w-full space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-3 border-b pb-4">
-                            <label class="text-xs font-bold text-gray-400 uppercase">Nama Lengkap</label>
-                            <div class="md:col-span-2 text-lg font-semibold text-gray-800">{{ $user->name }}</div>
-                        </div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-1">{{ $user->name }}</h3>
+                    <p class="text-sm text-gray-500 dark:text-slate-400 mb-4">{{ $mahasiswa->nim }}</p>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 border-b pb-4">
-                            <label class="text-xs font-bold text-gray-400 uppercase">NIM</label>
-                            <div class="md:col-span-2 font-mono text-gray-800">{{ $mahasiswa->nim }}</div>
-                        </div>
+                    <form action="{{ route('mahasiswa.profil.update') }}" method="POST" enctype="multipart/form-data"
+                        class="mt-4">
+                        @csrf
+                        @method('PUT')
+                        {{-- Hidden fields required for validation --}}
+                        <input type="hidden" name="name" value="{{ $user->name }}">
+                        <input type="hidden" name="email" value="{{ $user->email }}">
+                        <input type="hidden" name="no_hp" value="{{ $mahasiswa->no_hp }}">
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 border-b pb-4">
-                            <label class="text-xs font-bold text-gray-400 uppercase">Program Studi</label>
-                            <div class="md:col-span-2 text-gray-800">{{ $mahasiswa->prodi }}</div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3">
-                            <label class="text-xs font-bold text-gray-400 uppercase">Status Akun</label>
-                            <div class="md:col-span-2">
-                                @php
-                                    $currentSemester = $mahasiswa->semester ?? ($mahasiswa->getCurrentSemester() ?? null);
-                                    $displayStatus = ($currentSemester !== null && (int)$currentSemester === 1) ? 'Baru' : 'Aktif';
-                                @endphp
-                                <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                                    {{ $displayStatus }}
-                                </span>
+                        <div x-data="{ fileName: '' }" class="mb-4">
+                            <label class="block w-full">
+                                <span class="sr-only">Pilih Foto</span>
+                                <input type="file" name="foto" accept="image/*" required
+                                    @change="fileName = $event.target.files[0].name" class="block w-full text-sm text-gray-500 dark:text-slate-400
+                                                file:mr-4 file:py-2 file:px-4
+                                                file:rounded-full file:border-0
+                                                file:text-xs file:font-semibold
+                                                file:bg-maroon file:text-white
+                                                hover:file:bg-maroon-hover
+                                                cursor-pointer">
+                            </label>
+                            <div x-show="fileName" class="text-xs text-center mt-2 text-green-600 dark:text-green-400">
+                                <span x-text="fileName"></span> siap diupload
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div>
-                    <h3 class="font-medium text-gray-800 mb-4 border-b pb-2">Kontak & Akun</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Email</label>
-                            <div class="text-gray-800">{{ $user->email }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Nomor HP</label>
-                            <div class="text-gray-800">{{ $mahasiswa->no_hp ?? 'Belum diisi' }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="font-medium text-gray-800 mb-4 border-b pb-2">Detail Akademik</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Program</label>
-                            <div>Reguler</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Kurikulum</label>
-                            <div>Kurikulum {{ $mahasiswa->prodi }} Angkatan {{ $mahasiswa->angkatan }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Angkatan</label>
-                            <div>{{ $mahasiswa->angkatan }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Penasihat Akademik</label>
-                            <div>Dosen PA</div>
-                        </div>
-                    </div>
+                        <button type="submit"
+                            class="w-full py-2 bg-maroon text-white text-sm font-bold rounded-lg hover:bg-maroon-hover transition shadow-sm">
+                            <i class="fas fa-camera mr-2"></i> Update Foto
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            {{-- TAB DATA PRIBADI --}}
-            <div x-show="activeTab === 'data_pribadi'" x-cloak class="space-y-8">
-                <div>
-                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Domisili</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="md:col-span-2">
-                            <label class="text-xs font-bold text-gray-400 uppercase">Alamat Lengkap</label>
-                            <div>{{ $mahasiswa->alamat ?? 'Belum diisi' }}</div>
+            {{-- Right Column: Security --}}
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-6 h-full">
+                    <div class="flex items-center gap-3 mb-6 border-b border-gray-100 dark:border-slate-700 pb-4">
+                        <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                            <i class="fas fa-lock text-maroon text-lg"></i>
                         </div>
                         <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">RT / RW</label>
-                            <div>{{ ($mahasiswa->rt ?? '-') . ' / ' . ($mahasiswa->rw ?? '-') }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
-                            <div>{{ $mahasiswa->desa ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Kota/Kabupaten</label>
-                            <div>{{ $mahasiswa->kota ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
-                            <div>{{ $mahasiswa->provinsi ?? 'Belum diisi' }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Sesuai KTP</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="md:col-span-2">
-                            <label class="text-xs font-bold text-gray-400 uppercase">Alamat Lengkap</label>
-                            <div>{{ $mahasiswa->alamat_ktp ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">RT / RW</label>
-                            <div>{{ ($mahasiswa->rt_ktp ?? '-') . ' / ' . ($mahasiswa->rw_ktp ?? '-') }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
-                            <div>{{ $mahasiswa->desa_ktp ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Kota/Kabupaten</label>
-                            <div>{{ $mahasiswa->kota_ktp ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
-                            <div>{{ $mahasiswa->provinsi_ktp ?? 'Belum diisi' }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Pribadi</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Tempat Lahir</label>
-                            <div>{{ $mahasiswa->tempat_lahir ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Tanggal Lahir</label>
-                            <div>
-                                {{ $mahasiswa->tanggal_lahir
-                                    ? \Carbon\Carbon::parse($mahasiswa->tanggal_lahir)->format('d F Y')
-                                    : 'Belum diisi' }}
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Jenis Kelamin</label>
-                            <div>{{ $mahasiswa->jenis_kelamin ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Agama</label>
-                            <div>{{ $mahasiswa->agama ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Status Sipil</label>
-                            <div>{{ $mahasiswa->status_sipil ?? 'Belum diisi' }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Dokumen Pribadi</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Ijazah</label>
-                            <div>
-                                @if($mahasiswa->file_ijazah && count($mahasiswa->file_ijazah) > 0)
-                                    @foreach($mahasiswa->file_ijazah as $file)
-                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-cyan-600 hover:underline block text-sm">
-                                            <i class="fas fa-file-pdf mr-1"></i>{{ basename($file) }}
-                                        </a>
-                                    @endforeach
-                                @else
-                                    <span class="text-gray-400">Belum diupload</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Transkrip Nilai</label>
-                            <div>
-                                @if($mahasiswa->file_transkrip && count($mahasiswa->file_transkrip) > 0)
-                                    @foreach($mahasiswa->file_transkrip as $file)
-                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-cyan-600 hover:underline block text-sm">
-                                            <i class="fas fa-file-pdf mr-1"></i>{{ basename($file) }}
-                                        </a>
-                                    @endforeach
-                                @else
-                                    <span class="text-gray-400">Belum diupload</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Kartu Keluarga (KK)</label>
-                            <div>
-                                @if($mahasiswa->file_kk && count($mahasiswa->file_kk) > 0)
-                                    @foreach($mahasiswa->file_kk as $file)
-                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-cyan-600 hover:underline block text-sm">
-                                            <i class="fas fa-file-pdf mr-1"></i>{{ basename($file) }}
-                                        </a>
-                                    @endforeach
-                                @else
-                                    <span class="text-gray-400">Belum diupload</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">KTP</label>
-                            <div>
-                                @if($mahasiswa->file_ktp && count($mahasiswa->file_ktp) > 0)
-                                    @foreach($mahasiswa->file_ktp as $file)
-                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-cyan-600 hover:underline block text-sm">
-                                            <i class="fas fa-file-pdf mr-1"></i>{{ basename($file) }}
-                                        </a>
-                                    @endforeach
-                                @else
-                                    <span class="text-gray-400">Belum diupload</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- TAB ORANG TUA --}}
-            <div x-show="activeTab === 'orang_tua'" x-cloak class="space-y-8">
-                @if($mahasiswa->parents()->exists())
-                    @php $parent = $mahasiswa->parents()->first(); @endphp
-
-                    {{-- Orang Tua Display --}}
-                    @if($parent->nama_ayah || $parent->nama_ibu)
-                    <div>
-                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Ayah</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Nama Ayah</label>
-                                <div>{{ $parent->nama_ayah ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Pendidikan Ayah</label>
-                                <div>{{ $parent->pendidikan_ayah ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Pekerjaan Ayah</label>
-                                <div>{{ $parent->pekerjaan_ayah ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Agama Ayah</label>
-                                <div>{{ $parent->agama_ayah ?? 'Belum diisi' }}</div>
-                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-white">Keamanan Akun</h3>
+                            <p class="text-sm text-gray-500 dark:text-slate-400">Ganti password akun Anda</p>
                         </div>
                     </div>
 
-                    <div>
-                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Ibu</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Nama Ibu</label>
-                                <div>{{ $parent->nama_ibu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Pendidikan Ibu</label>
-                                <div>{{ $parent->pendidikan_ibu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Pekerjaan Ibu</label>
-                                <div>{{ $parent->pekerjaan_ibu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Agama Ibu</label>
-                                <div>{{ $parent->agama_ibu ?? 'Belum diisi' }}</div>
-                            </div>
-                        </div>
-                    </div>
+                    <form action="{{ route('mahasiswa.profil.update-password') }}" method="POST">
+                        @csrf
+                        @method('PUT')
 
-                    <div>
-                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Ayah</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-5">
                             <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Alamat</label>
-                                <div>{{ $parent->alamat_ayah ?? $parent->alamat_ortu ?? 'Belum diisi' }}</div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Password
+                                    Saat Ini</label>
+                                <div class="relative" x-data="{ show: false }">
+                                    <input :type="show ? 'text' : 'password'" name="current_password" required
+                                        class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-maroon focus:border-transparent bg-white dark:bg-slate-800 text-gray-800 dark:text-white"
+                                        placeholder="Masukkan password lama">
+                                    <button type="button" @click="show = !show"
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                        <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </button>
+                                </div>
+                                @error('current_password')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Kota</label>
-                                <div>{{ $parent->kota_ayah ?? $parent->kota_ortu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
-                                <div>{{ $parent->propinsi_ayah ?? $parent->propinsi_ortu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
-                                <div>{{ $parent->desa_ayah ?? $parent->desa_ortu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>
-                                <div>{{ $parent->handphone_ayah ?? $parent->handphone_ortu ?? 'Belum diisi' }}</div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div>
-                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Ibu</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Alamat</label>
-                                <div>{{ $parent->alamat_ibu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Kota</label>
-                                <div>{{ $parent->kota_ibu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
-                                <div>{{ $parent->propinsi_ibu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
-                                <div>{{ $parent->desa_ibu ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>
-                                <div>{{ $parent->handphone_ibu ?? 'Belum diisi' }}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Keluarga Lainnya Display --}}
-                    @if($parent->keluarga && count($parent->keluarga) > 0)
-                    <div>
-                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Keluarga Lainnya</h3>
-                        <div class="space-y-4">
-                            @foreach($parent->keluarga as $idx => $member)
-                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="text-xs font-bold text-gray-400 uppercase">Nama</label>
-                                        <div>{{ $member['nama'] ?? 'Belum diisi' }}</div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Password
+                                        Baru</label>
+                                    <div class="relative" x-data="{ show: false }">
+                                        <input :type="show ? 'text' : 'password'" name="new_password" required
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-maroon focus:border-transparent bg-white dark:bg-slate-800 text-gray-800 dark:text-white"
+                                            placeholder="Minimal 8 karakter">
+                                        <button type="button" @click="show = !show"
+                                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                            <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        </button>
                                     </div>
-                                    <div>
-                                        <label class="text-xs font-bold text-gray-400 uppercase">Hubungan</label>
-                                        <div>{{ $member['hubungan'] ?? 'Belum diisi' }}</div>
-                                    </div>
-                                    <div>
-                                        <label class="text-xs font-bold text-gray-400 uppercase">Pendidikan</label>
-                                        <div>{{ $member['pendidikan'] ?? 'Belum diisi' }}</div>
-                                    </div>
-                                    <div>
-                                        <label class="text-xs font-bold text-gray-400 uppercase">Pekerjaan</label>
-                                        <div>{{ $member['pekerjaan'] ?? 'Belum diisi' }}</div>
-                                    </div>
-                                    <div>
-                                        <label class="text-xs font-bold text-gray-400 uppercase">Agama</label>
-                                        <div>{{ $member['agama'] ?? 'Belum diisi' }}</div>
+                                    @error('new_password')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Konfirmasi
+                                        Password Baru</label>
+                                    <div class="relative" x-data="{ show: false }">
+                                        <input :type="show ? 'text' : 'password'" name="new_password_confirmation" required
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-maroon focus:border-transparent bg-white dark:bg-slate-800 text-gray-800 dark:text-white"
+                                            placeholder="Ulangi password baru">
+                                        <button type="button" @click="show = !show"
+                                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                            <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                            @endforeach
                         </div>
-                    </div>
-                    @endif
-                    @endif
 
-                    {{-- Wali Display --}}
-                    @if($parent->nama_wali)
-                    <div>
-                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Data Wali</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Nama Wali</label>
-                                <div>{{ $parent->nama_wali ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Hubungan</label>
-                                <div>{{ $parent->hubungan_wali ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Pendidikan Wali</label>
-                                <div>{{ $parent->pendidikan_wali ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Pekerjaan Wali</label>
-                                <div>{{ $parent->pekerjaan_wali ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Agama Wali</label>
-                                <div>{{ $parent->agama_wali ?? 'Belum diisi' }}</div>
-                            </div>
+                        <div class="mt-8 flex justify-end">
+                            <button type="submit"
+                                class="px-6 py-3 bg-maroon text-white font-bold rounded-lg hover:bg-maroon-hover transition shadow-md hover:shadow-lg flex items-center gap-2">
+                                <i class="fas fa-save"></i>
+                                Simpan Password Baru
+                            </button>
                         </div>
-                    </div>
-
-                    <div>
-                        <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Alamat Wali</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Alamat</label>
-                                <div>{{ $parent->alamat_wali ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Kota</label>
-                                <div>{{ $parent->kota_wali ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
-                                <div>{{ $parent->provinsi_wali ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
-                                <div>{{ $parent->desa_wali ?? 'Belum diisi' }}</div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>
-                                <div>{{ $parent->handphone_wali ?? 'Belum diisi' }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-
-                    @if(!$parent->nama_ayah && !$parent->nama_ibu && !$parent->nama_wali)
-                        <p class="text-sm text-gray-500">Informasi orang tua/wali belum dilengkapi.</p>
-                    @endif
-                @else
-                    <p class="text-sm text-gray-500">Informasi orang tua/wali belum dilengkapi.</p>
-                @endif
-            </div>
-
-            {{-- TAB ASAL SEKOLAH --}}
-            <div x-show="activeTab === 'asal_sekolah'" x-cloak class="space-y-8">
-                <div>
-                    <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Asal Sekolah</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Jenis Sekolah</label>
-                            <div>{{ $mahasiswa->jenis_sekolah ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Jurusan Sekolah</label>
-                            <div>{{ $mahasiswa->jurusan_sekolah ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Tahun Lulus</label>
-                            <div>{{ $mahasiswa->tahun_lulus ?? 'Belum diisi' }}</div>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 uppercase">Nilai Kelulusan</label>
-                            <div>{{ $mahasiswa->nilai_kelulusan ?? 'Belum diisi' }}</div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
+        </div>
 
+        {{-- Bottom Section: Account Info (Full Width) --}}
+        <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-6">
+            <h4
+                class="text-sm font-bold text-gray-400 dark:text-slate-500 uppercase mb-6 border-b border-gray-100 dark:border-slate-700 pb-2">
+                Informasi Akun
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">Program Studi</span>
+                    <span class="font-semibold text-gray-800 dark:text-white text-lg">{{ $mahasiswa->prodi }}</span>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">Status</span>
+                    <div>
+                        @php
+                            $displayStatus = 'Aktif'; 
+                        @endphp
+                        <span class="inline-block px-3 py-1 rounded text-xs font-bold bg-green-100 text-green-800">
+                            {{ $displayStatus }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">Email Saat Ini</span>
+                    <span class="font-semibold text-gray-800 dark:text-white text-lg truncate"
+                        title="{{ $user->email }}">{{ $user->email }}</span>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">No. HP</span>
+                    <span class="font-semibold text-gray-800 dark:text-white text-lg">{{ $mahasiswa->no_hp ?? '-' }}</span>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

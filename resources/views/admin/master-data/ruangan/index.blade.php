@@ -4,7 +4,7 @@
 @section('page-title', 'Data Ruangan Kelas')
 
 @section('content')
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                 <i class="fas fa-door-open mr-3 text-maroon"></i>
@@ -12,40 +12,16 @@
             </h2>
             <p class="text-gray-600 text-sm mt-1">Kelola data ruangan untuk perkuliahan</p>
         </div>
-        <div class="flex space-x-2">
-            <a href="{{ route('admin.ruangan.create') }}"
-                class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md">
-                <i class="fas fa-plus mr-2"></i>
-                Tambah Ruangan
-            </a>
+        <div class="flex-shrink-0">
+            <div class="flex space-x-2">
+                <a href="{{ route('admin.ruangan.create') }}"
+                    class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md">
+                    <i class="fas fa-plus mr-2"></i>
+                    Tambah Ruangan
+                </a>
+            </div>
         </div>
     </div>
-
-    @if(session('success'))
-        <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-check-circle text-green-400"></i>
-                </div>
-                <div class="ml-3">
-                    <p class="text-green-800">{{ session('success') }}</p>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-exclamation-circle text-red-400"></i>
-                </div>
-                <div class="ml-3">
-                    <p class="text-red-800">{{ session('error') }}</p>
-                </div>
-            </div>
-        </div>
-    @endif
 
     <!-- Data Table -->
     <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
@@ -120,8 +96,7 @@
                                         </a>
                                         <form action="{{ route('admin.ruangan.destroy', $ruangan) }}" 
                                               method="POST" 
-                                              class="inline"
-                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus ruangan ini?')">
+                                              class="inline delete-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
@@ -155,4 +130,28 @@
             </div>
         @endif
     </div>
+
+    @push('scripts')
+        <script>
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data Ruangan ini akan dihapus permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

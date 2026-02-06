@@ -13,17 +13,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('parents', function (Blueprint $table) {
-            // Add desa_ortu after kota_ortu if not exists
+            // Add desa_ortu if not exists (no positioning to avoid missing-column errors)
             if (!Schema::hasColumn('parents', 'desa_ortu')) {
-                $table->string('desa_ortu')->nullable()->after('kota_ortu');
+                $table->string('desa_ortu')->nullable();
             }
-            // Add negara_ortu after propinsi_ortu if not exists
+            // Add negara_ortu if not exists
             if (!Schema::hasColumn('parents', 'negara_ortu')) {
-                $table->string('negara_ortu')->nullable()->after('propinsi_ortu');
+                $table->string('negara_ortu')->nullable();
             }
-            // Add desa_wali after kota_wali if not exists
+            // Add desa_wali if not exists
             if (!Schema::hasColumn('parents', 'desa_wali')) {
-                $table->string('desa_wali')->nullable()->after('kota_wali');
+                $table->string('desa_wali')->nullable();
             }
         });
     }

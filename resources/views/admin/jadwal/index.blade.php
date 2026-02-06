@@ -9,6 +9,11 @@
             color: #8B1538;
             background-color: #FEF2F2;
         }
+        .dark .tab-btn.active {
+            background-color: rgba(139, 21, 56, 0.2);
+            color: #f87171;
+            border-color: #f87171;
+        }
 
         .tab-content {
             display: none;
@@ -22,28 +27,29 @@
 
 @section('content')
     <div class="space-y-6">
-        {{-- Alert Messages --}}
-        @if(session('success'))
-            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
-                <i class="fas fa-check-circle"></i>
-                {{ session('success') }}
+        @if(!empty($roomsMissing))
+            <div class="mb-4 p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800">
+                <strong>Perhatian:</strong> Kode ruangan belum tersedia atau belum ada data ruangan. Silakan tambahkan data ruangan terlebih dahulu.
+                @if(Route::has('admin.ruangan.index'))
+                    <a href="{{ route('admin.ruangan.index') }}" class="underline font-semibold ml-2">Buka Master Ruangan</a>
+                @endif
             </div>
         @endif
-        @if(session('error'))
-            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
-                <i class="fas fa-exclamation-circle"></i>
-                {{ session('error') }}
-            </div>
-        @endif
-
         {{-- Cards Layout: Pending, Waiting Room, Active --}}
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {{-- Left Column (30%): Form Tambah Kelas --}}
-            <div class="lg:col-span-3">
-                <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
-                    <div class="p-6 border-b border-gray-200 bg-maroon text-white">
-                        <div class="font-semibold text-lg flex items-center"><i class="fas fa-plus-circle mr-2"></i>Tambah
-                            Jadwal Baru</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {{-- Left Column (50%): Form Tambah Kelas --}}
+            <div class="flex flex-col">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden flex-1 flex flex-col">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white">
+                        <div class="flex items-center justify-between">
+                            <div class="font-semibold text-lg flex items-center text-white"><i class="fas fa-plus-circle mr-2"></i>Tambah
+                                Jadwal Baru</div>
+                            <button type="button" onclick="openRoomUsageModal()"
+                                class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition flex items-center gap-2 border border-white/20">
+                                <i class="fas fa-door-open"></i>
+                                <span>Lihat Penggunaan Ruangan</span>
+                            </button>
+                        </div>
                     </div>
                     <form action="{{ route('admin.kelas-mata-kuliah.store') }}" method="POST" class="p-4" x-data="{
                                                               mataKuliahId: '',
@@ -58,6 +64,7 @@
                                                               jamSelesai: '',
                                                               ruanganId: '',
                                                               jamPerkuliahanId: '',
+                                                              kuota: '',
                                                               roomStatus: { available: true, message: '' },
                                                               checkingRoom: false,
 
@@ -123,16 +130,26 @@
                                                                       console.error('Error checking room:', e);
                                                                   }
                                                                   this.checkingRoom = false;
+                                                              },
+
+                                                              updateKuota() {
+                                                                  if (!this.ruanganId) {
+                                                                      this.kuota = '';
+                                                                      return;
+                                                                  }
+                                                                  const select = document.querySelector('select[name=ruangan_id]');
+                                                                  const option = select.options[select.selectedIndex];
+                                                                  this.kuota = option.dataset.kapasitas || '';
                                                               }
                                                           }">
                         @csrf
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
-                                        class="fas fa-book text-gray-400 mr-1"></i>Mata Kuliah <span
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                        class="fas fa-book text-gray-400 dark:text-gray-500 mr-1"></i>Mata Kuliah <span
                                         class="text-red-500">*</span></label>
                                 <select name="mata_kuliah_id" x-model="mataKuliahId" @change="fetchDosens()"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
                                     required>
                                     <option value="">Pilih Mata Kuliah</option>
                                     @foreach($mataKuliahs as $mk)
@@ -141,21 +158,21 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
-                                        class="fas fa-users text-gray-400 mr-1"></i>Nama Kelas <span
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                        class="fas fa-users text-gray-400 dark:text-gray-500 mr-1"></i>Nama Kelas <span
                                         class="text-red-500">*</span></label>
                                 <input type="text" name="nama_kelas"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
                                     placeholder="A, B, C..." required>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
-                                        class="fas fa-user-tie text-gray-400 mr-1"></i>Dosen <span
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                        class="fas fa-user-tie text-gray-400 dark:text-gray-500 mr-1"></i>Dosen <span
                                         class="text-red-500">*</span></label>
 
                                 {{-- Loading state --}}
                                 <div x-show="loading"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm">
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm">
                                     <i class="fas fa-spinner fa-spin mr-1"></i> Memuat dosen...
                                 </div>
 
@@ -207,23 +224,39 @@
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1"><i
-                                            class="fas fa-user-friends text-gray-400 mr-1"></i>Kuota <span
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                            class="fas fa-user-friends text-gray-400 dark:text-gray-500 mr-1"></i>Kuota <span
                                             class="text-red-500">*</span></label>
-                                    <input type="number" name="kuota"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
-                                        placeholder="40" required>
+
+                                    {{-- No room selected --}}
+                                    <div x-show="!ruanganId"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-sm">
+                                        <i class="fas fa-info-circle mr-1"></i> Pilih ruangan terlebih dahulu
+                                    </div>
+
+                                    {{-- Room selected (auto-fill, readonly) --}}
+                                    <template x-if="ruanganId">
+                                        <div>
+                                            <input type="hidden" name="kuota" :value="kuota">
+                                            <div
+                                                class="w-full px-3 py-2 border border-green-300 dark:border-green-600 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-sm flex items-center justify-between">
+                                                <span><i class="fas fa-check-circle mr-1"></i> <span
+                                                        x-text="kuota + ' Mahasiswa'"></span></span>
+                                                <i class="fas fa-lock text-green-400 dark:text-green-500 text-xs"></i>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1"><i
-                                            class="fas fa-door-open text-gray-400 mr-1"></i>Ruangan <span
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                            class="fas fa-door-open text-gray-400 dark:text-gray-500 mr-1"></i>Ruangan <span
                                             class="text-red-500">*</span></label>
-                                    <select name="ruangan_id" x-model="ruanganId" @change="checkRoom()"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    <select name="ruangan_id" x-model="ruanganId" @change="updateKuota(); checkRoom()"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
                                         required>
                                         <option value="">Pilih Ruangan</option>
                                         @foreach($daftarRuangan as $r)
-                                            <option value="{{ $r->id }}">{{ $r->kode_ruangan }}</option>
+                                            <option value="{{ $r->id }}" data-kapasitas="{{ $r->kapasitas }}">{{ $r->kode_ruangan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -234,11 +267,11 @@
                                 <span x-text="roomStatus.message"></span>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
-                                        class="fas fa-calendar-day text-gray-400 mr-1"></i>Hari <span
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                        class="fas fa-calendar-day text-gray-400 dark:text-gray-500 mr-1"></i>Hari <span
                                         class="text-red-500">*</span></label>
                                 <select name="hari" x-model="hari" @change="checkRoom()"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
                                     required>
                                     <option value="">Pilih Hari</option>
                                     @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $h)
@@ -247,11 +280,11 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1"><i
-                                        class="fas fa-clock text-gray-400 mr-1"></i>Jam Perkuliahan <span
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                        class="fas fa-clock text-gray-400 dark:text-gray-500 mr-1"></i>Jam Perkuliahan <span
                                         class="text-red-500">*</span></label>
                                 <select name="jam_perkuliahan_id" x-model="jamPerkuliahanId" @change="updateJamFromPerkuliahan(); checkRoom();"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
                                     required>
                                     <option value="">Pilih Jam Perkuliahan</option>
                                     @foreach($jamPerkuliahan as $jp)
@@ -273,11 +306,14 @@
                 </div>
             </div>
 
-            {{-- Right Column (70%): Cards & Table --}}
-            <div class="lg:col-span-9 space-y-6">
+            {{-- Right Column (50%): Cards & Table --}}
+            <div class="space-y-6">
+                {{-- Generator: Auto Generate Jadwal (embedded) --}}
+                @include('admin.jadwal._generator_partial')
+
                 {{-- Card: Active Schedules (Full Width inside Right Column) --}}
-                <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
-                    <div class="p-6 border-b border-gray-200 bg-maroon text-white flex items-center justify-between">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
                         <div class="font-semibold text-white text-lg"><i class="fas fa-check-circle mr-2"></i>Jadwal Aktif
                         </div>
                         <div class="text-lg">
@@ -299,12 +335,12 @@
                                         <th class="px-4 py-3 text-center font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-200">
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                     @forelse($kelasMataKuliahs as $k)
-                                        <tr class="hover:bg-maroon-50 transition duration-200">
+                                        <tr class="hover:bg-maroon-50 dark:hover:bg-maroon-900/10 transition duration-200">
                                             <td class="px-4 py-3">
-                                                <div class="font-semibold text-gray-900">{{ $k->hari ?: '-' }}</div>
-                                                <div class="text-xs text-gray-500">
+                                                <div class="font-semibold text-gray-900 dark:text-gray-100">{{ $k->hari ?: '-' }}</div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
                                                     {{ $k->jam_mulai ? substr($k->jam_mulai, 0, 5) : '-' }} -
                                                     {{ $k->jam_selesai ? substr($k->jam_selesai, 0, 5) : '-' }}
                                                 </div>
@@ -353,109 +389,6 @@
                         </div>
                         @if($kelasMataKuliahs->hasPages())
                             <div class="mt-4">{{ $kelasMataKuliahs->links() }}</div>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Generator: Auto Generate Jadwal (embedded) --}}
-                @include('admin.jadwal._generator_partial')
-
-                {{-- Card: Informasi Penggunaan Ruangan (New Feature) --}}
-                <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" x-data="{
-                                                        selectedDay: '{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd') }}',
-                                                        schedules: @js($allSchedules->map(function ($s) {
-                                                            return [
-                                                                'id' => $s->id,
-                                                                'hari' => $s->hari,
-                                                                'ruang' => $s->ruang,
-                                                                'jam' => substr($s->jam_mulai, 0, 5) . '-' . substr($s->jam_selesai, 0, 5),
-                                                                'mk' => $s->mataKuliah->nama_mk ?? '',
-                                                                'dosen' => $s->dosen->user->name ?? ''
-                                                            ];
-                                                        })),
-                                                        getRoomSchedules(room) {
-                                                            return this.schedules.filter(s => s.ruang === room && s.hari === this.selectedDay);
-                                                        }
-                                                     }">
-                    <div
-                        class="p-6 border-b border-gray-200 bg-gradient-to-r from-maroon to-red-900 text-white flex items-center justify-between">
-                        <div class="font-bold text-white text-xl flex items-center gap-3">
-                            <div class="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                <i class="fas fa-door-open"></i>
-                            </div>
-                            Informasi Penggunaan Ruangan
-                        </div>
-                        <div class="relative">
-                            <select x-model="selectedDay"
-                                class="appearance-none pl-4 pr-10 py-2 border border-white/20 rounded-full text-sm font-semibold focus:ring-2 focus:ring-white/40 bg-white/10 text-white cursor-pointer hover:bg-white/20 transition-all backdrop-blur-sm shadow-sm">
-                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $h)
-                                    <option value="{{ $h }}" class="text-gray-800 bg-white">{{ $h }}</option>
-                                @endforeach
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white">
-                                <i class="fas fa-chevron-down text-xs"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-6 bg-gray-50/50">
-                        @if($rooms->count() > 0)
-                            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                                @foreach($rooms as $room)
-                                    <div class="group relative bg-white border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                                        :class="getRoomSchedules('{{ $room }}').length === 0 ? 'border-green-200 hover:border-green-400' : 'border-red-200 hover:border-red-400'">
-
-                                        <!-- Room Header -->
-                                        <div class="p-4 border-b flex justify-between items-center"
-                                            :class="getRoomSchedules('{{ $room }}').length === 0 ? 'bg-green-50/50 border-green-100' : 'bg-red-50/50 border-red-100'">
-                                            <div class="font-bold text-lg text-gray-800">{{ $room }}</div>
-                                            <div class="text-xs font-bold px-2 py-1 rounded-full text-center min-w-[60px]"
-                                                :class="getRoomSchedules('{{ $room }}').length === 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
-                                                <span
-                                                    x-text="getRoomSchedules('{{ $room }}').length === 0 ? 'KOSONG' : 'TERISI'"></span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Content -->
-                                        <div class="p-4 min-h-[140px]">
-                                            <ul class="space-y-3" x-show="getRoomSchedules('{{ $room }}').length > 0">
-                                                <template x-for="jadwal in getRoomSchedules('{{ $room }}')" :key="jadwal.id">
-                                                    <li
-                                                        class="relative pl-3 border-l-2 border-red-200 group-hover:border-red-400 transition-colors">
-                                                        <div class="text-xs font-bold text-maroon mb-0.5 flex items-center gap-1">
-                                                            <i class="far fa-clock"></i> <span x-text="jadwal.jam"></span>
-                                                        </div>
-                                                        <div class="font-medium text-gray-800 text-xs leading-tight mb-1"
-                                                            x-text="jadwal.mk" :title="jadwal.mk"></div>
-                                                        <div class="text-[10px] text-gray-500 flex items-center gap-1">
-                                                            <i class="fas fa-chalkboard-teacher text-gray-400"></i>
-                                                            <span x-text="jadwal.dosen" class="truncate"></span>
-                                                        </div>
-                                                    </li>
-                                                </template>
-                                            </ul>
-
-                                            <!-- Empty State Illustration -->
-                                            <div x-show="getRoomSchedules('{{ $room }}').length === 0"
-                                                class="h-full flex flex-col items-center justify-center text-center py-4 text-green-600/80 group-hover:text-green-600 transition-colors">
-                                                <div
-                                                    class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                                                    <i class="fas fa-check text-xl"></i>
-                                                </div>
-                                                <p class="text-xs font-medium">Tidak ada jadwal</p>
-                                                <p class="text-[10px] opacity-70">Ruangan tersedia</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center py-12">
-                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-door-open text-3xl text-gray-400"></i>
-                                </div>
-                                <h3 class="text-lg font-medium text-gray-900">Belum ada data ruangan</h3>
-                                <p class="text-sm text-gray-500">Silakan tambahkan data ruangan terlebih dahulu.</p>
-                            </div>
                         @endif
                     </div>
                 </div>
@@ -513,6 +446,116 @@
         </div>
     </div>
 
+    {{-- Room Usage Sidebar --}}
+    <div id="roomUsageModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 pointer-events-none"></div>
+        <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl transform transition-transform duration-300 ease-out translate-x-full z-10" 
+             id="roomUsageSidebar"
+             x-data="{
+                selectedDay: '{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd') }}',
+                schedules: @js($allSchedules->map(function ($s) {
+                    return [
+                        'id' => $s->id,
+                        'hari' => $s->hari,
+                        'ruang' => $s->ruang,
+                        'jam' => substr($s->jam_mulai, 0, 5) . '-' . substr($s->jam_selesai, 0, 5),
+                        'mk' => $s->mataKuliah->nama_mk ?? '',
+                        'dosen' => $s->dosen->user->name ?? ''
+                    ];
+                })),
+                getRoomSchedules(room) {
+                    return this.schedules.filter(s => s.ruang === room && s.hari === this.selectedDay);
+                }
+             }">
+            {{-- Sidebar Header --}}
+            <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-maroon to-red-900 text-white">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="font-bold text-white text-lg flex items-center gap-2">
+                        <i class="fas fa-door-open"></i>
+                        Penggunaan Ruangan
+                    </div>
+                    <button type="button" onclick="closeRoomUsageModal()"
+                        class="p-1.5 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+                <div class="relative">
+                    <select x-model="selectedDay"
+                        class="w-full appearance-none pl-3 pr-10 py-2 border border-white/20 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-white/40 bg-white/10 text-white cursor-pointer hover:bg-white/20 transition-all backdrop-blur-sm">
+                        @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $h)
+                            <option value="{{ $h }}" class="text-gray-800 bg-white">{{ $h }}</option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white">
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Sidebar Body --}}
+            <div class="p-4 bg-gray-50/50 overflow-y-auto" style="height: calc(100vh - 140px);">
+                @if($rooms->count() > 0)
+                    <div class="space-y-3">
+                        @foreach($rooms as $room)
+                            <div class="group relative bg-white border rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md"
+                                :class="getRoomSchedules('{{ $room }}').length === 0 ? 'border-green-200 hover:border-green-400' : 'border-red-200 hover:border-red-400'">
+
+                                <!-- Room Header -->
+                                <div class="p-3 border-b flex justify-between items-center"
+                                    :class="getRoomSchedules('{{ $room }}').length === 0 ? 'bg-green-50/50 border-green-100' : 'bg-red-50/50 border-red-100'">
+                                    <div class="font-bold text-base text-gray-800">{{ $room }}</div>
+                                    <div class="text-xs font-bold px-2 py-0.5 rounded-full"
+                                        :class="getRoomSchedules('{{ $room }}').length === 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+                                        <span x-text="getRoomSchedules('{{ $room }}').length === 0 ? 'KOSONG' : 'TERISI'"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Content -->
+                                <div class="p-3">
+                                    <ul class="space-y-2" x-show="getRoomSchedules('{{ $room }}').length > 0">
+                                        <template x-for="jadwal in getRoomSchedules('{{ $room }}')" :key="jadwal.id">
+                                            <li class="relative pl-2.5 border-l-2 border-red-200">
+                                                <div class="text-xs font-bold text-maroon mb-0.5 flex items-center gap-1">
+                                                    <i class="far fa-clock text-[10px]"></i> <span x-text="jadwal.jam"></span>
+                                                </div>
+                                                <div class="font-medium text-gray-800 text-xs leading-tight mb-0.5"
+                                                    x-text="jadwal.mk" :title="jadwal.mk"></div>
+                                                <div class="text-[10px] text-gray-500 flex items-center gap-1">
+                                                    <i class="fas fa-chalkboard-teacher text-gray-400"></i>
+                                                    <span x-text="jadwal.dosen" class="truncate"></span>
+                                                </div>
+                                            </li>
+                                        </template>
+                                    </ul>
+
+                                    <!-- Empty State -->
+                                    <div x-show="getRoomSchedules('{{ $room }}').length === 0"
+                                        class="flex items-center gap-2 text-green-600/80 py-2">
+                                        <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-check text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-medium">Tidak ada jadwal</p>
+                                            <p class="text-[10px] opacity-70">Ruangan tersedia</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-12">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-door-open text-2xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-base font-medium text-gray-900">Belum ada data ruangan</h3>
+                        <p class="text-xs text-gray-500">Silakan tambahkan data ruangan terlebih dahulu.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
             // Tab switching
@@ -557,6 +600,27 @@
                 if (modal) {
                     modal.style.display = 'none';
                 }
+            }
+
+            // Room Usage Sidebar
+            window.openRoomUsageModal = function () {
+                const modal = document.getElementById('roomUsageModal');
+                const sidebar = document.getElementById('roomUsageSidebar');
+                modal.classList.remove('hidden');
+                // Trigger reflow to enable transition
+                setTimeout(() => {
+                    sidebar.classList.remove('translate-x-full');
+                }, 10);
+            }
+
+            window.closeRoomUsageModal = function () {
+                const modal = document.getElementById('roomUsageModal');
+                const sidebar = document.getElementById('roomUsageSidebar');
+                sidebar.classList.add('translate-x-full');
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
             }
 
             // SweetAlert Delete Confirmation

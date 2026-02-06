@@ -21,7 +21,6 @@
                     <!-- Kode Fakultas -->
                     <div>
                         <label for="kode_fakultas" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-code mr-1"></i>
                             Kode Fakultas
                         </label>
                         <input type="text" name="kode_fakultas" id="kode_fakultas" value="{{ old('kode_fakultas') }}"

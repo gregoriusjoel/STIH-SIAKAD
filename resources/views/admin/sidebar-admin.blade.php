@@ -2,6 +2,7 @@
 <aside class="sidebar w-64 flex-shrink-0 hidden md:block overflow-y-auto">
     <style>
         .sidebar { background-color: #ffffff; }
+        .dark .sidebar { background-color: #1f1616; border-right-color: #1e293b; }
         .sidebar .title { padding: 0 1rem; background-color: #7a1621; color: #fff; height: 4.1rem; display: flex; align-items: center; }
 
         /* Logo size to match navbar avatar */
@@ -11,10 +12,13 @@
 
         /* Increase link text and icon sizing */
         .sidebar .sidebar-link { color: #374151; font-size: 1rem; }
+        .dark .sidebar .sidebar-link { color: #cbd5e1; }
         .sidebar .sidebar-link i { width: 1.25rem; font-size: 1.05rem; margin-right: 0.6rem; }
         .sidebar .sidebar-link:not(.active):hover { background-color: rgba(139,21,56,0.06); color: #7a1621; }
+        .dark .sidebar .sidebar-link:not(.active):hover { background-color: rgba(255,255,255,0.05); color: #ffffff; }
         .sidebar-link.active { background-color: #7a1621; color: #ffffff !important; }
         .sidebar .section-toggle { color: #6b1620; font-size: 0.95rem; }
+        .dark .sidebar .section-toggle { color: #f87171; opacity: 0.9; }
         .rotate-180 { transform: rotate(180deg); }
     </style>
 
@@ -29,12 +33,12 @@
     </div>
 
     <nav class="px-4 pb-4 mt-4">
-    <a href="@if(Route::has('admin.dashboard')){{ route('admin.dashboard') }}@else{{ url('/admin') }}@endif" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg mb-2 {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+    <a href="@if(Route::has('admin.dashboard')){{ route('admin.dashboard') }}@else{{ url('/admin') }}@endif" class="sidebar-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg mb-2 {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
         <i class="fas fa-home w-5 mr-3"></i>
         <span class="text-sm font-medium">Dashboard</span>
     </a>
     @if(Route::has('admin.pengumuman.index'))
-        <a href="{{ route('admin.pengumuman.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg mb-2 {{ request()->routeIs('admin.pengumuman.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.pengumuman.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg mb-2 {{ request()->routeIs('admin.pengumuman.*') ? 'active' : '' }}">
             <i class="fas fa-bullhorn w-5 mr-3"></i>
             <span class="text-sm font-medium">Pengumuman</span>
         </a>
@@ -254,7 +258,7 @@
     <div class="px-4 pb-4 mt-auto">
         <form method="POST" action="{{ route('logout') }}" class="w-full">
             @csrf
-            <button type="submit" class="w-full flex items-center px-4 py-3 text-gray-700 rounded-lg sidebar-link hover:bg-red-800/40">
+            <button type="submit" class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg sidebar-link hover:bg-red-800/40">
                 <i class="fas fa-sign-out-alt w-5 mr-3"></i>
                 <span class="text-sm font-medium">Logout</span>
             </button>

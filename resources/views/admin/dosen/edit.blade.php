@@ -3,6 +3,40 @@
 @section('title', 'Edit Dosen')
 @section('page-title', 'Edit Dosen')
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+.select2-container--default .select2-selection--single {
+    height: 48px;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 32px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 46px;
+}
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #800020;
+    box-shadow: 0 0 0 2px rgba(128, 0, 32, 0.1);
+}
+.select2-dropdown {
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+}
+.select2-search--dropdown .select2-search__field {
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 8px 12px;
+}
+.select2-results__option--highlighted {
+    background-color: #800020 !important;
+}
+</style>
+@endpush
+
 @section('content')
     <div class="w-full">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
@@ -83,8 +117,8 @@
                                 </label>
                                 <input type="text" name="nidn" value="{{ old('nidn', $dosen->nidn) }}"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="Contoh: 0123456789" inputmode="numeric" pattern="\d{1,10}" maxlength="10"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,10)" required>
+                                    placeholder="Contoh: 0123456789012345" inputmode="numeric" pattern="\d{1,16}" maxlength="16"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,16)" required>
                             </div>
 
                             <div>
@@ -95,39 +129,53 @@
                                 <div id="pendidikan-list" class="space-y-2">
                                     @php
                                         $pendidikanValues = old('pendidikan_terakhir', $dosen->pendidikan_terakhir ?? []);
-                                        if (!is_array($pendidikanValues))
-                                            $pendidikanValues = [];
+                                        $universitasValues = old('universitas', $dosen->universitas ?? []);
+                                        if (!is_array($pendidikanValues)) $pendidikanValues = [];
+                                        if (!is_array($universitasValues)) $universitasValues = [];
                                     @endphp
                                     @if(count($pendidikanValues) > 0)
                                         @foreach($pendidikanValues as $idx => $p)
-                                            <div class="flex items-center gap-3">
+                                            <div class="pendidikan-item flex items-center gap-3">
+                                                <div class="flex-1 grid grid-cols-2 gap-3">
+                                                    <select name="pendidikan_terakhir[]"
+                                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
+                                                        required>
+                                                        <option value="">Pilih Pendidikan</option>
+                                                        <option value="S1" {{ $p == 'S1' ? 'selected' : '' }}>S1</option>
+                                                        <option value="S2" {{ $p == 'S2' ? 'selected' : '' }}>S2</option>
+                                                        <option value="S3" {{ $p == 'S3' ? 'selected' : '' }}>S3</option>
+                                                    </select>
+                                                    <input type="text" name="universitas[]" 
+                                                        placeholder="Nama Universitas"
+                                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
+                                                        value="{{ $universitasValues[$idx] ?? '' }}"
+                                                        required>
+                                                </div>
+                                                    @if($idx == 0)
+                                                    <button type="button" id="add-pendidikan"
+                                                        class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200 mt-1">+</button>
+                                                @else
+                                                    <button type="button"
+                                                        class="remove-pendidikan px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200 mt-1">-</button>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                        @else
+                                        <div class="pendidikan-item flex items-center gap-3">
+                                            <div class="flex-1 grid grid-cols-2 gap-3">
                                                 <select name="pendidikan_terakhir[]"
                                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                                     required>
                                                     <option value="">Pilih Pendidikan</option>
-                                                    <option value="S1" {{ $p == 'S1' ? 'selected' : '' }}>S1</option>
-                                                    <option value="S2" {{ $p == 'S2' ? 'selected' : '' }}>S2</option>
-                                                    <option value="S3" {{ $p == 'S3' ? 'selected' : '' }}>S3</option>
+                                                    <option value="S1">S1</option>
+                                                    <option value="S2">S2</option>
+                                                    <option value="S3">S3</option>
                                                 </select>
-                                                @if($idx == 0)
-                                                    <button type="button" id="add-pendidikan"
-                                                        class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
-                                                @else
-                                                    <button type="button"
-                                                        class="remove-pendidikan px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
-                                                @endif
+                                                   <input type="text" name="universitas[]" 
+                                                    placeholder="Nama Universitas"
+                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
+                                                    required>
                                             </div>
-                                        @endforeach
-                                    @else
-                                        <div class="flex items-center gap-3">
-                                            <select name="pendidikan_terakhir[]"
-                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                                required>
-                                                <option value="">Pilih Pendidikan</option>
-                                                <option value="S1">S1</option>
-                                                <option value="S2">S2</option>
-                                                <option value="S3">S3</option>
-                                            </select>
                                             <button type="button" id="add-pendidikan"
                                                 class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
                                         </div>
@@ -160,7 +208,6 @@
                                     $selectedProdi = old('prodi', $dosen->prodi ?? []);
                                     if (!is_array($selectedProdi))
                                         $selectedProdi = [$selectedProdi];
-                                    $prodiOptions = ['Hukum Tata Kabupaten', 'Hukum Bisnis', 'Hukum Pidana'];
                                 @endphp
 
                                 <div id="prodi-list" class="space-y-2">
@@ -171,8 +218,10 @@
                                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                                     required>
                                                     <option value="">Pilih Program Studi</option>
-                                                    @foreach($prodiOptions as $opt)
-                                                        <option value="{{ $opt }}" {{ $p == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                                    @foreach($prodis as $prodi)
+                                                        <option value="{{ $prodi->kode_prodi }}" {{ $p == $prodi->kode_prodi ? 'selected' : '' }}>
+                                                            {{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                                 @if($idx == 0)
@@ -190,8 +239,8 @@
                                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                                 required>
                                                 <option value="">Pilih Program Studi</option>
-                                                @foreach($prodiOptions as $opt)
-                                                    <option value="{{ $opt }}">{{ $opt }}</option>
+                                                @foreach($prodis as $prodi)
+                                                    <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
                                                 @endforeach
                                             </select>
                                             <button type="button" id="add-prodi"
@@ -343,8 +392,16 @@
 @endsection
 
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Select2 for existing mata kuliah dropdowns
+        $('.mk-select').select2({
+            placeholder: 'Cari Mata Kuliah...',
+            allowClear: true,
+            width: '100%'
+        });
         // Password Toggle
         const pw = document.getElementById('dosen_password');
         const btn = document.getElementById('toggleDosenPw');
@@ -374,12 +431,18 @@
 
         function makePendidikanRow() {
             const row = document.createElement('div');
-            row.className = 'flex items-center gap-3';
+            row.className = 'pendidikan-item flex items-center gap-3';
             row.innerHTML = `
-            <select name="pendidikan_terakhir[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
-                ${pendidikanOptionsHtml}
-            </select>
-            <button type="button" class="remove-pendidikan px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+            <div class="flex-1 grid grid-cols-2 gap-3">
+                <select name="pendidikan_terakhir[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                    ${pendidikanOptionsHtml}
+                </select>
+                <input type="text" name="universitas[]" 
+                    placeholder="Nama Universitas"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
+                    required>
+            </div>
+            <button type="button" class="remove-pendidikan px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200 mt-1">-</button>
         `;
             row.querySelector('.remove-pendidikan')?.addEventListener('click', function () { row.remove(); });
             return row;
@@ -391,7 +454,7 @@
         });
 
         document.querySelectorAll('.remove-pendidikan').forEach(btn => btn.addEventListener('click', function () {
-            const row = this.closest('.flex'); if (row) row.remove();
+            const row = this.closest('.pendidikan-item'); if (row) row.remove();
         }));
 
         // Jabatan Fungsional handler
@@ -414,9 +477,9 @@
         const prodiList = document.getElementById('prodi-list');
         const prodiOptionsHtml = `
         <option value="">Pilih Program Studi</option>
-        <option value="Hukum Tata Kabupaten">Hukum Tata Kabupaten</option>
-        <option value="Hukum Bisnis">Hukum Bisnis</option>
-        <option value="Hukum Pidana">Hukum Pidana</option>
+        @foreach($prodis as $prodi)
+        <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
+        @endforeach
     `;
 
         function makeProdiRow() {
@@ -514,12 +577,20 @@
             `;
                 mkList.appendChild(row);
 
+                // Initialize Select2 for the new dropdown
+                $(row).find('.mk-select').select2({
+                    placeholder: 'Cari Mata Kuliah...',
+                    allowClear: true,
+                    width: '100%'
+                });
+
                 row.querySelector('.remove-mk')?.addEventListener('click', function () {
+                    $(row).find('.mk-select').select2('destroy');
                     row.remove();
                     syncMkOptions();
                     updateMkRemoveButtons();
                 });
-                row.querySelector('.mk-select')?.addEventListener('change', syncMkOptions);
+                $(row).find('.mk-select').on('change', syncMkOptions);
 
                 updateMkRemoveButtons();
                 updateMkAddButtonVisibility();
@@ -532,6 +603,22 @@
             // Merge Jabatan
             if (jabatanDropdown.value === 'lainnya' && jabatanCustomInput.value.trim()) {
                 jabatanDropdown.value = jabatanCustomInput.value.trim();
+            }
+
+            // Validate mata kuliah selection
+            const mataKuliahSelects = document.querySelectorAll('select[name="mata_kuliah_ids[]"]');
+            let hasValidSelection = false;
+            
+            mataKuliahSelects.forEach(select => {
+                if (select.value && select.value !== '') {
+                    hasValidSelection = true;
+                }
+            });
+
+            if (mataKuliahSelects.length > 0 && !hasValidSelection) {
+                e.preventDefault();
+                alert('Mata kuliah belum dipilih! Silakan pilih minimal 1 mata kuliah atau hapus field yang kosong.');
+                return false;
             }
         });
 

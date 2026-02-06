@@ -12,8 +12,8 @@
         <div class="mb-2">Mata Kuliah / Kelas: <strong>{{ $mataKuliah ?? '-' }}</strong></div>
 
         @if(!empty($presensi))
-            <div class="mb-2">Tanggal: <strong>{{ \\Carbon\\Carbon::parse($presensi->tanggal)->translatedFormat('d F Y') }}</strong></div>
-            <div class="mb-2">Jam: <strong>{{ $presensi->waktu ? \\Carbon\\Carbon::parse($presensi->waktu)->format('H:i') : '-' }}</strong></div>
+            <div class="mb-2">Tanggal: <strong>{{ \Carbon\Carbon::parse($presensi->tanggal)->translatedFormat('d F Y') }}</strong></div>
+            <div class="mb-2">Jam: <strong>{{ $presensi->waktu ? \Carbon\Carbon::parse($presensi->waktu)->format('H:i') : '-' }}</strong></div>
         @else
             <div class="mb-2">Tanggal: <strong>{{ now()->translatedFormat('d F Y') }}</strong></div>
             <div class="mb-2">Jam: <strong>{{ now()->format('H:i') }}</strong></div>

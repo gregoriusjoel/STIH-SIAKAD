@@ -13,13 +13,17 @@ class KrsController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Krs::with(['mahasiswa.user', 'kelas.mataKuliah', 'kelas.dosen', 'kelas.jadwals']);
+        // Get unique mahasiswa who have KRS records
+        $mahasiswaQuery = Mahasiswa::with(['user', 'krs.kelas.mataKuliah', 'krs.kelas.dosen', 'krs.kelas.jadwals'])
+            ->whereHas('krs');
 
         if ($request->has('status') && $request->status != '') {
-            $query->where('status', $request->status);
+            $mahasiswaQuery->whereHas('krs', function($q) use ($request) {
+                $q->where('status', $request->status);
+            });
         }
 
-        $krsData = $query->orderBy('created_at', 'desc')->paginate(10);
+        $krsData = $mahasiswaQuery->orderBy('created_at', 'desc')->paginate(10);
         $semesterAktif = Semester::where('status', 'aktif')->first();
         if (! $semesterAktif) {
             $semesterAktif = Semester::where('is_active', true)->first();

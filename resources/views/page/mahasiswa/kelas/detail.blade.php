@@ -156,14 +156,37 @@
                         <div x-show="open">
                             <div class="p-6 pt-0 border-t border-gray-50">
                                 <div class="mt-4 space-y-6">
+                                    {{-- Judul Materi dari Database --}}
+                                    @if(count($meeting['materials']) > 0)
+                                        @foreach($meeting['materials'] as $material)
+                                            <div class="bg-gradientµ">
+                                                <h5 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                                                    <span class="material-symbols-outlined text-maroon text-[22px]">school</span>
+                                                    {{ $material['judul'] }}
+                                                </h5>
+                                            </div>
+                                        @endforeach
+                                    @endif
+
                                     {{-- Description --}}
                                     <div>
                                         <h5 class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
                                             <i class="fas fa-align-left text-maroon w-5"></i> Deskripsi
                                         </h5>
-                                        <p class="text-sm text-gray-600 leading-relaxed pl-7">
-                                            {{ $meeting['description'] }}
-                                        </p>
+                                        <div class="pl-7 space-y-3">
+                                            {{-- Tampilkan deskripsi dari materi yang diupload --}}
+                                            @if(count($meeting['materials']) > 0)
+                                                @foreach($meeting['materials'] as $material)
+                                                    <p class="text-sm text-gray-600 leading-relaxed">
+                                                        {{ $material['deskripsi'] }}
+                                                    </p>
+                                                @endforeach
+                                            @else
+                                                <p class="text-sm text-gray-600 leading-relaxed">
+                                                    {{ $meeting['description'] }}
+                                                </p>
+                                            @endif
+                                        </div>
                                     </div>
 
                                     {{-- Materials --}}
@@ -171,24 +194,48 @@
                                         <h5 class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
                                             <i class="fas fa-file-alt text-maroon w-5"></i> Materi Pembelajaran
                                         </h5>
-                                        <div class="pl-7 grid gap-3">
-                                            @foreach($meeting['materials'] as $material)
+                                        <div class="pl-7 space-y-3">
+                                            @forelse($meeting['materials'] as $material)
+                                                {{-- File Download Link --}}
                                                 <a href="{{ $material['url'] }}" target="_blank"
-                                                    class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-maroon/30 hover:shadow-sm transition-all group">
-                                                    <div
-                                                        class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center">
-                                                        <i class="fas fa-file-pdf"></i>
-                                                    </div>
-                                                    <div class="flex-1">
-                                                        <p
-                                                            class="text-sm font-bold text-gray-800 group-hover:text-maroon transition-colors">
-                                                            {{ $material['name'] }}
-                                                        </p>
-                                                        <p class="text-xs text-gray-500">Klik untuk membuka di tab baru</p>
-                                                    </div>
-                                                    <i class="fas fa-external-link-alt text-gray-300 group-hover:text-maroon"></i>
-                                                </a>
-                                            @endforeach
+                                                        class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-maroon/30 hover:shadow-sm transition-all group">
+                                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white"
+                                                            style="background: {{ match($material['type']) {
+                                                                'pdf' => 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+                                                                'doc', 'docx' => 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                                                                'ppt', 'pptx' => 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)',
+                                                                'xls', 'xlsx' => 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                                                                'zip', 'rar' => 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
+                                                                default => 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'
+                                                            } }}">
+                                                            <span class="material-symbols-outlined text-[20px]">
+                                                                {{ match($material['type']) {
+                                                                    'pdf' => 'picture_as_pdf',
+                                                                    'doc', 'docx' => 'description',
+                                                                    'ppt', 'pptx' => 'slideshow',
+                                                                    'xls', 'xlsx' => 'table_chart',
+                                                                    'zip', 'rar' => 'folder_zip',
+                                                                    default => 'insert_drive_file'
+                                                                } }}
+                                                            </span>
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <p class="text-sm font-bold text-gray-800 group-hover:text-maroon transition-colors">
+                                                                {{ $material['name'] }}
+                                                            </p>
+                                                            <p class="text-xs text-gray-500">
+                                                                {{ $material['size'] }} • Klik untuk download
+                                                            </p>
+                                                        </div>
+                                                        <span class="material-symbols-outlined text-gray-300 group-hover:text-maroon text-[20px]">
+                                                            download
+                                                        </span>
+                                                    </a>
+                                            @empty
+                                                <div class="p-4 rounded-xl border border-gray-100 bg-gray-50 text-center">
+                                                    <p class="text-xs text-gray-500">Belum ada materi untuk pertemuan ini</p>
+                                                </div>
+                                            @endforelse
                                         </div>
                                     </div>
 
@@ -198,20 +245,26 @@
                                             <i class="fas fa-tasks text-maroon w-5"></i> Tugas
                                         </h5>
                                         <div class="pl-7 space-y-3">
-                                            @foreach($meeting['assignments'] as $tugas)
+                                            @forelse($meeting['assignments'] as $tugas)
                                                 <div class="p-4 rounded-xl border border-orange-100 bg-orange-50/50">
                                                     <div class="flex items-start justify-between mb-3">
-                                                        <div>
+                                                        <div class="flex-1">
                                                             <p class="text-sm font-bold text-gray-800 mb-1">{{ $tugas['title'] }}</p>
+                                                            
+                                                            {{-- Deskripsi Tugas --}}
+                                                            @if(!empty($tugas['description']))
+                                                                <p class="text-xs text-gray-600 mb-2 leading-relaxed">{{ $tugas['description'] }}</p>
+                                                            @endif
+                                                            
                                                             <p class="text-xs text-gray-600">Deadline: <span class="font-bold text-orange-700">{{ $tugas['deadline'] }}</span></p>
                                                         </div>
                                                         <span class="px-2 py-1 rounded text-[10px] font-bold bg-white border border-gray-200 text-gray-500">Belum Dikumpulkan</span>
                                                     </div>
                                                     
                                                     <div class="flex gap-2">
-                                                        @if(isset($tugas['file_url']))
+                                                        @if(isset($tugas['file_url']) && $tugas['file_url'])
                                                             <a href="{{ $tugas['file_url'] }}" target="_blank" class="flex-1 py-2 rounded-lg bg-orange-100/50 text-orange-700 border border-orange-200 text-xs font-bold text-center hover:bg-orange-100 transition-all flex items-center justify-center gap-2">
-                                                                <i class="fas fa-file-pdf"></i> Soal Tugas
+                                                                <span class="material-symbols-outlined text-[16px]">download</span> Download Soal
                                                             </a>
                                                         @endif
                                                         <button class="flex-1 py-2 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-600 hover:text-maroon hover:border-maroon transition-all flex items-center justify-center gap-2">
@@ -219,7 +272,11 @@
                                                         </button>
                                                     </div>
                                                 </div>
-                                            @endforeach
+                                            @empty
+                                                <div class="p-4 rounded-xl border border-orange-100 bg-orange-50/50 text-center">
+                                                    <p class="text-xs text-gray-500">Belum ada tugas untuk pertemuan ini</p>
+                                                </div>
+                                            @endforelse
                                         </div>
                                     </div>
                                 </div>

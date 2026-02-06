@@ -9,15 +9,25 @@ use App\Models\Kelas;
 use App\Models\MataKuliah;
 use App\Models\JadwalProposal;
 use App\Models\Ruangan;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 
 class JadwalController extends Controller
 {
     public function index()
     {
-        // Load active jadwals from the new system
+        // Load active jadwals that have been approved by dosen
+        // Only show jadwals that have approval record from dosen
         $activeJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
             ->where('status', 'active')
+            ->whereHas('kelas', function($query) {
+                // Only include jadwals where there's a corresponding approved proposal
+                $query->whereIn('id', function($subquery) {
+                    $subquery->select('kelas_id')
+                        ->from('jadwal_proposals')
+                        ->whereIn('status', ['approved_dosen', 'approved_admin']);
+                });
+            })
             ->get()
             ->map(function ($j) {
                 return (object)[
@@ -37,27 +47,8 @@ class JadwalController extends Controller
                 ];
             });
 
-        // Load schedules from the parallel KelasMataKuliah system
-        $legacySchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user'])
-            ->whereNotNull('hari')
-            ->get()
-            ->map(function ($k) {
-                return (object)[
-                    'id' => 'legacy-' . $k->id,
-                    'db_id' => $k->id,
-                    'type' => 'legacy',
-                    'hari' => $k->hari,
-                    'jam_mulai' => $k->jam_mulai,
-                    'jam_selesai' => $k->jam_selesai,
-                    'ruang' => $k->ruang,
-                    'nama_mk' => $k->mataKuliah->nama_mk ?? '-',
-                    'sks' => $k->mataKuliah->sks ?? 0,
-                    'kode_kelas' => $k->kode_kelas ?? '-',
-                    'dosen_name' => $k->dosen->user->name ?? 'N/A',
-                    'dosen_id' => $k->dosen_id ?? null,
-                    'mata_kuliah_id' => $k->mata_kuliah_id ?? null,
-                ];
-            });
+        // Don't load legacy schedules - only show approved ones
+        $legacySchedules = collect();
 
         // Merge and de-duplicate based on MK + Section + Dosen
         $merged = $activeJadwals->concat($legacySchedules)
@@ -83,7 +74,7 @@ class JadwalController extends Controller
 
         // Pagination for the merged collection
         $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
-        $perPage = 10;
+        $perPage = 5;
         $currentPageItems = $sortedSchedules->slice(($currentPage - 1) * $perPage, $perPage)->all();
         $kelasMataKuliahs = new \Illuminate\Pagination\LengthAwarePaginator(
             $currentPageItems,
@@ -100,13 +91,22 @@ class JadwalController extends Controller
         $mataKuliahs = MataKuliah::orderBy('nama_mk')->get();
         $dosens = \App\Models\Dosen::with('user')->get();
 
-        // Get list of unique rooms for filter/display
-        $rooms = $allSchedules->pluck('ruang')->filter()->unique()->sort()->values();
-
-        // Get actual ruangan data from database
-        $daftarRuangan = Ruangan::where('status', 'aktif')
-            ->orderBy('kode_ruangan')
-            ->get();
+        // Get list of all active rooms for filter/display (fetch from DB to include empty rooms)
+        $roomsMissing = false;
+        $rooms = collect();
+        $daftarRuangan = collect();
+        if (Schema::hasTable('ruangans') && Schema::hasColumn('ruangans', 'kode_ruangan')) {
+            $daftarRuangan = Ruangan::where('status', 'aktif')
+                ->orderBy('kode_ruangan')
+                ->get();
+            $rooms = $daftarRuangan->pluck('kode_ruangan');
+            if ($daftarRuangan->isEmpty()) {
+                $roomsMissing = true; // no rooms defined yet
+            }
+        } else {
+            // missing table/column -> treat as missing rooms
+            $roomsMissing = true;
+        }
 
         // Get jam perkuliahan data
         $jamPerkuliahan = \App\Models\JamPerkuliahan::where('is_active', true)

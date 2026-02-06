@@ -4,23 +4,23 @@
 @section('page-title', 'Kartu Rencana Studi')
 
 @section('content')
-    <div class="max-w-7xl mx-auto -mt-4">
+    <div class="space-y-6">
 
         {{-- Header --}}
-        <div class="bg-white rounded-xl shadow-lg p-4 mb-4">
+        <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-4 mb-4">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Kartu Rencana Studi (KRS)</h2>
-                    <p class="text-gray-600">Semester: <span
-                            class="font-semibold">{{ $semesterAktif->nama_semester ?? 'Tidak ada semester aktif' }}</span> •
-                        <span class="font-semibold">Semester {{ $mahasiswaSemester ?? 1 }}</span></p>
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Kartu Rencana Studi (KRS)</h2>
+                    <p class="text-gray-600 dark:text-slate-400">Semester: <span
+                        class="font-semibold">{{ $semesterAktif->nama_semester ?? 'Tidak ada semester aktif' }}</span> •
+                    <span class="font-semibold">Semester {{ $mahasiswaSemester ?? 1 }}</span></p>
                 </div>
                 <div class="text-right">
                     <p class="text-sm text-gray-600 mb-1">Status KRS:</p>
                     <span class="px-4 py-2 rounded-lg font-bold text-sm
-                        @if($statusKrs === 'approved') bg-green-100 text-green-700
-                        @elseif($statusKrs === 'diajukan') bg-yellow-100 text-yellow-700
-                        @else bg-gray-100 text-gray-700
+                        @if($statusKrs === 'approved') bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400
+                        @elseif($statusKrs === 'diajukan') bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400
+                        @else bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300
                         @endif">
                         {{ strtoupper($statusKrs) }}
                     </span>
@@ -29,19 +29,19 @@
         </div>
 
         {{-- Mahasiswa Profile Card --}}
-        <div class="bg-white rounded-xl shadow-lg p-4 mb-4 border border-gray-100">
+        <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-4 mb-4 border border-gray-100 dark:border-slate-800">
             <div class="flex items-center gap-4">
-                <div class="w-20 h-20 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
+                <div class="w-20 h-20 rounded-full bg-gray-100 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
                     @if(!empty($mahasiswa->foto))
                         <img src="{{ asset('storage/' . $mahasiswa->foto) }}" alt="Foto Mahasiswa" class="w-full h-full object-cover">
                     @else
-                        <i class="fas fa-user text-3xl text-gray-400"></i>
+                        <i class="fas fa-user text-3xl text-gray-400 dark:text-slate-500"></i>
                     @endif
                 </div>
                 <div>
-                    <div class="text-sm text-gray-500 uppercase tracking-wide">Nama Mahasiswa</div>
-                    <div class="text-lg font-bold text-gray-900">{{ $mahasiswa->nama ?? $mahasiswa->user->name ?? '-' }}</div>
-                    <div class="text-sm text-gray-500 mt-1">NIM: <span class="font-medium text-gray-700">{{ $mahasiswa->nim ?? '-' }}</span></div>
+                    <div class="text-sm text-gray-500 dark:text-slate-400 uppercase tracking-wide">Nama Mahasiswa</div>
+                    <div class="text-lg font-bold text-gray-900 dark:text-white">{{ $mahasiswa->nama ?? $mahasiswa->user->name ?? '-' }}</div>
+                    <div class="text-sm text-gray-500 dark:text-slate-400 mt-1">NIM: <span class="font-medium text-gray-700 dark:text-slate-300">{{ $mahasiswa->nim ?? '-' }}</span></div>
                 </div>
             </div>
         </div>
@@ -115,19 +115,19 @@
             @csrf
 
             {{-- Add Mata Kuliah Section (for cross-semester courses) --}}
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-6 mb-6">
                 <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h4 class="text-lg font-bold text-gray-800">Tambah Mata Kuliah Lintas Semester</h4>
-                        <p class="text-sm text-gray-600 mt-1">
+                        <h4 class="text-lg font-bold text-gray-800 dark:text-white">Tambah Mata Kuliah Lintas Semester</h4>
+                        <p class="text-sm text-gray-600 dark:text-slate-400 mt-1">
                             Pilih mata kuliah tambahan yang ingin Anda ambil di luar mata kuliah wajib semester ini.
                         </p>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
+                <div class="flex flex-col md:flex-row gap-3">
                     <select id="mataKuliahSelect"
-                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent text-sm"
+                        class="w-full md:flex-1 px-4 py-3 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent text-sm bg-white dark:bg-slate-800 text-gray-800 dark:text-white"
                         @if(!$isEditable) disabled aria-disabled="true" @endif>
                         <option value="">-- Pilih Mata Kuliah Tambahan --</option>
                         @foreach($additionalMataKuliah as $mk)
@@ -147,7 +147,7 @@
                         @endforeach
                     </select>
                     <button type="button" id="addMataKuliahBtn"
-                        class="px-6 py-3 bg-maroon text-white font-bold rounded-lg hover:bg-maroon-hover transition shadow-md hover:shadow-lg flex items-center gap-2"
+                        class="w-full md:w-auto px-6 py-3 bg-maroon text-white font-bold rounded-lg hover:bg-maroon-hover transition shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                         @if(!$isEditable) disabled aria-disabled="true" class="opacity-50 cursor-not-allowed" @endif>
                         <i class="fas fa-plus"></i>
                         Tambah
@@ -157,10 +157,10 @@
 
 
             <div class="mt-4 mb-6">
-                <div class="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
+                <div class="bg-white dark:bg-[#1a1d2e] rounded-lg border border-gray-200 dark:border-slate-700 p-4 flex items-center justify-between">
                     <div>
-                        <h4 class="text-sm font-semibold text-gray-700">Ambil Semua Mata Kuliah (Semester Ini)</h4>
-                        <p class="text-xs text-gray-500">Klik untuk memilih semua mata kuliah saat ini sekaligus.</p>
+                        <h4 class="text-sm font-semibold text-gray-700 dark:text-white">Ambil Semua Mata Kuliah (Semester Ini)</h4>
+                        <p class="text-xs text-gray-500 dark:text-slate-400">Klik untuk memilih semua mata kuliah saat ini sekaligus.</p>
                     </div>
                     <div>
                         <button id="ambilSemuaBtn" type="button"
@@ -181,7 +181,7 @@
                     aria-labelledby="modal-title" role="dialog" aria-modal="true">
                     <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" id="krsCalendarBackdrop">
                     </div>
-                    <div class="relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col h-[90vh] overflow-hidden transform transition-all">
+                    <div class="relative w-full max-w-7xl bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-2xl flex flex-col h-[90vh] overflow-hidden transform transition-all">
                         {{-- Header --}}
                         <div class="flex items-center justify-between px-6 py-5 bg-maroon text-white z-20 rounded-t-2xl shrink-0">
                             <div>
@@ -301,7 +301,7 @@
                                                         }
                                                      @endphp
 
-                                                     <div class="relative bg-white"
+                                                     <div class="relative bg-white dark:bg-[#1a1d2e]"
                                                          style="height: {{ ($hEnd - $hStart + 1) * $rowHeight }}px">
                                                          {{-- Header --}}
                                                          <div class="h-10 bg-gray-50/80 border-b border-gray-100 flex items-center justify-center sticky top-0 z-30 backdrop-blur-sm">
@@ -452,7 +452,7 @@
 
             @endif
 
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg overflow-hidden">
                 {{-- Table Header --}}
                 <div class="bg-gradient-to-r from-maroon to-maroon-hover text-white px-6 py-4 flex items-center justify-between">
                         <div>
@@ -470,9 +470,9 @@
                 {{-- Table Content --}}
                 <div class="overflow-x-auto">
                     <table class="w-full" id="krsTable">
-                        <thead class="bg-gray-100 border-b-2 border-gray-200">
+                        <thead class="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-200 dark:border-slate-700">
                             <tr>
-                                <th class="px-4 py-3 text-left text-sm font-bold text-gray-700">No</th>
+                                <th class="px-4 py-3 text-left text-sm font-bold text-gray-700 dark:text-slate-300">No</th>
                                 <th class="px-4 py-3 text-left text-sm font-bold text-gray-700">Kode MK</th>
                                 <th class="px-4 py-3 text-left text-sm font-bold text-gray-700">Mata Kuliah</th>
                                 <th class="px-4 py-3 text-center text-sm font-bold text-gray-700">SKS</th>
@@ -490,9 +490,9 @@
                                     $krs = $existingKrs->get($mk->id);
                                     $isChecked = $krs && $krs->ambil_mk === 'ya';
                                 @endphp
-                                <tr class="hover:bg-gray-50 transition {{ $isChecked ? 'bg-blue-50' : '' }}" data-mk-id="{{ $mk->id }}">
-                                    <td class="px-4 py-4 text-sm text-gray-700">{{ $loop->iteration }}</td>
-                                    <td class="px-4 py-4 text-sm font-medium text-gray-800">
+                                <tr class="hover:bg-gray-50 dark:hover:bg-slate-800 transition {{ $isChecked ? 'bg-blue-50 dark:bg-blue-900/20' : '' }}" data-mk-id="{{ $mk->id }}">
+                                    <td class="px-4 py-4 text-sm text-gray-700 dark:text-slate-300">{{ $loop->iteration }}</td>
+                                    <td class="px-4 py-4 text-sm font-medium text-gray-800 dark:text-white">
                                         {{ $mk->kode_mk }}
                                         <span class="block text-xs text-gray-500 mt-1">{{ strtoupper($mk->kode_id) }}</span>
                                     </td>
@@ -556,7 +556,7 @@
                                                    data-sks="{{ $mk->sks }}"
                                                    {{ $isChecked ? 'checked' : '' }}
                                                    @if(!$isEditable) disabled aria-disabled="true" @endif>
-                                            <span class="ml-2 text-sm text-gray-600">Ambil</span>
+                                            <span class="ml-2 text-sm text-gray-600 dark:text-slate-400">Ambil</span>
                                         </label>
                                     </td>
                                 </tr>
@@ -633,10 +633,10 @@
 
                             @if($currentSemesterMataKuliah->isEmpty() && $existingKrs->where('ambil_mk', 'ya')->isEmpty())
                                 <tr id="emptyRow">
-                                    <td colspan="{{ $isEditable ? '9' : '8' }}" class="px-4 py-8 text-center text-gray-500">
-                                        <i class="fas fa-inbox text-4xl mb-3 text-gray-300"></i>
+                                    <td colspan="{{ $isEditable ? '9' : '8' }}" class="px-4 py-8 text-center text-gray-500 dark:text-slate-500">
+                                        <i class="fas fa-inbox text-4xl mb-3 text-gray-300 dark:text-slate-700"></i>
                                         <p>Belum ada mata kuliah tersedia untuk semester ini</p>
-                                        <p class="text-sm text-gray-400 mt-1">Hubungi admin untuk menambahkan mata kuliah</p>
+                                        <p class="text-sm text-gray-400 dark:text-slate-600 mt-1">Hubungi admin untuk menambahkan mata kuliah</p>
                                     </td>
                                 </tr>
                             @endif
@@ -645,12 +645,12 @@
                 </div>
 
                 {{-- Summary Footer --}}
-                <div class="bg-gray-50 px-6 py-5 border-t-2 border-gray-200">
+                <div class="bg-gray-50 dark:bg-slate-800 px-6 py-5 border-t-2 border-gray-200 dark:border-slate-700">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-8">
                             <div>
-                                <p class="text-sm text-gray-600 mb-1">Total Mata Kuliah Diambil:</p>
-                                <p class="text-2xl font-bold text-gray-800" id="totalMk">0</p>
+                                <p class="text-sm text-gray-600 dark:text-slate-400 mb-1">Total Mata Kuliah Diambil:</p>
+                                <p class="text-2xl font-bold text-gray-800 dark:text-white" id="totalMk">0</p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Total SKS:</p>

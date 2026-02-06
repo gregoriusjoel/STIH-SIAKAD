@@ -66,27 +66,44 @@
 
     @stack('styles')
 
+    <!-- Early Dark Mode Detection (prevents flash) -->
+    <script>
+        (function() {
+            if (localStorage.getItem('color-theme') === 'dark' || 
+                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
 </head>
 
-<body class="bg-gray-50 font-inter" x-data="{ sidebarOpen: false }">
+<body class="bg-gray-50 font-inter dark:bg-slate-900" x-data="{ sidebarOpen: false }">
 
     <!-- Page Wrapper -->
     <div class="flex h-screen overflow-hidden">
 
         <!-- Mobile Backdrop -->
-        <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-900/80 z-40 lg:hidden" style="display: none;"></div>
+        <div x-show="sidebarOpen" @click="sidebarOpen = false"
+            x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300"
+            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-gray-900/80 z-40 lg:hidden" style="display: none;"></div>
 
         <!-- Sidebar -->
-        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col h-full shadow-sm transition-transform duration-300 transform lg:static lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+        <aside
+            class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-[#1a1d2e] border-r border-gray-200 dark:border-slate-800 flex flex-col h-full shadow-sm transition-transform duration-300 transform lg:static lg:translate-x-0"
+            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
             <div class="px-5 py-6 flex flex-col gap-8 h-full overflow-y-auto overflow-x-hidden scrollbar-thin">
                 <!-- Logo -->
                 <div class="flex items-center gap-3 px-1">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8B1538] to-[#6D1029] flex items-center justify-center text-white shadow-lg shadow-maroon/20 shrink-0">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8B1538] to-[#6D1029] flex items-center justify-center text-white shadow-lg shadow-maroon/20 shrink-0">
                         <i class="fas fa-graduation-cap text-lg"></i>
                     </div>
                     <div class="flex flex-col min-w-0">
-                        <h1 class="text-[#1A1A1A] text-sm font-bold leading-tight truncate">STIH Adhyaksa</h1>
-                        <p class="text-[#6B7280] text-[10px] font-medium tracking-wide">STUDENT PORTAL</p>
+                        <h1 class="text-[#1A1A1A] dark:text-white text-sm font-bold leading-tight truncate">STIH Adhyaksa</h1>
+                        <p class="text-[#6B7280] dark:text-slate-400 text-[10px] font-medium tracking-wide">STUDENT PORTAL</p>
                     </div>
                 </div>
 
@@ -95,29 +112,32 @@
                         openAkademik: {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'true' : 'false' }},
                         openPengajuan: {{ Request::routeIs('mahasiswa.pengajuan*') ? 'true' : 'false' }} 
                     }">
-                    
+
                     {{-- Nav Item Template --}}
                     @php
                         $navItemClass = "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group";
-                        $activeClass = "bg-[#FFF1F5] text-[#8B1538] font-semibold";
-                        $inactiveClass = "text-[#6B7280] hover:bg-[#F9FAFB] hover:text-[#1A1A1A]";
+                        $activeClass = "bg-[#FFF1F5] dark:bg-red-900/20 text-[#8B1538] dark:text-red-400 font-semibold";
+                        $inactiveClass = "text-[#6B7280] dark:text-slate-400 hover:bg-[#F9FAFB] dark:hover:bg-slate-800 hover:text-[#1A1A1A] dark:hover:text-white";
                     @endphp
 
                     <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.dashboard') ? $activeClass : $inactiveClass }}"
                         href="{{ route('mahasiswa.dashboard') }}">
-                        <i class="fas fa-home text-lg w-5 {{ Request::routeIs('mahasiswa.dashboard') ? 'text-[#8B1538]' : 'text-[#9CA3AF] group-hover:text-[#8B1538]' }}"></i>
+                        <i
+                            class="fas fa-home text-lg w-5 {{ Request::routeIs('mahasiswa.dashboard') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
                         <span class="text-sm">Dashboard</span>
                     </a>
 
                     <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.profil.manajemen') ? $activeClass : $inactiveClass }}"
                         href="{{ route('mahasiswa.profil.manajemen') }}">
-                        <i class="fas fa-user-cog text-lg w-5 {{ Request::routeIs('mahasiswa.profil.manajemen') ? 'text-[#8B1538]' : 'text-[#9CA3AF] group-hover:text-[#8B1538]' }}"></i>
+                        <i
+                            class="fas fa-user-cog text-lg w-5 {{ Request::routeIs('mahasiswa.profil.manajemen') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
                         <span class="text-sm">Manajemen Profil</span>
                     </a>
 
                     <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.krs*') ? $activeClass : $inactiveClass }}"
                         href="{{ route('mahasiswa.krs.index') }}">
-                        <i class="fas fa-file-alt text-lg w-5 {{ Request::routeIs('mahasiswa.krs*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] group-hover:text-[#8B1538]' }}"></i>
+                        <i
+                            class="fas fa-file-alt text-lg w-5 {{ Request::routeIs('mahasiswa.krs*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
                         <span class="text-sm">KRS</span>
                     </a>
 
@@ -126,7 +146,8 @@
                         <button @click="openAkademik = !openAkademik"
                             class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'text-[#8B1538]' : $inactiveClass }}">
                             <div class="flex items-center gap-3">
-                                <i class="fas fa-graduation-cap text-lg w-5 {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] group-hover:text-[#8B1538]' }}"></i>
+                                <i
+                                    class="fas fa-graduation-cap text-lg w-5 {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
                                 <span class="text-sm">Akademik</span>
                             </div>
                             <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
@@ -135,64 +156,66 @@
 
                         <div x-show="openAkademik" x-collapse class="pl-12 pr-2 py-1 space-y-1">
                             @foreach([
-                                'mahasiswa.nilai.index' => ['label' => 'Kartu Hasil Studi', 'icon' => 'fa-chart-bar'],
-                                'mahasiswa.jadwal.index' => ['label' => 'Jadwal Kelas', 'icon' => 'fa-calendar-alt'],
-                                'mahasiswa.kelas.index' => ['label' => 'E-Learning', 'icon' => 'fa-laptop-code'],
-                                'mahasiswa.perpustakaan.index' => ['label' => 'Perpustakaan', 'icon' => 'fa-book'],
-                                'mahasiswa.prestasi.index' => ['label' => 'Prestasi Mahasiswa', 'icon' => 'fa-trophy'],
-                            ] as $route => $data)
-                                <a class="block py-1.5 text-[13px] {{ Request::routeIs($route) ? 'text-[#8B1538] font-bold' : 'text-[#6B7280] hover:text-[#1A1A1A]' }} transition-colors"
-                                    href="{{ route($route) }}">
-                                    {{ $data['label'] }}
-                                </a>
+                                    'mahasiswa.nilai.index' => ['label' => 'Kartu Hasil Studi', 'icon' => 'fa-chart-bar'],
+                                    'mahasiswa.jadwal.index' => ['label' => 'Jadwal Kelas', 'icon' => 'fa-calendar-alt'],
+                                    'mahasiswa.kelas.index' => ['label' => 'E-Learning', 'icon' => 'fa-laptop-code'],
+                                    'mahasiswa.perpustakaan.index' => ['label' => 'Perpustakaan', 'icon' => 'fa-book'],
+                                    'mahasiswa.prestasi.index' => ['label' => 'Prestasi Mahasiswa', 'icon' => 'fa-trophy'],
+                                ] as $route => $data)
+                                    <a class="block py-1.5 text-[13px] {{ Request::routeIs($route) ? 'text-[#8B1538] dark:text-red-400 font-bold' : 'text-[#6B7280] dark:text-slate-400 hover:text-[#1A1A1A] dark:hover:text-white' }} transition-colors"
+                                        href="{{ route($route) }}">
+                                        {{ $data['label'] }}
+                                    </a>
                             @endforeach
                         </div>
                     </div>
 
-                    <!-- Pengajuan Dropdown -->
+
+                                                       <!-- Pengajuan Dropdown -->
                     <div class="relative">
                         <button @click="openPengajuan = !openPengajuan"
                             class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.pengajuan*') ? 'text-[#8B1538]' : $inactiveClass }}">
                             <div class="flex items-center gap-3">
-                                <i class="fas fa-file-signature text-lg w-5 {{ Request::routeIs('mahasiswa.pengajuan*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] group-hover:text-[#8B1538]' }}"></i>
+                                <i class="fas fa-file-signature text-lg w-5 {{ Request::routeIs('mahasiswa.pengajuan*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
                                 <span class="text-sm">Pengajuan</span>
                             </div>
-                            <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
-                                :class="{'rotate-180': openPengajuan}"></i>
-                        </button>
-
+                        <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
+                            :class="{'rotate-180': openPengajuan}"></i>
+                    </button>
                         <div x-show="openPengajuan" x-collapse class="pl-12 pr-2 py-1 space-y-1">
                             @foreach([
-                                'mahasiswa.pengajuan.sidang.index' => 'Pengajuan Sidang',
-                                'mahasiswa.pengajuan.surat.index' => 'Pengajuan Surat',
-                                'mahasiswa.pengajuan.yudisium.index' => 'Pengajuan Yudisium',
-                            ] as $route => $label)
-                                <a class="block py-1.5 text-[13px] {{ Request::routeIs($route) ? 'text-[#8B1538] font-bold' : 'text-[#6B7280] hover:text-[#1A1A1A]' }} transition-colors"
-                                    href="{{ route($route) }}">
-                                    {{ $label }}
-                                </a>
+                                    'mahasiswa.pengajuan.sidang.index' => 'Pengajuan Sidang',
+                                    'mahasiswa.pengajuan.surat.index' => 'Pengajuan Surat',
+                                    'mahasiswa.pengajuan.yudisium.index' => 'Pengajuan Yudisium',
+                                ] as $route => $label)
+
+                                     <a class="block py-1.5 text-[13px] {{ Request::routeIs($route) ? 'text-[#8B1538] dark:text-red-400 font-bold' : 'text-[#6B7280] dark:text-slate-400 hover:text-[#1A1A1A] dark:hover:text-white' }} transition-colors"
+                                        href="{{ route($route) }}">
+                                        {{ $label }}
+                                    </a>
                             @endforeach
                         </div>
                     </div>
 
-                    <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.pembayaran*') ? $activeClass : $inactiveClass }}"
+                    <a class="
+    {{ $navItemClass }} {{ Request::routeIs('mahasiswa.pembayaran*') ? $activeClass : $inactiveClass }}"
                         href="{{ route('mahasiswa.pembayaran.index') }}">
-                        <i class="fas fa-credit-card text-lg w-5 {{ Request::routeIs('mahasiswa.pembayaran*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] group-hover:text-[#8B1538]' }}"></i>
+                        <i class="fas fa-credit-card text-lg w-5 {{ Request::routeIs('mahasiswa.pembayaran*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
                         <span class="text-sm">Pembayaran</span>
                     </a>
 
                     <!-- Spacer -->
-                    <div class="mt-auto pt-6 pb-2 border-t border-gray-100">
+                    <div class="mt-auto pt-6 pb-2 border-t border-gray-100 dark:border-slate-700">
                         <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.profil.index') ? $activeClass : $inactiveClass }}"
                             href="{{ route('mahasiswa.profil.index') }}">
-                            <i class="fas fa-user-circle text-lg w-5 {{ Request::routeIs('mahasiswa.profil.index') ? 'text-[#8B1538]' : 'text-[#9CA3AF] group-hover:text-[#8B1538]' }}"></i>
+                            <i class="fas fa-user-circle text-lg w-5 {{ Request::routeIs('mahasiswa.profil.index') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
                             <span class="text-sm">Profil</span>
                         </a>
 
                         <form method="POST" action="{{ route('logout') }}" class="w-full">
                             @csrf
                             <button type="submit"
-                                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[#DC2626] hover:bg-red-50 transition-all font-medium">
+                                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[#DC2626] dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-medium">
                                 <i class="fas fa-sign-out-alt text-lg w-5"></i>
                                 <span class="text-sm">Logout</span>
                             </button>
@@ -200,33 +223,47 @@
                     </div>
                 </nav>
             </div>
-        </aside>
+
+                       
+                               </aside>
 
         <!-- Content Wrapper -->
         <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
 
             <!-- Topbar -->
-            <header class="bg-white border-b border-gray-200 px-6 py-3 shadow-sm sticky top-0 z-40">
+
+                                        <header class="bg-white dark:bg-[#1a1d2e] border-b border-gray-200 dark:border-slate-800 px-4 sm:px-6 lg:px-8 py-3 shadow-sm sticky top-0 z-40">
                 <div class="flex items-center justify-between">
                     <!-- Mobile Menu Button -->
-                    <button class="lg:hidden w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-lg transition-colors" @click="sidebarOpen = !sidebarOpen">
+                    <button class="lg:hidden w-10 h-10 flex items-center justify-center text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors" @click="sidebarOpen = !sidebarOpen">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
 
                     <!-- Page Title / Branding -->
                     <div class="flex items-center gap-4">
-                        <h2 class="text-lg font-extrabold text-[#1A1A1A] tracking-tight">@yield('page-title', 'Dashboard')</h2>
+                        <h2 class="text-lg font-extrabold text-[#1A1A1A] dark:text-white tracking-tight">@yield('page-title', 'Dashboard')</h2>
                     </div>
 
                     <!-- Right Side -->
                     <div class="flex items-center gap-4">
+                        <!-- Dark Mode Toggle - Simple Sun/Moon -->
+                        <label class="theme-switch">
+                            <input id="theme-toggle-input" type="checkbox" />
+                            <span class="theme-slider">
+                                <span class="theme-icon sun">☀️</span>
+                                <span class="theme-icon moon">🌙</span>
+                            </span>
+                        </label>
+
                         <!-- User Dropdown (minimal) -->
-                        <div class="flex items-center gap-3 pl-4 border-l border-gray-100">
+                        <div class="flex items-center gap-3 pl-4 border-l border-gray-100 dark:border-slate-700">
                             <div class="text-right hidden sm:block">
-                                <p class="text-sm font-bold text-[#1A1A1A]">
-                                    {{ Auth::user()->mahasiswa->nama ?? Auth::user()->name }}
-                                </p>
-                                <p class="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-wider">
+                                <p class="text-sm font-bold text-[#1A1A1A] dark:text-white">
+                                    
+                                  {{ Auth::user()->mahasiswa->nama ?? Auth::user()->name }}
+
+                                                                </p>
+                                <p class="text-[10px] text-[#9CA3AF] dark:text-slate-400 font-bold uppercase tracking-wider">
                                     NIM: {{ Auth::user()->mahasiswa->nim ?? '-' }}
                                 </p>
                             </div>
@@ -241,24 +278,50 @@
                 </div>
             </header>
 
+            <script>
+                (function() {
+                    var toggle = document.getElementById('theme-toggle-input');
+                    
+                    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                        document.documentElement.classList.add('dark');
+                        if(toggle) toggle.checked = true;
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        if(toggle) toggle.checked = false;
+                    }
+
+                    if(toggle) {
+                        toggle.addEventListener('change', function(e) {
+                            if(e.target.checked) {
+                                document.documentElement.classList.add('dark');
+                                localStorage.setItem('color-theme', 'dark');
+                            } else {
+                                document.documentElement.classList.remove('dark');
+                                localStorage.setItem('color-theme', 'light');
+                            }
+                        });
+                    }
+                })();
+            </script>
+
             <!-- Main Content -->
-            <main class="flex-1 p-6 bg-gray-50">
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-slate-900">
                 @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6 animate-fade-in">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                        <p class="text-green-800 font-medium">{{ session('success') }}</p>
+                    <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6 animate-fade-in">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                            <p class="text-green-800 font-medium">{{ session('success') }}</p>
+                        </div>
                     </div>
-                </div>
                 @endif
 
                 @if(session('error'))
-                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6 animate-fade-in">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
-                        <p class="text-red-800 font-medium">{{ session('error') }}</p>
+                    <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6 animate-fade-in">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
+                            <p class="text-red-800 font-medium">{{ session('error') }}</p>
+                        </div>
                     </div>
-                </div>
                 @endif
 
                 @yield('content')

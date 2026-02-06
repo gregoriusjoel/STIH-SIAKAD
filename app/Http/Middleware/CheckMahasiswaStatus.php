@@ -68,8 +68,13 @@ class CheckMahasiswaStatus
                 $currentRoute = $request->route()->getName();
                 
                 if (!in_array($currentRoute, $allowedRoutes)) {
+                    // Get missing fields to highlight in the form
+                    $missingFields = $mahasiswa->getMissingProfileFields();
+                    
                     return redirect()->route('mahasiswa.profil.manajemen')
-                        ->with('warning', 'Lengkapi data profil Anda terlebih dahulu sebelum mengakses fitur lainnya.');
+                        ->with('warning', 'Lengkapi data profil Anda terlebih dahulu sebelum mengakses fitur lainnya.')
+                        ->with('missing_fields', $missingFields)
+                        ->with('highlight_missing', true);
                 }
             }
         }

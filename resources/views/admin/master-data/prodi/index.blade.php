@@ -4,7 +4,7 @@
 @section('page-title', 'Master Data Prodi')
 
 @section('content')
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                 <i class="fas fa-graduation-cap mr-3 text-maroon"></i>
@@ -12,30 +12,14 @@
             </h2>
             <p class="text-gray-600 text-sm mt-1">Kelola data program studi yang tersedia di sistem</p>
         </div>
-        <a href="{{ route('admin.prodi.create') }}"
-            class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
-            <i class="fas fa-plus mr-2"></i>
-            Tambah Prodi
-        </a>
+        <div class="flex-shrink-0">
+            <a href="{{ route('admin.prodi.create') }}"
+                class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
+                <i class="fas fa-plus mr-2"></i>
+                Tambah Prodi
+            </a>
+        </div>
     </div>
-
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6" role="alert">
-            <div class="flex">
-                <div class="py-1"><i class="fas fa-check-circle text-green-500 mr-2"></i></div>
-                <div>{{ session('success') }}</div>
-            </div>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6" role="alert">
-            <div class="flex">
-                <div class="py-1"><i class="fas fa-exclamation-circle text-red-500 mr-2"></i></div>
-                <div>{{ session('error') }}</div>
-            </div>
-        </div>
-    @endif
 
     <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
@@ -46,7 +30,7 @@
                             No
                         </th>
                         <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-code mr-2"></i>Kode Prodi
+                            Kode Prodi
                         </th>
                         <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                             <i class="fas fa-graduation-cap mr-2"></i>Nama Prodi
@@ -110,8 +94,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('admin.prodi.destroy', $prodi->id) }}" 
-                                        method="POST" class="inline" 
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus prodi ini?')">
+                                        method="POST" class="inline delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" 
@@ -144,4 +127,28 @@
             </div>
         @endif
     </div>
+
+    @push('scripts')
+        <script>
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data Prodi ini akan dihapus permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

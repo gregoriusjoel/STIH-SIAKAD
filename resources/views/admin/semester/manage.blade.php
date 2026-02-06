@@ -7,9 +7,9 @@
     <div class="mb-6">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center"><i
-                        class="fas fa-calendar-alt mr-3 text-maroon"></i>Semester & Tahun Ajaran</h2>
-                <p class="text-gray-600 text-sm mt-1">Kelola daftar semester dan atur semester aktif</p>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center"><i
+                        class="fas fa-calendar-alt mr-3 text-maroon dark:text-red-500"></i>Semester & Tahun Ajaran</h2>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Kelola daftar semester dan atur semester aktif</p>
             </div>
             <div class="flex-shrink-0">
                 <a href="{{ route('admin.semester.create') }}"
@@ -20,25 +20,25 @@
         </div>
 
         <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-                <p class="text-xs text-gray-400 uppercase">Semester Aktif</p>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase">Semester Aktif</p>
                 @if($semesterAktif)
-                    <h3 class="text-2xl font-bold text-gray-800 mt-2">{{ $semesterAktif->nama_semester }}
+                    <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-2">{{ $semesterAktif->nama_semester }}
                         {{ $semesterAktif->tahun_ajaran }}</h3>
-                    <p class="text-sm text-gray-500 mt-2">Mulai: {{ optional($semesterAktif->tanggal_mulai)->format('d M Y') }}
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Mulai: {{ optional($semesterAktif->tanggal_mulai)->format('d M Y') }}
                         — Selesai: {{ optional($semesterAktif->tanggal_selesai)->format('d M Y') }}</p>
                 @else
-                    <h3 class="text-lg font-semibold text-gray-800 mt-2">Belum ada semester aktif</h3>
-                    <p class="text-sm text-gray-500 mt-2">Silakan pilih salah satu semester di daftar sebelah kanan.</p>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-2">Belum ada semester aktif</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Silakan pilih salah satu semester di daftar sebelah kanan.</p>
                 @endif
             </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Daftar Semester</h3>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Daftar Semester</h3>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="text-xs text-gray-600 uppercase">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="text-xs text-gray-600 dark:text-gray-400 uppercase">
                             <tr>
                                 <th class="px-4 py-2 text-left">Nama</th>
                                 <th class="px-4 py-2 text-left">Tahun Ajaran</th>
@@ -47,20 +47,20 @@
                                 <th class="px-4 py-2 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-100 text-sm">
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 text-sm">
                             @foreach($allSemesters as $s)
                                 <tr>
-                                    <td class="px-4 py-3">{{ $s->nama_semester }}</td>
-                                    <td class="px-4 py-3">{{ $s->tahun_ajaran }}</td>
-                                    <td class="px-4 py-3">{{ optional($s->tanggal_mulai)->format('d M Y') ?? '-' }} —
+                                    <td class="px-4 py-3 dark:text-gray-300">{{ $s->nama_semester }}</td>
+                                    <td class="px-4 py-3 dark:text-gray-300">{{ $s->tahun_ajaran }}</td>
+                                    <td class="px-4 py-3 dark:text-gray-300">{{ optional($s->tanggal_mulai)->format('d M Y') ?? '-' }} —
                                         {{ optional($s->tanggal_selesai)->format('d M Y') ?? '-' }}</td>
                                     <td class="px-4 py-3 text-center">
                                         @if($s->status === 'aktif')
                                             <span
-                                                class="inline-flex px-3 py-1 rounded-full bg-green-100 text-green-800">Aktif</span>
+                                                class="inline-flex px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">Aktif</span>
                                         @else
                                             <span
-                                                class="inline-flex px-3 py-1 rounded-full bg-gray-100 text-gray-800">Non-aktif</span>
+                                                class="inline-flex px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">Non-aktif</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 text-center">
@@ -115,7 +115,9 @@ function confirmDeleteSemester(semesterId) {
         cancelButtonColor: '#6b7280',
         confirmButtonText: 'Ya, Hapus!',
         cancelButtonText: 'Batal',
-        reverseButtons: true
+        reverseButtons: true,
+        background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+        color: document.documentElement.classList.contains('dark') ? '#f3f4f6' : '#1f293b',
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('delete-semester-form-' + semesterId).submit();

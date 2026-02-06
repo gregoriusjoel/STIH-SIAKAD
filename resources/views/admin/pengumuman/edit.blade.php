@@ -6,11 +6,11 @@
 @section('content')
     <div class="mb-6 flex justify-between items-center">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-edit mr-3 text-maroon"></i>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                <i class="fas fa-edit mr-3 text-maroon dark:text-red-500"></i>
                 Edit Pengumuman
             </h2>
-            <p class="text-gray-600 text-sm mt-1">Perbarui informasi pengumuman: {{ $pengumuman->judul }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Perbarui informasi pengumuman: {{ $pengumuman->judul }}</p>
         </div>
         <a href="{{ route('admin.pengumuman.index') }}"
             class="bg-gray-600 text-white hover:bg-gray-700 px-6 py-3 rounded-lg transition flex items-center shadow-md">
@@ -19,9 +19,9 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-800">Konten Pengumuman</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Konten Pengumuman</h3>
         </div>
 
         <form action="{{ route('admin.pengumuman.update', $pengumuman) }}" method="POST" class="p-6">
@@ -31,7 +31,7 @@
             <div class="space-y-6">
                 <!-- Judul -->
                 <div>
-                    <label for="judul" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="judul" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         <i class="fas fa-heading mr-1"></i>
                         Judul Pengumuman
                     </label>
@@ -39,7 +39,7 @@
                         name="judul" 
                         id="judul" 
                         value="{{ old('judul', $pengumuman->judul) }}"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('judul') border-red-500 @enderror"
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('judul') border-red-500 @enderror"
                         placeholder="Masukkan judul pengumuman..."
                         required>
                     @error('judul')
@@ -49,14 +49,14 @@
 
                 <!-- Isi -->
                 <div>
-                    <label for="isi" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="isi" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         <i class="fas fa-align-left mr-1"></i>
                         Isi Pengumuman
                     </label>
                     <textarea name="isi" 
                         id="isi" 
                         rows="8"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('isi') border-red-500 @enderror"
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('isi') border-red-500 @enderror"
                         placeholder="Tuliskan detail pengumuman..."
                         required>{{ old('isi', $pengumuman->isi) }}</textarea>
                     @error('isi')
@@ -68,17 +68,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Target Pengumuman -->
                     <div>
-                        <label for="target" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="target" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             <i class="fas fa-users mr-1"></i>
                             Target Pengumuman
                         </label>
                         <select name="target" 
                             id="target"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('target') border-red-500 @enderror"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('target') border-red-500 @enderror"
                             required>
                             <option value="semua" {{ old('target', $pengumuman->target) == 'semua' ? 'selected' : '' }}>Semua (Dosen & Mahasiswa)</option>
-                            <option value="dosen" {{ old('target', $pengumuman->target) == 'dosen' ? 'selected' : '' }}>Dosen Only</option>
-                            <option value="mahasiswa" {{ old('target', $pengumuman->target) == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa Only</option>
+                            <option value="dosen" {{ old('target', $pengumuman->target) == 'dosen' ? 'selected' : '' }}>Dosen</option>
+                            <option value="mahasiswa" {{ old('target', $pengumuman->target) == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
                         </select>
                         @error('target')
                             <p class="mt-1 text-sm text-red-600"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
@@ -87,7 +87,7 @@
 
                     <!-- Tanggal Publikasi -->
                     <div>
-                        <label for="published_at" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="published_at" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             <i class="fas fa-calendar-alt mr-1"></i>
                             Tanggal Publikasi (opsional)
                         </label>
@@ -95,8 +95,8 @@
                             name="published_at" 
                             id="published_at" 
                             value="{{ old('published_at', $pengumuman->published_at ? \Carbon\Carbon::parse($pengumuman->published_at)->format('Y-m-d\\TH:i') : '') }}"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('published_at') border-red-500 @enderror">
-                        <p class="mt-1 text-xs text-gray-500">Kosongkan jika ingin segera dipublikasikan</p>
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('published_at') border-red-500 @enderror">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Kosongkan jika ingin segera dipublikasikan</p>
                         @error('published_at')
                             <p class="mt-1 text-sm text-red-600"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
                         @enderror
@@ -105,12 +105,12 @@
             </div>
 
             <!-- Guidance Box -->
-            <div class="mt-8 p-4 bg-maroon/5 border border-maroon/10 rounded-lg">
+            <div class="mt-8 p-4 bg-maroon/5 dark:bg-maroon-900/10 border border-maroon/10 dark:border-maroon-900/30 rounded-lg">
                 <div class="flex items-start">
-                    <i class="fas fa-info-circle text-maroon mt-1 mr-3 text-lg"></i>
+                    <i class="fas fa-info-circle text-maroon dark:text-red-400 mt-1 mr-3 text-lg"></i>
                     <div>
-                        <h4 class="text-sm font-semibold text-gray-900">Petunjuk Pengeditan</h4>
-                        <p class="text-sm text-gray-700 mt-1">
+                        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Petunjuk Pengeditan</h4>
+                        <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">
                             Perubahan pada pengumuman akan langsung terlihat oleh pengguna yang dituju setelah disimpan. 
                             Pastikan informasi yang diperbarui sudah akurat.
                         </p>
@@ -119,9 +119,9 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
+            <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <a href="{{ route('admin.pengumuman.index') }}" 
-                    class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition flex items-center">
+                    class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition flex items-center">
                     <i class="fas fa-times mr-2"></i>
                     Batal
                 </a>

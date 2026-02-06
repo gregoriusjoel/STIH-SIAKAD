@@ -15,80 +15,82 @@
 @endsection
 
 @section('content')
-    <div class="h-full flex flex-col bg-slate-50">
+    <div class="h-full flex flex-col bg-slate-50 dark:bg-gray-900">
         <!-- Header -->
         <div class="mb-6 px-1 relative z-20">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                 <div>
-                    <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Kalender Akademik</h2>
-                    <p class="text-slate-500 mt-1 text-sm font-medium">
+                    <h2 class="text-3xl font-extrabold text-slate-800 dark:text-gray-100 tracking-tight">Kalender Akademik</h2>
+                    <p class="text-slate-500 dark:text-gray-400 mt-1 text-sm font-medium">
                         Kelola jadwal semester, periode KRS, dan agenda kegiatan.
                     </p>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-3 items-center ml-auto">
-                    <div class="relative group">
+                <div class="flex flex-col sm:flex-row gap-3 items-center w-full md:w-auto ml-auto">
+                    <div class="relative group w-full sm:w-auto">
                         <select id="filterSemester"
-                            class="appearance-none bg-white border border-slate-200 text-slate-700 text-sm rounded-xl shadow-sm focus:ring-2 focus:ring-maroon/20 focus:border-maroon block w-full pl-4 pr-10 py-2.5 transition-all duration-200 hover:border-maroon/30 cursor-pointer font-semibold">
+                            class="appearance-none bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-200 text-sm rounded-xl shadow-sm focus:ring-2 focus:ring-maroon/20 focus:border-maroon block w-full pl-4 pr-10 py-2.5 transition-all duration-200 hover:border-maroon/30 cursor-pointer font-semibold">
                             <option value="">-- Semua Semester --</option>
                             @foreach($semesters as $semester)
                                 <option value="{{ $semester->id }}">{{ $semester->nama_semester }} {{ $semester->tahun_ajaran }}
                                 </option>
                             @endforeach
                         </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 dark:text-gray-400">
                             <i class="fas fa-chevron-down text-xs"></i>
                         </div>
                     </div>
 
-                    <button onclick="document.getElementById('importModal').classList.remove('hidden')"
-                            class="px-5 py-2.5 bg-white text-slate-700 hover:text-maroon hover:bg-slate-50 border border-slate-200 rounded-xl hover:border-maroon/30 transition-all duration-200 shadow-sm font-bold text-sm flex items-center gap-2 group">
-                            <i class="fas fa-file-import text-slate-400 group-hover:text-maroon transition-colors"></i>
+                    <div class="flex gap-3 w-full sm:w-auto">
+                        <button onclick="document.getElementById('importModal').classList.remove('hidden')"
+                            class="flex-1 sm:flex-none justify-center px-5 py-2.5 bg-white dark:bg-gray-800 text-slate-700 dark:text-gray-300 hover:text-maroon dark:hover:text-red-400 hover:bg-slate-50 dark:hover:bg-gray-700 border border-slate-200 dark:border-gray-700 rounded-xl hover:border-maroon/30 transition-all duration-200 shadow-sm font-bold text-sm flex items-center gap-2 group">
+                            <i class="fas fa-file-import text-slate-400 dark:text-gray-500 group-hover:text-maroon dark:group-hover:text-red-400 transition-colors"></i>
                             <span>Import</span>
                         </button>
 
                         <button onclick="openEventModal()"
-                            class="px-5 py-2.5 bg-maroon text-white rounded-xl hover:bg-red-900 shadow-md hover:shadow-lg transition-all duration-200 font-bold text-sm flex items-center gap-2 transform active:scale-95">
+                            class="flex-1 sm:flex-none justify-center px-5 py-2.5 bg-maroon text-white rounded-xl hover:bg-red-900 shadow-md hover:shadow-lg transition-all duration-200 font-bold text-sm flex items-center gap-2 transform active:scale-95">
                             <i class="fas fa-calendar-plus"></i>
                             <span>Atur Jadwal</span>
                         </button>
                     </div>
                 </div>
+                </div>
             </div>
 
             <!-- Calendar Container -->
-            <div class="flex-1 bg-white rounded-2xl shadow-lg border border-slate-200/60 overflow-hidden p-6 relative">
-                <div id="calendar" class="h-full font-sans text-slate-600"></div>
+            <div class="flex-1 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-slate-200/60 dark:border-gray-700 overflow-hidden p-4 md:p-6 relative">
+                <div id="calendar" class="h-full font-sans text-slate-600 dark:text-gray-300"></div>
             </div>
         </div>
 
         <!-- Semester Modal -->
         <div id="semesterModal" tabindex="-1" aria-hidden="true"
-            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
+            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm transition-opacity duration-300">
             <div
-                class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-auto max-h-[90vh] overflow-hidden flex flex-col transform transition-all scale-100">
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-auto max-h-[90vh] overflow-hidden flex flex-col transform transition-all scale-100">
                 <!-- Modal Header -->
-                <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div class="px-6 py-4 md:px-8 md:py-5 border-b border-slate-100 dark:border-gray-700 flex justify-between items-center bg-slate-50/50 dark:bg-gray-900/50">
                     <div>
-                        <h3 class="text-xl font-bold text-slate-800">Pengaturan Semester</h3>
-                        <p class="text-sm text-slate-500">Atur periode akademik & jadwal KRS</p>
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-gray-100">Pengaturan Semester</h3>
+                        <p class="text-sm text-slate-500 dark:text-gray-400">Atur periode akademik & jadwal KRS</p>
                     </div>
                     <button onclick="closeSemesterModal()"
-                        class="text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100 transition-colors">
+                        class="text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors">
                         <i class="fas fa-times text-lg"></i>
                     </button>
                 </div>
 
                 <!-- Modal Body -->
-                <div class="p-8 overflow-y-auto custom-scrollbar">
+                <div class="p-6 md:p-8 overflow-y-auto custom-scrollbar">
                     <form id="semesterForm" class="space-y-8">
                         <input type="hidden" name="semester_id" id="semester_id">
 
                         <!-- Selection -->
                         <div class="space-y-3">
-                            <label class="block text-sm font-bold text-slate-700">Pilih Semester untuk Diedit</label>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-gray-300">Pilih Semester untuk Diedit</label>
                             <div class="relative">
                                 <select id="semesterSelect"
-                                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition-all text-slate-700 font-medium appearance-none cursor-pointer">
+                                    class="w-full px-4 py-3 bg-slate-50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition-all text-slate-700 dark:text-gray-200 font-medium appearance-none cursor-pointer">
                                     <option value="">-- Pilih Semester --</option>
                                     @foreach($semesters as $semester)
                                         <option value="{{ $semester->id }}" data-mulai="{{ $semester->tanggal_mulai }}"
@@ -102,67 +104,66 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-500">
+                                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-500 dark:text-gray-400">
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-500 ml-1">Pilih semester terlebih dahulu untuk memuat dan mengubah
-                                data.</p>
+                            <p class="text-xs text-slate-500 dark:text-gray-400 ml-1">Pilih semester terlebih dahulu untuk memuat dan mengubah data.</p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <!-- Periode Akademik -->
                             <div
-                                class="bg-blue-50/50 rounded-xl p-6 border border-blue-100 space-y-4 hover:shadow-sm transition-shadow">
-                                <h4 class="font-bold text-blue-900 flex items-center gap-2 border-b border-blue-200 pb-2">
-                                    <i class="fas fa-calendar-alt text-blue-600"></i> Periode Akademik
+                                class="bg-blue-50/50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-900/30 space-y-4 hover:shadow-sm transition-shadow">
+                                <h4 class="font-bold text-blue-900 dark:text-blue-300 flex items-center gap-2 border-b border-blue-200 dark:border-blue-800 pb-2">
+                                    <i class="fas fa-calendar-alt text-blue-600 dark:text-blue-400"></i> Periode Akademik
                                 </h4>
                                 <div class="space-y-4">
                                     <div>
                                         <label
-                                            class="block text-xs font-semibold text-blue-800 uppercase tracking-wide mb-1.5">Tanggal
+                                            class="block text-xs font-semibold text-blue-800 dark:text-blue-400 uppercase tracking-wide mb-1.5">Tanggal
                                             Mulai</label>
                                         <input type="date" name="tanggal_mulai" id="tanggal_mulai"
-                                            class="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm">
+                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-900/50 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm dark:text-gray-200">
                                     </div>
                                     <div>
                                         <label
-                                            class="block text-xs font-semibold text-blue-800 uppercase tracking-wide mb-1.5">Tanggal
+                                            class="block text-xs font-semibold text-blue-800 dark:text-blue-400 uppercase tracking-wide mb-1.5">Tanggal
                                             Selesai</label>
                                         <input type="date" name="tanggal_selesai" id="tanggal_selesai"
-                                            class="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm">
+                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-900/50 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm dark:text-gray-200">
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Periode KRS -->
                             <div
-                                class="bg-emerald-50/50 rounded-xl p-6 border border-emerald-100 space-y-4 hover:shadow-sm transition-shadow">
-                                <h4 class="font-bold text-emerald-900 flex items-center gap-2 border-b border-emerald-200 pb-2">
-                                    <i class="fas fa-file-signature text-emerald-600"></i> Periode KRS
+                                class="bg-emerald-50/50 dark:bg-emerald-900/20 rounded-xl p-6 border border-emerald-100 dark:border-emerald-900/30 space-y-4 hover:shadow-sm transition-shadow">
+                                <h4 class="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-2 border-b border-emerald-200 dark:border-emerald-800 pb-2">
+                                    <i class="fas fa-file-signature text-emerald-600 dark:text-emerald-400"></i> Periode KRS
                                 </h4>
                                 <div class="space-y-4">
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label
-                                                class="block text-xs font-semibold text-emerald-800 uppercase tracking-wide mb-1.5">Mulai
+                                                class="block text-xs font-semibold text-emerald-800 dark:text-emerald-400 uppercase tracking-wide mb-1.5">Mulai
                                                 KRS</label>
                                             <input type="date" name="krs_mulai" id="krs_mulai"
-                                                class="w-full px-3 py-2 bg-white border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                                                class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900/50 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm dark:text-gray-200">
                                         </div>
                                         <div>
                                             <label
-                                                class="block text-xs font-semibold text-emerald-800 uppercase tracking-wide mb-1.5">Selesai
+                                                class="block text-xs font-semibold text-emerald-800 dark:text-emerald-400 uppercase tracking-wide mb-1.5">Selesai
                                                 KRS</label>
                                             <input type="date" name="krs_selesai" id="krs_selesai"
-                                                class="w-full px-3 py-2 bg-white border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                                                class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900/50 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm dark:text-gray-200">
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-3 p-3 bg-white/60 rounded-lg border border-emerald-100">
+                                    <div class="flex items-center gap-3 p-3 bg-white/60 dark:bg-gray-700/50 rounded-lg border border-emerald-100 dark:border-emerald-900/30">
                                         <input type="checkbox" name="krs_dapat_diisi" id="krs_dapat_diisi"
-                                            class="w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500 cursor-pointer">
+                                            class="w-5 h-5 text-emerald-600 rounded border-emerald-300 dark:border-emerald-700 focus:ring-emerald-500 cursor-pointer">
                                         <label for="krs_dapat_diisi"
-                                            class="text-sm font-medium text-emerald-800 cursor-pointer select-none">Buka
+                                            class="text-sm font-medium text-emerald-800 dark:text-emerald-300 cursor-pointer select-none">Buka
                                             Pengisian KRS</label>
                                     </div>
                                 </div>
@@ -174,9 +175,9 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3">
+                <div class="px-8 py-5 border-t border-slate-100 dark:border-gray-700 bg-slate-50/50 dark:bg-gray-900/50 flex justify-end gap-3">
                     <button type="button" onclick="closeSemesterModal()"
-                        class="px-6 py-2.5 text-slate-600 hover:text-slate-800 hover:bg-slate-200/50 border border-transparent rounded-lg transition font-medium text-sm">
+                        class="px-6 py-2.5 text-slate-600 dark:text-gray-400 hover:text-slate-800 dark:hover:text-gray-200 hover:bg-slate-200/50 dark:hover:bg-gray-700 border border-transparent rounded-lg transition font-medium text-sm">
                         Batal
                     </button>
                     <button type="submit" form="semesterForm"
@@ -189,9 +190,9 @@
 
         <!-- Event Modal -->
         <div id="eventModal" tabindex="-1" aria-hidden="true"
-            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
+            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm transition-opacity duration-300">
             <div
-                class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-auto overflow-hidden transform transition-all scale-100">
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-auto overflow-hidden transform transition-all scale-100">
                 <!-- Header -->
                 <div class="px-6 py-4 flex justify-between items-center bg-gradient-to-r from-maroon to-red-700">
                     <h3 class="text-xl font-bold text-white" id="eventModalTitle">Kelola Jadwal</h3>
@@ -207,17 +208,17 @@
                     <div class="space-y-4">
                         <!-- Title -->
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Nama Kegiatan</label>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Nama Kegiatan</label>
                             <input type="text" name="title" id="event_title" required
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white transition-all text-slate-800 placeholder-slate-400"
+                                class="w-full px-4 py-3 bg-slate-50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white dark:focus:bg-gray-600 transition-all text-slate-800 dark:text-gray-100 placeholder-slate-400 dark:placeholder-gray-500"
                                 placeholder="Contoh: Libur Hari Raya">
                         </div>
 
                         <!-- Type & Color (Color automatic) -->
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Tipe Kegiatan</label>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Tipe Kegiatan</label>
                             <select name="event_type" id="event_type" required
-                                class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white text-sm">
+                                class="w-full px-3 py-3 bg-slate-50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white dark:focus:bg-gray-600 text-sm dark:text-gray-200">
                                 <option value="perkuliahan">Perkuliahan</option>
                                 <option value="krs">Periode KRS</option>
                                 <option value="krs_perubahan">KRS Perubahan</option>
@@ -226,55 +227,55 @@
                                 <option value="libur_akademik">Libur Akademik</option>
                                 <option value="lainnya">Lainnya</option>
                             </select>
-                            <p class="text-xs text-slate-500 mt-1">*Warna label akan disesuaikan otomatis dengan tipe kegiatan.
+                            <p class="text-xs text-slate-500 dark:text-gray-400 mt-1">*Warna label akan disesuaikan otomatis dengan tipe kegiatan.
                             </p>
                         </div>
 
                         <!-- Semester (required) -->
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Semester</label>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Semester</label>
                             <select name="semester_id" id="event_semester" required
-                                class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white text-sm">
+                                class="w-full px-3 py-3 bg-slate-50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white dark:focus:bg-gray-600 text-sm dark:text-gray-200">
                                 <option value="" disabled selected>-- Pilih Semester --</option>
                                 @foreach($semesters as $semester)
                                     <option value="{{ $semester->id }}">{{ $semester->nama_semester }} {{ $semester->tahun_ajaran }}</option>
                                 @endforeach
                             </select>
-                            <p class="text-xs text-slate-500 mt-1">Pilih semester agar event hanya muncul saat filter semester tersebut dipilih.</p>
+                            <p class="text-xs text-slate-500 dark:text-gray-400 mt-1">Pilih semester agar event hanya muncul saat filter semester tersebut dipilih.</p>
                         </div>
 
                         <!-- Dates -->
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Tanggal Mulai</label>
+                                <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Tanggal Mulai</label>
                                 <input type="date" name="start_date" id="event_start" required
-                                    class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white text-sm">
+                                    class="w-full px-3 py-3 bg-slate-50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white dark:focus:bg-gray-600 text-sm dark:text-gray-100">
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Tanggal Selesai</label>
+                                <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Tanggal Selesai</label>
                                 <input type="date" name="end_date" id="event_end" required
-                                    class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white text-sm">
+                                    class="w-full px-3 py-3 bg-slate-50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white dark:focus:bg-gray-600 text-sm dark:text-gray-100">
                             </div>
                         </div>
 
                         <!-- Desc -->
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Keterangan</label>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Keterangan</label>
                             <textarea name="description" id="event_description" rows="3"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white transition-all text-sm"
+                                class="w-full px-4 py-3 bg-slate-50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white dark:focus:bg-gray-600 transition-all text-sm dark:text-gray-100 placeholder-slate-400 dark:placeholder-gray-500"
                                 placeholder="Tambahkan detail opsional..."></textarea>
                         </div>
                     </div>
 
                     <!-- Footer Actions -->
-                    <div class="pt-4 flex items-center justify-between border-t border-slate-100 mt-2">
+                    <div class="pt-4 flex items-center justify-between border-t border-slate-100 dark:border-gray-700 mt-2">
                         <button type="button" id="deleteEventBtn"
-                            class="px-4 py-2 text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-sm font-semibold hidden flex items-center gap-2">
+                            class="px-4 py-2 text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-lg transition-colors text-sm font-semibold hidden flex items-center gap-2">
                             <i class="fas fa-trash-alt"></i> Hapus
                         </button>
                         <div class="flex gap-3 ml-auto">
                             <button type="button" onclick="closeEventModal()"
-                                class="px-5 py-2.5 text-slate-700 bg-white border border-slate-200 rounded-full hover:bg-slate-50 font-medium text-sm">
+                                class="px-5 py-2.5 text-slate-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-full hover:bg-slate-50 dark:hover:bg-gray-700 font-medium text-sm">
                                 Batal
                             </button>
                             <button type="submit"
@@ -289,9 +290,9 @@
         </div>
         <!-- Import Modal -->
         <div id="importModal" tabindex="-1" aria-hidden="true"
-            class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+            class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/80 backdrop-blur-sm px-4">
 
-            <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-xl overflow-hidden">
 
                 <!-- Header -->
                 <div class="flex items-start justify-between px-6 py-5 bg-maroon rounded-t-2xl">
@@ -309,15 +310,15 @@
                 <form id="importForm" class="p-6 space-y-6">
 
                     <!-- Template Card -->
-                    <div class="flex gap-4 items-start bg-indigo-50 border border-indigo-100 rounded-xl p-4">
-                        <div class="w-12 h-12 flex items-center justify-center bg-indigo-100 rounded-lg">
-                            <i class="fas fa-file-csv text-indigo-600 text-lg"></i>
+                    <div class="flex gap-4 items-start bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-900/30 rounded-xl p-4">
+                        <div class="w-12 h-12 flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/40 rounded-lg">
+                            <i class="fas fa-file-csv text-indigo-600 dark:text-indigo-400 text-lg"></i>
                         </div>
                         <div class="flex-1">
-                            <p class="font-semibold text-indigo-900 mb-1">Butuh Template?</p>
-                            <p class="text-sm text-indigo-700 mb-3">Gunakan template resmi agar format sesuai.</p>
+                            <p class="font-semibold text-indigo-900 dark:text-indigo-300 mb-1">Butuh Template?</p>
+                            <p class="text-sm text-indigo-700 dark:text-indigo-400 mb-3">Gunakan template resmi agar format sesuai.</p>
                             <a href="{{ route('admin.kalender.import-template') }}"
-                                class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                                class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">
                                 <i class="fas fa-download"></i> Download Template
                             </a>
                         </div>
@@ -325,20 +326,20 @@
 
                     <!-- Upload Area -->
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">File Jadwal</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">File Jadwal</label>
 
                         <label for="import_file"
-                            class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 transition">
+                            class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-gray-600 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700 transition">
 
-                            <i class="fas fa-cloud-upload-alt text-3xl text-slate-500 mb-3"></i>
+                            <i class="fas fa-cloud-upload-alt text-3xl text-slate-500 dark:text-gray-400 mb-3"></i>
 
-                            <p class="font-semibold text-slate-700">Klik untuk pilih file</p>
-                            <p class="text-xs text-slate-400 mt-1 mb-3">atau drag & drop file di sini</p>
+                            <p class="font-semibold text-slate-700 dark:text-gray-200">Klik untuk pilih file</p>
+                            <p class="text-xs text-slate-400 dark:text-gray-500 mt-1 mb-3">atau drag & drop file di sini</p>
 
                             <div class="flex gap-2">
-                                <span class="px-2 py-1 border rounded text-xs text-slate-600">CSV</span>
-                                <span class="px-2 py-1 border rounded text-xs text-slate-600">TXT</span>
-                                <span class="px-2 py-1 border rounded text-xs text-slate-600">PDF</span>
+                                <span class="px-2 py-1 border dark:border-gray-600 rounded text-xs text-slate-600 dark:text-gray-400">CSV</span>
+                                <span class="px-2 py-1 border dark:border-gray-600 rounded text-xs text-slate-600 dark:text-gray-400">TXT</span>
+                                <span class="px-2 py-1 border dark:border-gray-600 rounded text-xs text-slate-600 dark:text-gray-400">PDF</span>
                             </div>
 
                             <input id="import_file" name="file" type="file" class="hidden" accept=".csv,.txt,.pdf" required>
@@ -346,23 +347,23 @@
 
                         <!-- File Selected -->
                         <div id="file-name"
-                            class="hidden mt-3 flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3">
+                            class="hidden mt-3 flex items-center gap-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/30 rounded-lg px-4 py-3">
 
-                            <i class="fas fa-file-alt text-emerald-600"></i>
-                            <span id="file-name-text" class="text-sm text-emerald-700 font-medium truncate"></span>
+                            <i class="fas fa-file-alt text-emerald-600 dark:text-emerald-400"></i>
+                            <span id="file-name-text" class="text-sm text-emerald-700 dark:text-emerald-300 font-medium truncate"></span>
 
                             <button type="button"
                                 onclick="document.getElementById('import_file').value='';document.getElementById('file-name').classList.add('hidden');"
-                                class="ml-auto text-emerald-500 hover:text-emerald-700">
+                                class="ml-auto text-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-300">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Footer -->
-                    <div class="flex justify-end gap-3 pt-4 border-t">
+                    <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
                         <button type="button" onclick="closeImportModal()"
-                            class="px-5 py-2.5 text-slate-600 hover:text-slate-800 rounded-md shadow-sm">
+                            class="px-5 py-2.5 text-slate-600 dark:text-gray-400 hover:text-slate-800 dark:hover:text-gray-200 rounded-md shadow-sm">
                             Batal
                         </button>
                         <button type="submit"
@@ -393,14 +394,23 @@
                 .custom-scrollbar::-webkit-scrollbar-track {
                     background: #f1f5f9;
                 }
+                .dark .custom-scrollbar::-webkit-scrollbar-track {
+                    background: #1f2937;
+                }
 
                 .custom-scrollbar::-webkit-scrollbar-thumb {
                     background: #cbd5e1;
                     border-radius: 4px;
                 }
+                .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #4b5563;
+                }
 
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #94a3b8;
+                }
+                .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #6b7280;
                 }
 
                 /* FullCalendar Customization */
@@ -427,6 +437,13 @@
                     font-family: 'Inter', system-ui, -apple-system, sans-serif;
                 }
 
+                .dark .fc {
+                    --fc-border-color: #374151;
+                    --fc-today-bg-color: #111827;
+                    --fc-neutral-bg-color: #1f2937;
+                    --fc-page-bg-color: #1f2937;
+                }
+
                 /* Toolbar */
                 .fc-header-toolbar {
                     margin-bottom: 2rem !important;
@@ -447,6 +464,9 @@
                     color: #1e293b;
                     letter-spacing: -0.025em;
                 }
+                .dark .fc-toolbar-title {
+                    color: #f3f4f6;
+                }
 
                 .fc-button {
                     border-radius: 0.75rem !important;
@@ -463,6 +483,11 @@
                     border-color: #e2e8f0 !important;
                     color: #475569 !important;
                     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+                }
+                .dark .fc-button-primary {
+                    background-color: #374151 !important;
+                    border-color: #4b5563 !important;
+                    color: #d1d5db !important;
                 }
 
                 /* Force separation for all buttons in toolbar */
@@ -493,6 +518,11 @@
                     border-color: #cbd5e1 !important;
                     color: #1e293b !important;
                     transform: translateY(-1px);
+                }
+                .dark .fc-button-primary:hover {
+                    background-color: #4b5563 !important;
+                    border-color: #6b7280 !important;
+                    color: #ffffff !important;
                 }
 
                 .fc-button-primary:focus {
@@ -581,16 +611,26 @@
                     font-size: 0.75rem;
                     letter-spacing: 0.05em;
                 }
+                .dark .fc-col-header-cell {
+                    background-color: #111827;
+                    color: #9ca3af;
+                }
 
                 .fc-daygrid-day-number {
                     color: #475569;
                     font-weight: 600;
                     padding: 8px 12px !important;
                 }
+                .dark .fc-daygrid-day-number {
+                    color: #9ca3af;
+                }
 
                 .fc-day-today {
                     background-color: #fff1f2 !important;
                     /* Very light maroon tint for today */
+                }
+                .dark .fc-day-today {
+                    background-color: #1e1b1b !important;
                 }
 
                 /* Events */
@@ -621,6 +661,23 @@
                             #3b82f6 10px,
                             #60a5fa 10px,
                             #60a5fa 20px) !important;
+                }
+                @media (max-width: 640px) {
+                    .fc-header-toolbar {
+                        flex-direction: column;
+                        align-items: stretch !important;
+                        gap: 1rem;
+                    }
+                    .fc-toolbar-chunk:nth-child(2) {
+                        order: -1; 
+                        justify-content: center;
+                    }
+                    .fc-toolbar-chunk {
+                        justify-content: space-between;
+                    }
+                    .fc-toolbar-title {
+                        font-size: 1.25rem !important;
+                    }
                 }
             </style>
         @endpush
@@ -988,7 +1045,7 @@
 
                 function showNotification(message, type = 'success') {
                     const div = document.createElement('div');
-                    div.className = `fixed top-6 right-6 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform transition-all duration-500 translate-y-[-20px] opacity-0 z-[100] ${type === 'success' ? 'bg-white border-l-4 border-green-500 text-slate-700' : 'bg-white border-l-4 border-red-500 text-slate-700'
+                    div.className = `fixed top-6 right-6 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform transition-all duration-500 translate-y-[-20px] opacity-0 z-[100] ${type === 'success' ? 'bg-white dark:bg-gray-800 border-l-4 border-green-500 text-slate-700 dark:text-gray-200 shadow-xl' : 'bg-white dark:bg-gray-800 border-l-4 border-red-500 text-slate-700 dark:text-gray-200 shadow-xl'
                         }`;
 
                     const icon = type === 'success' ? '<i class="fas fa-check-circle text-green-500 text-xl"></i>' : '<i class="fas fa-exclamation-circle text-red-500 text-xl"></i>';
@@ -996,8 +1053,8 @@
                     div.innerHTML = `
                                                                                                                                                                                                                                     ${icon}
                                                                                                                                                                                                                                     <div>
-                                                                                                                                                                                                                                        <h4 class="font-bold text-sm text-slate-800">${type === 'success' ? 'Berhasil' : 'Gagal'}</h4>
-                                                                                                                                                                                                                                        <p class="text-xs text-slate-500 font-medium mt-0.5">${message}</p>
+                                                                                                                                                                                                                                        <h4 class="font-bold text-sm text-slate-800 dark:text-gray-100">${type === 'success' ? 'Berhasil' : 'Gagal'}</h4>
+                                                                                                                                                                                                                                        <p class="text-xs text-slate-500 dark:text-gray-400 font-medium mt-0.5">${message}</p>
                                                                                                                                                                                                                                     </div>
                                                                                                                                                                                                                                 `;
 

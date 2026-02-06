@@ -8,15 +8,15 @@
 @theme {
     --font-sans: 'Nunito', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-display: 'Inter', sans-serif;
-    
+
     --color-primary: #b2202c;
     --color-primary-hover: #9a1b25;
     --color-primary-dark: #821620;
-    
+
     --color-maroon: #8B1538;
     --color-maroon-hover: #6D1029;
     --color-maroon-light: #FEF2F4;
-    
+
     --color-background-light: #f8f6f6;
     --color-background-dark: #160d0d;
 }
@@ -26,4 +26,78 @@
     .text-shadow {
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     }
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Simple Theme Switch Toggle */
+.theme-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.theme-slider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 56px;
+    height: 28px;
+    background: linear-gradient(135deg, #87CEEB 0%, #48b1f3 100%);
+    border-radius: 28px;
+    padding: 0 4px;
+    transition: all 0.4s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.theme-switch input:checked+.theme-slider {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.theme-slider::before {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    left: 3px;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+
+.theme-switch input:checked+.theme-slider::before {
+    transform: translateX(28px);
+}
+
+.theme-icon {
+    font-size: 14px;
+    z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+.theme-icon.sun {
+    opacity: 1;
+}
+
+.theme-icon.moon {
+    opacity: 0.4;
+}
+
+.theme-switch input:checked+.theme-slider .theme-icon.sun {
+    opacity: 0.4;
+}
+
+.theme-switch input:checked+.theme-slider .theme-icon.moon {
+    opacity: 1;
 }

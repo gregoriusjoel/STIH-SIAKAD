@@ -153,6 +153,43 @@ class KelasController extends Controller
                 $status = 'Belum Dimulai';
             }
 
+            // Load actual materi from database for this pertemuan
+            $materis = \App\Models\Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+                ->where('pertemuan', $i)
+                ->with('dosen')
+                ->latest()
+                ->get();
+
+            $materials = $materis->map(function ($materi) {
+                return [
+                    'id' => $materi->id,
+                    'name' => $materi->file_name,
+                    'url' => route('mahasiswa.materi.download', $materi->id),
+                    'type' => $materi->file_type,
+                    'judul' => $materi->judul,
+                    'deskripsi' => $materi->deskripsi,
+                    'size' => $materi->file_size_human,
+                    'uploaded_by' => $materi->dosen->name ?? 'Dosen',
+                ];
+            })->toArray();
+
+            // Load tugas for this pertemuan
+            $tugas = \App\Models\Tugas::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+                ->where('pertemuan', $i)
+                ->with('dosen')
+                ->latest()
+                ->get();
+
+            $assignments = $tugas->map(function ($t) use ($meetingDate) {
+                return [
+                    'id' => $t->id,
+                    'title' => $t->judul,
+                    'description' => $t->deskripsi,
+                    'deadline' => $t->deadline ? \Carbon\Carbon::parse($t->deadline)->format('d M Y') : $meetingDate->copy()->addDays(7)->format('d M Y'),
+                    'file_url' => $t->file_path ? route('mahasiswa.tugas.download', $t->id) : null,
+                ];
+            })->toArray();
+
             $meetings[] = [
                 'no' => $i,
                 'label' => 'Pertemuan ' . $i,
@@ -161,27 +198,9 @@ class KelasController extends Controller
                 'status' => $status,
                 'status_class' => $statusClass,
                 'is_past' => $meetingDate->isPast(),
-                // Dummy Data for E-Learning
                 'description' => 'Pada pertemuan ini akan dibahas mengenai pengantar mata kuliah, kontrak perkuliahan, dan pemaparan silabus selama satu semester.',
-                'materials' => [
-                    [
-                        'name' => 'Slide Pengantar.pdf',
-                        'url' => '#', // In real app, this would be a URL
-                        'type' => 'pdf'
-                    ],
-                    [
-                        'name' => 'Kontrak Kuliah.docx',
-                        'url' => '#',
-                        'type' => 'doc'
-                    ]
-                ],
-                'assignments' => [
-                    [
-                        'title' => 'Tugas Resume Pertemuan 1',
-                        'deadline' => $meetingDate->copy()->addDays(7)->format('d M Y'),
-                        'file_url' => '#' // Dummy URL for assignment file
-                    ]
-                ]
+                'materials' => $materials,
+                'assignments' => $assignments,
             ];
         }
 

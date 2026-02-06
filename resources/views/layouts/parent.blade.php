@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SIAKAD STIH') - Parent Panel</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_stih_white.png') }}">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -54,6 +56,16 @@
         }
     </style>
     @stack('styles')
+
+    <!-- Early Dark Mode Detection (prevents flash) -->
+    <script>
+        (function () {
+            if (localStorage.getItem('color-theme') === 'dark' ||
+                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 </head>
 
 <body class="bg-gray-100">
@@ -62,7 +74,8 @@
         <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/50 z-40 hidden md:hidden transition-opacity"></div>
 
         <!-- Sidebar -->
-        <aside class="sidebar w-64 flex-shrink-0 overflow-y-auto fixed inset-y-0 left-0 z-50 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0 md:static md:block border-r border-maroon/20">
+        <aside
+            class="sidebar w-64 flex-shrink-0 overflow-y-auto fixed inset-y-0 left-0 z-50 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0 md:static md:block border-r border-maroon/20">
             <div class="p-6">
                 <h1 class="text-2xl font-bold text-white text-center">SIAKAD STIH</h1>
                 <p class="text-white text-center text-sm mt-1">Parent Panel</p>
@@ -158,10 +171,21 @@
                     </div>
 
                     <div class="flex items-center gap-4">
+                        <!-- Dark Mode Toggle - Simple Sun/Moon -->
+                        <label class="theme-switch">
+                            <input id="theme-toggle-input" type="checkbox" />
+                            <span class="theme-slider">
+                                <span class="theme-icon sun">☀️</span>
+                                <span class="theme-icon moon">🌙</span>
+                            </span>
+                        </label>
+
                         <div class="flex items-center space-x-3">
                             <div class="text-right mr-2 hidden sm:block">
-                                <div class="text-sm font-medium text-gray-800">{{ Auth::user()->name }}</div>
-                                <div class="text-xs text-gray-500">Orang Tua</div>
+                                <div class="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                    {{ Auth::user()->name }}
+                                </div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Orang Tua</div>
                             </div>
                             <div
                                 class="w-10 h-10 bg-maroon rounded-full flex items-center justify-center text-white font-bold shadow-md">
@@ -172,20 +196,46 @@
                 </div>
             </header>
 
+            <script>
+                (function () {
+                    var toggle = document.getElementById('theme-toggle-input');
+
+                    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                        document.documentElement.classList.add('dark');
+                        if (toggle) toggle.checked = true;
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        if (toggle) toggle.checked = false;
+                    }
+
+                    if (toggle) {
+                        toggle.addEventListener('change', function (e) {
+                            if (e.target.checked) {
+                                document.documentElement.classList.add('dark');
+                                localStorage.setItem('color-theme', 'dark');
+                            } else {
+                                document.documentElement.classList.remove('dark');
+                                localStorage.setItem('color-theme', 'light');
+                            }
+                        });
+                    }
+                })();
+            </script>
+
             <!-- Content Area -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 <!-- Flash Messages -->
                 @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-                    role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+                        role="alert">
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                    </div>
                 @endif
 
                 @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                    </div>
                 @endif
 
                 @yield('content')
@@ -195,11 +245,11 @@
 
     <script>
         // Auto-hide flash messages after 5 seconds
-        setTimeout(function() {
-            document.querySelectorAll('[role="alert"]').forEach(function(alert) {
+        setTimeout(function () {
+            document.querySelectorAll('[role="alert"]').forEach(function (alert) {
                 alert.style.transition = 'opacity 0.5s ease';
                 alert.style.opacity = '0';
-                setTimeout(function() {
+                setTimeout(function () {
                     alert.remove();
                 }, 500);
             });

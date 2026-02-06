@@ -31,11 +31,11 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
 
             <!-- CALENDAR SECTION -->
-            <div
-                class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm flex flex-col relative overflow-hidden w-full h-full">
+            <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm flex flex-col relative overflow-hidden w-full"
+                style="min-height: 540px;">
 
                 <!-- Calendar Header -->
                 <div class="flex items-center justify-between mb-4">
@@ -71,35 +71,36 @@
                     </div>
                 </div>
 
-                <div x-show="view === 'calendar'" x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                    class="flex flex-col flex-grow">
+                <div x-show="view === 'calendar'" class="flex flex-col h-full pb-16">
 
                     <!-- Weekdays -->
                     <div class="grid grid-cols-7 mb-2">
                         <template x-for="day in ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']">
                             <div class="text-center text-sm text-gray-400 font-medium py-2" x-text="day"></div>
                         </template>
+
                     </div>
 
+
                     <!-- Days Grid -->
-                    <div class="grid grid-cols-7 gap-1 lg:gap-2 flex-grow items-center">
+                    <div class="grid grid-cols-7 gap-1 lg:gap-2 items-center">
                         <!-- Empty cells -->
                         <template x-for="blank in blankDays">
-                            <div class="aspect-square"></div>
+                            <div class="w-full" style="height: 48px;"></div>
                         </template>
 
                         <!-- Days -->
                         <template x-for="date in daysInMonth">
-                            <div class="aspect-square relative flex items-center justify-center">
+                            <div class="w-full relative flex items-center justify-center" style="height: 48px;">
                                 <button @click="openDay(date)"
-                                    class="w-9 h-9 lg:w-11 lg:h-11 rounded-full flex flex-col items-center justify-center text-sm transition-all duration-200 relative group"
+                                    class="rounded-full flex flex-col items-center justify-center text-sm transition-all duration-200 relative group"
+                                    style="width: 40px; height: 40px;"
                                     :class="{
-                                                                                'bg-primary text-white shadow-lg shadow-primary/30 font-bold': isToday(date),
-                                                                                'bg-primary/15 text-primary font-black border-2 border-primary/20': !isToday(date) && getEvents(date).length > 0,
-                                                                                'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 font-medium': !isToday(date) && getEvents(date).length === 0,
-                                                                                'ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-900': selectedDate === date
-                                                                            }">
+                                                                                                                                                    'bg-primary text-white shadow-lg shadow-primary/30 font-bold': isToday(date),
+                                                                                                                                                    'bg-primary/15 text-primary font-black border-2 border-primary/20': !isToday(date) && getEvents(date).length > 0,
+                                                                                                                                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 font-medium': !isToday(date) && getEvents(date).length === 0,
+                                                                                                                                                    'ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-900': selectedDate === date
+                                                                                                                                                }">
                                     <span x-text="date"></span>
 
                                     <!-- Event Indicator Label (Optional/Micro) -->
@@ -113,10 +114,13 @@
                                 </button>
                             </div>
                         </template>
+
+
                     </div>
 
                     <!-- Legend -->
-                    <div class="mt-4 flex items-center gap-4 text-[10px] uppercase tracking-wider font-bold text-gray-500">
+                    <div
+                        class="absolute bottom-0 left-0 w-full p-6 flex items-center gap-4 text-[10px] uppercase tracking-wider font-bold text-gray-500 bg-white dark:bg-[#1a1d2e] z-10">
                         <div class="flex items-center gap-1.5">
                             <div class="w-3 h-3 rounded-full bg-primary"></div>
                             <span>Hari Ini</span>
@@ -160,11 +164,11 @@
             </div>
 
             <!-- SCHEDULES WRAPPER -->
-            <div class="md:col-span-2 flex flex-col gap-8">
+            <div class="md:col-span-2 flex flex-col gap-8" style="height: 460px;">
 
                 <!-- JADWAL HARI INI SECTION (MOVED TO MAIN COLUMN) -->
                 <div
-                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full">
+                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full flex-1 min-h-0">
 
                     <!-- Header -->
                     <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
@@ -179,7 +183,7 @@
                     </div>
 
                     <!-- List Content -->
-                    <div class="flex-1 overflow-y-auto max-h-[400px] custom-scrollbar">
+                    <div class="flex-1 overflow-y-auto custom-scrollbar">
                         @forelse($schedules as $schedule)
                             <div
                                 class="p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group">
@@ -223,7 +227,7 @@
 
                 <!-- JADWAL MENDATANG SECTION -->
                 <div
-                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full">
+                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full flex-1 min-h-0">
 
                     <!-- Header -->
                     <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">

@@ -42,13 +42,25 @@ return new class extends Migration
         }
 
         // Update existing mata kuliah to have default prodi and fakultas
-        \DB::table('mata_kuliahs')->where('prodi_id', 0)->orWhereNull('prodi_id')->update([
-            'prodi_id' => $prodiId
-        ]);
-        
-        \DB::table('mata_kuliahs')->whereNull('fakultas_id')->update([
-            'fakultas_id' => $fakultasId
-        ]);
+        // Ensure columns exist before updating rows
+        if (!Schema::hasColumn('mata_kuliahs', 'prodi_id') || !Schema::hasColumn('mata_kuliahs', 'fakultas_id')) {
+            Schema::table('mata_kuliahs', function (Blueprint $table) {
+                if (!Schema::hasColumn('mata_kuliahs', 'prodi_id')) {
+                    $table->unsignedBigInteger('prodi_id')->nullable();
+                }
+                if (!Schema::hasColumn('mata_kuliahs', 'fakultas_id')) {
+                    $table->unsignedBigInteger('fakultas_id')->nullable();
+                }
+            });
+        }
+
+        \DB::table('mata_kuliahs')->when(Schema::hasColumn('mata_kuliahs', 'prodi_id'), function ($q) use ($prodiId) {
+            return $q->where('prodi_id', 0)->orWhereNull('prodi_id')->update(['prodi_id' => $prodiId]);
+        });
+
+        \DB::table('mata_kuliahs')->when(Schema::hasColumn('mata_kuliahs', 'fakultas_id'), function ($q) use ($fakultasId) {
+            return $q->whereNull('fakultas_id')->update(['fakultas_id' => $fakultasId]);
+        });
 
         Schema::table('mata_kuliahs', function (Blueprint $table) {
             // Make fakultas_id not nullable

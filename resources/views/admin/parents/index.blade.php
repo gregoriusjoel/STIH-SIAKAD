@@ -4,7 +4,7 @@
 @section('page-title', 'Data Orang Tua/Wali')
 
 @section('content')
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                 <i class="fas fa-users mr-3 text-maroon"></i>
@@ -12,11 +12,13 @@
             </h2>
             <p class="text-gray-600 text-sm mt-1">Kelola data orang tua/wali mahasiswa</p>
         </div>
-        <a href="{{ route('admin.parents.create') }}"
-            class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
-            <i class="fas fa-plus mr-2"></i>
-            Tambah Orang Tua
-        </a>
+        <div class="flex-shrink-0">
+            <a href="{{ route('admin.parents.create') }}"
+                class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
+                <i class="fas fa-plus mr-2"></i>
+                Tambah Orang Tua
+            </a>
+        </div>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
@@ -71,9 +73,9 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span
-                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full 
                                         {{ $parent->hubungan == 'ayah' ? 'bg-blue-100 text-blue-800' : ($parent->hubungan == 'ibu' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800') }}">
-                                    <i class="fas fa-user mr-1"></i>
+                                    <i class="fas fa-user mr-2 text-sm"></i>
                                     {{ ucfirst($parent->hubungan) }}
                                 </span>
                             </td>

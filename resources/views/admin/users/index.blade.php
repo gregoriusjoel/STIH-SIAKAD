@@ -4,9 +4,9 @@
 @section('content')
     <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center"><i
                     class="fas fa-users-cog text-maroon mr-2"></i>Manajemen User</h3>
-            <p class="text-sm text-gray-600 mt-1">Kelola akses dan peran pengguna sistem</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Kelola akses dan peran pengguna sistem</p>
         </div>
         <div class="flex-shrink-0">
             <a href="{{ route('admin.users.create') }}"
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-maroon text-white">
@@ -27,49 +27,49 @@
                         <th class="px-6 py-4 text-center text-sm font-semibold">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     @forelse($users as $u)
-                        <tr class="hover:bg-gray-50 transition duration-200">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-200">
                             <td class="px-6 py-4">
                                 <div class="flex items-center">
                                     <div
-                                        class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">
+                                        class="flex-shrink-0 h-10 w-10 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
                                         {{ strtoupper(substr($u->name, 0, 1)) }}</div>
                                     <div class="ml-4">
-                                        <div class="font-semibold text-gray-900">{{ $u->name }}</div>
-                                        <div class="text-sm text-gray-500">ID: {{ $u->id }}</div>
+                                        <div class="font-semibold text-gray-900 dark:text-gray-100">{{ $u->name }}</div>
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">ID: {{ $u->id }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4"><i class="fas fa-envelope text-maroon mr-2"></i>{{ $u->email }}</td>
+                            <td class="px-6 py-4 dark:text-gray-300"><i class="fas fa-envelope text-maroon mr-2"></i>{{ $u->email }}</td>
                             <td class="px-6 py-4 text-center">
                                 @if($u->role == 'admin')
                                     <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"><i
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300"><i
                                             class="fas fa-user-shield mr-1"></i>Admin</span>
                                 @elseif($u->role == 'dosen')
                                     <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"><i
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300"><i
                                             class="fas fa-chalkboard-teacher mr-1"></i>Dosen</span>
                                 @elseif($u->role == 'mahasiswa')
                                     <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"><i
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"><i
                                             class="fas fa-user-graduate mr-1"></i>Mahasiswa</span>
                                 @elseif($u->role == 'keuangan')
                                     <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800"><i
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300"><i
                                             class="fas fa-money-bill-wave mr-1"></i>Keuangan</span>
                                 @elseif($u->role == 'perpustakaan')
                                     <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-teal-800"><i
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-teal-100 dark:bg-teal-900/30 text-teal-800 dark:text-teal-300"><i
                                             class="fas fa-book mr-1"></i>Perpustakaan</span>
                                 @elseif($u->role == 'parent')
                                     <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800"><i
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300"><i
                                             class="fas fa-user mr-1"></i>Parent</span>
                                 @else
                                     <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"><i
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300"><i
                                             class="fas fa-user mr-1"></i>{{ ucfirst($u->role) }}</span>
                                 @endif
                             </td>
@@ -90,7 +90,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center text-gray-500"><i
+                            <td colspan="4" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"><i
                                     class="fas fa-inbox text-4xl mb-3"></i>
                                 <p class="text-lg font-semibold">Belum ada user</p>
                             </td>
@@ -100,7 +100,7 @@
             </table>
         </div>
         @if($users->hasPages())
-            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">{{ $users->links() }}</div>
+            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">{{ $users->links() }}</div>
         @endif
     </div>
 
@@ -120,7 +120,8 @@
                         cancelButtonColor: '#6c757d',
                         confirmButtonText: 'Ya, Hapus!',
                         cancelButtonText: 'Batal',
-                        background: '#ffffff',
+                        background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                        color: document.documentElement.classList.contains('dark') ? '#f3f4f6' : '#1f293b',
                         customClass: {
                             confirmButton: 'btn btn-danger',
                             cancelButton: 'btn btn-secondary'

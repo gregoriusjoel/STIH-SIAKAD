@@ -35,7 +35,7 @@ class Kelas extends Model
      */
     public function dosen(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'dosen_id');
+        return $this->belongsTo(Dosen::class, 'dosen_id');
     }
 
     /**

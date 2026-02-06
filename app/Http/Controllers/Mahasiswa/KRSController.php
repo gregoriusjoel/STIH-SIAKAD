@@ -52,10 +52,8 @@ class KRSController extends Controller
         $user = Auth::user();
         $mahasiswa = Mahasiswa::where('user_id', $user->id)->firstOrFail();
 
-        // Display semester (card) should reflect admin-selected semester (status='aktif' or is_active)
-        $displaySemester = Semester::where('status', 'aktif')->first()
-            ?? Semester::where('is_active', true)->first()
-            ?? Semester::latest()->first();
+        // Get student's current semester info (auto-calculated from angkatan)
+        $semesterAktif = $mahasiswa->getCurrentSemesterInfo();
 
         // KRS control semester: prefer semester with KRS open (getCurrentSemester)
         $krsSemester = $this->getCurrentSemester();
@@ -64,7 +62,7 @@ class KRSController extends Controller
         if (!$krsSemester || !$krsSemester->krs_dapat_diisi) {
             return view('page.mahasiswa.krs.closed', [
                 'mahasiswa' => $mahasiswa,
-                'semesterAktif' => $displaySemester,
+                'semesterAktif' => $semesterAktif,
                 'message' => 'Pengisian KRS belum dibuka atau sudah ditutup. Silakan hubungi admin.',
             ]);
         }
@@ -77,7 +75,7 @@ class KRSController extends Controller
             if ($now->lt($mulai) || $now->gt($selesai)) {
                 return view('page.mahasiswa.krs.closed', [
                     'mahasiswa' => $mahasiswa,
-                    'semesterAktif' => $displaySemester,
+                    'semesterAktif' => $semesterAktif,
                     'message' => 'Pengisian KRS hanya dibuka pada ' . $mulai->format('d M Y') . ' sampai ' . $selesai->format('d M Y') . '.',
                 ]);
             }
@@ -188,40 +186,61 @@ class KRSController extends Controller
 
         // If student has not yet started filling KRS and has no existing KRS, show confirmation page first
         if ($existingKrs->isEmpty() && !$request->has('start')) {
-            // prepare list of past semesters and which are downloadable (student has submitted KRS)
-            $semesterList = Semester::orderBy('tahun_ajaran', 'desc')->orderBy('tanggal_mulai', 'desc')->get();
+            // Get semester history for downloads (past semesters)
+            $semesterHistory = $mahasiswa->getPastSemesters();
+            
+            // Check if current semester KRS is already submitted
+            $currentKodeId = 'sms' . $mahasiswaSemester;
+            $currentSemesterSubmitted = Krs::where('mahasiswa_id', $mahasiswa->id)
+                ->where('status', '!=', 'draft')
+                ->whereHas('mataKuliah', function ($q) use ($currentKodeId) {
+                    $q->where('kode_id', $currentKodeId);
+                })->exists();
+            
+            // If current semester is already submitted, add it to the list
+            if ($currentSemesterSubmitted) {
+                $isGanjil = ($mahasiswaSemester % 2 === 1);
+                $currentSemesterObj = (object) [
+                    'semester_number' => $mahasiswaSemester,
+                    'semester_display' => 'Semester ' . $mahasiswaSemester,
+                    'tahun_ajaran' => $semesterAktif->tahun_ajaran,
+                    'nama_semester' => $isGanjil ? 'Ganjil' : 'Genap',
+                ];
+                // Add to beginning of collection
+                $semesterHistory = collect([$currentSemesterObj])->merge($semesterHistory);
+            }
 
             // Determine which semesters the student can download (has submitted KRS for that semester)
             $downloadable = [];
-            foreach ($semesterList as $s) {
-                // Prefer stored PDF existence (saved by store())
+            foreach ($semesterHistory as $s) {
+                // Check if PDF exists
                 $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
-                $filename = 'KRS_' . $nimOrId . '_' . ($s->id ?? 'sem') . '.pdf';
+                $filename = 'KRS_' . $nimOrId . '_' . $s->semester_number . '.pdf';
                 $path = 'krs/' . $mahasiswa->id . '/' . $filename;
 
                 if (Storage::disk('public')->exists($path)) {
-                    $downloadable[] = $s->id;
+                    $downloadable[] = $s->semester_number;
                     continue;
                 }
 
-                // Fallback: detect submitted KRS via DB (older entries)
+                // Fallback: detect submitted KRS via DB for this specific semester
+                $semesterKodeId = 'sms' . $s->semester_number;
                 $hasSubmittedForSemester = Krs::where('mahasiswa_id', $mahasiswa->id)
                     ->where('status', '!=', 'draft')
-                    ->whereHas('kelas', function ($q) use ($s) {
-                        $q->where('tahun_ajaran', $s->tahun_ajaran ?? null)
-                            ->where('semester_type', $s->nama_semester ?? null);
+                    ->whereHas('mataKuliah', function ($q) use ($semesterKodeId) {
+                        $q->where('kode_id', $semesterKodeId);
                     })->exists();
 
                 if ($hasSubmittedForSemester) {
-                    $downloadable[] = $s->id;
+                    $downloadable[] = $s->semester_number;
                 }
             }
 
             return view('page.mahasiswa.krs.confirm', [
                 'mahasiswa' => $mahasiswa,
-                'semesterAktif' => $displaySemester,
+                'semesterAktif' => $semesterAktif,
                 'availableCount' => $currentSemesterMataKuliah->count() + $additionalMataKuliah->count(),
-                'semesterList' => $semesterList,
+                'semesterList' => $semesterHistory,
                 'downloadable' => $downloadable,
             ]);
         }
@@ -234,7 +253,7 @@ class KRSController extends Controller
             'totalSks' => $totalSks,
             'statusKrs' => $statusKrs,
             'isLocked' => $isLocked,
-            'semesterAktif' => $displaySemester,
+            'semesterAktif' => $semesterAktif,
             'mahasiswaSemester' => $mahasiswaSemester,
             'currentKodeId' => $currentKodeId,
             'allowedKodeIds' => $allowedKodeIds,
@@ -533,36 +552,59 @@ class KRSController extends Controller
         $user = Auth::user();
         $mahasiswa = Mahasiswa::where('user_id', $user->id)->firstOrFail();
 
-        $displaySemester = Semester::where('status', 'aktif')->first()
-            ?? Semester::where('is_active', true)->first()
-            ?? Semester::latest()->first();
+        // Get student's current semester info (auto-calculated from angkatan)
+        $semesterAktif = $mahasiswa->getCurrentSemesterInfo();
 
-        // prepare list of past semesters and which are downloadable (student has submitted KRS)
-        $semesterList = Semester::orderBy('tahun_ajaran', 'desc')->orderBy('tanggal_mulai', 'desc')->get();
+        // Get semester history for downloads (past semesters)
+        $semesterHistory = $mahasiswa->getPastSemesters();
+        
+        // Get current semester number
+        $currentSemester = $mahasiswa->getCurrentSemester();
+        
+        // Check if current semester KRS is already submitted
+        $currentKodeId = 'sms' . $currentSemester;
+        $currentSemesterSubmitted = Krs::where('mahasiswa_id', $mahasiswa->id)
+            ->where('status', '!=', 'draft')
+            ->whereHas('mataKuliah', function ($q) use ($currentKodeId) {
+                $q->where('kode_id', $currentKodeId);
+            })->exists();
+        
+        // If current semester is already submitted, add it to the list
+        if ($currentSemesterSubmitted) {
+            $isGanjil = ($currentSemester % 2 === 1);
+            $currentSemesterObj = (object) [
+                'semester_number' => $currentSemester,
+                'semester_display' => 'Semester ' . $currentSemester,
+                'tahun_ajaran' => $semesterAktif->tahun_ajaran,
+                'nama_semester' => $isGanjil ? 'Ganjil' : 'Genap',
+            ];
+            // Add to beginning of collection
+            $semesterHistory = collect([$currentSemesterObj])->merge($semesterHistory);
+        }
 
         // Determine which semesters the student can download (has submitted KRS for that semester)
         $downloadable = [];
-        foreach ($semesterList as $s) {
-            // Prefer stored PDF existence (saved by store())
+        foreach ($semesterHistory as $s) {
+            // Check if PDF exists
             $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
-            $filename = 'KRS_' . $nimOrId . '_' . ($s->id ?? 'sem') . '.pdf';
+            $filename = 'KRS_' . $nimOrId . '_' . $s->semester_number . '.pdf';
             $path = 'krs/' . $mahasiswa->id . '/' . $filename;
 
             if (Storage::disk('public')->exists($path)) {
-                $downloadable[] = $s->id;
+                $downloadable[] = $s->semester_number;
                 continue;
             }
 
-            // Fallback: detect submitted KRS via DB
+            // Fallback: detect submitted KRS via DB for this specific semester
+            $semesterKodeId = 'sms' . $s->semester_number;
             $hasSubmittedForSemester = Krs::where('mahasiswa_id', $mahasiswa->id)
                 ->where('status', '!=', 'draft')
-                ->whereHas('kelas', function ($q) use ($s) {
-                    $q->where('tahun_ajaran', $s->tahun_ajaran ?? null)
-                        ->where('semester_type', $s->nama_semester ?? null);
+                ->whereHas('mataKuliah', function ($q) use ($semesterKodeId) {
+                    $q->where('kode_id', $semesterKodeId);
                 })->exists();
 
             if ($hasSubmittedForSemester) {
-                $downloadable[] = $s->id;
+                $downloadable[] = $s->semester_number;
             }
         }
 
@@ -588,8 +630,8 @@ class KRSController extends Controller
 
         return view('page.mahasiswa.krs.confirm', [
             'mahasiswa' => $mahasiswa,
-            'semesterAktif' => $displaySemester,
-            'semesterList' => $semesterList,
+            'semesterAktif' => $semesterAktif,
+            'semesterList' => $semesterHistory,
             'downloadable' => $downloadable,
             'alreadySubmitted' => $alreadySubmitted,
             'hasDraft' => $hasDraft,

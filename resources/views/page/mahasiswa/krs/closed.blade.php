@@ -18,14 +18,14 @@
             @if($semesterAktif)
             <div class="mx-auto inline-block text-left bg-gray-50 p-5 rounded-lg mb-6 shadow-sm" style="min-width:200px;">
                 <p class="text-xs text-gray-500">Semester</p>
-                <p class="text-lg font-semibold">{{ $semesterAktif->nama_semester }}</p>
+                <p class="text-lg font-semibold">{{ $semesterAktif->nama_semester ?? 'N/A' }}</p>
                 <p class="text-xs text-gray-500 mt-2">Tahun Ajaran</p>
-                <p class="text-sm font-medium">{{ $semesterAktif->tahun_ajaran }}</p>
+                <p class="text-sm font-medium">{{ $semesterAktif->tahun_ajaran ?? 'N/A' }}</p>
                 
-                @if($semesterAktif->krs_mulai && $semesterAktif->krs_selesai)
+                @if(isset($semesterAktif->krs_mulai) && isset($semesterAktif->krs_selesai) && $semesterAktif->krs_mulai && $semesterAktif->krs_selesai)
                 <div class="mt-3 pt-3 border-t border-gray-200">
                     <p class="text-xs text-gray-500">Periode KRS</p>
-                    <p class="text-sm font-medium">{{ $semesterAktif->krs_mulai->format('d M Y') }} - {{ $semesterAktif->krs_selesai->format('d M Y') }}</p>
+                    <p class="text-sm font-medium">{{ \Carbon\Carbon::parse($semesterAktif->krs_mulai)->format('d M Y') }} - {{ \Carbon\Carbon::parse($semesterAktif->krs_selesai)->format('d M Y') }}</p>
                 </div>
                 @endif
             </div>

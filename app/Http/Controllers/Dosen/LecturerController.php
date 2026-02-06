@@ -55,20 +55,67 @@ class LecturerController extends Controller
             return $j->status !== 'cancelled' && $j->status !== 'inactive';
         });
 
-        // Fetch today's schedules
-        $today = now()->locale('id')->isoFormat('dddd'); // Senin, Selasa, etc
-        $todaySchedules = $activeJadwals->where('hari', $today)->map(function ($jadwal) {
+        // Build unified schedule source from both Jadwal and KelasMataKuliah
+        $mappedJadwals = $activeJadwals->map(function ($jadwal) {
             return [
-                'subject' => $jadwal->kelas->mataKuliah->nama_mk,
+                'title' => $jadwal->kelas->mataKuliah->nama_mk,
                 'code' => $jadwal->kelas->mataKuliah->kode_mk,
-                'class' => $jadwal->kelas->section,
+                'section' => $jadwal->kelas->section,
+                'day' => $jadwal->hari,
                 'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
+                'class' => $jadwal->kelas->section,
                 'room' => $jadwal->ruangan,
+                'subject' => $jadwal->kelas->mataKuliah->nama_mk,
+                'sks' => $jadwal->kelas->mataKuliah->sks ?? 0,
+                'raw_time' => $jadwal->jam_mulai,
+            ];
+        });
+
+        // Fetch explicit schedules from KelasMataKuliah (often used by Admin)
+        $kelasMataKuliahSchedules = collect();
+        if ($dosen) {
+            $kelasMataKuliahSchedules = \App\Models\KelasMataKuliah::where('dosen_id', $dosen->id)
+                ->whereNotNull('hari')
+                ->whereNotNull('jam_mulai')
+                ->whereNotNull('jam_selesai')
+                ->with('mataKuliah')
+                ->get();
+        }
+
+        $mappedKmk = $kelasMataKuliahSchedules->map(function ($kmk) {
+            return [
+                'title' => $kmk->mataKuliah->nama_mk,
+                'code' => $kmk->mataKuliah->kode_mk,
+                'section' => $kmk->kode_kelas ?? $kmk->section ?? '-',
+                'day' => $kmk->hari,
+                'time' => substr($kmk->jam_mulai, 0, 5) . ' - ' . substr($kmk->jam_selesai, 0, 5),
+                'class' => $kmk->kode_kelas ?? '-',
+                'room' => $kmk->ruang ?? '-',
+                'subject' => $kmk->mataKuliah->nama_mk,
+                'sks' => $kmk->mataKuliah->sks ?? 0,
+                'raw_time' => $kmk->jam_mulai,
+            ];
+        });
+
+        // Merge and deduplicate by day+time+code
+        $merged = collect(array_merge($mappedJadwals->toArray(), $mappedKmk->toArray()));
+
+        // Today's schedules
+        $today = now()->locale('id')->isoFormat('dddd');
+        $todaySchedules = $merged->filter(function ($s) use ($today) {
+            return !empty($s['day']) && $s['day'] === $today;
+        })->map(function ($s) {
+            return [
+                'subject' => $s['subject'],
+                'code' => $s['code'],
+                'class' => $s['class'],
+                'time' => $s['time'],
+                'room' => $s['room'] ?? '-',
                 'status' => 'Menunggu',
             ];
         })->values()->toArray();
 
-        // Fetch upcoming schedules (ordered by nearest day)
+        // Upcoming schedules
         $dayMap = [
             'Minggu' => 0,
             'Senin' => 1,
@@ -78,31 +125,26 @@ class LecturerController extends Controller
             'Jumat' => 5,
             'Sabtu' => 6
         ];
-        $todayIndex = now()->dayOfWeek; // 0 (Sunday) - 6 (Saturday)
+        $todayIndex = now()->dayOfWeek;
 
-        $upcomingSchedules = $activeJadwals->filter(function ($j) use ($today) {
-            return $j->hari !== $today;
-        })->map(function ($jadwal) use ($dayMap, $todayIndex) {
-            $dayIndex = $dayMap[$jadwal->hari] ?? 0;
+        $upcomingSchedules = $merged->filter(function ($s) use ($today) {
+            return empty($s['day']) ? false : ($s['day'] !== $today);
+        })->map(function ($s) use ($dayMap, $todayIndex) {
+            $dayIndex = $dayMap[$s['day']] ?? 0;
             $diff = ($dayIndex - $todayIndex + 7) % 7;
-            if ($diff === 0)
-                $diff = 7; // Should not happen due to filter, but safe guard
-
+            if ($diff === 0) $diff = 7;
             return [
-                'subject' => $jadwal->kelas->mataKuliah->nama_mk,
-                'code' => $jadwal->kelas->mataKuliah->kode_mk,
-                'class' => $jadwal->kelas->section,
-                'day' => $jadwal->hari,
-                'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
-                'room' => $jadwal->ruangan,
-                'sks' => $jadwal->kelas->mataKuliah->sks,
+                'subject' => $s['subject'],
+                'code' => $s['code'],
+                'class' => $s['class'],
+                'day' => $s['day'],
+                'time' => $s['time'],
+                'room' => $s['room'] ?? '-',
+                'sks' => $s['sks'] ?? 0,
                 'diff' => $diff,
-                'raw_time' => $jadwal->jam_mulai
+                'raw_time' => $s['raw_time'] ?? null,
             ];
-        })->sortBy([
-                    ['diff', 'asc'],
-                    ['raw_time', 'asc']
-                ])->take(5)->values()->toArray();
+        })->sortBy([['diff', 'asc'], ['raw_time', 'asc']])->take(5)->values()->toArray();
 
         // Fetch explicit schedules from KelasMataKuliah (often used by Admin)
         $kelasMataKuliahSchedules = collect();
@@ -145,8 +187,10 @@ class LecturerController extends Controller
         });
 
         // Unique merge based on day + time + code
-        $allSchedules = $mappedJadwals->merge($mappedKmk)->unique(function ($item) {
-            return $item['day'] . $item['time'] . $item['code'];
+        // Convert to plain arrays first to avoid Eloquent model behavior when items are arrays
+        $merged = collect(array_merge($mappedJadwals->toArray(), $mappedKmk->toArray()));
+        $allSchedules = $merged->unique(function ($item) {
+            return ($item['day'] ?? '') . ($item['time'] ?? '') . ($item['code'] ?? '');
         })->values()->toArray();
 
         return view('page.dosen.dashboard.index', [
@@ -164,63 +208,47 @@ class LecturerController extends Controller
     public function classes()
     {
         $user = Auth::user();
-        $dosen = Dosen::where('user_id', $user->id)->first();
-
-        // 1. Get classes from 'kelas' table (current system)
-        // Relaxing the constraint: show even if no active schedule yet
-        $kelasList = Kelas::where('dosen_id', $user->id)
-            ->with(['mataKuliah', 'jadwals'])
-            ->get();
-
-        // 2. Get classes from 'kelas_mata_kuliahs' table (often used for manual scheduling)
-        $kmkList = collect();
-        if ($dosen) {
-            $kmkList = KelasMataKuliah::where('dosen_id', $dosen->id)
-                ->with(['mataKuliah', 'jadwal'])
-                ->get();
+        if (! $user) {
+            return redirect()->route('login');
         }
 
-        // Map Kelas records
-        $mappedKelas = $kelasList->map(function ($kelas) {
-            $jadwal = $kelas->jadwals->first();
-            
-            // Find KMK counterpart to aggregate student counts
-            $kmk = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-                ->where(function($q) use ($kelas) {
-                    $q->where('kode_kelas', $kelas->section)
-                      ->orWhere('kode_kelas', $kelas->section . '');
-                })->first();
+        $dosen = Dosen::where('user_id', $user->id)->first();
 
-            // Calculate student count from both possible foreign keys
-            $krsCount = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
-                ->where(function ($q) use ($kelas, $kmk) {
-                    $q->where('kelas_id', $kelas->id);
-                    if ($kmk) {
-                        $q->orWhere('kelas_mata_kuliah_id', $kmk->id);
-                    }
-                })->count();
+        if (!$dosen) {
+            return view('page.dosen.kelas.index', ['classes' => []]);
+        }
 
-            return [
-                'id' => $kelas->id,
-                'source' => 'kelas',
-                'name' => $kelas->mataKuliah->nama_mk ?? 'N/A',
-                'code' => $kelas->mataKuliah->kode_mk ?? 'N/A',
-                'section' => $kelas->section,
-                'students' => $krsCount,
-                'day' => $jadwal?->hari ?? '-',
-                'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
-                'room' => $jadwal?->ruangan ?? '-',
-                'sks' => $kelas->mataKuliah->sks ?? 0,
-                'progress' => $this->calculateProgress(),
-            ];
-        });
+        // Get classes from 'kelas_mata_kuliahs' table (primary source)
+        $kmkList = KelasMataKuliah::where('dosen_id', $dosen->id)
+            ->with(['mataKuliah'])
+            ->get();
+
+        \Log::info('Kelas Saya Debug', [
+            'user_id' => $user->id,
+            'dosen_id' => $dosen->id,
+            'kmk_count' => $kmkList->count(),
+            'kmk_data' => $kmkList->map(fn($k) => [
+                'id' => $k->id,
+                'mata_kuliah_id' => $k->mata_kuliah_id,
+                'kode_kelas' => $k->kode_kelas,
+                'hari' => $k->hari,
+                'jam_mulai' => $k->jam_mulai,
+                'jam_selesai' => $k->jam_selesai,
+                'mk_nama' => $k->mataKuliah?->nama_mk,
+            ])->toArray(),
+        ]);
 
         // Map KelasMataKuliah records
-        $mappedKmk = $kmkList->map(function ($kmk) {
-            // Find if there's a Kelas counterpart
+        $classes = $kmkList->map(function ($kmk) {
+            // Find if there's a Kelas counterpart for routing purposes
             $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
                 ->where('section', $kmk->kode_kelas)
                 ->first();
+
+            // If exact kelas not found, attempt to fallback to any kelas with same mata_kuliah_id
+            if (!$kelas) {
+                $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)->first();
+            }
 
             // Calculate student count from both possible foreign keys
             $krsCount = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
@@ -232,23 +260,19 @@ class LecturerController extends Controller
                 })->count();
 
             return [
-                'id' => $kelas ? $kelas->id : $kmk->id, // Prefer Kelas ID for routing
-                'source' => $kelas ? 'kelas' : 'kmk',
+                // Prefer the actual Kelas id for routing; fallback to KelasMataKuliah id only if no Kelas exists
+                'id' => $kelas?->id ?? $kmk->id,
+                'source' => 'kmk',
                 'name' => $kmk->mataKuliah->nama_mk ?? 'N/A',
                 'code' => $kmk->mataKuliah->kode_mk ?? 'N/A',
-                'section' => $kmk->kode_kelas ?? $kmk->section ?? '-',
+                'section' => $kmk->kode_kelas ?? '-',
                 'students' => $krsCount,
                 'day' => $kmk->hari ?? '-',
                 'time' => ($kmk->jam_mulai && $kmk->jam_selesai) ? substr($kmk->jam_mulai, 0, 5) . ' - ' . substr($kmk->jam_selesai, 0, 5) : '-',
-                'room' => $kmk->ruang ?? $kmk->ruangan_id ?? '-',
+                'room' => $kmk->ruang ?? '-',
                 'sks' => $kmk->mataKuliah->sks ?? 0,
                 'progress' => $this->calculateProgress(),
             ];
-        });
-
-        // Unique merge based on Subject Code + Section
-        $classes = $mappedKelas->concat($mappedKmk)->unique(function ($item) {
-            return $item['code'] . '|' . $item['section'];
         })->values()->toArray();
 
         return view('page.dosen.kelas.index', compact('classes'));
@@ -382,7 +406,7 @@ class LecturerController extends Controller
             $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
             return [
                 'name' => $userName,
-                'nim' => $m->npm ?? null,
+                'nim' => $m->nim ?? null,
                 'prodi' => $m->prodi ?? null,
                 'semester' => $m->semester ?? null,
                 'ipk' => $m->ipk ?? null,
@@ -418,18 +442,27 @@ class LecturerController extends Controller
                 ->orderByDesc('created_at');
 
             // Only filter by pertemuan if the column exists in DB
+            // Include both matching pertemuan AND NULL pertemuan (legacy records)
             if (Schema::hasColumn('presensis', 'pertemuan')) {
-                $presensiQuery->where('pertemuan', $currentPertemuan);
+                $presensiQuery->where(function($q) use ($currentPertemuan) {
+                    $q->where('pertemuan', $currentPertemuan)
+                      ->orWhereNull('pertemuan');
+                });
             }
 
             $presensis = $presensiQuery->get();
         }
 
+        // Expose convenient variables expected by the Blade templates
+        $token = $class['qr_token'] ?? null;
+        $qrEnabled = (bool) ($class['qr_enabled'] ?? false);
+        $qrExpires = $class['qr_expires_at'] ?? null;
+
         if (request()->ajax()) {
-            return view('page.dosen.kelas.partials.absensi-content', compact('class_info', 'students', 'id', 'class', 'presensis'))->with('is_modal', true);
+            return view('page.dosen.kelas.partials.absensi-content', compact('class_info', 'students', 'id', 'class', 'presensis', 'token', 'qrEnabled', 'qrExpires'))->with('is_modal', true);
         }
 
-        return view('page.dosen.kelas.absensi', compact('class_info', 'students', 'id', 'class', 'presensis'))->with('is_modal', false);
+        return view('page.dosen.kelas.absensi', compact('class_info', 'students', 'id', 'class', 'presensis', 'token', 'qrEnabled', 'qrExpires'))->with('is_modal', false);
     }
 
     public function detail($id)
@@ -478,7 +511,7 @@ class LecturerController extends Controller
             $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
             return [
                 'name' => $userName,
-                'nim' => $m->npm ?? null,
+                'nim' => $m->nim ?? null,
                 'prodi' => $m->prodi ?? null,
                 'semester' => $m->semester ?? null,
                 'ipk' => $m->ipk !== null ? number_format((float) $m->ipk, 2) : '-',
@@ -599,18 +632,54 @@ class LecturerController extends Controller
             })->with('mahasiswa')
             ->get();
 
-        $students = $krsCollection->map(function ($krs) {
+        // Fetch attendance records for this meeting
+        $attendanceRecords = collect();
+        if ($kelasMataKuliah) {
+            $attendanceQuery = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id);
+            
+            // Filter by pertemuan (meeting number) if column exists
+            if (Schema::hasColumn('presensis', 'pertemuan')) {
+                $attendanceQuery->where(function($q) use ($pertemuan) {
+                    $q->where('pertemuan', $pertemuan)
+                      ->orWhereNull('pertemuan');
+                });
+            }
+            
+            $attendanceRecords = $attendanceQuery->get()->keyBy('mahasiswa_id');
+        }
+
+        $students = $krsCollection->map(function ($krs) use ($attendanceRecords) {
             $m = $krs->mahasiswa;
             $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
+            
+            // Check if student has attendance record
+            $hasAttended = $attendanceRecords->has($m->id);
+            $attendanceTime = null;
+            
+            if ($hasAttended) {
+                $attendanceRecord = $attendanceRecords->get($m->id);
+                $attendanceTime = $attendanceRecord->waktu 
+                    ? \Carbon\Carbon::parse($attendanceRecord->waktu)->format('H:i')
+                    : null;
+            }
+            
             return [
                 'name' => $userName,
-                'nim' => $m->npm ?? null,
+                'nim' => $m->nim ?? null,
                 'prodi' => $m->prodi ?? null,
                 'status' => 'Aktif',
+                'attendance_status' => $hasAttended ? 'hadir' : 'belum_absen',
+                'attendance_time' => $attendanceTime,
             ];
         })->toArray();
 
-        return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students'));
+        // Get tugas (assignments) for this mata kuliah and pertemuan
+        $tasks = \App\Models\Tugas::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('pertemuan', $pertemuan)
+            ->latest()
+            ->get();
+
+        return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students', 'tasks'));
     }
 
     public function meetingMaterials($id, $pertemuan)
@@ -643,7 +712,14 @@ class LecturerController extends Controller
             'room' => $jadwal?->ruangan ?? '-',
         ];
 
-        return view('page.dosen.kelas.materi', compact('kelas', 'meeting'));
+        // Get materials for this mata kuliah and pertemuan
+        $materis = \App\Models\Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('pertemuan', $pertemuan)
+            ->with('dosen')
+            ->latest()
+            ->get();
+
+        return view('page.dosen.kelas.materi', compact('kelas', 'meeting', 'materis'));
     }
 
     /**

@@ -14,6 +14,7 @@ class Dosen extends Model
         'nidn',
         'pendidikan',
         'pendidikan_terakhir',
+        'universitas',
         'prodi',
         'phone',
         'address',
@@ -27,6 +28,7 @@ class Dosen extends Model
         'mata_kuliah_ids' => 'array',
         'prodi' => 'array',
         'pendidikan_terakhir' => 'array',
+        'universitas' => 'array',
         'jabatan_fungsional' => 'array',
         'dosen_tetap' => 'boolean',
     ];

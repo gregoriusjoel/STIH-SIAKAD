@@ -71,6 +71,13 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/kelas/{id}/detail', [LecturerController::class, 'detail'])->name('kelas.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}', [LecturerController::class, 'meetingDetail'])->name('kelas.pertemuan.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi', [LecturerController::class, 'meetingMaterials'])->name('kelas.pertemuan.materi');
+    
+    // Materi (Dosen)
+    Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi/list', [App\Http\Controllers\Dosen\MateriController::class, 'index'])->name('kelas.pertemuan.materi.list');
+    Route::post('/kelas/{id}/pertemuan/{pertemuan}/materi', [App\Http\Controllers\Dosen\MateriController::class, 'store'])->name('kelas.pertemuan.materi.store');
+    Route::delete('/kelas/{id}/pertemuan/{pertemuan}/materi/{materi}', [App\Http\Controllers\Dosen\MateriController::class, 'destroy'])->name('kelas.pertemuan.materi.destroy');
+    Route::get('/materi/{materi}/download', [App\Http\Controllers\Dosen\MateriController::class, 'download'])->name('materi.download');
+    
     // Tugas (Dosen)
     Route::post('/kelas/{id}/pertemuan/{pertemuan}/tugas', [App\Http\Controllers\Dosen\TugasController::class, 'store'])->name('kelas.pertemuan.tugas.store');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/tugas', [App\Http\Controllers\Dosen\TugasController::class, 'index'])->name('kelas.pertemuan.tugas.index');
@@ -136,7 +143,12 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         // Kelas Saya
         Route::get('/kelas', [App\Http\Controllers\Mahasiswa\KelasController::class, 'index'])->name('kelas.index');
         Route::get('/kelas/{id}', [App\Http\Controllers\Mahasiswa\KelasController::class, 'show'])->name('kelas.show');
-        // Tugas (Mahasiswa submit)
+        
+        // Materi download
+        Route::get('/materi/{id}/download', [App\Http\Controllers\Mahasiswa\MateriController::class, 'download'])->name('materi.download');
+        
+        // Tugas download and submit
+        Route::get('/tugas/{id}/download', [App\Http\Controllers\Mahasiswa\TugasController::class, 'download'])->name('tugas.download');
         Route::post('/kelas/{id}/pertemuan/{pertemuan}/tugas/{tugas}/submit', [App\Http\Controllers\Mahasiswa\TugasController::class, 'submit'])->name('kelas.pertemuan.tugas.submit');
 
         // Profil
@@ -201,6 +213,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     ]);
 
     // Mata Kuliah Management
+    Route::get('mata-kuliah/download-template', [App\Http\Controllers\Admin\MataKuliahController::class, 'downloadTemplate'])->name('mata-kuliah.download-template');
+    Route::post('mata-kuliah/import', [App\Http\Controllers\Admin\MataKuliahController::class, 'import'])->name('mata-kuliah.import');
     Route::resource('mata-kuliah', App\Http\Controllers\Admin\MataKuliahController::class);
 
     // Ruangan Management

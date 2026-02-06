@@ -38,11 +38,11 @@
     }">
         <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-                    <i class="fas fa-user-tie mr-3 text-maroon"></i>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                    <i class="fas fa-user-tie mr-3 text-maroon dark:text-red-500"></i>
                     Manajemen Dosen PA
                 </h2>
-                <p class="text-gray-600 text-sm mt-1">Kelola data dosen pembimbing akademik</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Kelola data dosen pembimbing akademik</p>
             </div>
             <div class="flex-shrink-0">
                 <a href="{{ route('admin.dosen-pa.create') }}"
@@ -53,9 +53,9 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-maroon text-white">
                         <tr>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">No</th>
@@ -76,12 +76,12 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse($dosens as $dosen)
-                            <tr class="hover:bg-blue-50 transition duration-200 cursor-pointer"
-                                :class="{'bg-blue-50': selectedDosenId === {{ $dosen->id }} && showDetail}"
+                            <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition duration-200 cursor-pointer"
+                                :class="{'bg-blue-50 dark:bg-blue-900/30': selectedDosenId === {{ $dosen->id }} && showDetail}"
                                 @click="toggleDetail({{ $dosen->id }}, '{{ addslashes($dosen->user->name) }}')">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
                                     {{ ($dosens->currentPage() - 1) * $dosens->perPage() + $loop->iteration }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -94,17 +94,17 @@
                                             {{ strtoupper(substr($dosen->user->name, 0, 1)) }}
                                         </div>
                                         <div>
-                                            <div class="text-sm font-semibold text-gray-900">{{ $dosen->user->name }}</div>
-                                            <div class="text-xs text-gray-500">
-                                                <i class="fas fa-phone text-gray-400 mr-1"></i>
+                                            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $dosen->user->name }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                <i class="fas fa-phone text-gray-400 dark:text-gray-500 mr-1"></i>
                                                 {{ $dosen->phone ?? '-' }}
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        <i class="fas fa-envelope text-gray-400 mr-1"></i>
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">
+                                        <i class="fas fa-envelope text-gray-400 dark:text-gray-500 mr-1"></i>
                                         {{ $dosen->user->email }}
                                     </div>
                                 </td>
@@ -114,7 +114,7 @@
                                         $badgeClass = $count >= 6 ? 'bg-red-100 text-red-800' : ($count >= 4 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
                                     @endphp
                                     <span
-                                        class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $badgeClass }}">
+                                        class="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full {{ $badgeClass }}">
                                         <i class="fas fa-users mr-1"></i>
                                         {{ $count }}/6
                                         @if($count >= 6)
@@ -125,7 +125,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium" @click.stop>
                                     <div class="flex items-center justify-center space-x-2">
                                         <a href="{{ route('admin.dosen-pa.edit', $dosen->id) }}"
-                                            class="text-yellow-600 hover:text-yellow-900 transition p-2 hover:bg-yellow-50 rounded"
+                                            class="text-yellow-600 dark:text-yellow-400 hover:text-yellow-900 dark:hover:text-yellow-300 transition p-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded"
                                             title="Edit Dosen PA">
                                             <i class="fas fa-edit"></i>
                                         </a>
@@ -134,7 +134,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="text-red-600 hover:text-red-900 transition p-2 hover:bg-red-50 rounded"
+                                                class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                                                 title="Hapus Dosen PA">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -144,11 +144,11 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
                                     <div class="flex flex-col items-center justify-center">
-                                        <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                                        <i class="fas fa-inbox text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
                                         <p class="text-lg font-medium">Belum ada data Dosen PA</p>
-                                        <p class="text-sm text-gray-400 mt-1">Klik "Tambah Dosen PA" untuk menambahkan</p>
+                                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Klik "Tambah Dosen PA" untuk menambahkan</p>
                                     </div>
                                 </td>
                             </tr>
@@ -157,7 +157,7 @@
                 </table>
             </div>
             @if($dosens->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                     {{ $dosens->links() }}
                 </div>
             @endif
@@ -165,20 +165,20 @@
 
         {{-- Detail Dosen PA Card --}}
         <div x-ref="detailCard" x-show="showDetail" x-transition
-            class="mt-8 bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" style="display: none;">
-            <div class="p-6 border-b border-gray-200">
+            class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" style="display: none;">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div>
-                    <h3 class="text-xl font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-users text-maroon mr-2"></i>Detail Dosen PA
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                        <i class="fas fa-users text-maroon dark:text-red-500 mr-2"></i>Detail Dosen PA
                     </h3>
-                    <p class="text-sm text-gray-600 mt-1">Daftar mahasiswa bimbingan: <span
-                            class="font-semibold text-maroon" x-text="selectedDosenName"></span></p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Daftar mahasiswa bimbingan: <span
+                            class="font-semibold text-maroon dark:text-red-400" x-text="selectedDosenName"></span></p>
                 </div>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full">
-                    <thead class="bg-gray-50 text-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">No</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
@@ -195,47 +195,47 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         <template x-if="loading">
                             <tr>
-                                <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                                     <div class="flex flex-col items-center justify-center">
-                                        <i class="fas fa-spinner fa-spin text-4xl text-maroon mb-3"></i>
-                                        <p class="text-gray-500 font-medium">Memuat data mahasiswa...</p>
+                                        <i class="fas fa-spinner fa-spin text-4xl text-maroon dark:text-red-500 mb-3"></i>
+                                        <p class="text-gray-500 dark:text-gray-400 font-medium">Memuat data mahasiswa...</p>
                                     </div>
                                 </td>
                             </tr>
                         </template>
                         <template x-if="!loading && mahasiswaList.length === 0">
                             <tr>
-                                <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400 font-medium">
                                     <div class="flex flex-col items-center justify-center">
-                                        <i class="fas fa-user-slash text-4xl text-gray-300 mb-3"></i>
-                                        <p class="text-gray-500 font-medium">Belum ada mahasiswa yang dibimbing.</p>
+                                        <i class="fas fa-user-slash text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                                        <p class="text-gray-500 dark:text-gray-400 font-medium">Belum ada mahasiswa yang dibimbing.</p>
                                     </div>
                                 </td>
                             </tr>
                         </template>
                         <template x-for="(mhs, index) in mahasiswaList" :key="mhs.id">
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium"
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium"
                                     x-text="index + 1"></td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold mr-3"
                                             x-text="mhs.name ? mhs.name.charAt(0).toUpperCase() : '-'"></div>
-                                        <div class="text-sm font-semibold text-gray-900" x-text="mhs.name"></div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-gray-100" x-text="mhs.name"></div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="text-sm font-mono text-maroon font-bold" x-text="mhs.nim"></span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm text-gray-900" x-text="mhs.program_studi || 'Ilmu Hukum'"></span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-100" x-text="mhs.program_studi || 'Ilmu Hukum'"></span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300"
                                         x-text="'Semester ' + (mhs.semester || '-')"></span>
                                 </td>
                             </tr>
@@ -243,8 +243,8 @@
                     </tbody>
                 </table>
             </div>
-            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
-                <div class="text-xs text-gray-500">Menampilkan <span x-text="mahasiswaList.length"></span> mahasiswa</div>
+            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-between items-center">
+                <div class="text-xs text-gray-500 dark:text-gray-400">Menampilkan <span x-text="mahasiswaList.length"></span> mahasiswa</div>
             </div>
         </div>
     </div>

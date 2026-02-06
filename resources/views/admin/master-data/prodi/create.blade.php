@@ -21,7 +21,6 @@
                     <!-- Kode Prodi -->
                     <div>
                         <label for="kode_prodi" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-code mr-1"></i>
                             Kode Prodi
                         </label>
                         <input type="text" name="kode_prodi" id="kode_prodi" value="{{ old('kode_prodi') }}"

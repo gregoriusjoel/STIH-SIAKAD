@@ -6,22 +6,22 @@
 @section('content')
     <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-chalkboard-teacher mr-3 text-maroon"></i>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                <i class="fas fa-chalkboard-teacher mr-3 text-maroon dark:text-red-500"></i>
                 Manajemen Dosen
             </h2>
-            <p class="text-gray-600 text-sm mt-1">Kelola data dosen pengajar di sistem</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Kelola data dosen pengajar di sistem</p>
         </div>
         <div class="flex flex-row items-center gap-3">
             <button type="button" onclick="document.getElementById('modal-import-dosen').classList.remove('hidden')"
-                class="group bg-white text-maroon hover:bg-red-50 border-2 border-maroon/10 hover:border-maroon px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-sm hover:shadow-lg hover:shadow-maroon/10 whitespace-nowrap">
-                <div class="w-6 h-6 rounded-lg bg-maroon/5 group-hover:bg-maroon/10 flex items-center justify-center transition-colors">
+                class="group bg-white dark:bg-gray-800 text-maroon dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 border-2 border-maroon/10 hover:border-maroon px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-sm hover:shadow-lg hover:shadow-maroon/10 whitespace-nowrap">
+                <div class="w-6 h-6 rounded-lg bg-maroon/5 dark:bg-maroon/10 group-hover:bg-maroon/10 flex items-center justify-center transition-colors">
                     <i class="fas fa-file-import text-xs"></i>
                 </div>
-                <span class="font-bold text-sm tracking-wide">Import CSV</span>
+                <span class="font-bold text-sm tracking-wide">Import Data Dosen</span>
             </button>
 
-            <a href="{{ route('admin.dosen.create') }}"
+            <a href="{{ route('admin.dosen.create') }}" 
                 class="bg-maroon text-white hover:bg-red-900 px-4 py-2 rounded-lg transition flex items-center justify-center shadow-md transform hover:scale-105 text-sm font-medium whitespace-nowrap">
                 <i class="fas fa-plus mr-2"></i>
                 Tambah Dosen
@@ -29,9 +29,9 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-maroon text-white">
                     <tr>
                         <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
@@ -57,14 +57,14 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     @forelse($dosens as $dosen)
                         <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
                                 {{ ($dosens->currentPage() - 1) * $dosens->perPage() + $loop->iteration }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="text-sm font-mono text-maroon font-bold">{{ $dosen->nidn }}</span>
+                                <span class="text-sm font-mono text-maroon dark:text-red-400 font-bold">{{ $dosen->nidn }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
@@ -73,23 +73,23 @@
                                         {{ strtoupper(substr($dosen->user->name, 0, 1)) }}
                                     </div>
                                     <div>
-                                        <div class="text-sm font-semibold text-gray-900">{{ $dosen->user->name }}</div>
-                                        <div class="text-xs text-gray-500">
-                                            <i class="fas fa-phone text-gray-400 mr-1"></i>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $dosen->user->name }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            <i class="fas fa-phone text-gray-400 dark:text-gray-500 mr-1"></i>
                                             {{ $dosen->phone ?? '-' }}
                                         </div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">
-                                    <i class="fas fa-envelope text-gray-400 mr-1"></i>
+                                <div class="text-sm text-gray-900 dark:text-gray-100">
+                                    <i class="fas fa-envelope text-gray-400 dark:text-gray-500 mr-1"></i>
                                     {{ $dosen->user->email }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span
-                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    class="px-3 py-1 inline-flex items-center leading-none text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
                                     <i class="fas fa-graduation-cap mr-1"></i>
                                     {{ $dosen->pendidikan }}
                                 </span>
@@ -101,7 +101,7 @@
                                     <button type="button"
                                         onclick="confirmToggleStatus('{{ $dosen->id }}', '{{ $dosen->status }}', '{{ $dosen->user->name }}')"
                                         class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full cursor-pointer hover:shadow-md transition-all
-                                                                        {{ $dosen->status == 'aktif' ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200' }}"
+                                                                        {{ $dosen->status == 'aktif' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-200' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 hover:bg-red-200' }}"
                                         title="Klik untuk mengubah status">
                                         <i
                                             class="fas {{ $dosen->status == 'aktif' ? 'fa-check-circle' : 'fa-times-circle' }} text-xs mr-1"></i>
@@ -140,7 +140,7 @@
                         <div id="modal-dosen-{{ $dosen->id }}"
                             class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm hidden">
                             <div
-                                class="bg-white rounded-lg shadow-2xl w-11/12 md:w-3/4 lg:w-2/3 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-11/12 md:w-3/4 lg:w-2/3 max-h-[90vh] overflow-y-auto overflow-x-hidden">
                                 <div class="flex items-center justify-between px-6 py-4 bg-maroon text-white">
                                     <div class="flex items-center space-x-3">
                                         <div
@@ -156,7 +156,7 @@
                                         onclick="document.getElementById('modal-dosen-{{ $dosen->id }}').classList.add('hidden')"
                                         class="text-white text-xl leading-none">&times;</button>
                                 </div>
-                                <div class="p-6 text-sm text-gray-700">
+                                <div class="p-6 text-sm text-gray-700 dark:text-gray-300">
                                     <div class="grid grid-cols-1 gap-2">
                                         <div><strong>Nama:</strong> {{ $dosen->user->name }}</div>
                                         <div><strong>Email:</strong> {{ $dosen->user->email }}</div>
@@ -167,7 +167,7 @@
                                         <div><strong>Status:</strong> {{ ucfirst($dosen->status) }}</div>
                                     </div>
                                 </div>
-                                <div class="p-6 border-t">
+                                <div class="p-6 border-t dark:border-gray-700">
                                     <h5 class="text-sm font-semibold mb-2">Mata Kuliah yang Diampu</h5>
                                     @php
                                         $assigned = collect();
@@ -187,12 +187,12 @@
                                     @if($assigned->count())
                                         <div class="grid grid-cols-1 gap-2">
                                             @foreach($assigned as $mk)
-                                                <div class="flex items-center justify-between p-2 border rounded">
+                                                <div class="flex items-center justify-between p-2 border dark:border-gray-700 rounded">
                                                     <div>
-                                                        <div class="text-sm font-semibold">{{ $mk->nama_mk ?? '-' }}</div>
-                                                        <div class="text-xs text-gray-500">Kode: {{ $mk->kode_mk ?? '-' }}</div>
+                                                        <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $mk->nama_mk ?? '-' }}</div>
+                                                        <div class="text-xs text-gray-500 dark:text-gray-400">Kode: {{ $mk->kode_mk ?? '-' }}</div>
                                                     </div>
-                                                    <div class="text-xs text-gray-500">SKS: {{ $mk->sks ?? '-' }}</div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400">SKS: {{ $mk->sks ?? '-' }}</div>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -200,12 +200,12 @@
                                         <div class="text-sm text-gray-500">Belum ada mata kuliah tercatat.</div>
                                     @endif
                                 </div>
-                                <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
+                                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 flex justify-end space-x-3">
                                     <a href="{{ route('admin.dosen.edit', $dosen) }}"
                                         class="bg-maroon text-white px-4 py-2 rounded shadow">Edit</a>
                                     <button
                                         onclick="document.getElementById('modal-dosen-{{ $dosen->id }}').classList.add('hidden')"
-                                        class="px-4 py-2 border rounded">Tutup</button>
+                                        class="px-4 py-2 border dark:border-gray-600 rounded text-gray-700 dark:text-gray-300">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -255,6 +255,25 @@
                     text: "{{ session('error') }}",
                     background: '#ffffff',
                     iconColor: '#d33',
+                    confirmButtonColor: '#7a1621'
+                });
+            @endif
+
+            @if(session('import_errors'))
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan Import',
+                    html: `
+                        <div class="text-left text-sm max-h-60 overflow-y-auto">
+                            <ul class="list-disc list-inside">
+                                @foreach(session('import_errors') as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    `,
+                    background: '#ffffff',
+                    iconColor: '#f0ad4e',
                     confirmButtonColor: '#7a1621'
                 });
             @endif
@@ -360,7 +379,7 @@
         <div id="modal-import-dosen"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden transition-all duration-300">
             <div
-                class="bg-white rounded-2xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 max-h-[85vh] flex flex-col overflow-hidden transform scale-100 transition-all">
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 max-h-[85vh] flex flex-col overflow-hidden transform scale-100 transition-all">
                 <!-- Header -->
                 <div
                     class="flex-none flex items-center justify-between px-8 py-6 bg-gradient-to-r from-maroon to-red-900 text-white">
@@ -384,24 +403,24 @@
                         <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
                             <!-- Left Column: Upload Area -->
                             <div class="flex flex-col gap-2">
-                                <label class="text-sm font-bold text-gray-700 flex items-center gap-2">
+                                <label class="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
                                     <span class="w-1 h-4 bg-maroon rounded-full"></span>
                                     Upload File CSV
                                 </label>
 
                                 <div id="drop-area"
-                                    class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-2xl p-8 bg-gray-50/50 hover:bg-red-50/30 hover:border-maroon/50 transition-all cursor-pointer group min-h-[200px]">
+                                    class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-8 bg-gray-50/50 dark:bg-gray-700/30 hover:bg-red-50/30 dark:hover:bg-red-900/10 hover:border-maroon/50 transition-all cursor-pointer group min-h-[200px]">
 
                                     <div
-                                        class="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                        class="w-16 h-16 bg-white dark:bg-gray-700 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                                         <i class="fas fa-file-csv text-3xl text-maroon/80"></i>
                                     </div>
 
                                     <p
-                                        class="text-sm font-medium text-gray-700 text-center mb-1 group-hover:text-maroon transition-colors">
+                                        class="text-sm font-medium text-gray-700 dark:text-gray-300 text-center mb-1 group-hover:text-maroon transition-colors">
                                         Klik untuk upload atau drag & drop
                                     </p>
-                                    <p class="text-xs text-gray-400 text-center">
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 text-center">
                                         Maksimal ukuran file 5MB
                                     </p>
                                 </div>
@@ -411,14 +430,14 @@
 
                             <!-- Right Column: Instructions -->
                             <div class="flex flex-col gap-2">
-                                <label class="text-sm font-bold text-gray-700 flex items-center gap-2">
+                                <label class="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
                                     <span class="w-1 h-4 bg-blue-600 rounded-full"></span>
                                     Petunjuk Import
                                 </label>
 
-                                <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 flex-1">
+                                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 rounded-xl p-5 flex-1">
                                     <ul
-                                        class="text-xs text-blue-800 space-y-2 list-disc list-inside opacity-80 leading-relaxed">
+                                        class="text-xs text-blue-800 dark:text-blue-300 space-y-2 list-disc list-inside opacity-80 leading-relaxed">
                                         <li>File harus berformat <strong>.CSV</strong> (Comma Separated Values)</li>
                                         <li>Pastikan kolom wajib terisi: <strong>nidn, name, email</strong></li>
                                         <li>Untuk dosen dengan banyak prodi, pisahkan dengan tanda pipa <code>|</code> (contoh:
@@ -427,26 +446,45 @@
                                     </ul>
                                 </div>
 
-                                <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 flex flex-col gap-3">
+                                <div class="bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-700 rounded-xl p-5 flex flex-col gap-3">
                                     <div class="flex items-center justify-between">
-                                        <span class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Template
+                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Template
                                             File</span>
                                     </div>
-                                    <p class="text-xs text-gray-500">Gunakan template ini agar data terbaca dengan benar oleh
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Gunakan template ini agar data terbaca dengan benar oleh
                                         sistem.</p>
-                                    <a href="{{ route('admin.dosen.import-template') }}"
-                                        class="flex items-center justify-center gap-2 w-full py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 hover:text-maroon hover:border-maroon/30 transition-all shadow-sm">
+                                    <a href="{{ route('admin.dosen.import-template') }}" data-no-loader="true" onclick="showDownloadLoader()"
+                                        class="flex items-center justify-center gap-2 w-full py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-maroon dark:hover:text-red-400 hover:border-maroon/30 transition-all shadow-sm">
                                         <i class="fas fa-download"></i> Download Template
                                     </a>
+                                    <script>
+                                        function showDownloadLoader() {
+                                            const loader = document.getElementById('global-loader');
+                                            if (loader) {
+                                                loader.style.display = 'flex';
+                                                // Force reflow
+                                                void loader.offsetWidth;
+                                                loader.style.opacity = '1';
+                                                
+                                                // Hide after 3 seconds (estimated time for download to start)
+                                                setTimeout(() => {
+                                                    loader.style.opacity = '0';
+                                                    setTimeout(() => {
+                                                        loader.style.display = 'none';
+                                                    }, 300);
+                                                }, 3000);
+                                            }
+                                        }
+                                    </script>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Footer Actions -->
-                        <div class="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
+                        <div class="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
                             <button type="button"
                                 onclick="document.getElementById('modal-import-dosen').classList.add('hidden')"
-                                class="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition-colors">
+                                class="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 Batal
                             </button>
                             <button type="submit" id="btn-upload"

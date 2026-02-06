@@ -5,8 +5,8 @@
 
 @section('content')
     <div class="w-full">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
-            <div class="p-4 sm:p-6 border-b border-gray-200 bg-maroon text-white">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
+            <div class="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white">
                 <h3 class="text-xl font-bold flex items-center">
                     <i class="fas fa-bullhorn mr-3 text-2xl"></i>
                     Buat Pengumuman Baru
@@ -20,7 +20,7 @@
                 <div class="space-y-6">
                     <!-- Judul -->
                     <div>
-                        <label for="judul" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="judul" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             <i class="fas fa-heading mr-1"></i>
                             Judul Pengumuman
                         </label>
@@ -28,7 +28,7 @@
                             name="judul" 
                             id="judul" 
                             value="{{ old('judul') }}"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('judul') border-red-500 @enderror"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('judul') border-red-500 @enderror"
                             placeholder="Masukkan judul pengumuman yang menarik..."
                             required>
                         @error('judul')
@@ -38,14 +38,14 @@
 
                     <!-- Isi -->
                     <div>
-                        <label for="isi" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="isi" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             <i class="fas fa-align-left mr-1"></i>
                             Isi Pengumuman
                         </label>
                         <textarea name="isi" 
                             id="isi" 
                             rows="8"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('isi') border-red-500 @enderror"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('isi') border-red-500 @enderror"
                             placeholder="Tuliskan detail pengumuman di sini..."
                             required>{{ old('isi') }}</textarea>
                         @error('isi')
@@ -57,13 +57,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Target Pengumuman -->
                         <div>
-                            <label for="target" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="target" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 <i class="fas fa-users mr-1"></i>
                                 Target Pengumuman
                             </label>
                             <select name="target" 
                                 id="target"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('target') border-red-500 @enderror"
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('target') border-red-500 @enderror"
                                 required>
                                 <option value="semua" {{ old('target') == 'semua' ? 'selected' : '' }}>Semua (Dosen & Mahasiswa)</option>
                                 <option value="dosen" {{ old('target') == 'dosen' ? 'selected' : '' }}>Dosen</option>
@@ -76,7 +76,7 @@
 
                         <!-- Tanggal Publikasi -->
                         <div>
-                            <label for="published_at" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="published_at" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 <i class="fas fa-calendar-alt mr-1"></i>
                                 Tanggal Publikasi (opsional)
                             </label>
@@ -84,8 +84,8 @@
                                 name="published_at" 
                                 id="published_at" 
                                 value="{{ old('published_at') }}"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('published_at') border-red-500 @enderror">
-                            <p class="mt-1 text-xs text-gray-500">Kosongkan jika ingin segera dipublikasikan</p>
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('published_at') border-red-500 @enderror">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Kosongkan jika ingin segera dipublikasikan</p>
                             @error('published_at')
                                 <p class="mt-1 text-sm text-red-600"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
                             @enderror
@@ -94,12 +94,12 @@
                 </div>
 
                 <!-- Info Box (Matches Fakultas style) -->
-                <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/30 rounded-lg">
                     <div class="flex items-start">
-                        <i class="fas fa-info-circle text-blue-500 mt-1 mr-2 flex-shrink-0"></i>
+                        <i class="fas fa-info-circle text-blue-500 dark:text-blue-400 mt-1 mr-2 flex-shrink-0"></i>
                         <div>
-                            <h4 class="text-sm font-semibold text-blue-800">Petunjuk Pengisian</h4>
-                            <ul class="text-sm text-blue-700 mt-1 list-disc list-inside space-y-1">
+                            <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300">Petunjuk Pengisian</h4>
+                            <ul class="text-sm text-blue-700 dark:text-blue-400 mt-1 list-disc list-inside space-y-1">
                                 <li>Gunakan judul yang singkat namun informatif</li>
                                 <li>Pastikan isi pengumuman jelas dan mudah dipahami</li>
                                 <li>Anda dapat menjadwalkan publikasi di masa mendatang</li>
@@ -109,9 +109,9 @@
                 </div>
 
                 <!-- Submit Button -->
-                <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 mt-8 pt-6 border-t border-gray-200">
+                <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                     <a href="{{ route('admin.pengumuman.index') }}" 
-                        class="w-full sm:w-auto px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition text-center flex items-center justify-center">
+                        class="w-full sm:w-auto px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-center flex items-center justify-center">
                         <i class="fas fa-times mr-2"></i>
                         Batal
                     </a>

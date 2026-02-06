@@ -5,44 +5,44 @@
 
 @section('content')
 <div class="mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Dashboard Admin</h2>
-    <p class="text-gray-600 text-sm mt-1">Selamat datang di Sistem Informasi Akademik STIH</p>
+    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Dashboard Admin</h2>
+    <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Selamat datang di Sistem Informasi Akademik STIH</p>
 </div>
 
 <!-- Statistik Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     <!-- Total Mahasiswa -->
-    <div class="bg-white rounded-xl shadow-md border-l-4 border-blue-500 p-6 hover:shadow-lg transition">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border-l-4 border-blue-500 p-6 hover:shadow-lg transition">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-gray-500 text-sm font-medium mb-1">Total Mahasiswa</p>
-                <h3 class="text-3xl font-bold text-gray-800">{{ $total_mahasiswa }}</h3>
-                <p class="text-gray-400 text-xs mt-2">Mahasiswa Aktif STIH</p>
-                <a href="{{ route('admin.mahasiswa.index') }}" class="text-blue-600 text-sm font-semibold mt-3 inline-flex items-center hover:text-blue-700">
+                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total Mahasiswa</p>
+                <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $total_mahasiswa }}</h3>
+                <p class="text-gray-400 dark:text-gray-500 text-xs mt-2">Mahasiswa Aktif STIH</p>
+                <a href="{{ route('admin.mahasiswa.index') }}" class="text-blue-600 dark:text-blue-400 text-sm font-semibold mt-3 inline-flex items-center hover:text-blue-700 dark:hover:text-blue-300">
                     Lihat Detail 
                     <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
-            <div class="bg-blue-100 rounded-full p-4 w-16 h-16 flex items-center justify-center">
-                <i class="fas fa-user-graduate text-3xl text-blue-600"></i>
+            <div class="bg-blue-100 dark:bg-blue-900/30 rounded-full p-4 w-16 h-16 flex items-center justify-center">
+                <i class="fas fa-user-graduate text-3xl text-blue-600 dark:text-blue-400"></i>
             </div>
         </div>
     </div>
 
     <!-- Total Dosen -->
-    <div class="bg-white rounded-xl shadow-md border-l-4 border-green-500 p-6 hover:shadow-lg transition">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border-l-4 border-green-500 p-6 hover:shadow-lg transition">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-gray-500 text-sm font-medium mb-1">Total Dosen</p>
-                <h3 class="text-3xl font-bold text-gray-800">{{ $total_dosen }}</h3>
-                <p class="text-gray-400 text-xs mt-2">Dosen Pengajar</p>
-                <a href="{{ route('admin.dosen.index') }}" class="text-green-600 text-sm font-semibold mt-3 inline-flex items-center hover:text-green-700">
+                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total Dosen</p>
+                <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $total_dosen }}</h3>
+                <p class="text-gray-400 dark:text-gray-500 text-xs mt-2">Dosen Pengajar</p>
+                <a href="{{ route('admin.dosen.index') }}" class="text-green-600 dark:text-green-400 text-sm font-semibold mt-3 inline-flex items-center hover:text-green-700 dark:hover:text-green-300">
                     Lihat Detail 
                     <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
-            <div class="bg-green-100 rounded-full p-4 w-16 h-16 flex items-center justify-center">
-                <i class="fas fa-chalkboard-teacher text-3xl text-green-600"></i>
+            <div class="bg-green-100 dark:bg-green-900/30 rounded-full p-4 w-16 h-16 flex items-center justify-center">
+                <i class="fas fa-chalkboard-teacher text-3xl text-green-600 dark:text-green-400"></i>
             </div>
         </div>
     </div>
@@ -84,19 +84,19 @@
     </div>
 
     <!-- Total Kelas -->
-    <div class="bg-white rounded-xl shadow-md border-l-4 border-indigo-500 p-6 hover:shadow-lg transition">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border-l-4 border-indigo-500 p-6 hover:shadow-lg transition">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-gray-500 text-sm font-medium mb-1">Total Kelas</p>
-                <h3 class="text-3xl font-bold text-gray-800">{{ $total_kelas }}</h3>
-                <p class="text-gray-400 text-xs mt-2">Kelas Mata Kuliah</p>
-                <a href="{{ route('admin.mata-kuliah.index') }}" class="text-indigo-600 text-sm font-semibold mt-3 inline-flex items-center hover:text-indigo-700">
+                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total Kelas</p>
+                <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $total_kelas }}</h3>
+                <p class="text-gray-400 dark:text-gray-500 text-xs mt-2">Kelas Mata Kuliah</p>
+                <a href="{{ route('admin.mata-kuliah.index') }}" class="text-indigo-600 dark:text-indigo-400 text-sm font-semibold mt-3 inline-flex items-center hover:text-indigo-700 dark:hover:text-indigo-300">
                     Lihat Detail 
                     <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
-            <div class="bg-indigo-100 rounded-full p-4 w-16 h-16 flex items-center justify-center">
-                <i class="fas fa-door-open text-3xl text-indigo-600"></i>
+            <div class="bg-indigo-100 dark:bg-indigo-900/30 rounded-full p-4 w-16 h-16 flex items-center justify-center">
+                <i class="fas fa-door-open text-3xl text-indigo-600 dark:text-indigo-400"></i>
             </div>
         </div>
     </div>
@@ -123,10 +123,10 @@
 <!-- KRS Terbaru & Menu Cepat -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Kalender Akademik -->
-    <div class="lg:col-span-2 bg-white rounded-xl shadow-md border-t-4 border-maroon">
-        <div class="p-6 border-b border-gray-200">
-            <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                <i class="fas fa-calendar-alt text-maroon mr-2"></i>
+    <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-md border-t-4 border-maroon">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                <i class="fas fa-calendar-alt text-maroon dark:text-red-500 mr-2"></i>
                 Kalender Akademik
             </h3>
         </div>
@@ -134,10 +134,10 @@
             @if($academic_events->count() > 0)
                 <div class="space-y-3">
                     @foreach($academic_events as $event)
-                        <div class="flex items-start p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500 hover:bg-gray-100 transition">
+                        <div class="flex items-start p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-l-4 border-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
                             <div class="flex-shrink-0 mr-4">
-                                <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-blue-100">
-                                    <i class="fas fa-calendar-check text-blue-600 text-lg"></i>
+                                <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                                    <i class="fas fa-calendar-check text-blue-600 dark:text-blue-400 text-lg"></i>
                                 </div>
                             </div>
                             <div class="flex-1">
@@ -179,22 +179,22 @@
     </div>
 
     <!-- Menu Cepat -->
-    <div class="bg-white rounded-xl shadow-md border-t-4 border-maroon">
-        <div class="p-6 border-b border-gray-200">
-            <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                <i class="fas fa-bolt text-maroon mr-2"></i>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border-t-4 border-maroon">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                <i class="fas fa-bolt text-maroon dark:text-red-500 mr-2"></i>
                 Menu Cepat
             </h3>
         </div>
         <div class="p-6 space-y-3">
             <a href="{{ route('admin.mahasiswa.create') }}" 
-                class="flex items-center p-4 bg-white border-2 border-maroon rounded-lg hover:bg-maroon hover:text-white transition group">
+                class="flex items-center p-4 bg-white dark:bg-gray-800 border-2 border-maroon rounded-lg hover:bg-maroon hover:text-white transition group">
                             <div class="bg-maroon text-white rounded-full p-3 mr-4 transition">
                                 <i class="fas fa-user-plus text-xl"></i>
                             </div>
                 <div>
-                    <h4 class="font-semibold">Tambah Mahasiswa</h4>
-                    <p class="text-xs text-gray-500 group-hover:text-white">Daftarkan mahasiswa baru</p>
+                    <h4 class="font-semibold dark:text-white">Tambah Mahasiswa</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-white">Daftarkan mahasiswa baru</p>
                 </div>
             </a>
 

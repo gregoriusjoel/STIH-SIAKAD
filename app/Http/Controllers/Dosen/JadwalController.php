@@ -12,6 +12,7 @@ use App\Models\JadwalException;
 use Carbon\Carbon;
 use App\Models\JadwalReschedule;
 use App\Models\Ruangan;
+use Illuminate\Support\Facades\Schema;
 
 class JadwalController extends Controller
 {
@@ -99,47 +100,13 @@ class JadwalController extends Controller
         // For backward compatibility
         $activeJadwals = $kelasMataKuliahs;
 
-        // Also include any active Jadwal records (separate jadwals table) for this dosen's classes
-        if ($dosen) {
-            $jadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
-                ->where('status', 'active')
-                ->whereHas('kelas', function($q) use ($dosen) {
-                    $q->where('dosen_id', $dosen->id);
-                })
+        // Get actual ruangan data from database if table/columns exist
+        $daftarRuangan = collect();
+        if (Schema::hasTable('ruangans') && Schema::hasColumn('ruangans', 'status') && Schema::hasColumn('ruangans', 'kode_ruangan')) {
+            $daftarRuangan = Ruangan::where('status', 'aktif')
+                ->orderBy('kode_ruangan')
                 ->get();
-
-            $mappedFromJadwals = $jadwals->map(function($j) {
-                $item = new \stdClass();
-                $item->id = 'jadwal-'.$j->id;
-                $item->mataKuliah = $j->kelas->mataKuliah ?? null;
-                $item->semester = null;
-                $item->hari = $j->hari;
-                $item->jam_mulai = $j->jam_mulai;
-                $item->jam_selesai = $j->jam_selesai;
-                $item->ruang = $j->ruangan ?? $j->ruang;
-                $item->kode_kelas = $j->kelas->section ?? ($j->kelas->kode_kelas ?? null);
-                $item->dosen = $j->kelas->dosen ?? null;
-                // display_* fields to match existing mapping
-                $item->display_hari = $j->hari;
-                $item->display_jam_mulai = $j->jam_mulai;
-                $item->display_jam_selesai = $j->jam_selesai;
-                $item->display_ruang = $j->ruangan ?? $j->ruang;
-                $item->display_kelas = $item->kode_kelas;
-                $item->is_rescheduled = false;
-                $item->has_pending_reschedule = false;
-                return $item;
-            });
-
-            // Merge mapped jadwals into collection used for rendering
-            $kelasMataKuliahs = $kelasMataKuliahs->concat($mappedFromJadwals);
-            $schedulesByDay = $kelasMataKuliahs->groupBy('display_hari');
-            $activeJadwals = $kelasMataKuliahs;
         }
-
-        // Get actual ruangan data from database
-        $daftarRuangan = Ruangan::where('status', 'aktif')
-            ->orderBy('kode_ruangan')
-            ->get();
 
         // Get all schedules for room availability checking
         $allSchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'ruangan'])

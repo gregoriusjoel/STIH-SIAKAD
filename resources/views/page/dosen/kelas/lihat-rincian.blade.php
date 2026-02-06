@@ -79,9 +79,18 @@
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-gray-800 text-lg">Daftar Kehadiran</h3>
-                    <span class="px-3 py-1 rounded-full bg-gray-100 text-xs font-bold text-gray-600">
-                        Total Mahasiswa: {{ count($students) }}
-                    </span>
+                    @php
+                        $totalStudents = count($students);
+                        $attendedCount = collect($students)->where('attendance_status', 'hadir')->count();
+                    @endphp
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-xs font-bold text-green-700">
+                            Hadir: {{ $attendedCount }}
+                        </span>
+                        <span class="px-3 py-1 rounded-full bg-gray-100 text-xs font-bold text-gray-600">
+                            Total: {{ $totalStudents }}
+                        </span>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -105,12 +114,21 @@
                                     </td>
                                     <td class="px-6 py-4 font-mono text-sm text-gray-600">{{ $student['nim'] }}</td>
                                     <td class="px-6 py-4 text-center">
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
-                                            Belum Absen
-                                        </span>
+                                        @if(isset($student['attendance_status']) && $student['attendance_status'] === 'hadir')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                                                <span class="material-symbols-outlined text-[16px] mr-1">check_circle</span>
+                                                Hadir
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
+                                                <span class="material-symbols-outlined text-[16px] mr-1">cancel</span>
+                                                Belum Absen
+                                            </span>
+                                        @endif
                                     </td>
-                                    <td class="px-6 py-4 text-center text-gray-400 text-sm">-</td>
+                                    <td class="px-6 py-4 text-center text-gray-600 text-sm font-mono">
+                                        {{ $student['attendance_time'] ?? '-' }}
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>

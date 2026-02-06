@@ -3,50 +3,70 @@
 @section('title', 'Konfirmasi KRS')
 
 @section('content')
-<div class="pt-6 pb-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-    <div class="max-w-4xl w-full mx-auto space-y-8 bg-white p-6 sm:p-8 rounded-2xl shadow-xl">
-        
-        <!-- Header Title -->
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">Konfirmasi Pengisian KRS</h1>
+<div class="max-w-[1600px] w-full mx-auto space-y-6">
+    
+    <!-- Title Section -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Konfirmasi KRS</h1>
+            <p class="text-sm text-gray-500">Finalisasi rencana studi Anda untuk semester ini.</p>
         </div>
+    </div>
 
-        @if(session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded" role="alert">
-            <p class="font-bold">Berhasil</p>
-            <p>{{ session('success') }}</p>
-        </div>
-        @endif
-
-        <div class="flex flex-col md:flex-row gap-8 mb-10">
-            <!-- Left: Profile Card -->
-            <div class="w-full md:w-1/3 flex flex-col items-center justify-center p-6 border border-gray-200 rounded-xl bg-white shadow-sm">
-                <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-4 overflow-hidden">
-                    @php $foto = $mahasiswa->foto ?? null; @endphp
-                    @if(!empty($foto))
-                        <img src="{{ asset('storage/' . $foto) }}" alt="Profile" class="w-full h-full object-cover">
-                    @else
-                        <i class="fas fa-user text-4xl text-gray-400"></i>
-                    @endif
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left: Profile Card -->
+        <div class="lg:col-span-1 h-fit">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 flex flex-col items-center border-b border-gray-100">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 overflow-hidden shadow-inner ring-4 ring-gray-50">
+                        @php $foto = $mahasiswa->foto ?? null; @endphp
+                        @if(!empty($foto))
+                            <img src="{{ asset('storage/' . $foto) }}" alt="Profile" class="w-full h-full object-cover">
+                        @else
+                            <i class="fas fa-user text-4xl text-gray-300"></i>
+                        @endif
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 text-center leading-tight mb-1">{{ $mahasiswa->nama ?? $mahasiswa->user->name ?? '-' }}</h3>
+                    <p class="text-sm text-gray-500 font-medium">{{ $mahasiswa->nim ?? ($mahasiswa->user->nim ?? '-') }}</p>
                 </div>
-                <div class="text-center">
-                    <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Nama</p>
-                    <h3 class="text-lg font-bold text-gray-900 mb-3">{{ $mahasiswa->nama ?? $mahasiswa->user->name ?? '-' }}</h3>
-                    
-                    <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">NIM</p>
-                    <p class="text-md font-medium text-gray-800">{{ $mahasiswa->nim ?? ($mahasiswa->user->nim ?? '-') }}</p>
+                <div class="p-6 space-y-4 bg-gray-50/50">
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Program Studi</p>
+                        <p class="text-sm font-semibold text-gray-800">{{ $mahasiswa->prodi ?? '-' }}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Angkatan</p>
+                            <p class="text-sm font-semibold text-gray-800">{{ $mahasiswa->angkatan ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Status</p>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded textxs font-bold bg-green-100 text-green-800">
+                                Aktif
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Right: Action & Info -->
-            <div class="w-full md:w-2/3 flex flex-col justify-between border border-gray-200 rounded-xl p-6 bg-white shadow-sm">
-                <div class="text-center mb-6">
-                    <p class="text-sm text-gray-500 mb-1">Pengisian KRS {{ $semesterAktif->tahun_ajaran }}</p>
-                    <h2 class="text-xl font-bold text-gray-900 capitalize">
-                        {{ $semesterAktif->nama_semester == 'Ganjil' ? 'Semester 1' : ($semesterAktif->nama_semester == 'Genap' ? 'Semester 2' : $semesterAktif->nama_semester) }} 
-                        {{ $semesterAktif->tahun_ajaran }}
-                    </h2>
-                </div>
+        <!-- Right: Action & Info -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 flex flex-col h-full relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-bl-full -mr-8 -mt-8 opacity-50 pointer-events-none"></div>
+                
+                <div class="relative z-10">
+                    <div class="mb-8">
+                        <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wide mb-2">
+                            Pengisian KRS
+                        </span>
+                        <h2 class="text-3xl font-bold text-gray-900 capitalize mb-1">
+                            Semester {{ $semesterAktif->semester_number ?? 1 }} 
+                        </h2>
+                        <p class="text-gray-500">
+                            {{ $semesterAktif->nama_semester ?? 'Ganjil' }} {{ $semesterAktif->tahun_ajaran }}
+                        </p>
+                    </div>
 
                 @if(isset($alreadySubmitted) && $alreadySubmitted)
                 <div class="bg-green-50 p-4 rounded-lg mb-6 text-center border border-green-200">
@@ -99,65 +119,69 @@
                     </a>
                 </div>
                 @endif
+                </div>
             </div>
         </div>
-
-        <!-- Bottom: History -->
-        <div>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4 px-1">Download KRS Semester Lalu</h3>
-            <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Semester
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Tahun Ajaran
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Aksi
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($semesterList as $sem)
-                            @php
-                                $canDownload = in_array($sem->id, $downloadable);
-                            @endphp
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">
-                                    {{ $sem->nama_semester == 'Ganjil' ? 'Semester 1' : ($sem->nama_semester == 'Genap' ? 'Semester 2' : $sem->nama_semester) }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $sem->tahun_ajaran }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    @if($canDownload)
-                                        <a href="{{ route('mahasiswa.krs.print', ['semester_id' => $sem->id]) }}" 
-                                           target="_blank"
-                                           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-yellow-900 bg-yellow-400 hover:bg-yellow-500 shadow-sm">
-                                            Download/Cetak KRS
-                                        </a>
-                                    @else
-                                        <span class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
-                                            Download/Cetak KRS
-                                        </span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" class="px-6 py-8 text-center text-gray-500">
-                                    Belum ada riwayat KRS.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
     </div>
+
+    <!-- Bottom: History -->
+    <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 px-1">Download KRS Semester Lalu</h3>
+        
+        
+        
+        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Semester
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Tahun Ajaran
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Aksi
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($semesterList as $sem)
+                        @php
+                            $canDownload = in_array($sem->semester_number ?? $sem->id, $downloadable);
+                        @endphp
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">
+                                Semester {{ $sem->semester_number ?? 1 }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $sem->tahun_ajaran }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                @if($canDownload)
+                                    <a href="{{ route('mahasiswa.krs.print', ['semester_id' => $sem->semester_number ?? $sem->id]) }}" 
+                                       target="_blank"
+                                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-yellow-900 bg-yellow-400 hover:bg-yellow-500 shadow-sm">
+                                        Download/Cetak KRS
+                                    </a>
+                                @else
+                                    <span class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
+                                        Download/Cetak KRS
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="px-6 py-8 text-center text-gray-500">
+                                Belum ada riwayat KRS.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
 </div>
 @endsection

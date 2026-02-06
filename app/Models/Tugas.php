@@ -12,12 +12,17 @@ class Tugas extends Model
     protected $table = 'tugas';
 
     protected $fillable = [
-        'kelas_id', 'pertemuan', 'title', 'description', 'due_date', 'dosen_id', 'file_path', 'max_score'
+        'kelas_id', 'mata_kuliah_id', 'pertemuan', 'title', 'description', 'due_date', 'dosen_id', 'file_path', 'max_score'
     ];
 
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
+    }
+
+    public function mataKuliah()
+    {
+        return $this->belongsTo(MataKuliah::class, 'mata_kuliah_id');
     }
 
     public function dosen()

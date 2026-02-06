@@ -4,7 +4,7 @@
 @section('page-title', 'Detail Ruangan')
 
 @section('content')
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                 <i class="fas fa-door-open mr-3 text-maroon"></i>
@@ -12,17 +12,19 @@
             </h2>
             <p class="text-gray-600 text-sm mt-1">Informasi lengkap ruangan {{ $ruangan->nama_ruangan }}</p>
         </div>
-        <div class="flex space-x-2">
-            <a href="{{ route('admin.ruangan.edit', $ruangan) }}"
-                class="bg-yellow-600 text-white hover:bg-yellow-700 px-6 py-3 rounded-lg transition flex items-center shadow-md">
-                <i class="fas fa-edit mr-2"></i>
-                Edit
-            </a>
-            <a href="{{ route('admin.ruangan.index') }}"
-                class="bg-gray-600 text-white hover:bg-gray-700 px-6 py-3 rounded-lg transition flex items-center shadow-md">
-                <i class="fas fa-arrow-left mr-2"></i>
-                Kembali
-            </a>
+        <div class="flex-shrink-0">
+            <div class="flex space-x-2">
+                <a href="{{ route('admin.ruangan.edit', $ruangan) }}"
+                    class="bg-yellow-600 text-white hover:bg-yellow-700 px-6 py-3 rounded-lg transition flex items-center shadow-md">
+                    <i class="fas fa-edit mr-2"></i>
+                    Edit
+                </a>
+                <a href="{{ route('admin.ruangan.index') }}"
+                    class="bg-gray-600 text-white hover:bg-gray-700 px-6 py-3 rounded-lg transition flex items-center shadow-md">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Kembali
+                </a>
+            </div>
         </div>
     </div>
 

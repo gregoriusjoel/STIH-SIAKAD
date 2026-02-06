@@ -117,11 +117,17 @@ class JadwalApprovalController extends Controller
             try {
                 $kelas = $proposal->kelas;
                 $kodeKelas = $kelas?->section ?? null;
+                
+                // Get active semester
+                $activeSemester = \App\Models\Semester::where('status', 'aktif')->first()
+                    ?? \App\Models\Semester::latest()->first();
 
                 $kmkData = [
                     'mata_kuliah_id' => $proposal->mata_kuliah_id,
                     'dosen_id' => $proposal->dosen_id,
+                    'semester_id' => $activeSemester?->id,
                     'kode_kelas' => $kodeKelas,
+                    'kapasitas' => 40,
                     'ruang' => $ruangKode,
                     'ruangan_id' => $ruanganId ?? null,
                     'hari' => $proposal->hari,

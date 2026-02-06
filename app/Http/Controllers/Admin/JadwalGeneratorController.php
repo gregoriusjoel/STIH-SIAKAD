@@ -23,19 +23,88 @@ class JadwalGeneratorController extends Controller
 
     /**
      * Get active time slots from jam_perkuliahan table
+     * For multi-SKS courses, this will find consecutive slot combinations
      */
-    private function getJadwalSlots()
+    private function getJadwalSlots($requiredSks = null)
     {
-        return JamPerkuliahan::where('is_active', true)
+        $jamPerkuliahans = JamPerkuliahan::where('is_active', true)
             ->orderBy('jam_ke')
-            ->get()
-            ->map(function ($jam) {
+            ->get();
+
+        // If no SKS specified or 1 SKS, return single slots
+        if ($requiredSks === null || $requiredSks == 1) {
+            return $jamPerkuliahans->map(function ($jam) {
                 return [
                     'jam_mulai' => date('H:i', strtotime($jam->jam_mulai)),
                     'jam_selesai' => date('H:i', strtotime($jam->jam_selesai)),
+                    'jam_ke' => $jam->jam_ke,
                 ];
-            })
-            ->toArray();
+            })->toArray();
+        }
+
+        // For multi-SKS courses, find consecutive slot combinations
+        return $this->findConsecutiveSlots($jamPerkuliahans, $requiredSks);
+    }
+
+    /**
+     * Find consecutive time slots that match the required SKS
+     * For 2 SKS: find 2 consecutive 45-min slots (jam ke-1,2 or 2,3 etc)
+     * For 3 SKS: find 3 consecutive 45-min slots, etc.
+     */
+    private function findConsecutiveSlots($jamPerkuliahans, $requiredSks)
+    {
+        $combinations = [];
+        $count = $jamPerkuliahans->count();
+        
+        // Need at least $requiredSks slots to form a combination
+        if ($count < $requiredSks) {
+            return $combinations;
+        }
+        
+        $slots = $jamPerkuliahans->toArray();
+        
+        // Try each starting position
+        for ($i = 0; $i <= $count - $requiredSks; $i++) {
+            $isConsecutive = true;
+            $selectedSlots = [];
+            
+            // Check if next N slots are consecutive
+            for ($j = 0; $j < $requiredSks; $j++) {
+                $currentSlot = $slots[$i + $j];
+                $selectedSlots[] = $currentSlot;
+                
+                // Check if this slot connects to the next one (end time = next start time)
+                if ($j < $requiredSks - 1) {
+                    $nextSlot = $slots[$i + $j + 1];
+                    
+                    $currentEnd = date('H:i', strtotime($currentSlot['jam_selesai']));
+                    $nextStart = date('H:i', strtotime($nextSlot['jam_mulai']));
+                    
+                    if ($currentEnd !== $nextStart) {
+                        $isConsecutive = false;
+                        break;
+                    }
+                }
+            }
+            
+            // If all slots are consecutive, create combined slot
+            if ($isConsecutive && count($selectedSlots) === $requiredSks) {
+                $firstSlot = $selectedSlots[0];
+                $lastSlot = $selectedSlots[count($selectedSlots) - 1];
+                
+                $jamKeList = array_map(fn($s) => $s['jam_ke'], $selectedSlots);
+                
+                $combinations[] = [
+                    'jam_mulai' => date('H:i', strtotime($firstSlot['jam_mulai'])),
+                    'jam_selesai' => date('H:i', strtotime($lastSlot['jam_selesai'])),
+                    'jam_ke' => $firstSlot['jam_ke'],
+                    'jam_ke_list' => implode(',', $jamKeList),
+                    'sks' => $requiredSks,
+                ];
+            }
+        }
+        
+        return $combinations;
     }
 
     public function index()
@@ -82,53 +151,58 @@ class JadwalGeneratorController extends Controller
                 ->pluck('kode_ruangan')
                 ->toArray();
 
-            // Ambil semua mata kuliah yang perlu dijadwalkan
-            // Prefer data dari `kelas_mata_kuliahs` (mengandung preferensi ruang/hari/jam).
-            if (DB::table('kelas_mata_kuliahs')->count() > 0) {
-                $kelasMataKuliahs = DB::table('kelas_mata_kuliahs')
-                    ->join('mata_kuliahs', 'kelas_mata_kuliahs.mata_kuliah_id', '=', 'mata_kuliahs.id')
-                    ->join('dosens', 'kelas_mata_kuliahs.dosen_id', '=', 'dosens.id')
-                    ->join('users', 'dosens.user_id', '=', 'users.id')
-                    ->select(
-                        'kelas_mata_kuliahs.id',
-                        'kelas_mata_kuliahs.mata_kuliah_id',
-                        'kelas_mata_kuliahs.dosen_id',
-                        'kelas_mata_kuliahs.kode_kelas',
-                        'kelas_mata_kuliahs.kapasitas',
-                        'kelas_mata_kuliahs.ruang',
-                        'kelas_mata_kuliahs.hari',
-                        'kelas_mata_kuliahs.jam_mulai',
-                        'kelas_mata_kuliahs.jam_selesai',
-                        'mata_kuliahs.nama_mk as mata_kuliah_nama',
-                        'mata_kuliahs.sks',
-                        'kelas_mata_kuliahs.kode_kelas as kelas_nama',
-                        'users.name as dosen_nama'
-                    )
-                    ->get();
-            } else {
-                // Fallback: gunakan tabel `kelas` (sesuai form 'Tambah Jadwal Baru')
-                $kelasMataKuliahs = DB::table('kelas')
-                    ->join('mata_kuliahs', 'kelas.mata_kuliah_id', '=', 'mata_kuliahs.id')
-                    ->join('dosens', 'kelas.dosen_id', '=', 'dosens.id')
-                    ->join('users', 'dosens.user_id', '=', 'users.id')
-                    ->select(
-                        'kelas.id',
-                        'kelas.mata_kuliah_id',
-                        'kelas.dosen_id',
-                        'kelas.section',
-                        'kelas.kapasitas',
-                        'mata_kuliahs.nama_mk as mata_kuliah_nama',
-                        'mata_kuliahs.kode_mk',
-                        'mata_kuliahs.sks',
-                        DB::raw('CONCAT(mata_kuliahs.kode_mk, "-", kelas.section) as kode_kelas'),
-                        DB::raw('CONCAT(mata_kuliahs.kode_mk, "-", kelas.section) as kelas_nama'),
-                        DB::raw('NULL as ruang'),
-                        DB::raw('NULL as hari'),
-                        DB::raw('NULL as jam_mulai'),
-                        DB::raw('NULL as jam_selesai'),
-                        'users.name as dosen_nama'
-                    )
-                    ->get();
+            // Generate berdasarkan mata_kuliah_ids dari tabel dosens
+            $dosens = DB::table('dosens')
+                ->join('users', 'dosens.user_id', '=', 'users.id')
+                ->select('dosens.id', 'dosens.mata_kuliah_ids', 'users.name as dosen_nama')
+                ->whereNotNull('dosens.mata_kuliah_ids')
+                ->where('dosens.mata_kuliah_ids', '!=', '')
+                ->where('dosens.mata_kuliah_ids', '!=', '[]')
+                ->where('dosens.mata_kuliah_ids', '!=', 'null')
+                ->get();
+
+            $kelasMataKuliahs = collect();
+            
+            foreach ($dosens as $dosen) {
+                // Parse JSON mata_kuliah_ids
+                $mkIds = json_decode($dosen->mata_kuliah_ids, true);
+                
+                if (!is_array($mkIds) || empty($mkIds)) {
+                    continue;
+                }
+                
+                // Untuk setiap mata kuliah yang diampu dosen ini
+                foreach ($mkIds as $mkId) {
+                    // Ambil data mata kuliah
+                    $mataKuliah = DB::table('mata_kuliahs')->where('id', $mkId)->first();
+                    
+                    if (!$mataKuliah) {
+                        continue;
+                    }
+                    
+                    // Cek apakah sudah ada di kelas_mata_kuliahs (untuk ambil preferensi)
+                    $kmk = DB::table('kelas_mata_kuliahs')
+                        ->where('mata_kuliah_id', $mkId)
+                        ->where('dosen_id', $dosen->id)
+                        ->first();
+                    
+                    // Buat object untuk generate
+                    $kelasMataKuliahs->push((object)[
+                        'id' => $kmk->id ?? null,
+                        'mata_kuliah_id' => $mkId,
+                        'dosen_id' => $dosen->id,
+                        'kode_kelas' => $kmk->kode_kelas ?? 'A',
+                        'kapasitas' => $kmk->kapasitas ?? 40,
+                        'ruang' => $kmk->ruang ?? null,
+                        'hari' => $kmk->hari ?? null,
+                        'jam_mulai' => $kmk->jam_mulai ?? null,
+                        'jam_selesai' => $kmk->jam_selesai ?? null,
+                        'mata_kuliah_nama' => $mataKuliah->nama_mk,
+                        'sks' => $mataKuliah->sks,
+                        'kelas_nama' => ($kmk->kode_kelas ?? $mataKuliah->kode_mk . '-A'),
+                        'dosen_nama' => $dosen->dosen_nama,
+                    ]);
+                }
             }
             
             // Tracking untuk prevent duplicate dalam satu batch
@@ -142,21 +216,10 @@ class JadwalGeneratorController extends Controller
                     continue;
                 }
                 $processedCombinations[$combinationKey] = true;
-                // Skip if dosen tidak memiliki mata kuliah yang diajarkan
-                $dosenRow = DB::table('dosens')->where('id', $kmk->dosen_id)->first();
-                if (!$dosenRow) {
-                    Log::info("Skipping generation: dosen id {$kmk->dosen_id} not found for {$kmk->mata_kuliah_nama}");
-                    $failed++;
-                    $failedItems[] = "{$kmk->mata_kuliah_nama} - {$kmk->kelas_nama} (Dosen tidak ditemukan)";
-                    continue;
-                }
-
-                $mkIds = trim((string) ($dosenRow->mata_kuliah_ids ?? ''));
-                // treat JSON array or CSV; if empty -> skip
-                if ($mkIds === '' || $mkIds === '[]' || $mkIds === 'null') {
-                    Log::info("Skipping generation: dosen id {$kmk->dosen_id} has no mata_kuliah_ids");
-                    continue;
-                }
+                
+                // Data sudah difilter dari kelas_mata_kuliahs dengan dosen_id
+                // Jika ada di sini, berarti dosen memang sudah di-assign untuk mengajar mata kuliah ini
+                // Tidak perlu validasi mata_kuliah_ids lagi
 
                 $proposal = $this->generateJadwalForMataKuliah($kmk, $request->semester, $request->tahun_ajaran);
                 
@@ -164,7 +227,10 @@ class JadwalGeneratorController extends Controller
                     $generated++;
                 } else {
                     $failed++;
-                    $failedItems[] = "{$kmk->mata_kuliah_nama} - {$kmk->kelas_nama} ({$kmk->dosen_nama})";
+                    // Get SKS info for better error message
+                    $sks = isset($kmk->sks) ? $kmk->sks : null;
+                    $sksInfo = $sks ? " ({$sks} SKS - slot berturut-turut tidak tersedia)" : "";
+                    $failedItems[] = "{$kmk->mata_kuliah_nama} - {$kmk->kelas_nama}{$sksInfo}";
                 }
             }
 
@@ -301,7 +367,16 @@ class JadwalGeneratorController extends Controller
         }
 
         // Otherwise try available slots with randomization
-        $jadwalSlots = $this->getJadwalSlots();
+        // Fetch mata kuliah to get SKS
+        $mataKuliah = \App\Models\MataKuliah::find($kmk->mata_kuliah_id);
+        $requiredSks = $mataKuliah ? $mataKuliah->sks : 1;
+        
+        $jadwalSlots = $this->getJadwalSlots($requiredSks);
+        
+        if (empty($jadwalSlots)) {
+            Log::warning("No consecutive time slots available for {$requiredSks} SKS - {$kmk->mata_kuliah_nama}");
+            return null;
+        }
         
         // Randomize hari and time slots untuk variasi jadwal
         $randomHari = $this->availableHari;
