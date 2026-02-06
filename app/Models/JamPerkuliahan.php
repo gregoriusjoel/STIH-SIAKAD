@@ -31,4 +31,20 @@ class JamPerkuliahan extends Model
     {
         return date('H.i', strtotime($this->jam_mulai)) . ' - ' . date('H.i', strtotime($this->jam_selesai));
     }
+
+    /**
+     * Get slot label (e.g., "Jam 1 (09:00 - 09:45)")
+     */
+    public function getSlotLabelAttribute()
+    {
+        return "Jam {$this->jam_ke} ({$this->formatted_time})";
+    }
+
+    /**
+     * Relationship: Has many DosenAvailability
+     */
+    public function dosenAvailabilities()
+    {
+        return $this->hasMany(DosenAvailability::class);
+    }
 }

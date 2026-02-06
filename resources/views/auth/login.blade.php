@@ -23,11 +23,13 @@
 
     <style>
         body {
-            background: #f8f9fa;
+            background: url('{{ asset('images/bg.png') }}') no-repeat center center fixed;
+            background-size: cover;
             min-height: 100vh;
+            position: relative;
         }
 
-        /* Subtle pattern background */
+        /* Blur + Darker overlay for better contrast */
         body::before {
             content: '';
             position: fixed;
@@ -35,16 +37,19 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(178, 32, 44, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(178, 32, 44, 0.03) 0%, transparent 50%);
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             pointer-events: none;
             z-index: 0;
         }
 
         .login-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 1;
         }

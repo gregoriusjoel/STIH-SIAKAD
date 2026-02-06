@@ -67,6 +67,11 @@
                 <p class="text-sm font-medium">Jadwal Kuliah</p>
             </a>
 
+            <a href="{{ route('dosen.availability.index') }}" @click="if(window.innerWidth < 1024) sidebarOpen = false" class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors {{ Request::routeIs('dosen.availability.*') ? 'bg-primary/10 text-primary' : 'text-[#616889] dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-red-900/10 hover:text-primary' }}">
+                <span class="material-symbols-outlined text-[20px]">event_available</span>
+                <p class="text-sm font-medium">Ketersediaan Waktu</p>
+            </a>
+
             <a class="text-[#616889] dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-red-900/10 hover:text-primary transition-colors flex items-center gap-3 px-3 py-3 rounded-lg mt-auto" href="#">
                 <span class="material-symbols-outlined text-[20px]">account_circle</span>
                 <p class="text-sm font-medium">Profil</p>

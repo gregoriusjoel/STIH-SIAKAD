@@ -65,6 +65,10 @@ foreach ($missingFields as $field => $info) {
 </div>
 @endif
 
+{{-- Global villages data - load once to prevent memory exhaustion --}}
+<script>
+    window.villagesData = @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'district_code' => $v['district_code']])->toArray());
+</script>
 
 <div class="bg-white rounded-lg shadow-sm p-8" x-data="{ 
     activeTab: '{{ $highlightMissing && count($missingFields) > 0 ? (collect($missingFields)->first()['tab'] ?? 'akademik') : 'akademik' }}', 
@@ -246,6 +250,16 @@ foreach ($missingFields as $field => $info) {
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
+                        <div class="lg:col-span-9">
+                            <select name="kecamatan" id="kecamatanSelect" 
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                         <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
                         <div class="lg:col-span-9">
                             <!-- Custom Searchable Dropdown -->
@@ -278,7 +292,7 @@ foreach ($missingFields as $field => $info) {
                                             <div class="text-orange-400 mb-1">
                                                 <i class="fas fa-exclamation-circle text-xl"></i>
                                             </div>
-                                            <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                            <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
                                         </div>
                                         <!-- Hint Message -->
                                         <div x-show="showHint" class="px-4 py-8 text-center">
@@ -309,31 +323,31 @@ foreach ($missingFields as $field => $info) {
                                         search: '',
                                         selected: @json($mahasiswa->desa ?? ''),
                                         selectedText: @json($mahasiswa->desa ?? 'Pilih Desa'),
-                                        allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
-                                        currentCityCode: '',
+                                        allOptions: window.villagesData,
+                                        currentDistrictCode: '',
                                         isLoading: false,
-                                        noCitySelected: true,
+                                        noKecamatanSelected: true,
                                         init() {
                                             if (!this.selected) {
                                                 this.selectedText = 'Pilih Desa';
                                             }
-                                            // Listen to Kota/Kabupaten dropdown changes
-                                            const kotaSelect = document.getElementById('kotaSelect');
-                                            if (kotaSelect) {
-                                                // Initial city code
-                                                const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
-                                                if (initialOpt && initialOpt.dataset.cityCode) {
-                                                    this.currentCityCode = initialOpt.dataset.cityCode;
-                                                    this.noCitySelected = false;
+                                            // Listen to Kecamatan dropdown changes
+                                            const kecamatanSelect = document.getElementById('kecamatanSelect');
+                                            if (kecamatanSelect) {
+                                                // Initial district code
+                                                const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                if (initialOpt && initialOpt.dataset.districtCode) {
+                                                    this.currentDistrictCode = initialOpt.dataset.districtCode;
+                                                    this.noKecamatanSelected = false;
                                                 } else {
-                                                    this.noCitySelected = true;
+                                                    this.noKecamatanSelected = true;
                                                 }
                                                 // On change
-                                                kotaSelect.addEventListener('change', (e) => {
+                                                kecamatanSelect.addEventListener('change', (e) => {
                                                     const opt = e.target.options[e.target.selectedIndex];
-                                                    this.currentCityCode = opt?.dataset?.cityCode || '';
-                                                    this.noCitySelected = !this.currentCityCode;
-                                                    // Reset selection when city changes
+                                                    this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                    this.noKecamatanSelected = !this.currentDistrictCode;
+                                                    // Reset selection when kecamatan changes
                                                     this.selected = '';
                                                     this.selectedText = 'Pilih Desa';
                                                     this.search = '';
@@ -341,8 +355,8 @@ foreach ($missingFields as $field => $info) {
                                             }
                                         },
                                         get options() {
-                                            if (!this.currentCityCode) return [];
-                                            return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                            if (!this.currentDistrictCode) return [];
+                                            return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                         },
                                         get filteredOptions() {
                                             // Only show options when user types at least 2 characters
@@ -351,11 +365,11 @@ foreach ($missingFields as $field => $info) {
                                             return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
                                         },
                                         get showHint() {
-                                            if (this.noCitySelected) return false;
+                                            if (this.noKecamatanSelected) return false;
                                             return !this.search || this.search.trim().length < 2;
                                         },
                                         get showNoCityMessage() {
-                                            return this.noCitySelected;
+                                            return this.noKecamatanSelected;
                                         },
                                         selectOption(opt) {
                                             this.selected = opt.value;
@@ -420,6 +434,16 @@ foreach ($missingFields as $field => $info) {
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
+                        <div class="lg:col-span-9">
+                            <select name="kecamatan_ktp" id="kecamatanKtpSelect" 
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                         <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
                         <div class="lg:col-span-9">
                             <!-- Custom Searchable Dropdown for KTP -->
@@ -452,7 +476,7 @@ foreach ($missingFields as $field => $info) {
                                             <div class="text-orange-400 mb-1">
                                                 <i class="fas fa-exclamation-circle text-xl"></i>
                                             </div>
-                                            <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                            <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
                                         </div>
                                         <!-- Hint Message -->
                                         <div x-show="showHint" class="px-4 py-8 text-center">
@@ -483,31 +507,31 @@ foreach ($missingFields as $field => $info) {
                                         search: '',
                                         selected: @json($mahasiswa->desa_ktp ?? ''),
                                         selectedText: @json($mahasiswa->desa_ktp ?? 'Pilih Desa'),
-                                        allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
-                                        currentCityCode: '',
+                                        allOptions: window.villagesData,
+                                        currentDistrictCode: '',
                                         isLoading: false,
-                                        noCitySelected: true,
+                                        noKecamatanSelected: true,
                                         init() {
                                             if (!this.selected) {
                                                 this.selectedText = 'Pilih Desa';
                                             }
-                                            // Listen to Kota KTP dropdown changes
-                                            const kotaSelect = document.getElementById('kotaKtpSelect');
-                                            if (kotaSelect) {
-                                                // Initial city code
-                                                const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
-                                                if (initialOpt && initialOpt.dataset.cityCode) {
-                                                    this.currentCityCode = initialOpt.dataset.cityCode;
-                                                    this.noCitySelected = false;
+                                            // Listen to Kecamatan KTP dropdown changes
+                                            const kecamatanSelect = document.getElementById('kecamatanKtpSelect');
+                                            if (kecamatanSelect) {
+                                                // Initial district code
+                                                const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                if (initialOpt && initialOpt.dataset.districtCode) {
+                                                    this.currentDistrictCode = initialOpt.dataset.districtCode;
+                                                    this.noKecamatanSelected = false;
                                                 } else {
-                                                    this.noCitySelected = true;
+                                                    this.noKecamatanSelected = true;
                                                 }
                                                 // On change
-                                                kotaSelect.addEventListener('change', (e) => {
+                                                kecamatanSelect.addEventListener('change', (e) => {
                                                     const opt = e.target.options[e.target.selectedIndex];
-                                                    this.currentCityCode = opt?.dataset?.cityCode || '';
-                                                    this.noCitySelected = !this.currentCityCode;
-                                                    // Reset selection when city changes
+                                                    this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                    this.noKecamatanSelected = !this.currentDistrictCode;
+                                                    // Reset selection when kecamatan changes
                                                     this.selected = '';
                                                     this.selectedText = 'Pilih Desa';
                                                     this.search = '';
@@ -515,8 +539,8 @@ foreach ($missingFields as $field => $info) {
                                             }
                                         },
                                         get options() {
-                                            if (!this.currentCityCode) return [];
-                                            return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                            if (!this.currentDistrictCode) return [];
+                                            return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                         },
                                         get filteredOptions() {
                                             // Only show options when user types at least 2 characters
@@ -525,11 +549,11 @@ foreach ($missingFields as $field => $info) {
                                             return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
                                         },
                                         get showHint() {
-                                            if (this.noCitySelected) return false;
+                                            if (this.noKecamatanSelected) return false;
                                             return !this.search || this.search.trim().length < 2;
                                         },
                                         get showNoCityMessage() {
-                                            return this.noCitySelected;
+                                            return this.noKecamatanSelected;
                                         },
                                         selectOption(opt) {
                                             this.selected = opt.value;
@@ -549,15 +573,21 @@ foreach ($missingFields as $field => $info) {
             <script>
                 (function(){
                     const cities = @json($cities);
+                    const districts = @json($districts);
                     
-                    function setupAddressGroup(provId, kotaId, initialKota) {
+                    function setupAddressGroup(provId, kotaId, kecamatanId, initialKota, initialKecamatan) {
                         const provSelect = document.getElementById(provId);
                         const kotaSelect = document.getElementById(kotaId);
+                        const kecamatanSelect = kecamatanId ? document.getElementById(kecamatanId) : null;
 
                         function populateCities(provinceCode) {
-                            kotaSelect.innerHTML = '<option value=\"\">Pilih Kota/Kabupaten</option>';
+                            kotaSelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
                             if (!provinceCode) {
                                 kotaSelect.disabled = true;
+                                if (kecamatanSelect) {
+                                    kecamatanSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                                    kecamatanSelect.disabled = true;
+                                }
                                 return;
                             }
                             const filtered = cities.filter(c => c.province_code === provinceCode);
@@ -565,36 +595,80 @@ foreach ($missingFields as $field => $info) {
                                 const opt = document.createElement('option');
                                 opt.value = city.name;
                                 opt.textContent = city.name;
-                                opt.dataset.cityCode = city.city_code; // Add city_code for desa filtering
+                                opt.dataset.cityCode = city.city_code;
                                 if (city.name === initialKota) opt.selected = true;
                                 kotaSelect.appendChild(opt);
                             });
                             kotaSelect.disabled = filtered.length === 0;
                         }
 
+                        function populateKecamatan(cityCode) {
+                            if (!kecamatanSelect) return;
+                            kecamatanSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                            if (!cityCode) {
+                                kecamatanSelect.disabled = true;
+                                return;
+                            }
+                            const filtered = districts.filter(d => d.city_code === cityCode);
+                            filtered.forEach(dist => {
+                                const opt = document.createElement('option');
+                                opt.value = dist.name;
+                                opt.textContent = dist.name;
+                                opt.dataset.districtCode = dist.district_code;
+                                if (dist.name === initialKecamatan) opt.selected = true;
+                                kecamatanSelect.appendChild(opt);
+                            });
+                            kecamatanSelect.disabled = filtered.length === 0;
+                        }
+
                         provSelect.addEventListener('change', function() {
                             const code = this.options[this.selectedIndex].dataset.code || '';
                             populateCities(code);
-                            // Trigger change on Kota to reset Desa
-                            kotaSelect.dispatchEvent(new Event('change'));
+                            // Reset Kecamatan
+                            if (kecamatanSelect) {
+                                kecamatanSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                                kecamatanSelect.disabled = true;
+                                kecamatanSelect.dispatchEvent(new Event('change'));
+                            }
+                        });
+
+                        kotaSelect.addEventListener('change', function() {
+                            const opt = this.options[this.selectedIndex];
+                            const cityCode = opt?.dataset?.cityCode || '';
+                            populateKecamatan(cityCode);
+                            // Dispatch change event for Kecamatan to reset Desa
+                            if (kecamatanSelect) {
+                                kecamatanSelect.dispatchEvent(new Event('change'));
+                            }
                         });
 
                         // Init
                         const opt = provSelect.options[provSelect.selectedIndex];
-                        if (opt && opt.dataset.code) populateCities(opt.dataset.code);
-                        else kotaSelect.disabled = true;
+                        if (opt && opt.dataset.code) {
+                            populateCities(opt.dataset.code);
+                            // Set initial Kecamatan after Kota is populated
+                            setTimeout(() => {
+                                const kotaOpt = kotaSelect.options[kotaSelect.selectedIndex];
+                                if (kotaOpt && kotaOpt.dataset.cityCode) {
+                                    populateKecamatan(kotaOpt.dataset.cityCode);
+                                }
+                            }, 10);
+                        } else {
+                            kotaSelect.disabled = true;
+                            if (kecamatanSelect) kecamatanSelect.disabled = true;
+                        }
                     }
 
-                    setupAddressGroup('provinsiSelect', 'kotaSelect', @json($mahasiswa->kota ?? ''));
-                    setupAddressGroup('provinsiKtpSelect', 'kotaKtpSelect', @json($mahasiswa->kota_ktp ?? ''));
+                    setupAddressGroup('provinsiSelect', 'kotaSelect', 'kecamatanSelect', @json($mahasiswa->kota ?? ''), @json($mahasiswa->kecamatan ?? ''));
+                    setupAddressGroup('provinsiKtpSelect', 'kotaKtpSelect', 'kecamatanKtpSelect', @json($mahasiswa->kota_ktp ?? ''), @json($mahasiswa->kecamatan_ktp ?? ''));
                     
                     // Setup for Orang Tua and Wali sections (delayed to ensure elements exist)
                     document.addEventListener('DOMContentLoaded', function() {
                         // Small delay to ensure Alpine.js has rendered the elements
                         setTimeout(function() {
-                            setupAddressGroup('provinsiAyahSelect', 'kotaAyahSelect', @json($parent->kota_ayah ?? $parent->kota_ortu ?? ''));
-                            setupAddressGroup('provinsiIbuSelect', 'kotaIbuSelect', @json($parent->kota_ibu ?? ''));
-                            setupAddressGroup('provinsiWaliSelect', 'kotaWaliSelect', @json($parent->kota_wali ?? ''));
+                            setupAddressGroup('provinsiAyahSelect', 'kotaAyahSelect', 'kecamatanAyahSelect', @json($parent->kota_ayah ?? $parent->kota_ortu ?? ''), @json($parent->kecamatan_ayah ?? ''));
+                            setupAddressGroup('provinsiIbuSelect', 'kotaIbuSelect', 'kecamatanIbuSelect', @json($parent->kota_ibu ?? ''), @json($parent->kecamatan_ibu ?? ''));
+                            setupAddressGroup('provinsiWaliSelect', 'kotaWaliSelect', 'kecamatanWaliSelect', @json($parent->kota_wali ?? ''), @json($parent->kecamatan_wali ?? ''));
                         }, 100);
                     });
                 })();
@@ -949,6 +1023,15 @@ foreach ($missingFields as $field => $info) {
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
+                            <div class="lg:col-span-9">
+                                <select name="kecamatan_ayah" id="kecamatanAyahSelect"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                    <option value="">Pilih Kecamatan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                             <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
                             <div class="lg:col-span-9">
                                 <div x-data="desaAyahDropdown()" class="relative">
@@ -968,7 +1051,7 @@ foreach ($missingFields as $field => $info) {
                                         <div class="max-h-52 overflow-y-auto">
                                             <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
                                                 <div class="text-orange-400 mb-1"><i class="fas fa-exclamation-circle text-xl"></i></div>
-                                                <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                                <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
                                             </div>
                                             <div x-show="showHint" class="px-4 py-8 text-center">
                                                 <div class="text-gray-400 mb-1"><i class="fas fa-search text-xl"></i></div>
@@ -992,24 +1075,24 @@ foreach ($missingFields as $field => $info) {
                                             search: '',
                                             selected: @json($parent->desa_ayah ?? $parent->desa_ortu ?? ''),
                                             selectedText: @json($parent->desa_ayah ?? $parent->desa_ortu ?? 'Pilih Desa'),
-                                            allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
-                                            currentCityCode: '',
-                                            noCitySelected: true,
+                                            allOptions: window.villagesData,
+                                            currentDistrictCode: '',
+                                            noKecamatanSelected: true,
                                             init() {
                                                 if (!this.selected) this.selectedText = 'Pilih Desa';
-                                                const kotaSelect = document.getElementById('kotaAyahSelect');
-                                                if (kotaSelect) {
-                                                    const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
-                                                    if (initialOpt && initialOpt.dataset.cityCode) {
-                                                        this.currentCityCode = initialOpt.dataset.cityCode;
-                                                        this.noCitySelected = false;
+                                                const kecamatanSelect = document.getElementById('kecamatanAyahSelect');
+                                                if (kecamatanSelect) {
+                                                    const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                    if (initialOpt && initialOpt.dataset.districtCode) {
+                                                        this.currentDistrictCode = initialOpt.dataset.districtCode;
+                                                        this.noKecamatanSelected = false;
                                                     } else {
-                                                        this.noCitySelected = true;
+                                                        this.noKecamatanSelected = true;
                                                     }
-                                                    kotaSelect.addEventListener('change', (e) => {
+                                                    kecamatanSelect.addEventListener('change', (e) => {
                                                         const opt = e.target.options[e.target.selectedIndex];
-                                                        this.currentCityCode = opt?.dataset?.cityCode || '';
-                                                        this.noCitySelected = !this.currentCityCode;
+                                                        this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                        this.noKecamatanSelected = !this.currentDistrictCode;
                                                         this.selected = '';
                                                         this.selectedText = 'Pilih Desa';
                                                         this.search = '';
@@ -1017,8 +1100,8 @@ foreach ($missingFields as $field => $info) {
                                                 }
                                             },
                                             get options() {
-                                                if (!this.currentCityCode) return [];
-                                                return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                                if (!this.currentDistrictCode) return [];
+                                                return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                             },
                                             get filteredOptions() {
                                                 if (!this.search || this.search.trim().length < 2) return [];
@@ -1026,11 +1109,11 @@ foreach ($missingFields as $field => $info) {
                                                 return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
                                             },
                                             get showHint() {
-                                                if (this.noCitySelected) return false;
+                                                if (this.noKecamatanSelected) return false;
                                                 return !this.search || this.search.trim().length < 2;
                                             },
                                             get showNoCityMessage() {
-                                                return this.noCitySelected;
+                                                return this.noKecamatanSelected;
                                             },
                                             selectOption(opt) {
                                                 this.selected = opt.value;
@@ -1094,6 +1177,15 @@ foreach ($missingFields as $field => $info) {
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
+                            <div class="lg:col-span-9">
+                                <select name="kecamatan_ibu" id="kecamatanIbuSelect"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                    <option value="">Pilih Kecamatan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                             <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
                             <div class="lg:col-span-9">
                                 <div x-data="desaIbuDropdown()" class="relative">
@@ -1113,7 +1205,7 @@ foreach ($missingFields as $field => $info) {
                                         <div class="max-h-52 overflow-y-auto">
                                             <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
                                                 <div class="text-orange-400 mb-1"><i class="fas fa-exclamation-circle text-xl"></i></div>
-                                                <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                                <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
                                             </div>
                                             <div x-show="showHint" class="px-4 py-8 text-center">
                                                 <div class="text-gray-400 mb-1"><i class="fas fa-search text-xl"></i></div>
@@ -1137,24 +1229,24 @@ foreach ($missingFields as $field => $info) {
                                             search: '',
                                             selected: @json($parent->desa_ibu ?? ''),
                                             selectedText: @json($parent->desa_ibu ?? 'Pilih Desa'),
-                                            allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
-                                            currentCityCode: '',
-                                            noCitySelected: true,
+                                            allOptions: window.villagesData,
+                                            currentDistrictCode: '',
+                                            noKecamatanSelected: true,
                                             init() {
                                                 if (!this.selected) this.selectedText = 'Pilih Desa';
-                                                const kotaSelect = document.getElementById('kotaIbuSelect');
-                                                if (kotaSelect) {
-                                                    const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
-                                                    if (initialOpt && initialOpt.dataset.cityCode) {
-                                                        this.currentCityCode = initialOpt.dataset.cityCode;
-                                                        this.noCitySelected = false;
+                                                const kecamatanSelect = document.getElementById('kecamatanIbuSelect');
+                                                if (kecamatanSelect) {
+                                                    const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                    if (initialOpt && initialOpt.dataset.districtCode) {
+                                                        this.currentDistrictCode = initialOpt.dataset.districtCode;
+                                                        this.noKecamatanSelected = false;
                                                     } else {
-                                                        this.noCitySelected = true;
+                                                        this.noKecamatanSelected = true;
                                                     }
-                                                    kotaSelect.addEventListener('change', (e) => {
+                                                    kecamatanSelect.addEventListener('change', (e) => {
                                                         const opt = e.target.options[e.target.selectedIndex];
-                                                        this.currentCityCode = opt?.dataset?.cityCode || '';
-                                                        this.noCitySelected = !this.currentCityCode;
+                                                        this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                        this.noKecamatanSelected = !this.currentDistrictCode;
                                                         this.selected = '';
                                                         this.selectedText = 'Pilih Desa';
                                                         this.search = '';
@@ -1162,8 +1254,8 @@ foreach ($missingFields as $field => $info) {
                                                 }
                                             },
                                             get options() {
-                                                if (!this.currentCityCode) return [];
-                                                return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                                if (!this.currentDistrictCode) return [];
+                                                return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                             },
                                             get filteredOptions() {
                                                 if (!this.search || this.search.trim().length < 2) return [];
@@ -1171,11 +1263,11 @@ foreach ($missingFields as $field => $info) {
                                                 return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
                                             },
                                             get showHint() {
-                                                if (this.noCitySelected) return false;
+                                                if (this.noKecamatanSelected) return false;
                                                 return !this.search || this.search.trim().length < 2;
                                             },
                                             get showNoCityMessage() {
-                                                return this.noCitySelected;
+                                                return this.noKecamatanSelected;
                                             },
                                             selectOption(opt) {
                                                 this.selected = opt.value;
@@ -1311,6 +1403,15 @@ foreach ($missingFields as $field => $info) {
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
+                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
+                            <div class="lg:col-span-9">
+                                <select name="kecamatan_wali" id="kecamatanWaliSelect"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                    <option value="">Pilih Kecamatan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
                             <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
                             <div class="lg:col-span-9">
                                 <div x-data="desaWaliDropdown()" class="relative">
@@ -1336,7 +1437,7 @@ foreach ($missingFields as $field => $info) {
                                                 <div class="text-orange-400 mb-1">
                                                     <i class="fas fa-exclamation-circle text-xl"></i>
                                                 </div>
-                                                <p class="text-xs text-orange-500 font-medium">Pilih Kota/Kabupaten<br>terlebih dahulu</p>
+                                                <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
                                             </div>
                                             <!-- Hint Message -->
                                             <div x-show="showHint" class="px-4 py-8 text-center">
@@ -1367,30 +1468,30 @@ foreach ($missingFields as $field => $info) {
                                             search: '',
                                             selected: @json($parent->desa_wali ?? ''),
                                             selectedText: @json($parent->desa_wali ?? 'Pilih Desa'),
-                                            allOptions: @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'city_code' => $v['city_code']])->toArray()),
-                                            currentCityCode: '',
-                                            noCitySelected: true,
+                                            allOptions: window.villagesData,
+                                            currentDistrictCode: '',
+                                            noKecamatanSelected: true,
                                             init() {
                                                 if (!this.selected) {
                                                     this.selectedText = 'Pilih Desa';
                                                 }
-                                                // Listen to Kota Wali dropdown changes
-                                                const kotaSelect = document.getElementById('kotaWaliSelect');
-                                                if (kotaSelect) {
-                                                    // Initial city code
-                                                    const initialOpt = kotaSelect.options[kotaSelect.selectedIndex];
-                                                    if (initialOpt && initialOpt.dataset.cityCode) {
-                                                        this.currentCityCode = initialOpt.dataset.cityCode;
-                                                        this.noCitySelected = false;
+                                                // Listen to Kecamatan Wali dropdown changes
+                                                const kecamatanSelect = document.getElementById('kecamatanWaliSelect');
+                                                if (kecamatanSelect) {
+                                                    // Initial district code
+                                                    const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                    if (initialOpt && initialOpt.dataset.districtCode) {
+                                                        this.currentDistrictCode = initialOpt.dataset.districtCode;
+                                                        this.noKecamatanSelected = false;
                                                     } else {
-                                                        this.noCitySelected = true;
+                                                        this.noKecamatanSelected = true;
                                                     }
                                                     // On change
-                                                    kotaSelect.addEventListener('change', (e) => {
+                                                    kecamatanSelect.addEventListener('change', (e) => {
                                                         const opt = e.target.options[e.target.selectedIndex];
-                                                        this.currentCityCode = opt?.dataset?.cityCode || '';
-                                                        this.noCitySelected = !this.currentCityCode;
-                                                        // Reset selection when city changes
+                                                        this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                        this.noKecamatanSelected = !this.currentDistrictCode;
+                                                        // Reset selection when kecamatan changes
                                                         this.selected = '';
                                                         this.selectedText = 'Pilih Desa';
                                                         this.search = '';
@@ -1398,8 +1499,8 @@ foreach ($missingFields as $field => $info) {
                                                 }
                                             },
                                             get options() {
-                                                if (!this.currentCityCode) return [];
-                                                return this.allOptions.filter(opt => opt.city_code === this.currentCityCode);
+                                                if (!this.currentDistrictCode) return [];
+                                                return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                             },
                                             get filteredOptions() {
                                                 if (!this.search || this.search.trim().length < 2) return [];
@@ -1407,11 +1508,11 @@ foreach ($missingFields as $field => $info) {
                                                 return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
                                             },
                                             get showHint() {
-                                                if (this.noCitySelected) return false;
+                                                if (this.noKecamatanSelected) return false;
                                                 return !this.search || this.search.trim().length < 2;
                                             },
                                             get showNoCityMessage() {
-                                                return this.noCitySelected;
+                                                return this.noKecamatanSelected;
                                             },
                                             selectOption(opt) {
                                                 this.selected = opt.value;
@@ -1601,6 +1702,7 @@ foreach ($missingFields as $field => $info) {
             'alamat': 'data_pribadi',
             'provinsi': 'data_pribadi',
             'kota': 'data_pribadi',
+            'kecamatan': 'data_pribadi',
             'tempat_lahir': 'data_pribadi',
             'tanggal_lahir': 'data_pribadi',
             'jenis_kelamin': 'data_pribadi',
@@ -1779,6 +1881,7 @@ foreach ($missingFields as $field => $info) {
             'agama': 'select[name="agama"]',
             'status_sipil': 'select[name="status_sipil"]',
             'kota': 'select[name="kota"]',
+            'kecamatan': 'select[name="kecamatan"]',
             'provinsi': 'select[name="provinsi"]',
             'desa': 'input[name="desa"]',
             'jenis_sekolah': 'select[name="jenis_sekolah"]',
@@ -1799,11 +1902,13 @@ foreach ($missingFields as $field => $info) {
             'agama_ibu': 'select[name="agama_ibu"]',
             'alamat_ayah': 'textarea[name="alamat_ayah"]',
             'kota_ayah': 'select[name="kota_ayah"]',
+            'kecamatan_ayah': 'select[name="kecamatan_ayah"]',
             'propinsi_ayah': 'select[name="propinsi_ayah"]',
             'desa_ayah': 'input[name="desa_ayah"]',
             'handphone_ayah': 'input[name="handphone_ayah"]',
             'alamat_ibu': 'textarea[name="alamat_ibu"]',
             'kota_ibu': 'select[name="kota_ibu"]',
+            'kecamatan_ibu': 'select[name="kecamatan_ibu"]',
             'propinsi_ibu': 'select[name="propinsi_ibu"]',
             'desa_ibu': 'input[name="desa_ibu"]',
             'handphone_ibu': 'input[name="handphone_ibu"]',
@@ -1813,6 +1918,7 @@ foreach ($missingFields as $field => $info) {
             'rw_ktp': 'input[name="rw_ktp"]',
             'provinsi_ktp': 'select[name="provinsi_ktp"]',
             'kota_ktp': 'select[name="kota_ktp"]',
+            'kecamatan_ktp': 'select[name="kecamatan_ktp"]',
             'desa_ktp': 'input[name="desa_ktp"]',
             // Wali (Guardian) fields
             'nama_wali': 'input[name="nama_wali"]',
@@ -1823,6 +1929,7 @@ foreach ($missingFields as $field => $info) {
             'alamat_wali': 'textarea[name="alamat_wali"]',
             'provinsi_wali': 'select[name="provinsi_wali"]',
             'kota_wali': 'select[name="kota_wali"]',
+            'kecamatan_wali': 'select[name="kecamatan_wali"]',
             'desa_wali': 'input[name="desa_wali"]',
             'handphone_wali': 'input[name="handphone_wali"]',
         };

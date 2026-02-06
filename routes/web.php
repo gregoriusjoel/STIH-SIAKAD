@@ -98,6 +98,9 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
         Route::get('/available-slots/{hari}', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'getAvailableSlots'])->name('available_slots');
     });
     
+    // Availability Management for Dosen
+    Route::resource('availability', App\Http\Controllers\Dosen\DosenAvailabilityController::class)->only(['index', 'create', 'store', 'destroy']);
+    
     // Pengumuman untuk dosen
     Route::get('/pengumuman', [App\Http\Controllers\Page\PengumumanController::class, 'index'])->name('pengumuman.index');
     Route::get('/pengumuman/{pengumuman}', [App\Http\Controllers\Page\PengumumanController::class, 'show'])->name('pengumuman.show');
@@ -275,6 +278,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/{id}/process-dosen-request', [App\Http\Controllers\Admin\JadwalAdminApprovalController::class, 'processDosenRequest'])->name('process_dosen_request');
         Route::post('/{id}/process', [App\Http\Controllers\Admin\JadwalAdminApprovalController::class, 'process'])->name('process');
     });
+
+    // Dosen Availability Management (Admin)
+    Route::get('availability', [App\Http\Controllers\Admin\DosenAvailabilityController::class, 'index'])->name('availability.index');
+    Route::get('availability/{dosen}', [App\Http\Controllers\Admin\DosenAvailabilityController::class, 'show'])->name('availability.show');
 
    // Academic Calendar Management
     Route::get('kalender-akademik', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'index'])->name('kalender.index');

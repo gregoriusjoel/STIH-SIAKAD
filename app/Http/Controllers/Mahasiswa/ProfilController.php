@@ -79,6 +79,27 @@ class ProfilController extends Controller
             fclose($handle);
         }
 
+        // Read districts from CSV
+        $districts = collect();
+        $districtsPath = base_path('master/districts.csv');
+        if (file_exists($districtsPath)) {
+            $handle = fopen($districtsPath, 'r');
+            $header = fgetcsv($handle); // skip header
+            while (($row = fgetcsv($handle)) !== false) {
+                // CSV format: id, province_code, city_code, district_code, district, created_at, updated_at
+                if (count($row) >= 5 && !empty($row[4])) {
+                    $districts->push([
+                        'id' => $row[0],
+                        'city_code' => $row[2],
+                        'district_code' => $row[3],
+                        'name' => $row[4],
+                    ]);
+                }
+            }
+            fclose($handle);
+        }
+        $districts = $districts->sortBy('name')->values();
+
         // Read all villages from CSV
         $villages = collect();
         $villagesPath = base_path('master/villages.csv');
@@ -91,6 +112,7 @@ class ProfilController extends Controller
                     $villages->push([
                         'id' => $row[0],
                         'city_code' => $row[2],
+                        'district_code' => $row[3],
                         'name' => $row[5],
                     ]);
                 }
@@ -113,7 +135,7 @@ class ProfilController extends Controller
             fclose($handle);
         }
 
-        return view('page.mahasiswa.profil.manajemen', compact('mahasiswa', 'user', 'parent', 'provinces', 'cities', 'religions', 'villages', 'pekerjaans'));
+        return view('page.mahasiswa.profil.manajemen', compact('mahasiswa', 'user', 'parent', 'provinces', 'cities', 'religions', 'districts', 'villages', 'pekerjaans'));
     }
 
     /**
@@ -169,14 +191,15 @@ class ProfilController extends Controller
             'rt' => 'nullable|string|max:10',
             'rw' => 'nullable|string|max:10',
             'kota' => 'nullable|string|max:255',
+            'kecamatan' => 'nullable|string|max:255',
             'desa' => 'nullable|string|max:255',
             'provinsi' => 'nullable|string|max:255',
-            'negara' => 'nullable|string|max:255',
             'alamat_ktp' => 'nullable|string',
             'rt_ktp' => 'nullable|string|max:10',
             'rw_ktp' => 'nullable|string|max:10',
             'provinsi_ktp' => 'nullable|string|max:255',
             'kota_ktp' => 'nullable|string|max:255',
+            'kecamatan_ktp' => 'nullable|string|max:255',
             'desa_ktp' => 'nullable|string|max:255',
             'jenis_sekolah' => 'nullable|string|max:255',
             'jurusan_sekolah' => 'nullable|string|max:255',
@@ -192,11 +215,13 @@ class ProfilController extends Controller
             'agama_ibu' => 'nullable|string|max:255',
             'alamat_ayah' => 'nullable|string',
             'kota_ayah' => 'nullable|string|max:255',
+            'kecamatan_ayah' => 'nullable|string|max:255',
             'desa_ayah' => 'nullable|string|max:255',
             'propinsi_ayah' => 'nullable|string|max:255',
             'handphone_ayah' => 'nullable|string|max:20',
             'alamat_ibu' => 'nullable|string',
             'kota_ibu' => 'nullable|string|max:255',
+            'kecamatan_ibu' => 'nullable|string|max:255',
             'desa_ibu' => 'nullable|string|max:255',
             'propinsi_ibu' => 'nullable|string|max:255',
             'handphone_ibu' => 'nullable|string|max:20',
@@ -208,6 +233,7 @@ class ProfilController extends Controller
             'agama_wali' => 'nullable|string|max:255',
             'alamat_wali' => 'nullable|string',
             'kota_wali' => 'nullable|string|max:255',
+            'kecamatan_wali' => 'nullable|string|max:255',
             'desa_wali' => 'nullable|string|max:255',
             'provinsi_wali' => 'nullable|string|max:255',
             'negara_wali' => 'nullable|string|max:255',
@@ -248,6 +274,7 @@ class ProfilController extends Controller
             'rt' => $request->rt,
             'rw' => $request->rw,
             'kota' => $request->kota,
+            'kecamatan' => $request->kecamatan,
             'desa' => $request->desa,
             'provinsi' => $request->provinsi,
             'alamat_ktp' => $request->alamat_ktp,
@@ -255,6 +282,7 @@ class ProfilController extends Controller
             'rw_ktp' => $request->rw_ktp,
             'provinsi_ktp' => $request->provinsi_ktp,
             'kota_ktp' => $request->kota_ktp,
+            'kecamatan_ktp' => $request->kecamatan_ktp,
             'desa_ktp' => $request->desa_ktp,
             'jenis_sekolah' => $request->jenis_sekolah,
             'jurusan_sekolah' => $request->jurusan_sekolah,
@@ -313,11 +341,13 @@ class ProfilController extends Controller
             'agama_ibu' => $request->agama_ibu,
             'alamat_ayah' => $request->alamat_ayah,
             'kota_ayah' => $request->kota_ayah,
+            'kecamatan_ayah' => $request->kecamatan_ayah,
             'desa_ayah' => $request->desa_ayah,
             'propinsi_ayah' => $request->propinsi_ayah,
             'handphone_ayah' => $request->handphone_ayah,
             'alamat_ibu' => $request->alamat_ibu,
             'kota_ibu' => $request->kota_ibu,
+            'kecamatan_ibu' => $request->kecamatan_ibu,
             'desa_ibu' => $request->desa_ibu,
             'propinsi_ibu' => $request->propinsi_ibu,
             'handphone_ibu' => $request->handphone_ibu,
@@ -328,6 +358,7 @@ class ProfilController extends Controller
             'agama_wali' => $request->agama_wali,
             'alamat_wali' => $request->alamat_wali,
             'kota_wali' => $request->kota_wali,
+            'kecamatan_wali' => $request->kecamatan_wali,
             'desa_wali' => $request->desa_wali,
             'provinsi_wali' => $request->provinsi_wali,
             'negara_wali' => $request->negara_wali,

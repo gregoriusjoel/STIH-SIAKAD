@@ -35,294 +35,38 @@
                 @endif
             </div>
         @endif
-        {{-- Cards Layout: Pending, Waiting Room, Active --}}
+        {{-- Cards Layout: Auto Generate & Jadwal Aktif (two-column) --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- Left Column (50%): Form Tambah Kelas --}}
-            <div class="flex flex-col">
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden flex-1 flex flex-col">
-                    <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white">
-                        <div class="flex items-center justify-between">
-                            <div class="font-semibold text-lg flex items-center text-white"><i class="fas fa-plus-circle mr-2"></i>Tambah
-                                Jadwal Baru</div>
-                            <button type="button" onclick="openRoomUsageModal()"
-                                class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition flex items-center gap-2 border border-white/20">
-                                <i class="fas fa-door-open"></i>
-                                <span>Lihat Penggunaan Ruangan</span>
-                            </button>
-                        </div>
-                    </div>
-                    <form action="{{ route('admin.kelas-mata-kuliah.store') }}" method="POST" class="p-4" x-data="{
-                                                              mataKuliahId: '',
-                                                              dosens: [],
-                                                              selectedDosenId: '',
-                                                              selectedDosenSks: 0,
-                                                              loading: false,
-
-                                                              // Room Validation
-                                                              hari: '',
-                                                              jamMulai: '',
-                                                              jamSelesai: '',
-                                                              ruanganId: '',
-                                                              jamPerkuliahanId: '',
-                                                              kuota: '',
-                                                              roomStatus: { available: true, message: '' },
-                                                              checkingRoom: false,
-
-                                                              updateSks() {
-                                                                  const dosen = this.dosens.find(d => d.id == this.selectedDosenId);
-                                                                  this.selectedDosenSks = dosen ? dosen.total_sks : 0;
-                                                              },
-
-                                                              updateJamFromPerkuliahan() {
-                                                                  if (!this.jamPerkuliahanId) {
-                                                                      this.jamMulai = '';
-                                                                      this.jamSelesai = '';
-                                                                      return;
-                                                                  }
-                                                                  const select = document.querySelector('select[name=jam_perkuliahan_id]');
-                                                                  const option = select.options[select.selectedIndex];
-                                                                  this.jamMulai = option.dataset.mulai || '';
-                                                                  this.jamSelesai = option.dataset.selesai || '';
-                                                              },
-
-                                                              async fetchDosens() {
-                                                                  if (!this.mataKuliahId) {
-                                                                      this.dosens = [];
-                                                                      this.selectedDosenId = '';
-                                                                      return;
-                                                                  }
-                                                                  this.loading = true;
-                                                                  try {
-                                                                      const response = await fetch(`/api/dosens-by-mata-kuliah/${this.mataKuliahId}`);
-                                                                      this.dosens = await response.json();
-                                                                      if (this.dosens.length === 1) {
-                                                                          this.selectedDosenId = this.dosens[0].id;
-                                                                          this.selectedDosenSks = this.dosens[0].total_sks;
-                                                                      } else {
-                                                                          this.selectedDosenId = '';
-                                                                          this.selectedDosenSks = 0;
-                                                                      }
-                                                                  } catch (e) {
-                                                                      console.error('Error fetching dosens:', e);
-                                                                      this.dosens = [];
-                                                                  }
-                                                                  this.loading = false;
-                                                              },
-
-                                                              async checkRoom() {
-                                                                  if (!this.hari || !this.jamMulai || !this.jamSelesai || !this.ruanganId) {
-                                                                      this.roomStatus = { available: true, message: '' };
-                                                                      return;
-                                                                  }
-
-                                                                  this.checkingRoom = true;
-                                                                  try {
-                                                                      const params = new URLSearchParams({
-                                                                          hari: this.hari,
-                                                                          jam_mulai: this.jamMulai,
-                                                                          jam_selesai: this.jamSelesai,
-                                                                          ruangan_id: this.ruanganId
-                                                                      });
-                                                                      const response = await fetch(`/api/check-room-availability?${params.toString()}`);
-                                                                      const data = await response.json();
-                                                                      this.roomStatus = data;
-                                                                  } catch (e) {
-                                                                      console.error('Error checking room:', e);
-                                                                  }
-                                                                  this.checkingRoom = false;
-                                                              },
-
-                                                              updateKuota() {
-                                                                  if (!this.ruanganId) {
-                                                                      this.kuota = '';
-                                                                      return;
-                                                                  }
-                                                                  const select = document.querySelector('select[name=ruangan_id]');
-                                                                  const option = select.options[select.selectedIndex];
-                                                                  this.kuota = option.dataset.kapasitas || '';
-                                                              }
-                                                          }">
-                        @csrf
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
-                                        class="fas fa-book text-gray-400 dark:text-gray-500 mr-1"></i>Mata Kuliah <span
-                                        class="text-red-500">*</span></label>
-                                <select name="mata_kuliah_id" x-model="mataKuliahId" @change="fetchDosens()"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
-                                    required>
-                                    <option value="">Pilih Mata Kuliah</option>
-                                    @foreach($mataKuliahs as $mk)
-                                        <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
-                                        class="fas fa-users text-gray-400 dark:text-gray-500 mr-1"></i>Nama Kelas <span
-                                        class="text-red-500">*</span></label>
-                                <input type="text" name="nama_kelas"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
-                                    placeholder="A, B, C..." required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
-                                        class="fas fa-user-tie text-gray-400 dark:text-gray-500 mr-1"></i>Dosen <span
-                                        class="text-red-500">*</span></label>
-
-                                {{-- Loading state --}}
-                                <div x-show="loading"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm">
-                                    <i class="fas fa-spinner fa-spin mr-1"></i> Memuat dosen...
-                                </div>
-
-                                {{-- No mata kuliah selected --}}
-                                <div x-show="!loading && !mataKuliahId"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-400 text-sm">
-                                    <i class="fas fa-info-circle mr-1"></i> Pilih mata kuliah terlebih dahulu
-                                </div>
-
-                                {{-- No dosen available --}}
-                                <div x-show="!loading && mataKuliahId && dosens.length === 0"
-                                    class="w-full px-3 py-2 border border-red-300 rounded-lg bg-red-50 text-red-500 text-sm">
-                                    <i class="fas fa-exclamation-triangle mr-1"></i> Tidak ada dosen yang mengajar mata
-                                    kuliah ini
-                                </div>
-
-                                {{-- Single dosen (auto-select, readonly) --}}
-                                <template x-if="!loading && dosens.length === 1">
-                                    <div>
-                                        <input type="hidden" name="dosen_id" :value="selectedDosenId">
-                                        <div
-                                            class="w-full px-3 py-2 border border-green-300 rounded-lg bg-green-50 text-green-700 text-sm flex items-center justify-between">
-                                            <span><i class="fas fa-check-circle mr-1"></i> <span
-                                                    x-text="dosens[0].name"></span></span>
-                                            <i class="fas fa-lock text-green-400 text-xs"></i>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                {{-- Multiple dosens (dropdown) --}}
-                                <select x-show="!loading && dosens.length > 1" name="dosen_id" x-model="selectedDosenId" @change="updateSks()"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
-                                    :required="dosens.length > 1">
-                                    <option value="">Pilih Dosen</option>
-                                    <template x-for="dosen in dosens" :key="dosen.id">
-                                        <option :value="dosen.id" x-text="dosen.name"></option>
-                                    </template>
-                                </select>
-
-                                {{-- Alert Low SKS --}}
-                                <div x-show="selectedDosenId && selectedDosenSks < 20" 
-                                     class="mt-2 bg-yellow-50 border border-yellow-200 text-yellow-800 px-3 py-2 rounded-lg text-sm flex items-start gap-2 animate-pulse">
-                                    <i class="fas fa-exclamation-triangle mt-0.5 text-yellow-600"></i>
-                                    <div>
-                                        <strong>Perhatian:</strong>
-                                        <span class="block text-xs">Total SKS dosen ini baru <span class="font-bold" x-text="selectedDosenSks"></span> SKS (Belum mencapai 20 SKS).</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
-                                            class="fas fa-user-friends text-gray-400 dark:text-gray-500 mr-1"></i>Kuota <span
-                                            class="text-red-500">*</span></label>
-
-                                    {{-- No room selected --}}
-                                    <div x-show="!ruanganId"
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-sm">
-                                        <i class="fas fa-info-circle mr-1"></i> Pilih ruangan terlebih dahulu
-                                    </div>
-
-                                    {{-- Room selected (auto-fill, readonly) --}}
-                                    <template x-if="ruanganId">
-                                        <div>
-                                            <input type="hidden" name="kuota" :value="kuota">
-                                            <div
-                                                class="w-full px-3 py-2 border border-green-300 dark:border-green-600 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-sm flex items-center justify-between">
-                                                <span><i class="fas fa-check-circle mr-1"></i> <span
-                                                        x-text="kuota + ' Mahasiswa'"></span></span>
-                                                <i class="fas fa-lock text-green-400 dark:text-green-500 text-xs"></i>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
-                                            class="fas fa-door-open text-gray-400 dark:text-gray-500 mr-1"></i>Ruangan <span
-                                            class="text-red-500">*</span></label>
-                                    <select name="ruangan_id" x-model="ruanganId" @change="updateKuota(); checkRoom()"
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
-                                        required>
-                                        <option value="">Pilih Ruangan</option>
-                                        @foreach($daftarRuangan as $r)
-                                            <option value="{{ $r->id }}" data-kapasitas="{{ $r->kapasitas }}">{{ $r->kode_ruangan }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div x-show="!roomStatus.available"
-                                class="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-xs flex items-start gap-2">
-                                <i class="fas fa-exclamation-circle mt-0.5"></i>
-                                <span x-text="roomStatus.message"></span>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
-                                        class="fas fa-calendar-day text-gray-400 dark:text-gray-500 mr-1"></i>Hari <span
-                                        class="text-red-500">*</span></label>
-                                <select name="hari" x-model="hari" @change="checkRoom()"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
-                                    required>
-                                    <option value="">Pilih Hari</option>
-                                    @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $h)
-                                        <option value="{{ $h }}">{{ $h }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
-                                        class="fas fa-clock text-gray-400 dark:text-gray-500 mr-1"></i>Jam Perkuliahan <span
-                                        class="text-red-500">*</span></label>
-                                <select name="jam_perkuliahan_id" x-model="jamPerkuliahanId" @change="updateJamFromPerkuliahan(); checkRoom();"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
-                                    required>
-                                    <option value="">Pilih Jam Perkuliahan</option>
-                                    @foreach($jamPerkuliahan as $jp)
-                                        <option value="{{ $jp->id }}" data-mulai="{{ date('H:i', strtotime($jp->jam_mulai)) }}" data-selesai="{{ date('H:i', strtotime($jp->jam_selesai)) }}">
-                                            Jam ke-{{ $jp->jam_ke }} ({{ date('H.i', strtotime($jp->jam_mulai)) }} - {{ date('H.i', strtotime($jp->jam_selesai)) }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <input type="hidden" name="jam_mulai" x-model="jamMulai">
-                                <input type="hidden" name="jam_selesai" x-model="jamSelesai">
-                            </div>
-                            <button type="submit" :disabled="!roomStatus.available || checkingRoom"
-                                :class="{'opacity-50 cursor-not-allowed': !roomStatus.available || checkingRoom, 'hover:bg-maroon-700': roomStatus.available && !checkingRoom}"
-                                class="w-full bg-maroon text-white px-4 py-2 rounded-lg transition flex items-center justify-center gap-2 text-sm font-semibold shadow-md mt-4">
-                                <i class="fas fa-save"></i> Simpan Jadwal
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            {{-- Right Column (50%): Cards & Table --}}
-            <div class="space-y-6">
-                {{-- Generator: Auto Generate Jadwal (embedded) --}}
+            <div>
+                {{-- Left card: Auto Generate Jadwal --}}
                 @include('admin.jadwal._generator_partial')
+            </div>
+            <div>
+                {{-- Right card: Jadwal Aktif --}}
 
-                {{-- Card: Active Schedules (Full Width inside Right Column) --}}
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
-                    <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
-                        <div class="font-semibold text-white text-lg"><i class="fas fa-check-circle mr-2"></i>Jadwal Aktif
-                        </div>
-                        <div class="text-lg">
-                            @if($kelasMataKuliahs->count() > 0)
-                                <span
-                                    class="ml-2 px-2 py-0.5 bg-white text-maroon text-xs rounded-full">{{ $kelasMataKuliahs->total() }}</span>
-                            @endif
-                        </div>
+
+
+            {{-- Card: Active Schedules (Full Width) --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden h-full flex flex-col">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
+                    <div class="font-semibold text-white text-lg"><i class="fas fa-check-circle mr-2"></i>Jadwal Aktif
                     </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="openTambahJadwalModal()"
+                            class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition flex items-center gap-2 border border-white/20 font-semibold">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Tambah Jadwal Baru</span>
+                        </button>
+                        <button type="button" onclick="openRoomUsageModal()"
+                            class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition flex items-center gap-2 border border-white/20">
+                            <i class="fas fa-door-open"></i>
+                            <span>Lihat Penggunaan Ruangan</span>
+                        </button>
+                        @if($kelasMataKuliahs->count() > 0)
+                            <span class="px-2 py-0.5 bg-white text-maroon text-xs rounded-full font-bold">{{ $kelasMataKuliahs->total() }}</span>
+                        @endif
+                    </div>
+                </div>
                     <div class="p-6">
                         <div class="overflow-x-auto">
                             <table class="w-full text-base">
@@ -393,6 +137,283 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    {{-- Modal: Tambah Jadwal Baru --}}
+    <div id="tambahJadwalModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white rounded-t-xl flex items-center justify-between">
+                <div class="font-semibold text-lg flex items-center text-white">
+                    <i class="fas fa-plus-circle mr-2"></i>Tambah Jadwal Baru
+                </div>
+                <button type="button" onclick="closeTambahJadwalModal()"
+                    class="p-1.5 hover:bg-white/10 rounded-lg transition">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            <form action="{{ route('admin.kelas-mata-kuliah.store') }}" method="POST" class="p-6" x-data="{
+                                                          mataKuliahId: '',
+                                                          dosens: [],
+                                                          selectedDosenId: '',
+                                                          selectedDosenSks: 0,
+                                                          loading: false,
+
+                                                          // Room Validation
+                                                          hari: '',
+                                                          jamMulai: '',
+                                                          jamSelesai: '',
+                                                          ruanganId: '',
+                                                          jamPerkuliahanId: '',
+                                                          kuota: '',
+                                                          roomStatus: { available: true, message: '' },
+                                                          checkingRoom: false,
+
+                                                          updateSks() {
+                                                              const dosen = this.dosens.find(d => d.id == this.selectedDosenId);
+                                                              this.selectedDosenSks = dosen ? dosen.total_sks : 0;
+                                                          },
+
+                                                          updateJamFromPerkuliahan() {
+                                                              if (!this.jamPerkuliahanId) {
+                                                                  this.jamMulai = '';
+                                                                  this.jamSelesai = '';
+                                                                  return;
+                                                              }
+                                                              const select = document.querySelector('select[name=jam_perkuliahan_id]');
+                                                              const option = select.options[select.selectedIndex];
+                                                              this.jamMulai = option.dataset.mulai || '';
+                                                              this.jamSelesai = option.dataset.selesai || '';
+                                                          },
+
+                                                          async fetchDosens() {
+                                                              if (!this.mataKuliahId) {
+                                                                  this.dosens = [];
+                                                                  this.selectedDosenId = '';
+                                                                  return;
+                                                              }
+                                                              this.loading = true;
+                                                              try {
+                                                                  const response = await fetch(`/api/dosens-by-mata-kuliah/${this.mataKuliahId}`);
+                                                                  this.dosens = await response.json();
+                                                                  if (this.dosens.length === 1) {
+                                                                      this.selectedDosenId = this.dosens[0].id;
+                                                                      this.selectedDosenSks = this.dosens[0].total_sks;
+                                                                  } else {
+                                                                      this.selectedDosenId = '';
+                                                                      this.selectedDosenSks = 0;
+                                                                  }
+                                                              } catch (e) {
+                                                                  console.error('Error fetching dosens:', e);
+                                                                  this.dosens = [];
+                                                              }
+                                                              this.loading = false;
+                                                          },
+
+                                                          async checkRoom() {
+                                                              if (!this.hari || !this.jamMulai || !this.jamSelesai || !this.ruanganId) {
+                                                                  this.roomStatus = { available: true, message: '' };
+                                                                  return;
+                                                              }
+
+                                                              this.checkingRoom = true;
+                                                              try {
+                                                                  const params = new URLSearchParams({
+                                                                      hari: this.hari,
+                                                                      jam_mulai: this.jamMulai,
+                                                                      jam_selesai: this.jamSelesai,
+                                                                      ruangan_id: this.ruanganId
+                                                                  });
+                                                                  const response = await fetch(`/api/check-room-availability?${params.toString()}`);
+                                                                  const data = await response.json();
+                                                                  this.roomStatus = data;
+                                                              } catch (e) {
+                                                                  console.error('Error checking room:', e);
+                                                              }
+                                                              this.checkingRoom = false;
+                                                          },
+
+                                                          updateKuota() {
+                                                              if (!this.ruanganId) {
+                                                                  this.kuota = '';
+                                                                  return;
+                                                              }
+                                                              const select = document.querySelector('select[name=ruangan_id]');
+                                                              const option = select.options[select.selectedIndex];
+                                                              this.kuota = option.dataset.kapasitas || '';
+                                                          }
+                                                      }">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                class="fas fa-book text-gray-400 dark:text-gray-500 mr-1"></i>Mata Kuliah <span
+                                class="text-red-500">*</span></label>
+                        <select name="mata_kuliah_id" x-model="mataKuliahId" @change="fetchDosens()"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                            required>
+                            <option value="">Pilih Mata Kuliah</option>
+                            @foreach($mataKuliahs as $mk)
+                                <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                class="fas fa-users text-gray-400 dark:text-gray-500 mr-1"></i>Nama Kelas <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="nama_kelas"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                            placeholder="A, B, C..." required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                class="fas fa-user-tie text-gray-400 dark:text-gray-500 mr-1"></i>Dosen <span
+                                class="text-red-500">*</span></label>
+
+                        {{-- Loading state --}}
+                        <div x-show="loading"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm">
+                            <i class="fas fa-spinner fa-spin mr-1"></i> Memuat dosen...
+                        </div>
+
+                        {{-- No mata kuliah selected --}}
+                        <div x-show="!loading && !mataKuliahId"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-400 text-sm">
+                            <i class="fas fa-info-circle mr-1"></i> Pilih mata kuliah terlebih dahulu
+                        </div>
+
+                        {{-- No dosen available --}}
+                        <div x-show="!loading && mataKuliahId && dosens.length === 0"
+                            class="w-full px-3 py-2 border border-red-300 rounded-lg bg-red-50 text-red-500 text-sm">
+                            <i class="fas fa-exclamation-triangle mr-1"></i> Tidak ada dosen yang mengajar mata
+                            kuliah ini
+                        </div>
+
+                        {{-- Single dosen (auto-select, readonly) --}}
+                        <template x-if="!loading && dosens.length === 1">
+                            <div>
+                                <input type="hidden" name="dosen_id" :value="selectedDosenId">
+                                <div
+                                    class="w-full px-3 py-2 border border-green-300 rounded-lg bg-green-50 text-green-700 text-sm flex items-center justify-between">
+                                    <span><i class="fas fa-check-circle mr-1"></i> <span
+                                            x-text="dosens[0].name"></span></span>
+                                    <i class="fas fa-lock text-green-400 text-xs"></i>
+                                </div>
+                            </div>
+                        </template>
+
+                        {{-- Multiple dosens (dropdown) --}}
+                        <select x-show="!loading && dosens.length > 1" name="dosen_id" x-model="selectedDosenId" @change="updateSks()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                            :required="dosens.length > 1">
+                            <option value="">Pilih Dosen</option>
+                            <template x-for="dosen in dosens" :key="dosen.id">
+                                <option :value="dosen.id" x-text="dosen.name"></option>
+                            </template>
+                        </select>
+
+                        {{-- Alert Low SKS --}}
+                        <div x-show="selectedDosenId && selectedDosenSks < 20" 
+                             class="mt-2 bg-yellow-50 border border-yellow-200 text-yellow-800 px-3 py-2 rounded-lg text-sm flex items-start gap-2 animate-pulse">
+                            <i class="fas fa-exclamation-triangle mt-0.5 text-yellow-600"></i>
+                            <div>
+                                <strong>Perhatian:</strong>
+                                <span class="block text-xs">Total SKS dosen ini baru <span class="font-bold" x-text="selectedDosenSks"></span> SKS (Belum mencapai 20 SKS).</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                    class="fas fa-user-friends text-gray-400 dark:text-gray-500 mr-1"></i>Kuota <span
+                                    class="text-red-500">*</span></label>
+
+                            {{-- No room selected --}}
+                            <div x-show="!ruanganId"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-sm">
+                                <i class="fas fa-info-circle mr-1"></i> Pilih ruangan terlebih dahulu
+                            </div>
+
+                            {{-- Room selected (auto-fill, readonly) --}}
+                            <template x-if="ruanganId">
+                                <div>
+                                    <input type="hidden" name="kuota" :value="kuota">
+                                    <div
+                                        class="w-full px-3 py-2 border border-green-300 dark:border-green-600 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-sm flex items-center justify-between">
+                                        <span><i class="fas fa-check-circle mr-1"></i> <span
+                                                x-text="kuota + ' Mahasiswa'"></span></span>
+                                        <i class="fas fa-lock text-green-400 dark:text-green-500 text-xs"></i>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                    class="fas fa-door-open text-gray-400 dark:text-gray-500 mr-1"></i>Ruangan <span
+                                    class="text-red-500">*</span></label>
+                            <select name="ruangan_id" x-model="ruanganId" @change="updateKuota(); checkRoom();"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                required>
+                                <option value="">Pilih Ruangan</option>
+                                @foreach($daftarRuangan as $r)
+                                    <option value="{{ $r->id }}" data-kapasitas="{{ $r->kapasitas }}">{{ $r->kode_ruangan }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                    class="fas fa-calendar-day text-gray-400 dark:text-gray-500 mr-1"></i>Hari <span
+                                    class="text-red-500">*</span></label>
+                            <select name="hari" x-model="hari" @change="checkRoom()"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                required>
+                                <option value="">Pilih Hari</option>
+                                <option value="Senin">Senin</option>
+                                <option value="Selasa">Selasa</option>
+                                <option value="Rabu">Rabu</option>
+                                <option value="Kamis">Kamis</option>
+                                <option value="Jumat">Jumat</option>
+                                <option value="Sabtu">Sabtu</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
+                                    class="fas fa-clock text-gray-400 dark:text-gray-500 mr-1"></i>Jam Perkuliahan <span
+                                    class="text-red-500">*</span></label>
+                            <select name="jam_perkuliahan_id" x-model="jamPerkuliahanId" @change="updateJamFromPerkuliahan(); checkRoom();"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
+                                required>
+                                <option value="">Pilih Jam Perkuliahan</option>
+                                @foreach($jamPerkuliahanList as $jp)
+                                    <option value="{{ $jp->id }}" data-mulai="{{ $jp->jam_mulai }}" data-selesai="{{ $jp->jam_selesai }}">
+                                        {{ substr($jp->jam_mulai, 0, 5) }} - {{ substr($jp->jam_selesai, 0, 5) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Room Availability Feedback --}}
+                    <div x-show="checkingRoom" class="bg-blue-50 border border-blue-200 text-blue-700 px-3 py-2 rounded-lg text-sm flex items-center gap-2">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Mengecek ketersediaan ruangan...</span>
+                    </div>
+                    <div x-show="!checkingRoom && roomStatus.message" :class="roomStatus.available ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'"
+                        class="border px-3 py-2 rounded-lg text-sm flex items-start gap-2">
+                        <i :class="roomStatus.available ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-600'" class="fas mt-0.5"></i>
+                        <span x-text="roomStatus.message"></span>
+                    </div>
+
+                    <button type="submit" :disabled="!roomStatus.available || checkingRoom"
+                        :class="{'opacity-50 cursor-not-allowed': !roomStatus.available || checkingRoom, 'hover:bg-maroon-700': roomStatus.available && !checkingRoom}"
+                        class="w-full bg-maroon text-white px-4 py-2 rounded-lg transition flex items-center justify-center gap-2 text-sm font-semibold shadow-md">
+                        <i class="fas fa-save"></i> Simpan Jadwal
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -622,6 +643,22 @@
                     modal.classList.add('hidden');
                 }, 300);
             }
+
+            // Tambah Jadwal Modal
+            window.openTambahJadwalModal = function () {
+                document.getElementById('tambahJadwalModal').classList.remove('hidden');
+            }
+
+            window.closeTambahJadwalModal = function () {
+                document.getElementById('tambahJadwalModal').classList.add('hidden');
+            }
+
+            // Close modal when clicking outside
+            document.getElementById('tambahJadwalModal')?.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeTambahJadwalModal();
+                }
+            });
 
             // SweetAlert Delete Confirmation
             document.querySelectorAll('.delete-form').forEach(form => {

@@ -30,6 +30,7 @@ class Mahasiswa extends Model
         'rt',
         'rw',
         'kota',
+        'kecamatan',
         'desa',
         'provinsi',
         'negara',
@@ -46,6 +47,7 @@ class Mahasiswa extends Model
         'rw_ktp',
         'provinsi_ktp',
         'kota_ktp',
+        'kecamatan_ktp',
         'desa_ktp',
     ];
 
@@ -129,6 +131,75 @@ class Mahasiswa extends Model
         return max(1, min(8, $baseSemester));
     }
 
+    /**
+     * Get current semester information as an object
+     * Returns an object containing semester details
+     */
+    public function getCurrentSemesterInfo(): object
+    {
+        $semesterNumber = $this->getCurrentSemester();
+        
+        // Try to get the active semester record for additional metadata
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+
+        $tahunAjaran = $activeSemester->tahun_ajaran ?? null;
+        $namaSemester = $activeSemester->nama_semester ?? (($semesterNumber % 2 === 1) ? 'Ganjil' : 'Genap');
+
+        return (object) [
+            'semester_number' => $semesterNumber,
+            'semester' => $semesterNumber,
+            'angkatan' => $this->angkatan,
+            'tahun_ajaran' => $tahunAjaran,
+            'nama_semester' => $namaSemester,
+            'semester_obj' => $activeSemester,
+        ];
+    }
+
+    /**
+     * Get past semesters for which the student has submitted KRS
+     * Returns a collection of objects with keys: semester_number, semester_display, tahun_ajaran, nama_semester
+     */
+    public function getPastSemesters()
+    {
+        // Find submitted KRS entries (not draft) and collect distinct semester numbers from mata_kuliahs.kode_id (format: sms{n})
+        $submittedSemesterNumbers = \App\Models\Krs::where('mahasiswa_id', $this->id)
+            ->where('status', '!=', 'draft')
+            ->whereHas('mataKuliah', function ($q) {
+                $q->whereNotNull('kode_id')->where('kode_id', 'like', 'sms%');
+            })
+            ->with('mataKuliah')
+            ->get()
+            ->pluck('mataKuliah')
+            ->filter()
+            ->pluck('kode_id')
+            ->unique()
+            ->map(function ($kode) {
+                return (int) preg_replace('/[^0-9]/', '', $kode);
+            })
+            ->filter()
+            ->sortDesc()
+            ->values();
+
+        if ($submittedSemesterNumbers->isEmpty()) {
+            return collect();
+        }
+
+        // Attempt to get an active semester for tahun_ajaran fallback
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+        $tahunAjaran = $activeSemester->tahun_ajaran ?? null;
+
+        $collection = $submittedSemesterNumbers->map(function ($semNum) use ($tahunAjaran) {
+            return (object) [
+                'semester_number' => $semNum,
+                'semester_display' => 'Semester ' . $semNum,
+                'tahun_ajaran' => $tahunAjaran,
+                'nama_semester' => ($semNum % 2 === 1) ? 'Ganjil' : 'Genap',
+            ];
+        });
+
+        return $collection;
+    }
+
     public function dosenPa()
     {
         return $this->belongsToMany(Dosen::class, 'dosen_pa', 'mahasiswa_id', 'dosen_id')->withTimestamps();
@@ -150,6 +221,8 @@ class Mahasiswa extends Model
             'agama',
             'status_sipil',
             'kota',
+            'kecamatan',
+            'kecamatan_ktp',
             'provinsi',
             'desa',
             'jenis_sekolah',
@@ -196,11 +269,13 @@ class Mahasiswa extends Model
             'agama_ibu',
             'alamat_ayah',
             'kota_ayah',
+            'kecamatan_ayah',
             'propinsi_ayah',
             'desa_ayah',
             'handphone_ayah',
             'alamat_ibu',
             'kota_ibu',
+            'kecamatan_ibu',
             'propinsi_ibu',
             'desa_ibu',
             'handphone_ibu',
@@ -215,6 +290,7 @@ class Mahasiswa extends Model
             'agama_wali',
             'alamat_wali',
             'kota_wali',
+            'kecamatan_wali',
             'provinsi_wali',
             'desa_wali',
             'handphone_wali',
@@ -277,6 +353,7 @@ class Mahasiswa extends Model
             'status_sipil' => ['label' => 'Status Sipil', 'tab' => 'data_pribadi'],
             'kota' => ['label' => 'Kota/Kabupaten', 'tab' => 'data_pribadi'],
             'provinsi' => ['label' => 'Provinsi', 'tab' => 'data_pribadi'],
+            'kecamatan' => ['label' => 'Kecamatan', 'tab' => 'data_pribadi'],
             'desa' => ['label' => 'Desa/Kelurahan', 'tab' => 'data_pribadi'],
             // Alamat Sesuai KTP fields
             'alamat_ktp' => ['label' => 'Alamat KTP', 'tab' => 'data_pribadi'],
@@ -284,6 +361,7 @@ class Mahasiswa extends Model
             'rw_ktp' => ['label' => 'RW KTP', 'tab' => 'data_pribadi'],
             'provinsi_ktp' => ['label' => 'Provinsi KTP', 'tab' => 'data_pribadi'],
             'kota_ktp' => ['label' => 'Kota/Kab. KTP', 'tab' => 'data_pribadi'],
+            'kecamatan_ktp' => ['label' => 'Kecamatan KTP', 'tab' => 'data_pribadi'],
             'desa_ktp' => ['label' => 'Desa KTP', 'tab' => 'data_pribadi'],
             // Asal Sekolah fields
             'jenis_sekolah' => ['label' => 'Jenis Sekolah', 'tab' => 'asal_sekolah'],
@@ -328,11 +406,13 @@ class Mahasiswa extends Model
             'alamat_ayah' => ['label' => 'Alamat Ayah', 'tab' => 'orang_tua'],
             'kota_ayah' => ['label' => 'Kota Ayah', 'tab' => 'orang_tua'],
             'propinsi_ayah' => ['label' => 'Provinsi Ayah', 'tab' => 'orang_tua'],
+            'kecamatan_ayah' => ['label' => 'Kecamatan Ayah', 'tab' => 'orang_tua'],
             'desa_ayah' => ['label' => 'Desa Ayah', 'tab' => 'orang_tua'],
             'handphone_ayah' => ['label' => 'Handphone Ayah', 'tab' => 'orang_tua'],
             'alamat_ibu' => ['label' => 'Alamat Ibu', 'tab' => 'orang_tua'],
             'kota_ibu' => ['label' => 'Kota Ibu', 'tab' => 'orang_tua'],
             'propinsi_ibu' => ['label' => 'Provinsi Ibu', 'tab' => 'orang_tua'],
+            'kecamatan_ibu' => ['label' => 'Kecamatan Ibu', 'tab' => 'orang_tua'],
             'desa_ibu' => ['label' => 'Desa Ibu', 'tab' => 'orang_tua'],
             'handphone_ibu' => ['label' => 'Handphone Ibu', 'tab' => 'orang_tua'],
         ];
@@ -347,6 +427,7 @@ class Mahasiswa extends Model
             'alamat_wali' => ['label' => 'Alamat Wali', 'tab' => 'orang_tua'],
             'kota_wali' => ['label' => 'Kota Wali', 'tab' => 'orang_tua'],
             'provinsi_wali' => ['label' => 'Provinsi Wali', 'tab' => 'orang_tua'],
+            'kecamatan_wali' => ['label' => 'Kecamatan Wali', 'tab' => 'orang_tua'],
             'desa_wali' => ['label' => 'Desa Wali', 'tab' => 'orang_tua'],
             'handphone_wali' => ['label' => 'Handphone Wali', 'tab' => 'orang_tua'],
         ];

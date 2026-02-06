@@ -5,7 +5,7 @@
         ?? \App\Models\Semester::where('is_active', true)->first();
 @endphp
 
-<div x-data="{}" x-cloak class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+<div x-data="{}" x-cloak class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden h-full">
     <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
         <div class="font-bold text-white text-xl flex items-center gap-3">
             <div class="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
