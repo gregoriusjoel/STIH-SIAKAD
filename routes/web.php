@@ -293,6 +293,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('kalender-akademik/event/{id}/date', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'updateDate'])->name('kalender.event.updateDate');
     Route::post('kalender-akademik/import', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'import'])->name('kalender.import');
     Route::get('kalender-akademik/import-template', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'downloadTemplate'])->name('kalender.import-template');
+    Route::get('kalender-akademik/export', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'export'])->name('kalender.export');
 
 
     // Maintenance

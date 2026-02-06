@@ -133,6 +133,12 @@ class AcademicCalendarController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
+    public function export()
+    {
+        $events = AcademicEvent::active()->get();
+        return view('admin.kalender-akademik.pdf', compact('events'));
+    }
+
     public function storeEvent(Request $request)
     {
         $validated = $request->validate([
