@@ -71,6 +71,7 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/kelas/{id}/detail', [LecturerController::class, 'detail'])->name('kelas.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}', [LecturerController::class, 'meetingDetail'])->name('kelas.pertemuan.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi', [LecturerController::class, 'meetingMaterials'])->name('kelas.pertemuan.materi');
+    Route::post('/kelas/{id}/pertemuan/{pertemuan}/presensi', [LecturerController::class, 'updateAttendance'])->name('kelas.pertemuan.presensi');
     
     // Materi (Dosen)
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi/list', [App\Http\Controllers\Dosen\MateriController::class, 'index'])->name('kelas.pertemuan.materi.list');
@@ -89,6 +90,12 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/krs', [LecturerController::class, 'krs'])->name('krs');
     Route::get('/input-nilai', [LecturerController::class, 'inputNilai'])->name('input-nilai');
     Route::get('/mahasiswa', [LecturerController::class, 'students'])->name('mahasiswa');
+    
+    // Input Nilai per Kelas
+    Route::get('/kelas/{id}/input-nilai', [LecturerController::class, 'inputNilaiKelas'])->name('kelas.input-nilai');
+    Route::post('/kelas/{id}/bobot-penilaian', [LecturerController::class, 'saveBobotPenilaian'])->name('kelas.bobot-penilaian.save');
+    Route::post('/kelas/{id}/simpan-nilai', [LecturerController::class, 'simpanNilai'])->name('kelas.simpan-nilai');
+    Route::get('/kelas/{id}/get-bobot', [LecturerController::class, 'getBobotPenilaian'])->name('kelas.get-bobot');
     
     // Jadwal Approval Routes
     Route::prefix('jadwal-approval')->name('jadwal_approval.')->group(function () {

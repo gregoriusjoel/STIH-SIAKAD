@@ -18,7 +18,7 @@
 @endpush
 
 @section('content')
-    <div class="pt-6 px-6 md:px-8 pb-8 w-full flex flex-col gap-6" x-data="calendarApp(@js($all_schedules ?? []))">
+    <div class="pt-6 px-6 md:px-8 pb-8 w-full flex flex-col gap-6" x-data="dashboardApp(@js($all_schedules ?? []), @js($meeting_dates ?? []), @js($schedules ?? []), @js($upcomingSchedules ?? []))">
         <!-- Force Tailwind JIT: grid grid-cols-7 gap-1 -->
 
         <!-- Welcome Section -->
@@ -164,11 +164,11 @@
             </div>
 
             <!-- SCHEDULES WRAPPER -->
-            <div class="md:col-span-2 flex flex-col gap-8" style="height: 460px;">
+            <div class="md:col-span-2 flex flex-col gap-6">
 
-                <!-- JADWAL HARI INI SECTION (MOVED TO MAIN COLUMN) -->
+                <!-- JADWAL HARI INI SECTION -->
                 <div
-                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full flex-1 min-h-0">
+                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full h-[280px]">
 
                     <!-- Header -->
                     <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
@@ -183,51 +183,82 @@
                     </div>
 
                     <!-- List Content -->
-                    <div class="flex-1 overflow-y-auto custom-scrollbar">
-                        @forelse($schedules as $schedule)
-                            <div
-                                class="p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group">
-                                <!-- Time Column -->
-                                <div class="flex flex-col items-center min-w-[50px] pt-1">
-                                    <span
-                                        class="text-sm font-bold text-[#111218] dark:text-white">{{ substr($schedule['time'], 0, 5) }}</span>
-                                    <span class="text-[10px] text-gray-400">{{ substr($schedule['time'], 8, 5) }}</span>
-                                </div>
-
-                                <!-- Content Column -->
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
-                                        title="{{ $schedule['subject'] }}">
-                                        {{ $schedule['subject'] }}
-                                    </h4>
-                                    <p class="text-xs text-gray-500 dark:text-slate-400 truncate mb-1.5">
-                                        {{ $schedule['code'] }} • Kelas {{ $schedule['class'] }}
-                                    </p>
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="flex items-center gap-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
-                                            <span class="material-symbols-outlined text-[10px]">location_on</span>
-                                            <span>{{ $schedule['room'] }}</span>
-                                        </div>
+                    <div class="flex-1 min-h-0 flex flex-col">
+                        <div class="flex-1">
+                            <template x-if="todaySchedules.length === 0">
+                                <div class="flex flex-col items-center justify-center h-full text-center px-6">
+                                    <div
+                                        class="w-16 h-16 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
+                                        <span class="material-symbols-outlined text-3xl text-gray-300">event_busy</span>
                                     </div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Tidak ada jadwal</p>
+                                    <p class="text-xs text-gray-500 mt-1">Anda tidak memiliki jadwal mengajar hari ini.</p>
                                 </div>
-                            </div>
-                        @empty
-                            <div class="flex flex-col items-center justify-center py-10 text-center px-6">
-                                <div
-                                    class="w-16 h-16 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
-                                    <span class="material-symbols-outlined text-3xl text-gray-300">event_busy</span>
+                            </template>
+
+                            <template x-if="todaySchedules.length > 0">
+                                <div>
+                                    <template x-for="(schedule, index) in paginatedTodaySchedules" :key="index">
+                                        <div
+                                            class="p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group"
+                                            x-transition:enter="transition ease-out duration-200"
+                                            x-transition:enter-start="opacity-0 transform translate-y-2"
+                                            x-transition:enter-end="opacity-100 transform translate-y-0">
+                                            <!-- Time Column -->
+                                            <div class="flex flex-col items-center min-w-12 pt-1">
+                                                <span
+                                                    class="text-sm font-bold text-[#111218] dark:text-white"
+                                                    x-text="schedule.time.substring(0, 5)"></span>
+                                                <span class="text-[10px] text-gray-400" x-text="schedule.time.substring(8, 5)"></span>
+                                            </div>
+
+                                            <!-- Content Column -->
+                                            <div class="flex-1 min-w-0">
+                                                <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
+                                                    x-text="schedule.subject"
+                                                    :title="schedule.subject"></h4>
+                                                <p class="text-xs text-gray-500 dark:text-slate-400 truncate mb-1.5">
+                                                    <span x-text="schedule.code"></span> • Kelas <span x-text="schedule.class"></span>
+                                                </p>
+                                                <div class="flex items-center gap-4">
+                                                    <div
+                                                        class="flex items-center gap-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                                                        <span class="material-symbols-outlined text-[10px]">location_on</span>
+                                                        <span x-text="schedule.room"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </div>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">Tidak ada jadwal</p>
-                                <p class="text-xs text-gray-500 mt-1">Anda tidak memiliki jadwal mengajar hari ini.</p>
-                            </div>
-                        @endforelse
+                            </template>
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        <div x-show="todaySchedules.length > todayPerPage" 
+                            class="px-5 py-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50 dark:bg-slate-800/50">
+                            <button @click="todayPage = Math.max(1, todayPage - 1)"
+                                :disabled="todayPage === 1"
+                                :class="todayPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-slate-700'"
+                                class="p-2 rounded-lg transition-colors text-gray-600 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-lg">chevron_left</span>
+                            </button>
+                            <span class="text-xs font-semibold text-gray-600 dark:text-slate-400">
+                                <span x-text="todayPage"></span> / <span x-text="todayTotalPages"></span>
+                            </span>
+                            <button @click="todayPage = Math.min(todayTotalPages, todayPage + 1)"
+                                :disabled="todayPage === todayTotalPages"
+                                :class="todayPage === todayTotalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-slate-700'"
+                                class="p-2 rounded-lg transition-colors text-gray-600 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-lg">chevron_right</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- JADWAL MENDATANG SECTION -->
                 <div
-                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full flex-1 min-h-0">
+                    class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full h-[280px]">
 
                     <!-- Header -->
                     <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
@@ -238,46 +269,78 @@
                     </div>
 
                     <!-- List Content -->
-                    <div class="flex-1 overflow-y-auto max-h-[400px] custom-scrollbar">
-                        @forelse($upcomingSchedules ?? [] as $schedule)
-                            <div
-                                class="p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group">
-                                <!-- Time/Day Column -->
-                                <div class="flex flex-col items-center min-w-[60px] pt-1">
-                                    <span
-                                        class="text-[10px] font-bold text-primary uppercase tracking-wide mb-0.5">{{ $schedule['day'] }}</span>
-                                    <span
-                                        class="text-sm font-bold text-[#111218] dark:text-white">{{ substr($schedule['time'], 0, 5) }}</span>
-                                </div>
-
-                                <!-- Content Column -->
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
-                                        title="{{ $schedule['subject'] }}">
-                                        {{ $schedule['subject'] }}
-                                    </h4>
-                                    <p class="text-xs text-gray-500 dark:text-slate-400 truncate mb-1.5">
-                                        {{ $schedule['code'] }} • Kelas {{ $schedule['class'] }}
-                                    </p>
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="flex items-center gap-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
-                                            <span class="material-symbols-outlined text-[10px]">location_on</span>
-                                            <span>{{ $schedule['room'] }}</span>
-                                        </div>
+                    <div class="flex-1 min-h-0 flex flex-col">
+                        <div class="flex-1">
+                            <template x-if="upcomingSchedulesList.length === 0">
+                                <div class="flex flex-col items-center justify-center h-full text-center px-6">
+                                    <div
+                                        class="w-16 h-16 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
+                                        <span class="material-symbols-outlined text-3xl text-gray-300">event_busy</span>
                                     </div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Tidak ada jadwal mendatang</p>
+                                    <p class="text-xs text-gray-500 mt-1">Jadwal mengajar minggu depan belum tersedia.</p>
                                 </div>
-                            </div>
-                        @empty
-                            <div class="flex flex-col items-center justify-center py-10 text-center px-6">
-                                <div
-                                    class="w-16 h-16 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
-                                    <span class="material-symbols-outlined text-3xl text-gray-300">event_busy</span>
+                            </template>
+
+                            <template x-if="upcomingSchedulesList.length > 0">
+                                <div>
+                                    <template x-for="(schedule, index) in paginatedUpcomingSchedules" :key="index">
+                                        <div
+                                            class="p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group"
+                                            x-transition:enter="transition ease-out duration-200"
+                                            x-transition:enter-start="opacity-0 transform translate-y-2"
+                                            x-transition:enter-end="opacity-100 transform translate-y-0">
+                                            <!-- Time/Day Column -->
+                                            <div class="flex flex-col items-center min-w-15 pt-1">
+                                                <span
+                                                    class="text-[10px] font-bold text-primary uppercase tracking-wide mb-0.5"
+                                                    x-text="schedule.day"></span>
+                                                <span
+                                                    class="text-sm font-bold text-[#111218] dark:text-white"
+                                                    x-text="schedule.time.substring(0, 5)"></span>
+                                            </div>
+
+                                            <!-- Content Column -->
+                                            <div class="flex-1 min-w-0">
+                                                <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
+                                                    x-text="schedule.subject"
+                                                    :title="schedule.subject"></h4>
+                                                <p class="text-xs text-gray-500 dark:text-slate-400 truncate mb-1.5">
+                                                    <span x-text="schedule.code"></span> • Kelas <span x-text="schedule.class"></span>
+                                                </p>
+                                                <div class="flex items-center gap-4">
+                                                    <div
+                                                        class="flex items-center gap-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                                                        <span class="material-symbols-outlined text-[10px]">location_on</span>
+                                                        <span x-text="schedule.room"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </div>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">Tidak ada jadwal mendatang</p>
-                                <p class="text-xs text-gray-500 mt-1">Jadwal mengajar minggu depan belum tersedia.</p>
-                            </div>
-                        @endforelse
+                            </template>
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        <div x-show="upcomingSchedulesList.length > upcomingPerPage" 
+                            class="px-5 py-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50 dark:bg-slate-800/50">
+                            <button @click="upcomingPage = Math.max(1, upcomingPage - 1)"
+                                :disabled="upcomingPage === 1"
+                                :class="upcomingPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-slate-700'"
+                                class="p-2 rounded-lg transition-colors text-gray-600 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-lg">chevron_left</span>
+                            </button>
+                            <span class="text-xs font-semibold text-gray-600 dark:text-slate-400">
+                                <span x-text="upcomingPage"></span> / <span x-text="upcomingTotalPages"></span>
+                            </span>
+                            <button @click="upcomingPage = Math.min(upcomingTotalPages, upcomingPage + 1)"
+                                :disabled="upcomingPage === upcomingTotalPages"
+                                :class="upcomingPage === upcomingTotalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-slate-700'"
+                                class="p-2 rounded-lg transition-colors text-gray-600 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-lg">chevron_right</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -341,7 +404,7 @@
 
     @push('scripts')
         <script>
-            function calendarApp(schedules) {
+            function dashboardApp(schedules, meetingDates, todaySchedulesData, upcomingSchedulesData) {
                 return {
                     view: 'calendar', // calendar, months, years
                     showModal: false,
@@ -351,11 +414,43 @@
                     month: new Date().getMonth(),
                     year: new Date().getFullYear(),
                     schedules: schedules,
+                    meetingDates: meetingDates,
                     monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                    // dayNames: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+                    
+                    // Today schedules pagination
+                    todaySchedules: todaySchedulesData,
+                    todayPage: 1,
+                    todayPerPage: 3,
+                    
+                    // Upcoming schedules pagination
+                    upcomingSchedulesList: upcomingSchedulesData,
+                    upcomingPage: 1,
+                    upcomingPerPage: 3,
 
                     get monthName() {
                         return this.monthNames[this.month];
+                    },
+                    
+                    // Today schedules computed properties
+                    get todayTotalPages() {
+                        return Math.ceil(this.todaySchedules.length / this.todayPerPage) || 1;
+                    },
+                    
+                    get paginatedTodaySchedules() {
+                        const start = (this.todayPage - 1) * this.todayPerPage;
+                        const end = start + this.todayPerPage;
+                        return this.todaySchedules.slice(start, end);
+                    },
+                    
+                    // Upcoming schedules computed properties
+                    get upcomingTotalPages() {
+                        return Math.ceil(this.upcomingSchedulesList.length / this.upcomingPerPage) || 1;
+                    },
+                    
+                    get paginatedUpcomingSchedules() {
+                        const start = (this.upcomingPage - 1) * this.upcomingPerPage;
+                        const end = start + this.upcomingPerPage;
+                        return this.upcomingSchedulesList.slice(start, end);
                     },
 
                     get yearsList() {
@@ -409,8 +504,18 @@
                     },
 
                     getEvents(date) {
-                        // Need to map date to day name for current schedule logic which relies on "Senin", etc.
+                        // Only show events if this date is within the 16 meeting dates
                         const d = new Date(this.year, this.month, date);
+                        const dateStr = d.getFullYear() + '-' + 
+                                      String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+                                      String(d.getDate()).padStart(2, '0');
+                        
+                        // Check if this date is in the meeting dates list
+                        if (!this.meetingDates.includes(dateStr)) {
+                            return [];
+                        }
+                        
+                        // Map date to day name for current schedule logic
                         const dayName = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][d.getDay()];
                         return this.schedules.filter(s => s.day === dayName);
                     },

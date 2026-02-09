@@ -264,10 +264,10 @@ foreach ($missingFields as $field => $info) {
                         <!-- Custom Searchable Dropdown -->
                         <div x-data="desaDropdown()" class="relative" x-init="init()">
                             <!-- Hidden input for form submission -->
-                            <input type="hidden" name="desa" :value="selected">
+                            <input type="hidden" name="desa" :value="selected" x-ref="desaInput">
                             
                             <!-- Dropdown Trigger -->
-                            <button type="button" @click="open = !open; if(open) $nextTick(() => $refs.searchInput.focus())" 
+                            <button type="button" @click="updateDistrict(); open = !open; if(open) $nextTick(() => $refs.searchInput.focus())" 
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
                                 <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
                                 <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -375,6 +375,21 @@ foreach ($missingFields as $field => $info) {
                                         this.selectedText = opt.text;
                                         this.open = false;
                                         this.search = '';
+                                        this.$nextTick(() => {
+                                            const input = this.$refs.desaInput;
+                                            if(input) {
+                                                input.dispatchEvent(new Event('input', {bubbles:true}));
+                                                input.dispatchEvent(new Event('change', {bubbles:true}));
+                                            }
+                                        });
+                                    },
+                                    updateDistrict() {
+                                        const kecamatanSelect = document.getElementById('kecamatanSelect');
+                                        if (kecamatanSelect) {
+                                            const opt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                            this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                            this.noKecamatanSelected = !this.currentDistrictCode;
+                                        }
                                     }
                                 }
                             }
@@ -447,10 +462,10 @@ foreach ($missingFields as $field => $info) {
                         <!-- Custom Searchable Dropdown for KTP -->
                         <div x-data="desaKtpDropdown()" class="relative" x-init="init()">
                             <!-- Hidden input for form submission -->
-                            <input type="hidden" name="desa_ktp" :value="selected">
+                            <input type="hidden" name="desa_ktp" :value="selected" x-ref="desaKtpInput">
                             
                             <!-- Dropdown Trigger -->
-                            <button type="button" @click="open = !open; if(open) $nextTick(() => $refs.searchInputKtp.focus())" 
+                            <button type="button" @click="updateDistrict(); open = !open; if(open) $nextTick(() => $refs.searchInputKtp.focus())" 
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
                                 <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
                                 <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -558,6 +573,21 @@ foreach ($missingFields as $field => $info) {
                                         this.selectedText = opt.text;
                                         this.open = false;
                                         this.search = '';
+                                        this.$nextTick(() => {
+                                            const input = this.$refs.desaKtpInput;
+                                            if(input) {
+                                                input.dispatchEvent(new Event('input', {bubbles:true}));
+                                                input.dispatchEvent(new Event('change', {bubbles:true}));
+                                            }
+                                        });
+                                    },
+                                    updateDistrict() {
+                                        const kecamatanSelect = document.getElementById('kecamatanKtpSelect');
+                                        if (kecamatanSelect) {
+                                            const opt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                            this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                            this.noKecamatanSelected = !this.currentDistrictCode;
+                                        }
                                     }
                                 }
                             }
@@ -1034,8 +1064,8 @@ foreach ($missingFields as $field => $info) {
                             <div>
                                 <label class="block text-sm text-gray-600 font-medium mb-2">Desa/Kelurahan</label>
                                 <div x-data="desaAyahDropdown()" class="relative">
-                                    <input type="hidden" name="desa_ayah" :value="selected">
-                                    <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputAyah.focus())"
+                                    <input type="hidden" name="desa_ayah" :value="selected" x-ref="desaAyahInput">
+                                    <button type="button" @click="updateDistrict(); open = !open; $nextTick(() => $refs.searchInputAyah.focus())"
                                         class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
                                         <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
                                         <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
@@ -1119,6 +1149,21 @@ foreach ($missingFields as $field => $info) {
                                                 this.selectedText = opt.text;
                                                 this.open = false;
                                                 this.search = '';
+                                                this.$nextTick(() => {
+                                                    const input = this.$refs.desaAyahInput;
+                                                    if(input) {
+                                                        input.dispatchEvent(new Event('input', {bubbles:true}));
+                                                        input.dispatchEvent(new Event('change', {bubbles:true}));
+                                                    }
+                                                });
+                                            },
+                                            updateDistrict() {
+                                                const kecamatanSelect = document.getElementById('kecamatanAyahSelect');
+                                                if (kecamatanSelect) {
+                                                    const opt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                    this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                    this.noKecamatanSelected = !this.currentDistrictCode;
+                                                }
                                             }
                                         }
                                     }
@@ -1189,8 +1234,8 @@ foreach ($missingFields as $field => $info) {
                             <div>
                                 <label class="block text-sm text-gray-600 font-medium mb-2">Desa/Kelurahan</label>
                                 <div x-data="desaIbuDropdown()" class="relative">
-                                    <input type="hidden" name="desa_ibu" :value="selected">
-                                    <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputIbu.focus())"
+                                    <input type="hidden" name="desa_ibu" :value="selected" x-ref="desaIbuInput">
+                                    <button type="button" @click="updateDistrict(); open = !open; $nextTick(() => $refs.searchInputIbu.focus())"
                                         class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
                                         <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
                                         <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
@@ -1274,6 +1319,21 @@ foreach ($missingFields as $field => $info) {
                                                 this.selectedText = opt.text;
                                                 this.open = false;
                                                 this.search = '';
+                                                this.$nextTick(() => {
+                                                    const input = this.$refs.desaIbuInput;
+                                                    if(input) {
+                                                        input.dispatchEvent(new Event('input', {bubbles:true}));
+                                                        input.dispatchEvent(new Event('change', {bubbles:true}));
+                                                    }
+                                                });
+                                            },
+                                            updateDistrict() {
+                                                const kecamatanSelect = document.getElementById('kecamatanIbuSelect');
+                                                if (kecamatanSelect) {
+                                                    const opt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                    this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                    this.noKecamatanSelected = !this.currentDistrictCode;
+                                                }
                                             }
                                         }
                                     }
@@ -1417,8 +1477,8 @@ foreach ($missingFields as $field => $info) {
                             <div>
                                 <label class="block text-sm text-gray-600 font-medium mb-2">Desa/Kelurahan</label>
                                 <div x-data="desaWaliDropdown()" class="relative">
-                                    <input type="hidden" name="desa_wali" :value="selected">
-                                    <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputWali.focus())"
+                                    <input type="hidden" name="desa_wali" :value="selected" x-ref="desaWaliInput">
+                                    <button type="button" @click="updateDistrict(); open = !open; $nextTick(() => $refs.searchInputWali.focus())"
                                         class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
                                         <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
                                         <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
@@ -1521,6 +1581,21 @@ foreach ($missingFields as $field => $info) {
                                                 this.selectedText = opt.text;
                                                 this.open = false;
                                                 this.search = '';
+                                                this.$nextTick(() => {
+                                                    const input = this.$refs.desaWaliInput;
+                                                    if(input) {
+                                                        input.dispatchEvent(new Event('input', {bubbles:true}));
+                                                        input.dispatchEvent(new Event('change', {bubbles:true}));
+                                                    }
+                                                });
+                                            },
+                                            updateDistrict() {
+                                                const kecamatanSelect = document.getElementById('kecamatanWaliSelect');
+                                                if (kecamatanSelect) {
+                                                    const opt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                    this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                    this.noKecamatanSelected = !this.currentDistrictCode;
+                                                }
                                             }
                                         }
                                     }
@@ -1937,16 +2012,31 @@ foreach ($missingFields as $field => $info) {
         
         // Handle hidden inputs for custom dropdowns (like Desa/Kelurahan)
         const hiddenInputs = document.querySelectorAll('input[type="hidden"][name^="desa"]');
+        
+        // Store previous values to detect changes
+        const previousValues = {};
         hiddenInputs.forEach(element => {
+            previousValues[element.name] = element.value;
             toggleEmptyLabel(element);
         });
         
         // Poll hidden inputs for changes (since they are updated by Alpine)
         setInterval(() => {
             hiddenInputs.forEach(element => {
+                const currentValue = element.value;
+                const prevValue = previousValues[element.name];
+                
+                // Always update the label state
                 toggleEmptyLabel(element);
+                
+                // If value changed, dispatch a change event for other listeners
+                if (currentValue !== prevValue) {
+                    previousValues[element.name] = currentValue;
+                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             });
-        }, 300);
+        }, 200);
         
         // Backend-driven missing fields highlight (additional red styling)
         @if($highlightMissing && count($missingFields) > 0)

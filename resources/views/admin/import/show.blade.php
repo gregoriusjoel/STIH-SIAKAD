@@ -255,12 +255,12 @@
         const extension = file.name.split('.').pop().toLowerCase();
 
         if (!validExtensions.includes(extension)) {
-            alert('Format file tidak didukung. Gunakan CSV atau XLSX.');
+            showError('Format file tidak didukung. Gunakan CSV atau XLSX.');
             return;
         }
 
         if (file.size > 10 * 1024 * 1024) {
-            alert('Ukuran file terlalu besar. Maksimal 10MB.');
+            showError('Ukuran file terlalu besar. Maksimal 10MB.');
             return;
         }
 
@@ -336,11 +336,11 @@
                     document.getElementById('btn-import').disabled = validatedCount === 0;
                 }
             } else {
-                alert(result.message || 'Error saat membaca file');
+                showError(result.message || 'Error saat membaca file');
             }
         } catch (error) {
             hideProgress();
-            alert('Error: ' + error.message);
+            showError('Error: ' + error.message);
         }
     }
 
@@ -361,7 +361,7 @@
         
         if (columns.length === 0) {
             container.classList.add('hidden');
-            alert('Tidak dapat membaca kolom dari file');
+            showError('Tidak dapat membaca kolom dari file');
             return;
         }
 
@@ -455,7 +455,17 @@
     async function importData() {
         if (!selectedFile) return;
 
-        if (!confirm('Apakah Anda yakin ingin mengimport data ini?')) return;
+        showConfirm(
+            'Apakah Anda yakin ingin mengimport data ini?',
+            async function() {
+                await performImport();
+            },
+            null,
+            'Konfirmasi Import'
+        );
+    }
+
+    async function performImport() {
 
         const formData = new FormData();
         formData.append('file', selectedFile);
@@ -479,7 +489,7 @@
             showImportResults(result);
         } catch (error) {
             hideProgress();
-            alert('Error: ' + error.message);
+            showError('Error: ' + error.message);
             document.getElementById('btn-import').disabled = false;
         }
     }

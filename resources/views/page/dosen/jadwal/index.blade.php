@@ -30,11 +30,11 @@
 
                 <div class="flex items-center gap-3">
                     <!-- Availability Check Button -->
-                    <button @click="showAvailabilityModal = true" 
+                    <a href="{{ route('dosen.availability.index') }}" 
                         class="hidden md:flex items-center gap-2 px-4 py-2 bg-[#8B1538] text-white rounded-lg text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity">
                         <span class="material-symbols-outlined text-[20px]">event_available</span>
                         Ketersediaan Waktu
-                    </button>
+                    </a>
 
                     <!-- Week Navigator -->
                     <div

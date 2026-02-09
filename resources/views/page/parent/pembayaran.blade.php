@@ -15,7 +15,7 @@
                 </div>
                 <a href="#"
                     class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition flex items-center gap-2"
-                    onclick="alert('Silakan hubungi bagian keuangan untuk informasi tagihan lebih lanjut.')">
+                    onclick="showInfo('Informasi', 'Silakan hubungi bagian keuangan untuk informasi tagihan lebih lanjut.')">
                     <i class="fas fa-info-circle"></i> Info Tagihan
                 </a>
             </div>

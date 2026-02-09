@@ -14,7 +14,12 @@ class NilaiController extends Controller
         
         // Get semua nilai dengan relasi
         $nilaiData = $mahasiswa->krs()
-            ->with(['kelasMataKuliah.mataKuliah', 'kelasMataKuliah.semester', 'nilai'])
+            ->with([
+                'kelasMataKuliah.mataKuliah', 
+                'kelasMataKuliah.semester', 
+                'nilai.bobotPenilaian',
+                'kelas.bobotPenilaian'
+            ])
             ->whereHas('nilai')
             ->get();
         
@@ -29,7 +34,7 @@ class NilaiController extends Controller
         
         foreach($nilaiData as $krs) {
             if($krs->nilai) {
-                $bobot = $this->getBobot($krs->nilai->nilai);
+                $bobot = $krs->nilai->bobot ?? $this->getBobot($krs->nilai->nilai_akhir ?? 0);
                 $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
                 $totalBobot += ($bobot * $sks);
                 $totalSks += $sks;
@@ -46,7 +51,7 @@ class NilaiController extends Controller
             
             foreach($nilaiList as $krs) {
                 if($krs->nilai) {
-                    $bobot = $this->getBobot($krs->nilai->nilai);
+                    $bobot = $krs->nilai->bobot ?? $this->getBobot($krs->nilai->nilai_akhir ?? 0);
                     $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
                     $semesterBobot += ($bobot * $sks);
                     $semesterSks += $sks;
@@ -73,7 +78,12 @@ class NilaiController extends Controller
         $mahasiswa = Auth::user()->mahasiswa;
 
         $nilaiData = $mahasiswa->krs()
-            ->with(['kelasMataKuliah.mataKuliah', 'kelasMataKuliah.semester', 'nilai'])
+            ->with([
+                'kelasMataKuliah.mataKuliah', 
+                'kelasMataKuliah.semester', 
+                'nilai.bobotPenilaian',
+                'kelas.bobotPenilaian'
+            ])
             ->whereHas('nilai')
             ->get();
 
@@ -86,7 +96,7 @@ class NilaiController extends Controller
         $totalSks = 0;
         foreach($nilaiData as $krs) {
             if($krs->nilai) {
-                $bobot = $this->getBobot($krs->nilai->nilai);
+                $bobot = $krs->nilai->bobot ?? $this->getBobot($krs->nilai->nilai_akhir ?? 0);
                 $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
                 $totalBobot += ($bobot * $sks);
                 $totalSks += $sks;
@@ -100,7 +110,7 @@ class NilaiController extends Controller
             $semesterSks = 0;
             foreach($nilaiList as $krs) {
                 if($krs->nilai) {
-                    $bobot = $this->getBobot($krs->nilai->nilai);
+                    $bobot = $krs->nilai->bobot ?? $this->getBobot($krs->nilai->nilai_akhir ?? 0);
                     $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
                     $semesterBobot += ($bobot * $sks);
                     $semesterSks += $sks;
@@ -123,7 +133,12 @@ class NilaiController extends Controller
         $mahasiswa = Auth::user()->mahasiswa;
 
         $nilaiData = $mahasiswa->krs()
-            ->with(['kelasMataKuliah.mataKuliah', 'kelasMataKuliah.semester', 'nilai'])
+            ->with([
+                'kelasMataKuliah.mataKuliah', 
+                'kelasMataKuliah.semester', 
+                'nilai.bobotPenilaian',
+                'kelas.bobotPenilaian'
+            ])
             ->whereHas('nilai')
             ->get();
 
@@ -136,7 +151,7 @@ class NilaiController extends Controller
         $totalSks = 0;
         foreach($nilaiData as $krs) {
             if($krs->nilai) {
-                $bobot = $this->getBobot($krs->nilai->nilai);
+                $bobot = $krs->nilai->bobot ?? $this->getBobot($krs->nilai->nilai_akhir ?? 0);
                 $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
                 $totalBobot += ($bobot * $sks);
                 $totalSks += $sks;
@@ -167,7 +182,7 @@ class NilaiController extends Controller
         ));
     }
     
-    private function getBobot($nilai)
+    public function getBobot($nilai)
     {
         if ($nilai >= 85) return 4.0;
         if ($nilai >= 80) return 3.7;
@@ -181,7 +196,7 @@ class NilaiController extends Controller
         return 0;
     }
     
-    private function getGrade($nilai)
+    public function getGrade($nilai)
     {
         if ($nilai >= 85) return 'A';
         if ($nilai >= 80) return 'A-';

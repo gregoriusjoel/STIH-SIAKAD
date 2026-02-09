@@ -281,7 +281,7 @@
                         confirmButtonColor: '#8B1538'
                     });
                 } else {
-                    alert('Slot sudah penuh untuk dosen ini. Hapus pilihan atau pilih dosen lain.');
+                    showError('Slot sudah penuh untuk dosen ini. Hapus pilihan atau pilih dosen lain.');
                 }
                 return;
             }

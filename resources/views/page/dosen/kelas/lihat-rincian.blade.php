@@ -176,8 +176,8 @@
                                     </div>
                                 </div>
 
-                                <div class="flex gap-2 w-full max-w-[200px]">
-                                    <form action="{{ route('dosen.kelas.deactivate_qr', ['id' => $id]) }}" method="POST" class="w-full" class="deactivate-qr-form">
+                                <div class="flex gap-2 w-full max-w-[200px] mt-8">
+                                    <form action="{{ route('dosen.kelas.deactivate_qr', ['id' => $id]) }}" method="POST" class="w-full">
                                         @csrf
                                         <button type="submit" class="w-full py-2 bg-white border border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-sm font-bold transition-colors">
                                             Matikan QR
@@ -197,7 +197,7 @@
                                             @csrf
                                             <input type="hidden" name="pertemuan" value="{{ $meeting['no'] }}">
                                             <button type="button" @click="showQr('activateQrForm')" 
-                                                class="px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                                                class="px-5 py-2.5 bg-maroon text-white rounded-xl text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
                                                 <span class="material-symbols-outlined text-[18px]">bolt</span>
                                                 Tampilkan QR Sekarang
                                             </button>
@@ -230,13 +230,13 @@
                                             value="{{ (isset($token) && $token) ? route('absensi.form', ['token' => $token]) : 'Link belum tersedia' }}" 
                                             class="w-full text-sm px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 pr-12 font-medium" />
                                         <div class="absolute right-3 top-1/2 -translate-y-1/2">
-                                            @if(isset($token) && $token)
+                                            @if(isset($token) && $token && $qrEnabled)
                                                 <span class="flex h-2 w-2 relative">
                                                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                                   <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                                 </span>
                                             @else
-                                                 <span class="h-2 w-2 rounded-full bg-gray-300 block"></span>
+                                                 <span class="h-2 w-2 rounded-full bg-red-500 block"></span>
                                             @endif
                                         </div>
                                     </div>
@@ -364,7 +364,7 @@
                                                     <span class="material-symbols-outlined text-[18px]">download</span>
                                                 </a>
                                                 <form action="{{ route('dosen.kelas.pertemuan.materi.destroy', ['id' => $kelas->id, 'pertemuan' => $meeting['no'], 'materi' => $materi->id]) }}" 
-                                                      method="POST" onsubmit="return confirm('Hapus materi ini?');">
+                                                      method="POST" onsubmit="event.preventDefault(); showDeleteConfirm('materi', () => this.submit());">
                                                     @csrf @method('DELETE')
                                                     <button type="submit" class="size-8 flex items-center justify-center text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
                                                         <span class="material-symbols-outlined text-[18px]">delete</span>
@@ -410,7 +410,7 @@
                                         <div class="mt-3 flex gap-2">
                                             <form method="POST"
                                                 action="{{ route('kelas.pertemuan.tugas.destroy', ['id' => $kelas->id, 'pertemuan' => $meeting['no'], 'tugas' => $t->id]) }}"
-                                                onsubmit="return confirm('Hapus tugas ini?');">
+                                                onsubmit="event.preventDefault(); showDeleteConfirm('tugas', () => this.submit());">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="px-3 py-1.5 bg-white border border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 rounded text-xs transition-colors">Hapus</button>
@@ -453,58 +453,99 @@
                 x-transition:leave="ease-in duration-200"
                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                class="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl relative z-10"
+                class="inline-block w-full max-w-2xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl relative z-10"
                  @click.stop>
-                <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
-                    <h3 class="text-xl font-bold text-gray-900">Upload Materi</h3>
-                    <button type="button" @click="open = false" class="text-gray-400 hover:text-gray-600 transition-colors">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
+                {{-- Header with Full Gradient --}}
+                <div class="bg-maroon px-8 py-8 -mx-0 -mt-0 rounded-t-2xl">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="size-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                                <span class="material-symbols-outlined text-white text-4xl">upload_file</span>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-1">Upload Materi</h3>
+                                <p class="text-sm text-white/90">Tambahkan materi pembelajaran untuk pertemuan ini</p>
+                            </div>
+                        </div>
+                        <button type="button" @click="open = false" class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
+                            <span class="material-symbols-outlined text-3xl">close</span>
+                        </button>
+                    </div>
                 </div>
+
+                <div class="p-6">
 
                 <form action="{{ route('dosen.kelas.pertemuan.materi.store', ['id' => $kelas->id, 'pertemuan' => $meeting['no']]) }}" 
                       method="POST" 
                       enctype="multipart/form-data">
                     @csrf
 
-                    <div class="space-y-4">
+                    <div class="space-y-5">
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Judul Materi *</label>
+                            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                <span class="material-symbols-outlined text-primary text-sm">title</span>
+                                Judul Materi *
+                            </label>
                             <input type="text" name="judul" required
-                                   class="w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium bg-white"
                                    placeholder="Contoh: Pengenalan Hukum Tata Negara">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Deskripsi (Opsional)</label>
+                            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                <span class="material-symbols-outlined text-primary text-sm">description</span>
+                                Deskripsi (Opsional)
+                            </label>
                             <textarea name="deskripsi" rows="3"
-                                      class="w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium"
+                                      class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium bg-white resize-none"
                                       placeholder="Jelaskan singkat tentang materi ini..."></textarea>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">File Materi *</label>
-                            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-200 border-dashed rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors group">
-                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <span class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors text-3xl mb-2">cloud_upload</span>
-                                    <p class="text-sm text-gray-500 font-medium"><span class="font-bold text-gray-700 group-hover:text-primary transition-colors">Klik upload</span> atau drag file</p>
-                                    <p class="text-[10px] text-gray-400 mt-1">PDF, DOCX, PPTX, XLSX, ZIP (Max. 10MB)</p>
+                            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                <span class="material-symbols-outlined text-primary text-sm">attach_file</span>
+                                File Materi *
+                            </label>
+                            <label class="relative flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-2xl cursor-pointer overflow-hidden group
+                                          border-primary/30 bg-gradient-to-br from-primary/5 to-red-50/50 hover:from-primary/10 hover:to-red-100/50 transition-all duration-300">
+                                <div class="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div class="relative flex flex-col items-center justify-center pt-5 pb-6 z-10">
+                                    <div class="size-14 rounded-full bg-white shadow-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                                        <span class="material-symbols-outlined text-primary text-3xl">cloud_upload</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700 font-semibold mb-1">
+                                        <span class="text-primary">Klik untuk upload</span> atau drag & drop
+                                    </p>
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <span class="px-2 py-0.5 bg-white rounded-full text-[10px] font-bold text-gray-600 shadow-sm">PDF</span>
+                                        <span class="px-2 py-0.5 bg-white rounded-full text-[10px] font-bold text-gray-600 shadow-sm">DOCX</span>
+                                        <span class="px-2 py-0.5 bg-white rounded-full text-[10px] font-bold text-gray-600 shadow-sm">PPTX</span>
+                                        <span class="px-2 py-0.5 bg-white rounded-full text-[10px] font-bold text-gray-600 shadow-sm">ZIP</span>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500 mt-2 font-medium">Maksimal 50MB</p>
                                 </div>
                                 <input name="file" type="file" required accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar" class="hidden" />
                             </label>
                         </div>
                     </div>
 
-                    <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
+                    <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
                         <button type="button" @click="open = false"
-                                class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all">
-                            Batal
+                                class="w-full sm:w-auto px-5 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all order-2 sm:order-1">
+                            <span class="flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-lg">close</span>
+                                Batal
+                            </span>
                         </button>
                         <button type="submit"
-                                class="px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
-                            Upload Materi
+                                class="w-full sm:w-auto px-5 py-2.5 bg-maroon text-white rounded-xl text-sm font-bold hover:from-primary-hover hover:to-red-800 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all order-1 sm:order-2">
+                            <span class="flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-lg">upload</span>
+                                Upload Materi
+                             </span>
                         </button>
                     </div>
+                </div>
                 </form>
             </div>
         </div>
@@ -535,60 +576,80 @@
                         action="{{ route('dosen.kelas.pertemuan.tugas.store', ['id' => $kelas->id, 'pertemuan' => $meeting['no']]) }}">
                         @csrf
 
-                        {{-- Header --}}
-                        <div class="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-gray-900" id="modal-title">Buat Tugas Baru</h3>
-                            <button type="button" @click="open = false"
-                                class="text-gray-400 hover:text-gray-500 transition-colors">
-                                <span class="material-symbols-outlined">close</span>
+                    {{-- Header with Full Gradient --}}
+                    <div class="bg-maroon px-8 py-8 -mx-6 -mt-6 rounded-t-2xl mb-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="size-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                                    <span class="material-symbols-outlined text-white text-4xl">assignment</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold text-white mb-1">Buat Tugas Baru</h3>
+                                    <p class="text-sm text-white/90">Tambahkan tugas untuk mahasiswa</p>
+                                </div>
+                            </div>
+                            <button type="button" @click="open = false" class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
+                                <span class="material-symbols-outlined text-3xl">close</span>
                             </button>
                         </div>
+                    </div>
 
-                        {{-- Body --}}
-                        <div class="px-6 py-6 space-y-5">
+                    <div class="px-8 pb-8">
+                        <div class="space-y-5">
                             {{-- Title Input --}}
                             <div>
-                                <label for="title"
-                                    class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Judul
-                                    Tugas</label>
+                                <label for="title" class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <span class="material-symbols-outlined text-primary text-sm">title</span>
+                                    Judul Tugas
+                                </label>
                                 <input type="text" name="title" id="title" required
-                                    class="w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium bg-white"
                                     placeholder="Contoh: Resume Pertemuan 1">
                             </div>
 
                             {{-- Description Input --}}
                             <div>
-                                <label for="description"
-                                    class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Deskripsi /
-                                    Instruksi</label>
+                                <label for="description" class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <span class="material-symbols-outlined text-primary text-sm">description</span>
+                                    Deskripsi / Instruksi
+                                </label>
                                 <textarea name="description" id="description" rows="3"
-                                    class="w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium bg-white resize-none"
                                     placeholder="Jelaskan instruksi pengerjaan tugas..."></textarea>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-5">
-                                {{-- Due Date --}}
-                                <div>
-                                    <label for="due_date"
-                                        class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Deadline</label>
-                                    <input type="datetime-local" name="due_date" id="due_date"
-                                        class="w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 transition-all text-sm font-medium text-gray-600">
-                                </div>
+                            {{-- Due Date --}}
+                            <div>
+                                <label for="due_date" class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <span class="material-symbols-outlined text-primary text-sm">schedule</span>
+                                    Deadline
+                                </label>
+                                <input type="datetime-local" name="due_date" id="due_date"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium text-gray-700 bg-white">
                             </div>
 
                             {{-- File Upload --}}
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">File Soal
-                                    (Opsional)</label>
-                                <label
-                                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-200 border-dashed rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors group">
-                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <span
-                                            class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors text-3xl mb-2">cloud_upload</span>
-                                        <p class="text-sm text-gray-500 font-medium"><span
-                                                class="font-bold text-gray-700 group-hover:text-primary transition-colors">Klik
-                                                untuk upload</span> atau drag and drop</p>
-                                        <p class="text-xs text-gray-400 mt-1">PDF, DOCX, ZIP (Max. 10MB)</p>
+                                <label class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <span class="material-symbols-outlined text-primary text-sm">attach_file</span>
+                                    File Soal (Opsional)
+                                </label>
+                                <label class="relative flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-2xl cursor-pointer overflow-hidden group
+                                              border-blue-300/40 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 hover:from-blue-100/50 hover:to-indigo-100/50 transition-all duration-300">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <div class="relative flex flex-col items-center justify-center pt-5 pb-6 z-10">
+                                        <div class="size-14 rounded-full bg-white shadow-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                                            <span class="material-symbols-outlined text-blue-600 text-3xl">cloud_upload</span>
+                                        </div>
+                                        <p class="text-sm text-gray-700 font-semibold mb-1">
+                                            <span class="text-blue-600">Klik untuk upload</span> atau drag & drop
+                                        </p>
+                                        <div class="flex items-center gap-2 mt-2">
+                                            <span class="px-2 py-0.5 bg-white rounded-full text-[10px] font-bold text-gray-600 shadow-sm">PDF</span>
+                                            <span class="px-2 py-0.5 bg-white rounded-full text-[10px] font-bold text-gray-600 shadow-sm">DOCX</span>
+                                            <span class="px-2 py-0.5 bg-white rounded-full text-[10px] font-bold text-gray-600 shadow-sm">ZIP</span>
+                                        </div>
+                                        <p class="text-[10px] text-gray-500 mt-2 font-medium">Maksimal 50MB</p>
                                     </div>
                                     <input name="file" type="file" class="hidden" />
                                 </label>
@@ -596,15 +657,20 @@
                         </div>
 
                         {{-- Footer --}}
-                        <div
-                            class="bg-gray-50 px-6 py-4 flex items-center justify-end gap-3 rounded-b-2xl border-t border-gray-100">
+                        <div class="flex flex-col sm:flex-row justify-end gap-3 px-8 pb-8 pt-6 border-t border-gray-100">
                             <button type="button" @click="open = false"
-                                class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-all shadow-sm">
-                                Batal
+                                class="w-full sm:w-auto px-5 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all order-2 sm:order-1">
+                                <span class="flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                    Batal
+                                </span>
                             </button>
                             <button type="submit"
-                                class="px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
-                                Simpan Tugas
+                                class="w-full sm:w-auto px-5 py-2.5 bg-maroon text-white rounded-xl text-sm font-bold hover:from-primary-hover hover:to-red-800 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all order-1 sm:order-2">
+                                <span class="flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-lg">task_alt</span>
+                                    Simpan Tugas
+                                </span>
                             </button>
                         </div>
                     </form>
@@ -615,7 +681,6 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Flash message handling
         @if(session('success'))

@@ -138,7 +138,7 @@
                         </a>
 
                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block"
-                            onsubmit="return confirm('Hapus user ini?');">
+                            onsubmit="event.preventDefault(); showDeleteConfirm('user', () => this.submit());">
                             @csrf
                             @method('DELETE')
                             <button type="submit"

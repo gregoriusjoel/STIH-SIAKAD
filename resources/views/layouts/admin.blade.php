@@ -580,7 +580,7 @@
         function downloadFailedItems() {
             const failedItems = @json(session('failed_items') ?? []);
             if (!failedItems || failedItems.length === 0) {
-                alert('Tidak ada data gagal untuk didownload');
+                showError('Tidak ada data gagal untuk didownload');
                 return;
             }
 

@@ -248,9 +248,9 @@
                                         // reload to reflect status change
                                         location.reload();
                                     } else {
-                                        alert(data.error || 'Gagal mengirim usulan perubahan');
+                                        showError(data.error || 'Gagal mengirim usulan perubahan');
                                     }
-                                }).catch(err => alert('Error: ' + err.message));
+                                }).catch(err => showError('Error: ' + err.message));
                                 // ensure changes fields visibility is updated after page load
                                 setTimeout(function(){ if (typeof toggleChangesFields === 'function') toggleChangesFields(); }, 100);
                             }

@@ -148,7 +148,7 @@
 
                     <form action="{{ route('admin.fakultas.destroy', ['fakultas' => $fakultas->id]) }}" 
                         method="POST" 
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus fakultas ini?')"
+                        onsubmit="event.preventDefault(); showDeleteConfirm('fakultas', () => this.submit());"
                         class="w-full">
                         @csrf
                         @method('DELETE')

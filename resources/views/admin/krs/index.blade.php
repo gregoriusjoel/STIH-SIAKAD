@@ -211,7 +211,7 @@
                                 @csrf
                                 <button type="submit" 
                                     class="bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 px-3 py-1.5 rounded-lg text-sm font-medium transition" 
-                                    onclick="return confirm('Buka kembali pengisian KRS untuk mahasiswa ini? Mahasiswa akan dapat mengedit KRS.')"
+                                    onclick="event.preventDefault(); showConfirm('Buka kembali pengisian KRS untuk mahasiswa ini? Mahasiswa akan dapat mengedit KRS.', () => this.closest('form').submit(), null, 'Konfirmasi Edit KRS')"
                                     title="Buka Kembali">
                                     <i class="fas fa-edit mr-1"></i> Edit
                                 </button>
@@ -350,7 +350,7 @@
                                     @csrf
                                     <button type="submit" 
                                         class="text-yellow-600 dark:text-yellow-400 hover:text-yellow-900 dark:hover:text-yellow-300 transition p-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded" 
-                                        onclick="return confirm('Buka kembali pengisian KRS untuk mahasiswa ini? Mahasiswa akan dapat mengedit KRS.')"
+                                        onclick="event.preventDefault(); showConfirm('Buka kembali pengisian KRS untuk mahasiswa ini? Mahasiswa akan dapat mengedit KRS.', () => this.closest('form').submit(), null, 'Konfirmasi Edit KRS')"
                                         title="Buka Kembali (Reopen)">
                                         <i class="fas fa-edit"></i>
                                         </button>

@@ -193,6 +193,52 @@ class LecturerController extends Controller
             return ($item['day'] ?? '') . ($item['time'] ?? '') . ($item['code'] ?? '');
         })->values()->toArray();
 
+        // Generate 16 meeting dates from semester start date
+        $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
+            ?? \App\Models\Semester::where('is_active', true)->first()
+            ?? \App\Models\Semester::latest()->first();
+
+        $meetingDates = [];
+        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
+            $startDate = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
+            
+            // Generate dates for each schedule based on their day
+            foreach ($allSchedules as $schedule) {
+                $dayName = $schedule['day'] ?? null;
+                if (!$dayName) continue;
+                
+                // Map day names to Carbon day constants
+                $dayMap = [
+                    'Minggu' => 0,
+                    'Senin' => 1,
+                    'Selasa' => 2,
+                    'Rabu' => 3,
+                    'Kamis' => 4,
+                    'Jumat' => 5,
+                    'Sabtu' => 6
+                ];
+                
+                $targetDay = $dayMap[$dayName] ?? null;
+                if ($targetDay === null) continue;
+                
+                // Find the first occurrence of this day from start date
+                $firstOccurrence = $startDate->copy();
+                while ($firstOccurrence->dayOfWeek !== $targetDay) {
+                    $firstOccurrence->addDay();
+                }
+                
+                // Generate 16 weekly occurrences
+                for ($i = 0; $i < 16; $i++) {
+                    $meetingDate = $firstOccurrence->copy()->addWeeks($i);
+                    $meetingDates[] = $meetingDate->format('Y-m-d');
+                }
+            }
+            
+            // Remove duplicates
+            $meetingDates = array_unique($meetingDates);
+            sort($meetingDates);
+        }
+
         return view('page.dosen.dashboard.index', [
             'total_mata_kuliah' => $kelasList->count(),
             'total_kelas_aktif' => $kelasList->count(),
@@ -201,7 +247,8 @@ class LecturerController extends Controller
             'krs_approval' => 0,
             'schedules' => $todaySchedules,
             'upcomingSchedules' => $upcomingSchedules,
-            'all_schedules' => $allSchedules
+            'all_schedules' => $allSchedules,
+            'meeting_dates' => $meetingDates
         ]);
     }
 
@@ -505,42 +552,54 @@ class LecturerController extends Controller
 
         // Fetch attendance records for this meeting
         $attendanceRecords = collect();
+        $totalAttendanceCounts = collect();
+        
         if ($kelasMataKuliah) {
             $attendanceQuery = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id);
             
-            // Filter by pertemuan (meeting number) if column exists
+            // Get records for current meeting
+            $currentMeetingQuery = clone $attendanceQuery;
             if (Schema::hasColumn('presensis', 'pertemuan')) {
-                $attendanceQuery->where(function($q) use ($pertemuan) {
+                $currentMeetingQuery->where(function($q) use ($pertemuan) {
                     $q->where('pertemuan', $pertemuan)
                       ->orWhereNull('pertemuan');
                 });
             }
-            
-            $attendanceRecords = $attendanceQuery->get()->keyBy('mahasiswa_id');
+            $attendanceRecords = $currentMeetingQuery->get()->keyBy('mahasiswa_id');
+
+            // Calculate total attendance per student
+            $totalAttendanceCounts = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+                ->where('status', 'hadir')
+                ->selectRaw('mahasiswa_id, count(*) as total')
+                ->groupBy('mahasiswa_id')
+                ->pluck('total', 'mahasiswa_id');
         }
 
-        $students = $krsCollection->map(function ($krs) use ($attendanceRecords) {
+        $students = $krsCollection->map(function ($krs) use ($attendanceRecords, $totalAttendanceCounts, $kelas) {
             $m = $krs->mahasiswa;
             $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
             
-            // Check if student has attendance record
-            $hasAttended = $attendanceRecords->has($m->id);
-            $attendanceTime = null;
+            // Check if student has attendance record for this meeting
+            $attendanceRecord = $attendanceRecords->get($m->id);
+            $attendanceStatus = $attendanceRecord ? $attendanceRecord->status : null; // 'hadir', 'izin', 'sakit', 'alpa'
+            $attendanceTime = $attendanceRecord && $attendanceRecord->waktu 
+                ? \Carbon\Carbon::parse($attendanceRecord->waktu)->format('H:i')
+                : null;
             
-            if ($hasAttended) {
-                $attendanceRecord = $attendanceRecords->get($m->id);
-                $attendanceTime = $attendanceRecord->waktu 
-                    ? \Carbon\Carbon::parse($attendanceRecord->waktu)->format('H:i')
-                    : null;
-            }
-            
+            // Get semester - prefer explicit semester field, fallback to calculation if needed
+            $semester = $m->semester ?? $m->getCurrentSemester();
+
             return [
+                'id' => $m->id,
                 'name' => $userName,
                 'nim' => $m->nim ?? null,
                 'prodi' => $m->prodi ?? null,
-                'status' => 'Aktif',
-                'attendance_status' => $hasAttended ? 'hadir' : 'belum_absen',
+                'semester' => $semester,
+                'status_mahasiswa' => $m->status ?? 'Aktif', // Status of the student (Aktif, Cuti, etc)
+                'attendance_status' => $attendanceStatus, // Status for this meeting
                 'attendance_time' => $attendanceTime,
+                'total_attendance' => $totalAttendanceCounts->get($m->id, 0),
+                'krs_id' => $krs->id,
             ];
         })->toArray();
 
@@ -551,6 +610,9 @@ class LecturerController extends Controller
             ->get();
 
         // Ensure the kelas_mata_kuliah has a qr_token so QR can be generated; generate if missing
+
+
+
         if ($kelasMataKuliah && empty($kelasMataKuliah->qr_token)) {
             $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
             $kelasMataKuliah->qr_enabled = $kelasMataKuliah->qr_enabled ?? false;
@@ -569,6 +631,63 @@ class LecturerController extends Controller
             ->get();
 
         return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students', 'tasks', 'materis', 'token', 'qrEnabled', 'qrExpires', 'id'));
+    }
+
+    public function updateAttendance(Request $request, $id, $pertemuan)
+    {
+        $request->validate([
+            'mahasiswa_id' => 'required|exists:mahasiswas,id',
+            'status' => 'required|in:hadir,izin,sakit,alpa',
+        ]);
+
+        $kelas = Kelas::findOrFail($id);
+        
+        // Find or create KelasMataKuliah
+        $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('kode_kelas', $kelas->section)
+            ->first();
+
+        if (!$kelasMataKuliah) {
+             // Fallback or create logic if needed, but usually should exist
+             return response()->json(['success' => false, 'message' => 'Kelas Mata Kuliah not found'], 404);
+        }
+
+        $studentId = $request->mahasiswa_id;
+        $status = $request->status;
+
+        // Find existing record or create new
+        $attendance = Presensi::updateOrCreate(
+            [
+                'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
+                'mahasiswa_id' => $studentId,
+                'pertemuan' => $pertemuan,
+            ],
+            [
+                'status' => $status,
+                'tanggal' => now()->toDateString(),
+                'waktu' => now(), // Update time to now
+                // We might need krs_id if strict relationship is required
+                'krs_id' => \App\Models\Krs::where('mahasiswa_id', $studentId)
+                            ->where('kelas_id', $kelas->id)
+                            ->whereIn('status', ['approved', 'disetujui'])
+                            ->value('id')
+            ]
+        );
+
+        // Recalculate total attendance for this student
+        $totalAttendance = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+            ->where('mahasiswa_id', $studentId)
+            ->where('status', 'hadir')
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Absensi berhasil diperbarui',
+            'data' => [
+                'status' => $status,
+                'total_attendance' => $totalAttendance
+            ]
+        ]);
     }
 
     public function meetingMaterials($id, $pertemuan)
@@ -728,6 +847,282 @@ class LecturerController extends Controller
             'success' => true,
             'presensis' => $formattedPresensis,
             'count' => $presensis->count()
+        ]);
+    }
+
+    /**
+     * Display input nilai page for specific kelas
+     */
+    public function inputNilaiKelas($id)
+    {
+        $user = Auth::user();
+        
+        $kelas = Kelas::with(['mataKuliah', 'dosen'])->findOrFail($id);
+        
+        // Check if user is the dosen for this class
+        // Note: dosen_id in kelas refers to dosen table, not users table
+        if (!$kelas->dosen || $kelas->dosen->user_id != $user->id) {
+            return redirect()->route('dosen.kelas')->with('error', 'Anda tidak memiliki akses ke kelas ini.');
+        }
+        
+        // Get or create bobot penilaian
+        $bobot = \App\Models\BobotPenilaian::firstOrCreate(
+            ['kelas_id' => $id],
+            [
+                'bobot_partisipatif' => 25.00,
+                'bobot_proyek' => 25.00,
+                'bobot_quiz' => 5.00,
+                'bobot_tugas' => 5.00,
+                'bobot_uts' => 20.00,
+                'bobot_uas' => 20.00,
+                'is_locked' => false,
+            ]
+        );
+        
+        // Get students from KRS
+        $students = \App\Models\Krs::where('kelas_id', $id)
+            ->whereIn('status', ['approved', 'disetujui'])
+            ->with(['mahasiswa.user', 'nilai'])
+            ->get()
+            ->map(function($krs) use ($id) {
+                $mahasiswa = $krs->mahasiswa;
+                $nilai = $krs->nilai ?? new \App\Models\Nilai(['kelas_id' => $id]);
+                
+                return [
+                    'krs_id' => $krs->id,
+                    'nim' => $mahasiswa->nim ?? '-',
+                    'name' => $mahasiswa->user->name ?? $mahasiswa->nama ?? '-',
+                    'nilai_id' => $nilai->id ?? null,
+                    'nilai_partisipatif' => $nilai->nilai_partisipatif ?? 0,
+                    'nilai_proyek' => $nilai->nilai_proyek ?? 0,
+                    'nilai_quiz' => $nilai->nilai_quiz ?? 0,
+                    'nilai_tugas' => $nilai->nilai_tugas ?? 0,
+                    'nilai_uts' => $nilai->nilai_uts ?? 0,
+                    'nilai_uas' => $nilai->nilai_uas ?? 0,
+                    'nilai_akhir' => $nilai->nilai_akhir ?? 0,
+                    'grade' => $nilai->grade ?? '-',
+                    'bobot' => $nilai->bobot ?? 0,
+                ];
+            })->toArray();
+        
+        $class_info = [
+            'id' => $kelas->id,
+            'name' => $kelas->mataKuliah->nama_mk,
+            'code' => $kelas->mataKuliah->kode_mk,
+            'section' => $kelas->section,
+            'sks' => $kelas->mataKuliah->sks,
+        ];
+        
+        return view('page.dosen.input-nilai.kelas', compact('class_info', 'students', 'bobot'));
+    }
+
+    /**
+     * Save bobot penilaian for a kelas
+     */
+    public function saveBobotPenilaian(Request $request, $id)
+    {
+        $request->validate([
+            'bobot_partisipatif' => 'required|numeric|min:0|max:100',
+            'bobot_proyek' => 'required|numeric|min:0|max:100',
+            'bobot_quiz' => 'required|numeric|min:0|max:100',
+            'bobot_tugas' => 'required|numeric|min:0|max:100',
+            'bobot_uts' => 'required|numeric|min:0|max:100',
+            'bobot_uas' => 'required|numeric|min:0|max:100',
+        ]);
+        
+        // Check authorization
+        $kelas = Kelas::with('dosen')->findOrFail($id);
+        
+        if (!$kelas->dosen || $kelas->dosen->user_id != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses ke kelas ini.'
+            ], 403);
+        }
+        
+        // Validate total = 100
+        $total = $request->bobot_partisipatif + $request->bobot_proyek + $request->bobot_quiz + 
+                 $request->bobot_tugas + $request->bobot_uts + $request->bobot_uas;
+        
+        if (abs($total - 100) > 0.01) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Total bobot harus sama dengan 100%. Saat ini: ' . $total . '%'
+            ], 422);
+        }
+        
+        $bobot = \App\Models\BobotPenilaian::where('kelas_id', $id)->first();
+        
+        if (!$bobot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bobot penilaian tidak ditemukan.'
+            ], 404);
+        }
+        
+        // Check if bobot is being edited (already locked)
+        $isEditing = $bobot->is_locked;
+        
+        // Update bobot values
+        $bobot->update($request->only([
+            'bobot_partisipatif',
+            'bobot_proyek',
+            'bobot_quiz',
+            'bobot_tugas',
+            'bobot_uts',
+            'bobot_uas',
+        ]));
+        
+        // Lock the bobot if not already locked
+        if (!$isEditing) {
+            $bobot->lock(Auth::id());
+        }
+        
+        // If editing, recalculate all existing grades
+        if ($isEditing) {
+            $this->recalculateAllGrades($id, $bobot);
+        }
+        
+        $message = $isEditing 
+            ? 'Bobot penilaian berhasil diupdate. Semua nilai telah dikalkulasi ulang.'
+            : 'Bobot penilaian berhasil disimpan dan dikunci.';
+        
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data' => $bobot,
+            'recalculated' => $isEditing
+        ]);
+    }
+
+    /**
+     * Recalculate all grades for a kelas when bobot changes
+     */
+    private function recalculateAllGrades($kelasId, $bobot)
+    {
+        \DB::beginTransaction();
+        try {
+            // Get all nilai records for this kelas
+            $nilaiRecords = \App\Models\Nilai::where('kelas_id', $kelasId)->get();
+            
+            foreach ($nilaiRecords as $nilai) {
+                // Recalculate using the new bobot
+                $nilai->autoCalculateGrade($bobot);
+                $nilai->save();
+            }
+            
+            \DB::commit();
+            \Log::info("Recalculated {$nilaiRecords->count()} grades for kelas {$kelasId}");
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Error recalculating grades: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Save nilai mahasiswa
+     */
+    public function simpanNilai(Request $request, $id)
+    {
+        $request->validate([
+            'nilai' => 'required|array',
+            'nilai.*.krs_id' => 'required|exists:krs,id',
+            'nilai.*.nilai_partisipatif' => 'nullable|numeric|min:0|max:100',
+            'nilai.*.nilai_proyek' => 'nullable|numeric|min:0|max:100',
+            'nilai.*.nilai_quiz' => 'nullable|numeric|min:0|max:100',
+            'nilai.*.nilai_tugas' => 'nullable|numeric|min:0|max:100',
+            'nilai.*.nilai_uts' => 'nullable|numeric|min:0|max:100',
+            'nilai.*.nilai_uas' => 'nullable|numeric|min:0|max:100',
+        ]);
+        
+        $kelas = Kelas::with('dosen')->findOrFail($id);
+        
+        // Check ownership
+        // Note: dosen_id in kelas refers to dosen table, not users table
+        if (!$kelas->dosen || $kelas->dosen->user_id != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses ke kelas ini.'
+            ], 403);
+        }
+        
+        $bobot = \App\Models\BobotPenilaian::where('kelas_id', $id)->first();
+        
+        if (!$bobot || !$bobot->is_locked) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bobot penilaian belum diset atau belum dikunci.'
+            ], 422);
+        }
+        
+        \DB::beginTransaction();
+        try {
+            $savedCount = 0;
+            
+            foreach ($request->nilai as $nilaiData) {
+                $krsId = $nilaiData['krs_id'];
+                
+                // Find or create nilai record
+                $nilai = \App\Models\Nilai::firstOrNew([
+                    'krs_id' => $krsId,
+                    'kelas_id' => $id,
+                ]);
+                
+                // Set component values
+                $nilai->nilai_partisipatif = $nilaiData['nilai_partisipatif'] ?? 0;
+                $nilai->nilai_proyek = $nilaiData['nilai_proyek'] ?? 0;
+                $nilai->nilai_quiz = $nilaiData['nilai_quiz'] ?? 0;
+                $nilai->nilai_tugas = $nilaiData['nilai_tugas'] ?? 0;
+                $nilai->nilai_uts = $nilaiData['nilai_uts'] ?? 0;
+                $nilai->nilai_uas = $nilaiData['nilai_uas'] ?? 0;
+                
+                // Auto calculate final grade and bobot
+                $nilai->autoCalculateGrade($bobot);
+                
+                // Auto-publish: set as published immediately
+                $nilai->is_published = true;
+                $nilai->published_at = now();
+                $nilai->published_by = Auth::id();
+                
+                $nilai->save();
+                $savedCount++;
+            }
+            
+            \DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil menyimpan {$savedCount} nilai mahasiswa.",
+            ]);
+            
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Error saving nilai: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan nilai: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get bobot penilaian for AJAX
+     */
+    public function getBobotPenilaian($id)
+    {
+        $bobot = \App\Models\BobotPenilaian::where('kelas_id', $id)->first();
+        
+        if (!$bobot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bobot penilaian tidak ditemukan.'
+            ], 404);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'data' => $bobot
         ]);
     }
 }

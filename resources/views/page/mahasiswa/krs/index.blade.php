@@ -738,7 +738,10 @@
         document.getElementById('addMataKuliahBtn')?.addEventListener('click', function () {
             const select = document.getElementById('mataKuliahSelect');
             const opt = select.options[select.selectedIndex];
-            if (!opt || !opt.value) { alert('Silakan pilih mata kuliah terlebih dahulu!'); return; }
+            if (!opt || !opt.value) { 
+                showError('Silakan pilih mata kuliah terlebih dahulu!');
+                return;
+            }
 
             const mkId = opt.value;
             const kodeMk = opt.dataset.kode;
@@ -751,7 +754,10 @@
 
             // SKS limit
             const currentSks = parseInt(document.getElementById('totalSks').textContent) || 0;
-            if (currentSks + sks > 24) { alert('Total SKS akan melebihi batas maksimal (24 SKS)!'); return; }
+            if (currentSks + sks > 24) { 
+                showError('Total SKS akan melebihi batas maksimal (24 SKS)!');
+                return;
+            }
 
             // Add row
             const tbody = document.getElementById('krsTableBody');
@@ -787,19 +793,33 @@
             calculateTotal();
 
             tr.querySelector('.remove-additional-btn').addEventListener('click', function(){
-                if (!confirm('Apakah Anda yakin ingin menghapus mata kuliah ini?')) return;
-                tr.remove();
-                // add back simple option
-                const sel = document.getElementById('mataKuliahSelect');
-                const option = document.createElement('option'); option.value = mkId; option.textContent = `${kodeMk} - ${namaMk} (${sks} SKS)`; sel.appendChild(option);
-                calculateTotal();
+                showConfirm(
+                    'Apakah Anda yakin ingin menghapus mata kuliah ini?',
+                    function() {
+                        tr.remove();
+                        // add back simple option
+                        const sel = document.getElementById('mataKuliahSelect');
+                        const option = document.createElement('option'); 
+                        option.value = mkId; 
+                        option.textContent = `${kodeMk} - ${namaMk} (${sks} SKS)`; 
+                        sel.appendChild(option);
+                        calculateTotal();
+                    }
+                );
             });
         });
 
         // Remove buttons for kelas-based rows
         document.querySelectorAll('.remove-btn').forEach(btn=> btn.addEventListener('click', function(e){
-            const kelasId = this.dataset.kelasId; if (!confirm('Apakah Anda yakin ingin menghapus mata kuliah ini?')) return;
-            const row = document.querySelector(`tr[data-kelas-id="${kelasId}"]`); if (row) row.remove(); calculateTotal();
+            const kelasId = this.dataset.kelasId;
+            showConfirm(
+                'Apakah Anda yakin ingin menghapus mata kuliah ini?',
+                function() {
+                    const row = document.querySelector(`tr[data-kelas-id="${kelasId}"]`);
+                    if (row) row.remove();
+                    calculateTotal();
+                }
+            );
         }));
 
         // Initial calculation
@@ -808,8 +828,16 @@
         // Form submit validation
         document.getElementById('krsForm')?.addEventListener('submit', function(e){
             const totalSks = parseInt(document.getElementById('totalSks').textContent)||0;
-            if (totalSks > 24) { e.preventDefault(); alert('Total SKS melebihi batas maksimal (24 SKS)!'); return false; }
-            if (totalSks === 0) { e.preventDefault(); alert('Anda belum memilih mata kuliah!'); return false; }
+            if (totalSks > 24) { 
+                e.preventDefault();
+                showError('Total SKS melebihi batas maksimal (24 SKS)!');
+                return false;
+            }
+            if (totalSks === 0) { 
+                e.preventDefault();
+                showError('Anda belum memilih mata kuliah!');
+                return false;
+            }
             return true;
         });
 

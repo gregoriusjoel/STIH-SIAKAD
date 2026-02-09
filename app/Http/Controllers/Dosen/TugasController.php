@@ -16,7 +16,7 @@ class TugasController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
-            'file' => 'nullable|file|max:10240',
+            'file' => 'nullable|file|max:51200', // 50MB max
             'max_score' => 'nullable|integer|min:0'
         ]);
 

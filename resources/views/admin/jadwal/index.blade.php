@@ -503,7 +503,7 @@
                     <button type="button" onclick="closeRejectModalWeekly()"
                         class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Batal</button>
                     <button type="submit" class="px-4 py-2 bg-maroon text-white rounded-lg hover:bg-maroon-700 transition"
-                        onclick="return confirm('Yakin ingin menolak permintaan reschedule ini?')">Tolak</button>
+                        onclick="event.preventDefault(); showConfirm('Yakin ingin menolak permintaan reschedule ini?', () => this.closest('form').submit());">Tolak</button>
                 </div>
             </form>
         </div>

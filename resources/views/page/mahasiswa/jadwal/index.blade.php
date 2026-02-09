@@ -154,7 +154,7 @@
 @push('scripts')
     <script>
         function downloadICS() {
-            alert('Fitur export ke kalender akan segera tersedia!');
+            showInfo('Informasi', 'Fitur export ke kalender akan segera tersedia!');
         }
     </script>
 @endpush

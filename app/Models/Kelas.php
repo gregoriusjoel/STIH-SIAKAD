@@ -50,6 +50,11 @@ class Kelas extends Model
         return $this->hasMany(Krs::class);
     }
 
+    public function bobotPenilaian()
+    {
+        return $this->hasOne(BobotPenilaian::class);
+    }
+
     public function mahasiswas()
     {
         // KRS status values have changed over time (indonesian: 'disetujui', english: 'approved').

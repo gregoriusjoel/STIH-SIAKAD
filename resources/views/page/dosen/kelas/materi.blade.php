@@ -129,7 +129,7 @@
                                     </a>
                                     <form action="{{ route('dosen.kelas.pertemuan.materi.destroy', ['id' => $kelas->id, 'pertemuan' => $meeting['no'], 'materi' => $materi->id]) }}" 
                                           method="POST" 
-                                          onsubmit="return confirm('Yakin ingin menghapus materi ini?');">
+                                          onsubmit="event.preventDefault(); showDeleteConfirm('materi', () => this.submit());">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"

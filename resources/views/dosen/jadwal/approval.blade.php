@@ -47,25 +47,54 @@
     },
     
     approveProposal(id) {
-        if (!confirm('Yakin ingin menyetujui proposal jadwal ini?')) return;
-        
-        const formData = new FormData();
-        formData.append('_token', '{{ csrf_token() }}');
-        
-        fetch(`{{ route('dosen.jadwal_approval.approve', ':id') }}`.replace(':id', id), {
-            method: 'POST',
-            body: formData,
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Gagal menyetujui proposal: ' + data.message);
+        Swal.fire({
+            title: 'Setujui Jadwal?',
+            text: 'Jadwal ini akan disetujui dan diajukan ke admin.',
+            icon: 'question',
+            iconColor: '#8B1538',
+            showCancelButton: true,
+            confirmButtonColor: '#8B1538',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Ya, Setujui',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('_token', '{{ csrf_token() }}');
+                
+                fetch(`{{ route('dosen.jadwal_approval.approve', ':id') }}`.replace(':id', id), {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Jadwal berhasil disetujui.',
+                            icon: 'success',
+                            confirmButtonColor: '#8B1538'
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: 'Gagal menyetujui proposal: ' + data.message,
+                            icon: 'error',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan sistem.',
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
+                    });
+                });
             }
-        })
-        .catch(err => alert('Error: ' + err.message));
+        });
     },
     
     submitRejection() {

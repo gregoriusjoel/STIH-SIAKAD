@@ -21,7 +21,9 @@ class LoginController extends Controller
         $token = $request->query('token');
         $kelas = null;
         if ($token) {
-            $kelas = KelasMataKuliah::where('qr_token', $token)->first();
+            $kelas = KelasMataKuliah::where('qr_token', $token)
+                ->with(['mataKuliah', 'dosen.user'])
+                ->first();
             if (!$kelas) {
                 abort(404);
             }
@@ -98,7 +100,7 @@ class LoginController extends Controller
             session([
                 'kelas_id' => $kelas->id,
                 'pertemuan' => $pertemuan,
-                'mata_kuliah' => $kelas->mataKuliah->nama ?? null,
+                'mata_kuliah' => $kelas->mataKuliah->nama_mk ?? null,
                 'presensi_exists' => true,
             ]);
 
@@ -141,7 +143,7 @@ class LoginController extends Controller
             session([
                 'kelas_id' => $kelas->id,
                 'pertemuan' => $pertemuan,
-                'mata_kuliah' => $kelas->mataKuliah->nama ?? null,
+                'mata_kuliah' => $kelas->mataKuliah->nama_mk ?? null,
                 'presensi_exists' => false,
                 'presensi_id' => $presensi->id,
             ]);
@@ -175,6 +177,13 @@ class LoginController extends Controller
                 ->where('kelas_mata_kuliah_id', $kelasId)
                 ->orderBy('created_at', 'desc')
                 ->first();
+        }
+        
+        if (!$mataKuliah && $kelasId) {
+            $kelas = KelasMataKuliah::with('mataKuliah')->find($kelasId);
+            if ($kelas && $kelas->mataKuliah) {
+                $mataKuliah = $kelas->mataKuliah->nama_mk;
+            }
         }
 
         return view('absen.thank-you', compact('user', 'mahasiswa', 'kelasId', 'mataKuliah', 'presensi', 'pertemuan'));

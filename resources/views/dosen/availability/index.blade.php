@@ -33,7 +33,7 @@
 
         {{-- Availability Grid --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
                     <i class="fas fa-clock text-maroon"></i>
                     Jadwal Ketersediaan Anda
@@ -54,53 +54,69 @@
                         </a>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="bg-maroon text-white">
-                                <tr>
-                                    <th class="px-4 py-3 text-left font-semibold">Hari</th>
-                                    <th class="px-4 py-3 text-left font-semibold">Jam Tersedia</th>
-                                    <th class="px-4 py-3 text-left font-semibold">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $day)
-                                    @if($availabilities->has($day))
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                                            <td class="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{{ $day }}</td>
-                                            <td class="px-4 py-3">
-                                                <div class="flex flex-wrap gap-2">
+                    {{-- Modern Card-Based Layout --}}
+                    <div class="space-y-5">
+                        @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $day)
+                            @if($availabilities->has($day))
+                                <div class="group bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-maroon/30 dark:hover:border-maroon/50 hover:shadow-lg transition-all duration-300">
+                                    <div class="p-6">
+                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                                            {{-- Day Label --}}
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-maroon to-red-800 flex items-center justify-center shadow-md">
+                                                    <span class="text-white font-bold text-base">
+                                                        {{ substr($day, 0, 3) }}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <h4 class="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1">{{ $day }}</h4>
+                                                    @php
+                                                        $bookedCount = $availabilities[$day]->where('status', 'booked')->count();
+                                                        $totalCount = $availabilities[$day]->count();
+                                                    @endphp
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                        @if($bookedCount > 0)
+                                                            <i class="fas fa-calendar-check text-blue-500 mr-1.5"></i>
+                                                            {{ $bookedCount }}/{{ $totalCount }} slot terjadwal
+                                                        @else
+                                                            <i class="fas fa-check-circle text-green-500 mr-1.5"></i>
+                                                            {{ $totalCount }} slot tersedia
+                                                        @endif
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {{-- Time Slots --}}
+                                            <div class="flex-1 md:ml-8">
+                                                <div class="flex flex-wrap gap-3">
                                                     @foreach($availabilities[$day] as $availability)
-                                                        <span class="px-3 py-1 rounded-full text-xs font-medium
-                                                            @if($availability->status === 'available') bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400
-                                                            @elseif($availability->status === 'booked') bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400
-                                                            @else bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400
-                                                            @endif">
-                                                            {{ $availability->jamPerkuliahan->slot_label }}
-                                                        </span>
+                                                        <div class="relative group/slot">
+                                                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200
+                                                                @if($availability->status === 'available') 
+                                                                    bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200 hover:from-green-100 hover:to-emerald-100 hover:shadow-md dark:from-green-900/20 dark:to-emerald-900/20 dark:text-green-400 dark:border-green-800
+                                                                @elseif($availability->status === 'booked') 
+                                                                    bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200 hover:from-blue-100 hover:to-indigo-100 hover:shadow-md dark:from-blue-900/20 dark:to-indigo-900/20 dark:text-blue-400 dark:border-blue-800
+                                                                @else 
+                                                                    bg-gradient-to-r from-gray-50 to-slate-50 text-gray-700 border border-gray-200 hover:from-gray-100 hover:to-slate-100 hover:shadow-md dark:from-gray-900/20 dark:to-slate-900/20 dark:text-gray-400 dark:border-gray-700
+                                                                @endif">
+                                                                @if($availability->status === 'available')
+                                                                    <i class="fas fa-circle text-[6px] text-green-500"></i>
+                                                                @elseif($availability->status === 'booked')
+                                                                    <i class="fas fa-circle text-[6px] text-blue-500"></i>
+                                                                @else
+                                                                    <i class="fas fa-circle text-[6px] text-gray-400"></i>
+                                                                @endif
+                                                                <span>{{ $availability->jamPerkuliahan->slot_label }}</span>
+                                                            </span>
+                                                        </div>
                                                     @endforeach
                                                 </div>
-                                            </td>
-                                            <td class="px-4 py-3">
-                                                @php
-                                                    $bookedCount = $availabilities[$day]->where('status', 'booked')->count();
-                                                    $totalCount = $availabilities[$day]->count();
-                                                @endphp
-                                                @if($bookedCount > 0)
-                                                    <span class="text-xs text-blue-600 dark:text-blue-400">
-                                                        {{ $bookedCount }}/{{ $totalCount }} slot terjadwal
-                                                    </span>
-                                                @else
-                                                    <span class="text-xs text-green-600 dark:text-green-400">
-                                                        Semua slot tersedia
-                                                    </span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                            </tbody>
-                        </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
                 @endif
             </div>

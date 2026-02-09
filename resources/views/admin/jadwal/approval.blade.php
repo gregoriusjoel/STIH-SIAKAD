@@ -192,7 +192,7 @@
                                         </a>
                                         <form action="{{ route('admin.jadwal_admin_approval.approve', $proposal->id) }}" method="POST">
                                             @csrf
-                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui proposal ini?')" class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition" title="Setujui Langsung">
+                                            <button type="submit" onclick="event.preventDefault(); showConfirm('Apakah Anda yakin ingin menyetujui proposal ini?', () => this.closest('form').submit());" class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition" title="Setujui Langsung">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         </form>

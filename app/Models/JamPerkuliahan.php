@@ -20,8 +20,6 @@ class JamPerkuliahan extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'jam_mulai' => 'datetime:H:i',
-        'jam_selesai' => 'datetime:H:i',
     ];
 
     /**

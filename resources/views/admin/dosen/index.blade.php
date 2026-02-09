@@ -240,7 +240,7 @@
                     icon: 'success',
                     title: 'Berhasil!',
                     text: "{{ session('success') }}",
-                    showConfirmButton: false,
+                    showConfirmButton: false,   
                     timer: 2000,
                     background: '#ffffff',
                     iconColor: '#1d7f35',

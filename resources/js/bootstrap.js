@@ -171,6 +171,10 @@ window.downloadFile = function(url, filename) {
         window.URL.revokeObjectURL(link.href);
     }).catch(error => {
         console.error('Download failed:', error);
-        alert('Download gagal. Silakan coba lagi.');
+        if (window.showError) {
+            window.showError('Download gagal. Silakan coba lagi.');
+        } else {
+            alert('Download gagal. Silakan coba lagi.');
+        }
     });
 };

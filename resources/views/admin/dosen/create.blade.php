@@ -361,7 +361,7 @@
 
             if (mataKuliahSelects.length > 0 && !hasValidSelection) {
                 e.preventDefault();
-                alert('Mata kuliah belum dipilih! Silakan pilih minimal 1 mata kuliah atau hapus field yang kosong.');
+                showError('Mata kuliah belum dipilih! Silakan pilih minimal 1 mata kuliah atau hapus field yang kosong.');
                 return false;
             }
         });

@@ -1324,7 +1324,9 @@
                 });
 
                 document.getElementById('deleteEventBtn').addEventListener('click', function () {
-                    if (!confirm('Hapus event ini?')) return;
+                    showDeleteConfirm('event', function() {
+                        // Delete logic here
+                    });
                     const eventId = document.getElementById('event_id').value;
                     fetch(`/admin/kalender-akademik/event/${eventId}`, {
                         method: 'DELETE',
@@ -1363,7 +1365,16 @@
                     }
                 }
 
-                if (!confirm(`Update tanggal event ke ${startStr} s/d ${endStr}?`)) {
+                showConfirm(
+                    `Update tanggal event ke ${startStr} s/d ${endStr}?`,
+                    function() {
+                        // Update logic here  
+                    },
+                    function() {
+                        // Revert logic
+                    },
+                    'Konfirmasi Update'
+                );
                     info.revert();
                     return;
                 }

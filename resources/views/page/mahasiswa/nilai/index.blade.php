@@ -68,55 +68,6 @@
             @include('page.mahasiswa.khs._content')
         </div>
     </div>
-
-    @php
-        // Helper functions - duplicate dari controller untuk view
-        function getGrade($nilai)
-        {
-            if ($nilai >= 85)
-                return 'A';
-            if ($nilai >= 80)
-                return 'A-';
-            if ($nilai >= 75)
-                return 'B+';
-            if ($nilai >= 70)
-                return 'B';
-            if ($nilai >= 65)
-                return 'B-';
-            if ($nilai >= 60)
-                return 'C+';
-            if ($nilai >= 55)
-                return 'C';
-            if ($nilai >= 50)
-                return 'C-';
-            if ($nilai >= 45)
-                return 'D';
-            return 'E';
-        }
-
-        function getBobot($nilai)
-        {
-            if ($nilai >= 85)
-                return 4.0;
-            if ($nilai >= 80)
-                return 3.7;
-            if ($nilai >= 75)
-                return 3.3;
-            if ($nilai >= 70)
-                return 3.0;
-            if ($nilai >= 65)
-                return 2.7;
-            if ($nilai >= 60)
-                return 2.3;
-            if ($nilai >= 55)
-                return 2.0;
-            if ($nilai >= 50)
-                return 1.7;
-            if ($nilai >= 45)
-                return 1.3;
-            return 0;
-        }
-    @endphp
 @endsection
 
 @push('scripts')

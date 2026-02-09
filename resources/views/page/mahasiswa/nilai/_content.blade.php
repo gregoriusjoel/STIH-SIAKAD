@@ -1,59 +1,229 @@
 <div class="space-y-6">
 
-    @php $maxSemester = isset($mahasiswa) ? $mahasiswa->getCurrentSemester() : 8; @endphp
-    @for($s = 1; $s <= $maxSemester; $s++)
-        @php
-            $label = 'Semester ' . $s;
-            $found = collect($nilaiPerSemester)->first(function($value, $key) use ($s) {
-                return preg_match('/\\b' . $s . '\\b/', $key);
-            });
-        @endphp
+    @php 
+        // Helper function untuk mendapatkan warna badge berdasarkan grade
+        function getGradeColor($grade) {
+            if (in_array($grade, ['A', 'A-'])) {
+                return 'bg-gradient-to-r from-green-500 to-green-600 text-white';
+            } elseif (in_array($grade, ['B+', 'B', 'B-'])) {
+                return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white';
+            } elseif (in_array($grade, ['C+', 'C', 'C-'])) {
+                return 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white';
+            } else {
+                return 'bg-gradient-to-r from-red-500 to-red-600 text-white';
+            }
+        }
+    @endphp
 
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                <h4 class="text-md font-bold">{{ $label }}</h4>
+    @if($nilaiPerSemester->isEmpty())
+        <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div class="p-12 text-center">
+                <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-inbox text-3xl text-gray-400 dark:text-gray-600"></i>
+                </div>
+                <p class="text-gray-500 dark:text-gray-400 font-medium">Belum ada nilai</p>
+                <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Nilai akan muncul setelah dosen menginput nilai</p>
             </div>
-
-            @if($found && $found->count())
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50 border-b-2 border-gray-200">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">No</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Kode MK</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Mata Kuliah</th>
-                                <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase">SKS</th>
-                                <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase">Nilai</th>
-                                <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase">Grade</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @foreach($found as $index => $krs)
-                                @php
-                                    $mataKuliah = $krs->kelasMataKuliah->mataKuliah ?? null;
-                                    $nilai = $krs->nilai;
-                                    $nilaiAngka = $nilai->nilai ?? 0;
-                                    $grade = (new \App\Http\Controllers\Mahasiswa\NilaiController)->getGrade($nilaiAngka);
-                                @endphp
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4 text-sm text-gray-700">{{ $index + 1 }}</td>
-                                    <td class="px-6 py-4 text-sm font-medium text-gray-800">{{ $mataKuliah->kode_mk ?? '-' }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-800">{{ $mataKuliah->nama_mk ?? '-' }}</td>
-                                    <td class="px-6 py-4 text-sm text-center font-semibold text-gray-800">{{ $mataKuliah->sks ?? 0 }}</td>
-                                    <td class="px-6 py-4 text-sm text-center font-bold text-gray-900">{{ $nilaiAngka }}</td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="px-3 py-1 rounded-lg font-bold text-sm bg-gray-100 text-gray-700">{{ $grade }}</span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="p-8 text-center text-gray-500">
-                    Tidak ada nilai untuk semester ini.
-                </div>
-            @endif
         </div>
-    @endfor
+    @else
+        @foreach($nilaiPerSemester as $semesterNama => $nilaiList)
+            @php
+                // Calculate semester statistics
+                $totalSKS = 0;
+                $semesterNumber = null;
+                
+                if ($nilaiList && $nilaiList->count()) {
+                    foreach ($nilaiList as $krs) {
+                        $mataKuliah = $krs->kelasMataKuliah->mataKuliah ?? null;
+                        $totalSKS += $mataKuliah->sks ?? 0;
+                        
+                        // Get semester number from first mata kuliah
+                        if ($semesterNumber === null && $mataKuliah) {
+                            $semesterNumber = $mataKuliah->semester ?? null;
+                        }
+                    }
+                }
+                
+                // Display semester label
+                $semesterLabel = $semesterNumber ? "Semester {$semesterNumber}" : $semesterNama;
+            @endphp
+
+            <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                {{-- Semester Header --}}
+                <div class="bg-maroon dark:bg-red-900 px-6 py-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-book-open text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-white">{{ $semesterLabel }}</h4>
+                                <p class="text-sm text-white/80">{{ $nilaiList->count() }} Mata Kuliah • {{ $totalSKS }} SKS</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-white">{{ $nilaiList->count() }}</div>
+                            <div class="text-xs text-white/80">Courses</div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                {{-- Course Cards Grid --}}
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($nilaiList as $index => $krs)
+                            @php
+                                $mataKuliah = $krs->kelasMataKuliah->mataKuliah ?? null;
+                                $nilai = $krs->nilai;
+                                $nilaiAngka = $nilai->nilai_akhir ?? 0;
+                                $grade = $nilai->grade ?? '-';
+                                $gradeColor = getGradeColor($grade);
+                                
+                                // Get bobot penilaian from kelas
+                                $kelas = $krs->kelas ?? $krs->kelasMataKuliah->kelas ?? null;
+                                $bobotPenilaian = $kelas?->bobotPenilaian;
+                            @endphp
+                            
+                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                                 x-data="{ expanded: false }">
+                                {{-- Compact Card (Collapsed) --}}
+                                <div class="p-4 cursor-pointer" @click="expanded = !expanded">
+                                    {{-- Header: Number + Code --}}
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-maroon/10 dark:bg-red-900/20 text-maroon dark:text-red-400 font-bold text-xs">
+                                                {{ $index + 1 }}
+                                            </span>
+                                            <span class="text-base font-mono font-semibold text-gray-600 dark:text-gray-400">
+                                                {{ $mataKuliah->kode_mk ?? '-' }}
+                                            </span>
+                                        </div>
+                                        <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                           :class="expanded ? 'rotate-180' : ''"></i>
+                                    </div>
+                                    
+                                    {{-- Course Name --}}
+                                    <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2 min-h-[2.5rem]">
+                                        {{ $mataKuliah->nama_mk ?? '-' }}
+                                    </h5>
+                                    
+                                    {{-- SKS --}}
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                        <i class="fas fa-book text-[10px]"></i> {{ $mataKuliah->sks ?? 0 }} SKS
+                                    </p>
+                                    
+                                    {{-- Score & Grade Badge (Bottom Right Corner) --}}
+                                    <div class="flex justify-end items-end mt-auto pt-4">
+                                        <div class="text-right mr-3">
+                                            <div class="text-3xl font-bold text-gray-900 dark:text-white leading-none">
+                                                {{ number_format($nilaiAngka, 0) }}
+                                            </div>
+                                            <div class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Nilai</div>
+                                        </div>
+                                        <div class="relative">
+                                            <div class="absolute inset-0 {{ $gradeColor }} rounded-lg blur-sm opacity-40"></div>
+                                            <div class="relative {{ $gradeColor }} rounded-lg px-3 py-2 shadow-md">
+                                                <span class="text-xl font-black">{{ $grade }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {{-- Expandable Detail Section --}}
+                                @if($bobotPenilaian)
+                                    <div x-show="expanded" 
+                                         x-collapse
+                                         class="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                                        <div class="p-4 space-y-3">
+                                            <h6 class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">
+                                                <i class="fas fa-clipboard-list mr-1 text-maroon dark:text-red-400"></i>
+                                                Komponen Penilaian
+                                            </h6>
+                                            
+                                            {{-- Component Grid --}}
+                                            <div class="grid grid-cols-2 gap-2">
+                                                @if($bobotPenilaian->bobot_partisipatif > 0)
+                                                    <div class="bg-white dark:bg-gray-800 rounded p-2 border border-gray-200 dark:border-gray-700">
+                                                        <div class="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Partisipatif</div>
+                                                        <div class="flex items-baseline justify-between">
+                                                            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($nilai->nilai_partisipatif ?? 0, 0) }}</span>
+                                                            <span class="text-[10px] text-gray-500">{{ $bobotPenilaian->bobot_partisipatif }}%</span>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($bobotPenilaian->bobot_proyek > 0)
+                                                    <div class="bg-white dark:bg-gray-800 rounded p-2 border border-gray-200 dark:border-gray-700">
+                                                        <div class="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Proyek</div>
+                                                        <div class="flex items-baseline justify-between">
+                                                            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($nilai->nilai_proyek ?? 0, 0) }}</span>
+                                                            <span class="text-[10px] text-gray-500">{{ $bobotPenilaian->bobot_proyek }}%</span>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($bobotPenilaian->bobot_quiz > 0)
+                                                    <div class="bg-white dark:bg-gray-800 rounded p-2 border border-gray-200 dark:border-gray-700">
+                                                        <div class="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Quiz</div>
+                                                        <div class="flex items-baseline justify-between">
+                                                            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($nilai->nilai_quiz ?? 0, 0) }}</span>
+                                                            <span class="text-[10px] text-gray-500">{{ $bobotPenilaian->bobot_quiz }}%</span>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($bobotPenilaian->bobot_tugas > 0)
+                                                    <div class="bg-white dark:bg-gray-800 rounded p-2 border border-gray-200 dark:border-gray-700">
+                                                        <div class="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Tugas</div>
+                                                        <div class="flex items-baseline justify-between">
+                                                            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($nilai->nilai_tugas ?? 0, 0) }}</span>
+                                                            <span class="text-[10px] text-gray-500">{{ $bobotPenilaian->bobot_tugas }}%</span>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($bobotPenilaian->bobot_uts > 0)
+                                                    <div class="bg-white dark:bg-gray-800 rounded p-2 border border-gray-200 dark:border-gray-700">
+                                                        <div class="text-[10px] text-gray-500 dark:text-gray-400 mb-1">UTS</div>
+                                                        <div class="flex items-baseline justify-between">
+                                                            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($nilai->nilai_uts ?? 0, 0) }}</span>
+                                                            <span class="text-[10px] text-gray-500">{{ $bobotPenilaian->bobot_uts }}%</span>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($bobotPenilaian->bobot_uas > 0)
+                                                    <div class="bg-white dark:bg-gray-800 rounded p-2 border border-gray-200 dark:border-gray-700">
+                                                        <div class="text-[10px] text-gray-500 dark:text-gray-400 mb-1">UAS</div>
+                                                        <div class="flex items-baseline justify-between">
+                                                            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($nilai->nilai_uas ?? 0, 0) }}</span>
+                                                            <span class="text-[10px] text-gray-500">{{ $bobotPenilaian->bobot_uas }}%</span>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            
+                                            {{-- Final Summary --}}
+                                            <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="text-gray-600 dark:text-gray-400">Nilai Akhir</span>
+                                                    <span class="font-bold text-maroon dark:text-red-400">{{ number_format($nilaiAngka, 0) }}</span>
+                                                </div>
+                                                <div class="flex items-center justify-between text-xs mt-1">
+                                                    <span class="text-gray-600 dark:text-gray-400">Grade Point</span>
+                                                    <span class="font-bold text-maroon dark:text-red-400">{{ number_format($nilai->bobot ?? 0, 2) }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @endif
 </div>
