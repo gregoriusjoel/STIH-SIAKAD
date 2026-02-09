@@ -123,7 +123,7 @@
                                             <span class="material-symbols-outlined text-lg">download</span>
                                             Simpan QR
                                         </a>
-                                        <form action="{{ route('dosen.kelas.deactivate_qr', ['id' => $id]) }}" method="POST" onsubmit="return confirm('Nonaktifkan QR sekarang?');">
+                                        <form action="{{ route('dosen.kelas.deactivate_qr', ['id' => $id]) }}" method="POST" class="deactivate-qr-form">
                                             @csrf
                                             <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-600 dark:text-gray-300 hover:text-red-600 transition-all rounded-xl text-sm font-bold">
                                                 <span class="material-symbols-outlined text-lg">block</span>
@@ -396,6 +396,120 @@
                 const timer = setInterval(tick, 1000);
             }
         })();
+    </script>
+
+    {{-- Real-time attendance polling --}}
+    <script>
+        (function() {
+            const kelasId = {{ $id }};
+            const currentPertemuan = {{ request('pertemuan', $class_info['pertemuan'] ?? 1) }};
+            const apiUrl = "{{ route('dosen.kelas.attendance_data', ['id' => $id]) }}";
+            let lastAttendanceIds = new Set();
+            let isFirstLoad = true;
+
+            // Initialize with current attendance IDs
+            @if(!empty($presensis) && count($presensis) > 0)
+                @foreach($presensis as $p)
+                    lastAttendanceIds.add({{ $p->id }});
+                @endforeach
+            @endif
+
+            function fetchAttendanceData() {
+                fetch(apiUrl + '?pertemuan=' + currentPertemuan, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.presensis) {
+                        updateAttendanceTable(data.presensis);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching attendance data:', error);
+                });
+            }
+
+            function updateAttendanceTable(presensis) {
+                const tbody = document.querySelector('table tbody');
+                if (!tbody) return;
+
+                // Check if there are new entries
+                const newIds = new Set(presensis.map(p => p.id));
+                const hasNewEntries = !isFirstLoad && presensis.some(p => !lastAttendanceIds.has(p.id));
+
+                if (presensis.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-400">Belum ada peserta yang mengisi absensi.</td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = presensis.map((p, index) => {
+                        const isNew = !isFirstLoad && !lastAttendanceIds.has(p.id);
+                        const rowClass = isNew ? 'bg-green-50 animate-pulse' : '';
+                        
+                        return `
+                            <tr class="${rowClass}" data-attendance-id="${p.id}">
+                                <td class="px-4 py-4">${index + 1}</td>
+                                <td class="px-4 py-4">${p.nama}</td>
+                                <td class="px-4 py-4">${p.kelas}</td>
+                                <td class="px-4 py-4">${p.kontak}</td>
+                                <td class="px-4 py-4">${p.waktu}</td>
+                                <td class="px-4 py-4">-</td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    // Remove highlight animation after 3 seconds
+                    if (hasNewEntries) {
+                        setTimeout(() => {
+                            document.querySelectorAll('tr.animate-pulse').forEach(row => {
+                                row.classList.remove('bg-green-50', 'animate-pulse');
+                            });
+                        }, 3000);
+                    }
+                }
+
+                // Update the set of known IDs
+                lastAttendanceIds = newIds;
+                isFirstLoad = false;
+            }
+
+            // Poll every 5 seconds
+            const pollingInterval = setInterval(fetchAttendanceData, 5000);
+
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', () => {
+                clearInterval(pollingInterval);
+            });
+        })();
+    </script>
+    <script>
+        // SweetAlert2 confirmation for Deactivate QR
+        document.querySelectorAll('.deactivate-qr-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Nonaktifkan QR?',
+                    text: 'QR absensi akan dinonaktifkan dan mahasiswa tidak bisa scan untuk absen.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#8B1538',
+                    cancelButtonColor: '#6B7280',
+                    confirmButtonText: 'Ya, Nonaktifkan',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Use native submit to bypass the event listener
+                        HTMLFormElement.prototype.submit.call(form);
+                    }
+                });
+            });
+        });
     </script>
 @endpush
 

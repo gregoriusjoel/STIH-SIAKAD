@@ -230,6 +230,32 @@
         </ul>
     </div>
 
+    <!-- Import Data -->
+    <div class="mt-2">
+        <button type="button" data-toggle="sidebar-section" data-section="import-data" class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold section-toggle uppercase tracking-wide opacity-80">
+            <span>Import Data</span>
+            <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <ul class="mt-1 space-y-1 pb-2 sidebar-section hidden">
+            <li>
+                @if(Route::has('admin.import.index'))
+                    <a href="{{ route('admin.import.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.import.index') ? 'active' : '' }}">
+                        <i class="fas fa-file-import w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Import Data</span>
+                    </a>
+                @endif
+            </li>
+            <li>
+                @if(Route::has('admin.import.history'))
+                    <a href="{{ route('admin.import.history') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.import.history') ? 'active' : '' }}">
+                        <i class="fas fa-history w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Riwayat Import</span>
+                    </a>
+                @endif
+            </li>
+        </ul>
+    </div>
+
     <!-- Sistem -->
     <div class="mt-4">
         <button type="button" data-toggle="sidebar-section" data-section="sistem" class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold section-toggle uppercase tracking-wide opacity-80">

@@ -218,14 +218,10 @@
                                             <div class="font-bold text-gray-800 dark:text-white">{{ $m['time'] }}</div>
                                         </div>
 
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <a href="{{ route('dosen.kelas.absensi', ['id' => $id]) }}?pertemuan={{ $m['no'] }}"
-                                                class="flex items-center justify-center gap-1.5 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-hover transition-all shadow-sm">
-                                                <span class="material-symbols-outlined text-[16px]">how_to_reg</span>
-                                                Absen
-                                            </a>
+                                        <div class="grid grid-cols-1 gap-2">
                                             <a href="{{ route('dosen.kelas.pertemuan.detail', ['id' => $id, 'pertemuan' => $m['no']]) }}"
-                                                class="flex items-center justify-center gap-1.5 py-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 rounded-lg text-xs font-semibold hover:bg-gray-50 dark:hover:bg-slate-600 transition-all">
+                                                class="flex items-center justify-center gap-1.5 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-hover transition-all shadow-sm">
+                                                <span class="material-symbols-outlined text-[16px]">visibility</span>
                                                 Lihat Rincian
                                             </a>
                                         </div>

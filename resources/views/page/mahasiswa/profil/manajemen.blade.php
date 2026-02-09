@@ -112,89 +112,89 @@ foreach ($missingFields as $field => $info) {
                 </div>
                 <div class="space-y-8">
 
-                    {{-- Photo Preview --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start mb-6">
-                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Foto Profil</label>
-                        <div class="lg:col-span-9">
-                            <div class="w-32 h-40 border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50">
-                                <template x-if="photoPreview">
-                                    <img :src="photoPreview" class="w-full h-full object-cover" alt="Preview">
-                                </template>
-                                <template x-if="!photoPreview">
-                                    <div class="w-full h-full flex items-center justify-center text-gray-300">
-                                        <i class="fas fa-user text-4xl"></i>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </div>
 
-                    {{-- Upload Foto --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Upload Foto</label>
-                        <div class="lg:col-span-9 flex items-center gap-3">
-                            <label class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-700 cursor-pointer hover:bg-gray-50 transition shadow-sm font-medium">
-                                Choose File
-                                <input type="file" name="foto" class="hidden" accept=".jpg,.jpeg,.png,image/jpeg,image/png" @change="const file = $event.target.files[0]; if(file){ const reader = new FileReader(); reader.onload = (e) => photoPreview = e.target.result; reader.readAsDataURL(file); }">
-                            </label>
-                            <span class="text-xs text-gray-500 italic">Format: JPG/PNG, Max: 2MB</span>
-                        </div>
-                    </div>
-
-                    {{-- Nama Lengkap --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <div class="lg:col-span-9">
-                            <input type="text" name="name" value="{{ $user->name }}"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
-                        </div>
-                    </div>
-
-                    {{-- Email --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">Email <span class="text-red-500">*</span></label>
-                        <div class="lg:col-span-9">
-                            <input type="email" name="email" value="{{ $user->email }}"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
-                        </div>
-                    </div>
-
-                    {{-- No HP --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">No. HP <span class="text-red-500">*</span></label>
-                        <div class="lg:col-span-9">
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
-                                    <span class="text-sm font-bold opacity-50">+62</span>
+                    {{-- Grid Container for Data Akademik --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        
+                        {{-- Left Column: Foto & Upload --}}
+                        <div class="space-y-4">
+                            {{-- Foto Profil --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Foto Profil</label>
+                                <div class="w-32 h-40 border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                                    <template x-if="photoPreview">
+                                        <img :src="photoPreview" class="w-full h-full object-cover" alt="Preview">
+                                    </template>
+                                    <template x-if="!photoPreview">
+                                        <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                            <i class="fas fa-user text-4xl"></i>
+                                        </div>
+                                    </template>
                                 </div>
-                                <input type="text" name="no_hp" value="{{ $mahasiswa->no_hp }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
-                                    class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
+                            </div>
+
+                            {{-- Upload Foto --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Upload Foto</label>
+                                <div class="flex items-center gap-3">
+                                    <label class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-700 cursor-pointer hover:bg-gray-50 transition shadow-sm font-medium">
+                                        Choose File
+                                        <input type="file" name="foto" class="hidden" accept=".jpg,.jpeg,.png,image/jpeg,image/png" @change="const file = $event.target.files[0]; if(file){ const reader = new FileReader(); reader.onload = (e) => photoPreview = e.target.result; reader.readAsDataURL(file); }">
+                                    </label>
+                                    <span class="text-xs text-gray-500 italic">Format: JPG/PNG, Max: 2MB</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {{-- Readonly Information --}}
-                    @foreach([
-                    'NIM' => $mahasiswa->nim,
-                    'Jurusan' => $mahasiswa->prodi,
-                    'Program' => '1 - REGULER',
-                    'Kurikulum' => '32 - Kurikulum ' . $mahasiswa->prodi . ' ' . $mahasiswa->angkatan,
-                    'Angkatan' => $mahasiswa->angkatan,
-                    'Penasehat Akademik' => 'Dosen PA',
-                    'Status Awal' => 'B - Baru',
-                    'Status Mahasiswa' => 'A - Aktif'
-                    ] as $label => $value)
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-sm text-gray-600 font-medium">{{ $label }}</label>
-                        <div class="lg:col-span-9">
+                        {{-- Right Column: Identity --}}
+                        <div class="space-y-4">
+                            {{-- Nama Lengkap --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+                                <input type="text" name="name" value="{{ $user->name }}"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                            </div>
+
+                            {{-- Email --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Email <span class="text-red-500">*</span></label>
+                                <input type="email" name="email" value="{{ $user->email }}"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                            </div>
+
+                            {{-- No HP --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">No. HP <span class="text-red-500">*</span></label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
+                                        <span class="text-sm font-bold opacity-50">+62</span>
+                                    </div>
+                                    <input type="text" name="no_hp" value="{{ $mahasiswa->no_hp }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
+                                        class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Full Width or 2-Col for Readonly --}}
+                        @foreach([
+                            'NIM' => $mahasiswa->nim,
+                            'Jurusan' => $mahasiswa->prodi,
+                            'Program' => '1 - REGULER',
+                            'Kurikulum' => '32 - Kurikulum ' . $mahasiswa->prodi . ' ' . $mahasiswa->angkatan,
+                            'Angkatan' => $mahasiswa->angkatan,
+                            'Penasehat Akademik' => 'Dosen PA',
+                            'Status Awal' => 'B - Baru',
+                            'Status Mahasiswa' => 'A - Aktif'
+                        ] as $label => $value)
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">{{ $label }}</label>
                             <div class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-md text-gray-500 text-sm flex justify-between items-center shadow-sm cursor-default">
                                 <span>{{ $value ?? '-' }}</span>
                                 <i class="fas fa-lock text-gray-300 text-xs"></i>
                             </div>
                         </div>
+                        @endforeach
                     </div>
-                    @endforeach
-
                 </div>
             </div>
         </div>
@@ -208,17 +208,19 @@ foreach ($missingFields as $field => $info) {
                     <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Current Residence</span>
                 </div>
                 <div class="space-y-5">
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider pt-3">Alamat Lengkap</label>
-                        <div class="lg:col-span-9">
-                            <textarea name="alamat" rows="3"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $mahasiswa->alamat }}</textarea>
-                        </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    {{-- Alamat Lengkap (Full Width) --}}
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Alamat Lengkap</label>
+                        <textarea name="alamat" rows="3"
+                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $mahasiswa->alamat }}</textarea>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">RT / RW</label>
-                        <div class="lg:col-span-9 grid grid-cols-2 gap-4">
+                    {{-- RT / RW --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">RT / RW</label>
+                        <div class="grid grid-cols-2 gap-4">
                             <input type="text" name="rt" value="{{ $mahasiswa->rt }}" placeholder="RT"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                             <input type="text" name="rw" value="{{ $mahasiswa->rw }}" placeholder="RW"
@@ -226,162 +228,159 @@ foreach ($missingFields as $field => $info) {
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
-                        <div class="lg:col-span-9">
-                            <select name="provinsi" id="provinsiSelect" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                <option value="">Pilih Provinsi</option>
-                                @foreach($provinces as $prov)
-                                <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    {{-- Provinsi --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
+                        <select name="provinsi" id="provinsiSelect" 
+                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                            <option value="">Pilih Provinsi</option>
+                            @foreach($provinces as $prov)
+                            <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
-                        <div class="lg:col-span-9">
-                            <select name="kota" id="kotaSelect" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                <option value="">Pilih Kota/Kabupaten</option>
-                            </select>
-                        </div>
+                    {{-- Kota/Kabupaten --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
+                        <select name="kota" id="kotaSelect" 
+                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                            <option value="">Pilih Kota/Kabupaten</option>
+                        </select>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
-                        <div class="lg:col-span-9">
-                            <select name="kecamatan" id="kecamatanSelect" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                <option value="">Pilih Kecamatan</option>
-                            </select>
-                        </div>
+                    {{-- Kecamatan --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
+                        <select name="kecamatan" id="kecamatanSelect" 
+                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                            <option value="">Pilih Kecamatan</option>
+                        </select>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
-                        <div class="lg:col-span-9">
-                            <!-- Custom Searchable Dropdown -->
-                            <div x-data="desaDropdown()" class="relative" x-init="init()">
-                                <!-- Hidden input for form submission -->
-                                <input type="hidden" name="desa" :value="selected">
-                                
-                                <!-- Dropdown Trigger -->
-                                <button type="button" @click="open = !open; if(open) $nextTick(() => $refs.searchInput.focus())" 
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
-                                    <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
-                                    <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </button>
-                                
-                                <!-- Dropdown Panel -->
-                                <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
-                                    <!-- Search Input Inside Dropdown -->
-                                    <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
-                                        <input type="text" x-model="search" x-ref="searchInput" @click.stop @keydown.escape="open = false"
-                                            placeholder="Cari desa/kelurahan..." 
-                                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
+                    {{-- Desa/Kelurahan --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
+                        <!-- Custom Searchable Dropdown -->
+                        <div x-data="desaDropdown()" class="relative" x-init="init()">
+                            <!-- Hidden input for form submission -->
+                            <input type="hidden" name="desa" :value="selected">
+                            
+                            <!-- Dropdown Trigger -->
+                            <button type="button" @click="open = !open; if(open) $nextTick(() => $refs.searchInput.focus())" 
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
+                                <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
+                                <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <!-- Dropdown Panel -->
+                            <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
+                                <!-- Search Input Inside Dropdown -->
+                                <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                    <input type="text" x-model="search" x-ref="searchInput" @click.stop @keydown.escape="open = false"
+                                        placeholder="Cari desa/kelurahan..." 
+                                        class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
+                                </div>
+                                <!-- Options List -->
+                                <div class="max-h-52 overflow-y-auto">
+                                    <!-- No City Selected Message -->
+                                    <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
+                                        <div class="text-orange-400 mb-1">
+                                            <i class="fas fa-exclamation-circle text-xl"></i>
+                                        </div>
+                                        <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
                                     </div>
-                                    <!-- Options List -->
-                                    <div class="max-h-52 overflow-y-auto">
-                                        <!-- No City Selected Message -->
-                                        <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
-                                            <div class="text-orange-400 mb-1">
-                                                <i class="fas fa-exclamation-circle text-xl"></i>
-                                            </div>
-                                            <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
+                                    <!-- Hint Message -->
+                                    <div x-show="showHint" class="px-4 py-8 text-center">
+                                        <div class="text-gray-400 mb-1">
+                                            <i class="fas fa-search text-xl"></i>
                                         </div>
-                                        <!-- Hint Message -->
-                                        <div x-show="showHint" class="px-4 py-8 text-center">
-                                            <div class="text-gray-400 mb-1">
-                                                <i class="fas fa-search text-xl"></i>
-                                            </div>
-                                            <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
-                                        </div>
+                                        <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
+                                    </div>
 
-                                        <template x-for="(opt, index) in filteredOptions" :key="index">
-                                            <div @click="selectOption(opt)" 
-                                                class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
-                                                :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
-                                                <span x-text="opt.text"></span>
-                                            </div>
-                                        </template>
-                                        <div x-show="!showHint && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
-                                            Tidak ditemukan
+                                    <template x-for="(opt, index) in filteredOptions" :key="index">
+                                        <div @click="selectOption(opt)" 
+                                            class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
+                                            :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
+                                            <span x-text="opt.text"></span>
                                         </div>
+                                    </template>
+                                    <div x-show="!showHint && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
+                                        Tidak ditemukan
                                     </div>
                                 </div>
                             </div>
-                            
-                            <script>
-                                function desaDropdown() {
-                                    return {
-                                        open: false,
-                                        search: '',
-                                        selected: @json($mahasiswa->desa ?? ''),
-                                        selectedText: @json($mahasiswa->desa ?? 'Pilih Desa'),
-                                        allOptions: window.villagesData,
-                                        currentDistrictCode: '',
-                                        isLoading: false,
-                                        noKecamatanSelected: true,
-                                        init() {
-                                            if (!this.selected) {
-                                                this.selectedText = 'Pilih Desa';
-                                            }
-                                            // Listen to Kecamatan dropdown changes
-                                            const kecamatanSelect = document.getElementById('kecamatanSelect');
-                                            if (kecamatanSelect) {
-                                                // Initial district code
-                                                const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
-                                                if (initialOpt && initialOpt.dataset.districtCode) {
-                                                    this.currentDistrictCode = initialOpt.dataset.districtCode;
-                                                    this.noKecamatanSelected = false;
-                                                } else {
-                                                    this.noKecamatanSelected = true;
-                                                }
-                                                // On change
-                                                kecamatanSelect.addEventListener('change', (e) => {
-                                                    const opt = e.target.options[e.target.selectedIndex];
-                                                    this.currentDistrictCode = opt?.dataset?.districtCode || '';
-                                                    this.noKecamatanSelected = !this.currentDistrictCode;
-                                                    // Reset selection when kecamatan changes
-                                                    this.selected = '';
-                                                    this.selectedText = 'Pilih Desa';
-                                                    this.search = '';
-                                                });
-                                            }
-                                        },
-                                        get options() {
-                                            if (!this.currentDistrictCode) return [];
-                                            return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
-                                        },
-                                        get filteredOptions() {
-                                            // Only show options when user types at least 2 characters
-                                            if (!this.search || this.search.trim().length < 2) return [];
-                                            const term = this.search.toLowerCase().trim();
-                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
-                                        },
-                                        get showHint() {
-                                            if (this.noKecamatanSelected) return false;
-                                            return !this.search || this.search.trim().length < 2;
-                                        },
-                                        get showNoCityMessage() {
-                                            return this.noKecamatanSelected;
-                                        },
-                                        selectOption(opt) {
-                                            this.selected = opt.value;
-                                            this.selectedText = opt.text;
-                                            this.open = false;
-                                            this.search = '';
+                        </div>
+                        
+                        <script>
+                            function desaDropdown() {
+                                return {
+                                    open: false,
+                                    search: '',
+                                    selected: @json($mahasiswa->desa ?? ''),
+                                    selectedText: @json($mahasiswa->desa ?? 'Pilih Desa'),
+                                    allOptions: window.villagesData,
+                                    currentDistrictCode: '',
+                                    isLoading: false,
+                                    noKecamatanSelected: true,
+                                    init() {
+                                        if (!this.selected) {
+                                            this.selectedText = 'Pilih Desa';
                                         }
+                                        // Listen to Kecamatan dropdown changes
+                                        const kecamatanSelect = document.getElementById('kecamatanSelect');
+                                        if (kecamatanSelect) {
+                                            // Initial district code
+                                            const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                            if (initialOpt && initialOpt.dataset.districtCode) {
+                                                this.currentDistrictCode = initialOpt.dataset.districtCode;
+                                                this.noKecamatanSelected = false;
+                                            } else {
+                                                this.noKecamatanSelected = true;
+                                            }
+                                            // On change
+                                            kecamatanSelect.addEventListener('change', (e) => {
+                                                const opt = e.target.options[e.target.selectedIndex];
+                                                this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                this.noKecamatanSelected = !this.currentDistrictCode;
+                                                // Reset selection when kecamatan changes
+                                                this.selected = '';
+                                                this.selectedText = 'Pilih Desa';
+                                                this.search = '';
+                                            });
+                                        }
+                                    },
+                                    get options() {
+                                        if (!this.currentDistrictCode) return [];
+                                        return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
+                                    },
+                                    get filteredOptions() {
+                                        // Only show options when user types at least 2 characters
+                                        if (!this.search || this.search.trim().length < 2) return [];
+                                        const term = this.search.toLowerCase().trim();
+                                        return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                    },
+                                    get showHint() {
+                                        if (this.noKecamatanSelected) return false;
+                                        return !this.search || this.search.trim().length < 2;
+                                    },
+                                    get showNoCityMessage() {
+                                        return this.noKecamatanSelected;
+                                    },
+                                    selectOption(opt) {
+                                        this.selected = opt.value;
+                                        this.selectedText = opt.text;
+                                        this.open = false;
+                                        this.search = '';
                                     }
                                 }
-                            </script>
-                        </div>
+                            }
+                        </script>
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -392,17 +391,19 @@ foreach ($missingFields as $field => $info) {
                     <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Identity Card Address</span>
                 </div>
                 <div class="space-y-5">
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider pt-3">Alamat</label>
-                        <div class="lg:col-span-9">
-                            <textarea name="alamat_ktp" rows="3"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $mahasiswa->alamat_ktp }}</textarea>
-                        </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    {{-- Alamat Lengkap (Full Width) --}}
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Alamat</label>
+                        <textarea name="alamat_ktp" rows="3"
+                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $mahasiswa->alamat_ktp }}</textarea>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">RT / RW</label>
-                        <div class="lg:col-span-9 grid grid-cols-2 gap-4">
+                    {{-- RT / RW --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">RT / RW</label>
+                        <div class="grid grid-cols-2 gap-4">
                             <input type="text" name="rt_ktp" value="{{ $mahasiswa->rt_ktp }}" placeholder="RT"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                             <input type="text" name="rw_ktp" value="{{ $mahasiswa->rw_ktp }}" placeholder="RW"
@@ -410,162 +411,159 @@ foreach ($missingFields as $field => $info) {
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
-                        <div class="lg:col-span-9">
-                            <select name="provinsi_ktp" id="provinsiKtpSelect" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                <option value="">Pilih Provinsi</option>
-                                @foreach($provinces as $prov)
-                                <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi_ktp ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    {{-- Provinsi --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
+                        <select name="provinsi_ktp" id="provinsiKtpSelect" 
+                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                            <option value="">Pilih Provinsi</option>
+                            @foreach($provinces as $prov)
+                            <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi_ktp ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
-                        <div class="lg:col-span-9">
-                            <select name="kota_ktp" id="kotaKtpSelect" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                <option value="">Pilih Kota/Kabupaten</option>
-                            </select>
-                        </div>
+                    {{-- Kota/Kabupaten --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
+                        <select name="kota_ktp" id="kotaKtpSelect" 
+                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                            <option value="">Pilih Kota/Kabupaten</option>
+                        </select>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
-                        <div class="lg:col-span-9">
-                            <select name="kecamatan_ktp" id="kecamatanKtpSelect" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                <option value="">Pilih Kecamatan</option>
-                            </select>
-                        </div>
+                    {{-- Kecamatan --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
+                        <select name="kecamatan_ktp" id="kecamatanKtpSelect" 
+                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                            <option value="">Pilih Kecamatan</option>
+                        </select>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
-                        <div class="lg:col-span-9">
-                            <!-- Custom Searchable Dropdown for KTP -->
-                            <div x-data="desaKtpDropdown()" class="relative" x-init="init()">
-                                <!-- Hidden input for form submission -->
-                                <input type="hidden" name="desa_ktp" :value="selected">
-                                
-                                <!-- Dropdown Trigger -->
-                                <button type="button" @click="open = !open; if(open) $nextTick(() => $refs.searchInputKtp.focus())" 
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
-                                    <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
-                                    <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </button>
-                                
-                                <!-- Dropdown Panel -->
-                                <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
-                                    <!-- Search Input Inside Dropdown -->
-                                    <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
-                                        <input type="text" x-model="search" x-ref="searchInputKtp" @click.stop @keydown.escape="open = false"
-                                            placeholder="Cari desa/kelurahan..." 
-                                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
+                    {{-- Desa/Kelurahan --}}
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
+                        <!-- Custom Searchable Dropdown for KTP -->
+                        <div x-data="desaKtpDropdown()" class="relative" x-init="init()">
+                            <!-- Hidden input for form submission -->
+                            <input type="hidden" name="desa_ktp" :value="selected">
+                            
+                            <!-- Dropdown Trigger -->
+                            <button type="button" @click="open = !open; if(open) $nextTick(() => $refs.searchInputKtp.focus())" 
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
+                                <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
+                                <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <!-- Dropdown Panel -->
+                            <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
+                                <!-- Search Input Inside Dropdown -->
+                                <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                    <input type="text" x-model="search" x-ref="searchInputKtp" @click.stop @keydown.escape="open = false"
+                                        placeholder="Cari desa/kelurahan..." 
+                                        class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
+                                </div>
+                                <!-- Options List -->
+                                <div class="max-h-52 overflow-y-auto">
+                                    <!-- No City Selected Message -->
+                                    <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
+                                        <div class="text-orange-400 mb-1">
+                                            <i class="fas fa-exclamation-circle text-xl"></i>
+                                        </div>
+                                        <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
                                     </div>
-                                    <!-- Options List -->
-                                    <div class="max-h-52 overflow-y-auto">
-                                        <!-- No City Selected Message -->
-                                        <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
-                                            <div class="text-orange-400 mb-1">
-                                                <i class="fas fa-exclamation-circle text-xl"></i>
-                                            </div>
-                                            <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
+                                    <!-- Hint Message -->
+                                    <div x-show="showHint" class="px-4 py-8 text-center">
+                                        <div class="text-gray-400 mb-1">
+                                            <i class="fas fa-search text-xl"></i>
                                         </div>
-                                        <!-- Hint Message -->
-                                        <div x-show="showHint" class="px-4 py-8 text-center">
-                                            <div class="text-gray-400 mb-1">
-                                                <i class="fas fa-search text-xl"></i>
-                                            </div>
-                                            <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
-                                        </div>
+                                        <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
+                                    </div>
 
-                                        <template x-for="(opt, index) in filteredOptions" :key="index">
-                                            <div @click="selectOption(opt)" 
-                                                class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
-                                                :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
-                                                <span x-text="opt.text"></span>
-                                            </div>
-                                        </template>
-                                        <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
-                                            Tidak ditemukan
+                                    <template x-for="(opt, index) in filteredOptions" :key="index">
+                                        <div @click="selectOption(opt)" 
+                                            class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
+                                            :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
+                                            <span x-text="opt.text"></span>
                                         </div>
+                                    </template>
+                                    <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
+                                        Tidak ditemukan
                                     </div>
                                 </div>
                             </div>
-                            
-                            <script>
-                                function desaKtpDropdown() {
-                                    return {
-                                        open: false,
-                                        search: '',
-                                        selected: @json($mahasiswa->desa_ktp ?? ''),
-                                        selectedText: @json($mahasiswa->desa_ktp ?? 'Pilih Desa'),
-                                        allOptions: window.villagesData,
-                                        currentDistrictCode: '',
-                                        isLoading: false,
-                                        noKecamatanSelected: true,
-                                        init() {
-                                            if (!this.selected) {
-                                                this.selectedText = 'Pilih Desa';
-                                            }
-                                            // Listen to Kecamatan KTP dropdown changes
-                                            const kecamatanSelect = document.getElementById('kecamatanKtpSelect');
-                                            if (kecamatanSelect) {
-                                                // Initial district code
-                                                const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
-                                                if (initialOpt && initialOpt.dataset.districtCode) {
-                                                    this.currentDistrictCode = initialOpt.dataset.districtCode;
-                                                    this.noKecamatanSelected = false;
-                                                } else {
-                                                    this.noKecamatanSelected = true;
-                                                }
-                                                // On change
-                                                kecamatanSelect.addEventListener('change', (e) => {
-                                                    const opt = e.target.options[e.target.selectedIndex];
-                                                    this.currentDistrictCode = opt?.dataset?.districtCode || '';
-                                                    this.noKecamatanSelected = !this.currentDistrictCode;
-                                                    // Reset selection when kecamatan changes
-                                                    this.selected = '';
-                                                    this.selectedText = 'Pilih Desa';
-                                                    this.search = '';
-                                                });
-                                            }
-                                        },
-                                        get options() {
-                                            if (!this.currentDistrictCode) return [];
-                                            return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
-                                        },
-                                        get filteredOptions() {
-                                            // Only show options when user types at least 2 characters
-                                            if (!this.search || this.search.trim().length < 2) return [];
-                                            const term = this.search.toLowerCase().trim();
-                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
-                                        },
-                                        get showHint() {
-                                            if (this.noKecamatanSelected) return false;
-                                            return !this.search || this.search.trim().length < 2;
-                                        },
-                                        get showNoCityMessage() {
-                                            return this.noKecamatanSelected;
-                                        },
-                                        selectOption(opt) {
-                                            this.selected = opt.value;
-                                            this.selectedText = opt.text;
-                                            this.open = false;
-                                            this.search = '';
+                        </div>
+                        
+                        <script>
+                            function desaKtpDropdown() {
+                                return {
+                                    open: false,
+                                    search: '',
+                                    selected: @json($mahasiswa->desa_ktp ?? ''),
+                                    selectedText: @json($mahasiswa->desa_ktp ?? 'Pilih Desa'),
+                                    allOptions: window.villagesData,
+                                    currentDistrictCode: '',
+                                    isLoading: false,
+                                    noKecamatanSelected: true,
+                                    init() {
+                                        if (!this.selected) {
+                                            this.selectedText = 'Pilih Desa';
                                         }
+                                        // Listen to Kecamatan KTP dropdown changes
+                                        const kecamatanSelect = document.getElementById('kecamatanKtpSelect');
+                                        if (kecamatanSelect) {
+                                            // Initial district code
+                                            const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                            if (initialOpt && initialOpt.dataset.districtCode) {
+                                                this.currentDistrictCode = initialOpt.dataset.districtCode;
+                                                this.noKecamatanSelected = false;
+                                            } else {
+                                                this.noKecamatanSelected = true;
+                                            }
+                                            // On change
+                                            kecamatanSelect.addEventListener('change', (e) => {
+                                                const opt = e.target.options[e.target.selectedIndex];
+                                                this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                this.noKecamatanSelected = !this.currentDistrictCode;
+                                                // Reset selection when kecamatan changes
+                                                this.selected = '';
+                                                this.selectedText = 'Pilih Desa';
+                                                this.search = '';
+                                            });
+                                        }
+                                    },
+                                    get options() {
+                                        if (!this.currentDistrictCode) return [];
+                                        return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
+                                    },
+                                    get filteredOptions() {
+                                        // Only show options when user types at least 2 characters
+                                        if (!this.search || this.search.trim().length < 2) return [];
+                                        const term = this.search.toLowerCase().trim();
+                                        return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                    },
+                                    get showHint() {
+                                        if (this.noKecamatanSelected) return false;
+                                        return !this.search || this.search.trim().length < 2;
+                                    },
+                                    get showNoCityMessage() {
+                                        return this.noKecamatanSelected;
+                                    },
+                                    selectOption(opt) {
+                                        this.selected = opt.value;
+                                        this.selectedText = opt.text;
+                                        this.open = false;
+                                        this.search = '';
                                     }
                                 }
-                            </script>
-                        </div>
+                            }
+                        </script>
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -681,25 +679,24 @@ foreach ($missingFields as $field => $info) {
                     <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Personal Details</span>
                 </div>
                 <div class="space-y-5">
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Tempat Lahir</label>
-                        <div class="lg:col-span-9">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        {{-- Tempat Lahir --}}
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Tempat Lahir</label>
                             <input type="text" name="tempat_lahir" value="{{ $mahasiswa->tempat_lahir }}"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Tanggal Lahir</label>
-                        <div class="lg:col-span-9">
+                        {{-- Tanggal Lahir --}}
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Tanggal Lahir</label>
                             <input type="date" name="tanggal_lahir" value="{{ $mahasiswa->tanggal_lahir ? \Carbon\Carbon::parse($mahasiswa->tanggal_lahir)->format('Y-m-d') : '' }}"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Jenis Kelamin</label>
-                        <div class="lg:col-span-9">
+                        {{-- Jenis Kelamin --}}
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Jenis Kelamin</label>
                             <select name="jenis_kelamin"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                 <option value="">Pilih Jenis Kelamin</option>
@@ -707,11 +704,10 @@ foreach ($missingFields as $field => $info) {
                                 <option value="Perempuan" {{ $mahasiswa->jenis_kelamin === 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                             </select>
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Agama</label>
-                        <div class="lg:col-span-9">
+                        {{-- Agama --}}
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Agama</label>
                             <select name="agama"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                 <option value="">Pilih Agama</option>
@@ -722,11 +718,10 @@ foreach ($missingFields as $field => $info) {
                                 @endif
                             </select>
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Status Sipil</label>
-                        <div class="lg:col-span-9">
+                        {{-- Status Sipil --}}
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Status Sipil</label>
                             <select name="status_sipil"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                 <option value="">Pilih Status Sipil</option>
@@ -801,9 +796,10 @@ foreach ($missingFields as $field => $info) {
                     <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Previous Education</span>
                 </div>
                 <div class="space-y-5">
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Jenis Sekolah</label>
-                        <div class="lg:col-span-9">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        {{-- Jenis Sekolah --}}
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Jenis Sekolah</label>
                             <select name="jenis_sekolah"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                 <option value="">Pilih Jenis Sekolah</option>
@@ -812,10 +808,10 @@ foreach ($missingFields as $field => $info) {
                                 <option value="3 - Umum" {{ $mahasiswa->jenis_sekolah === '3 - Umum' ? 'selected' : '' }}>3 - Umum</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Jurusan</label>
-                        <div class="lg:col-span-9">
+
+                        {{-- Jurusan --}}
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Jurusan</label>
                             <select name="jurusan_sekolah"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                 <option value="">Pilih Jurusan</option>
@@ -824,17 +820,17 @@ foreach ($missingFields as $field => $info) {
                                 @endforeach
                             </select>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Tahun Lulus</label>
-                        <div class="lg:col-span-9">
+
+                        {{-- Tahun Lulus --}}
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Tahun Lulus</label>
                             <input type="text" name="tahun_lulus" value="{{ $mahasiswa->tahun_lulus ?? '' }}" placeholder="Contoh: 2020"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                         </div>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                        <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Nilai Kelulusan</label>
-                        <div class="lg:col-span-9">
+
+                        {{-- Nilai Kelulusan --}}
+                        <div>
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Nilai Kelulusan</label>
                             <input type="number" name="nilai_kelulusan" value="{{ $mahasiswa->nilai_kelulusan ?? '' }}" step="0.01" min="0" max="100" placeholder="Contoh: 81.56"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                         </div>
@@ -880,16 +876,17 @@ foreach ($missingFields as $field => $info) {
                         <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Father's Info</span>
                     </div>
                     <div class="space-y-5">
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Nama Ayah</label>
-                            <div class="lg:col-span-9">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                            {{-- Nama Ayah --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Nama Ayah</label>
                                 <input type="text" name="nama_ayah" value="{{ $parent->nama_ayah ?? '' }}"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Pendidikan Ayah</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Pendidikan Ayah --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Pendidikan Ayah</label>
                                 <select name="pendidikan_ayah"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Pendidikan</option>
@@ -898,10 +895,10 @@ foreach ($missingFields as $field => $info) {
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Pekerjaan Ayah</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Pekerjaan Ayah --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Pekerjaan Ayah</label>
                                 <select name="pekerjaan_ayah"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Pekerjaan</option>
@@ -912,10 +909,10 @@ foreach ($missingFields as $field => $info) {
                                     @endif
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Agama Ayah</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Agama Ayah --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Agama Ayah</label>
                                 <select name="agama_ayah"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Agama</option>
@@ -937,16 +934,17 @@ foreach ($missingFields as $field => $info) {
                         <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Mother's Info</span>
                     </div>
                     <div class="space-y-5">
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Nama Ibu</label>
-                            <div class="lg:col-span-9">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                            {{-- Nama Ibu --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Nama Ibu</label>
                                 <input type="text" name="nama_ibu" value="{{ $parent->nama_ibu ?? '' }}"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Pendidikan Ibu</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Pendidikan Ibu --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Pendidikan Ibu</label>
                                 <select name="pendidikan_ibu"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Pendidikan</option>
@@ -955,10 +953,10 @@ foreach ($missingFields as $field => $info) {
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Pekerjaan Ibu</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Pekerjaan Ibu --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Pekerjaan Ibu</label>
                                 <select name="pekerjaan_ibu"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Pekerjaan</option>
@@ -969,10 +967,10 @@ foreach ($missingFields as $field => $info) {
                                     @endif
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Agama Ibu</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Agama Ibu --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Agama Ibu</label>
                                 <select name="agama_ibu"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Agama</option>
@@ -994,16 +992,17 @@ foreach ($missingFields as $field => $info) {
                         <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Father's Residence</span>
                     </div>
                     <div class="space-y-5">
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider pt-3">Alamat Lengkap</label>
-                            <div class="lg:col-span-9">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                            {{-- Alamat Lengkap --}}
+                            <div class="md:col-span-2">
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Alamat Lengkap</label>
                                 <textarea name="alamat_ayah" rows="3"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $parent->alamat_ayah ?? $parent->alamat_ortu ?? '' }}</textarea>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Provinsi --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Provinsi</label>
                                 <select name="propinsi_ayah" id="provinsiAyahSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Provinsi</option>
@@ -1012,28 +1011,28 @@ foreach ($missingFields as $field => $info) {
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Kota/Kabupaten --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Kota/Kabupaten</label>
                                 <select name="kota_ayah" id="kotaAyahSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
                                     <option value="">Pilih Kota/Kabupaten</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Kecamatan --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Kecamatan</label>
                                 <select name="kecamatan_ayah" id="kecamatanAyahSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Desa/Kelurahan --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Desa/Kelurahan</label>
                                 <div x-data="desaAyahDropdown()" class="relative">
                                     <input type="hidden" name="desa_ayah" :value="selected">
                                     <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputAyah.focus())"
@@ -1125,10 +1124,10 @@ foreach ($missingFields as $field => $info) {
                                     }
                                 </script>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Handphone Ayah</label>
-                            <div class="lg:col-span-9">
+                            
+                            {{-- Handphone Ayah (Using Grid Flow to fit in remaining space) --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Handphone Ayah</label>
                                 <div class="relative group">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
                                         <span class="text-sm font-bold opacity-50">+62</span>
@@ -1148,16 +1147,17 @@ foreach ($missingFields as $field => $info) {
                         <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Mother's Residence</span>
                     </div>
                     <div class="space-y-5">
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider pt-3">Alamat Lengkap</label>
-                            <div class="lg:col-span-9">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                            {{-- Alamat Lengkap --}}
+                            <div class="md:col-span-2">
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Alamat Lengkap</label>
                                 <textarea name="alamat_ibu" rows="3"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $parent->alamat_ibu ?? '' }}</textarea>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Provinsi --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Provinsi</label>
                                 <select name="propinsi_ibu" id="provinsiIbuSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Provinsi</option>
@@ -1166,28 +1166,28 @@ foreach ($missingFields as $field => $info) {
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Kota/Kabupaten --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Kota/Kabupaten</label>
                                 <select name="kota_ibu" id="kotaIbuSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
                                     <option value="">Pilih Kota/Kabupaten</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Kecamatan --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Kecamatan</label>
                                 <select name="kecamatan_ibu" id="kecamatanIbuSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Desa/Kelurahan --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Desa/Kelurahan</label>
                                 <div x-data="desaIbuDropdown()" class="relative">
                                     <input type="hidden" name="desa_ibu" :value="selected">
                                     <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputIbu.focus())"
@@ -1279,10 +1279,10 @@ foreach ($missingFields as $field => $info) {
                                     }
                                 </script>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Handphone Ibu</label>
-                            <div class="lg:col-span-9">
+                            
+                            {{-- Handphone Ibu --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Handphone Ibu</label>
                                 <div class="relative group">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
                                         <span class="text-sm font-bold opacity-50">+62</span>
@@ -1305,16 +1305,17 @@ foreach ($missingFields as $field => $info) {
                         <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Guardian's Info</span>
                     </div>
                     <div class="space-y-5">
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Nama Wali</label>
-                            <div class="lg:col-span-9">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                            {{-- Nama Wali --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Nama Wali</label>
                                 <input type="text" name="nama_wali" value="{{ $parent->nama_wali ?? '' }}"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Hubungan</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Hubungan --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Hubungan</label>
                                 <select name="hubungan_wali"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Hubungan</option>
@@ -1323,10 +1324,10 @@ foreach ($missingFields as $field => $info) {
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Pendidikan</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Pendidikan --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Pendidikan</label>
                                 <select name="pendidikan_wali"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Pendidikan</option>
@@ -1335,10 +1336,10 @@ foreach ($missingFields as $field => $info) {
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Pekerjaan</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Pekerjaan --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Pekerjaan</label>
                                 <select name="pekerjaan_wali"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Pekerjaan</option>
@@ -1349,10 +1350,10 @@ foreach ($missingFields as $field => $info) {
                                     @endif
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Agama</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Agama --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Agama</label>
                                 <select name="agama_wali"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Agama</option>
@@ -1374,16 +1375,17 @@ foreach ($missingFields as $field => $info) {
                         <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Guardian's Residence</span>
                     </div>
                     <div class="space-y-5">
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-start">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider pt-3">Alamat Lengkap</label>
-                            <div class="lg:col-span-9">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                            {{-- Alamat Lengkap --}}
+                            <div class="md:col-span-2">
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Alamat Lengkap</label>
                                 <textarea name="alamat_wali" rows="3"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $parent->alamat_wali ?? '' }}</textarea>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Provinsi --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Provinsi</label>
                                 <select name="provinsi_wali" id="provinsiWaliSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                     <option value="">Pilih Provinsi</option>
@@ -1392,28 +1394,28 @@ foreach ($missingFields as $field => $info) {
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Kota/Kabupaten --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Kota/Kabupaten</label>
                                 <select name="kota_wali" id="kotaWaliSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
                                     <option value="">Pilih Kota/Kabupaten</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Kecamatan --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Kecamatan</label>
                                 <select name="kecamatan_wali" id="kecamatanWaliSelect"
                                     class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Desa/Kelurahan --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Desa/Kelurahan</label>
                                 <div x-data="desaWaliDropdown()" class="relative">
                                     <input type="hidden" name="desa_wali" :value="selected">
                                     <button type="button" @click="open = !open; $nextTick(() => $refs.searchInputWali.focus())"
@@ -1524,10 +1526,10 @@ foreach ($missingFields as $field => $info) {
                                     }
                                 </script>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-2 gap-x-6 items-center">
-                            <label class="lg:col-span-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Handphone Wali</label>
-                            <div class="lg:col-span-9">
+
+                            {{-- Handphone Wali --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Handphone Wali</label>
                                 <div class="relative group">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
                                         <span class="text-sm font-bold opacity-50">+62</span>
@@ -1840,9 +1842,14 @@ foreach ($missingFields as $field => $info) {
 
 </script>
 
-{{-- Highlight Missing Fields Script --}}
-@if($highlightMissing && count($missingFields) > 0)
+{{-- Dynamic "Belum Diisi" Label Styles (always active) --}}
 <style>
+    .empty-field-label::after {
+        content: ' (Belum diisi)';
+        font-size: 10px;
+        font-weight: normal;
+        color: #9CA3AF;
+    }
     .missing-field {
         border-color: #ef4444 !important;
         background-color: #fef2f2 !important;
@@ -1865,11 +1872,85 @@ foreach ($missingFields as $field => $info) {
         font-weight: normal;
     }
 </style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const missingFields = @json(array_keys($missingFields));
+        // Find the label for a given form element
+        function findLabelForElement(element) {
+            // Traverse up through parent elements to find a label
+            let current = element.parentElement;
+            while (current && !current.matches('form, body')) {
+                // Check if this container has a direct label child
+                let label = null;
+                for (const child of current.children) {
+                    if (child.tagName === 'LABEL') {
+                        label = child;
+                        break;
+                    }
+                }
+                if (label) return label;
+                current = current.parentElement;
+            }
+            return null;
+        }
         
-        // Map field names to their input selectors
+        // Toggle the empty-field-label class based on whether the field has a value
+        function toggleEmptyLabel(element) {
+            const label = findLabelForElement(element);
+            if (!label) return;
+            
+            let hasValue = false;
+            if (element.type === 'file') {
+                hasValue = element.files && element.files.length > 0;
+            } else if (element.type === 'hidden') {
+                hasValue = element.value.trim() !== '';
+            } else {
+                hasValue = element.value.trim() !== '';
+            }
+            
+            if (hasValue) {
+                label.classList.remove('empty-field-label');
+            } else {
+                // Only add if not already a missing-label (which has higher priority)
+                if (!label.classList.contains('missing-label')) {
+                    label.classList.add('empty-field-label');
+                }
+            }
+        }
+        
+        // Apply to all visible form fields
+        const allFields = document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea');
+        
+        allFields.forEach(element => {
+            // Initial check
+            toggleEmptyLabel(element);
+            
+            // Add event listeners
+            const eventType = (element.tagName === 'SELECT' || element.type === 'file') ? 'change' : 'input';
+            element.addEventListener(eventType, function() {
+                toggleEmptyLabel(element);
+            });
+            element.addEventListener('blur', function() {
+                toggleEmptyLabel(element);
+            });
+        });
+        
+        // Handle hidden inputs for custom dropdowns (like Desa/Kelurahan)
+        const hiddenInputs = document.querySelectorAll('input[type="hidden"][name^="desa"]');
+        hiddenInputs.forEach(element => {
+            toggleEmptyLabel(element);
+        });
+        
+        // Poll hidden inputs for changes (since they are updated by Alpine)
+        setInterval(() => {
+            hiddenInputs.forEach(element => {
+                toggleEmptyLabel(element);
+            });
+        }, 300);
+        
+        // Backend-driven missing fields highlight (additional red styling)
+        @if($highlightMissing && count($missingFields) > 0)
+        const missingFields = @json(array_keys($missingFields));
         const fieldSelectors = {
             'no_hp': 'input[name="no_hp"]',
             'alamat': 'textarea[name="alamat"]',
@@ -1912,7 +1993,6 @@ foreach ($missingFields as $field => $info) {
             'propinsi_ibu': 'select[name="propinsi_ibu"]',
             'desa_ibu': 'input[name="desa_ibu"]',
             'handphone_ibu': 'input[name="handphone_ibu"]',
-            // Alamat Sesuai KTP fields
             'alamat_ktp': 'textarea[name="alamat_ktp"]',
             'rt_ktp': 'input[name="rt_ktp"]',
             'rw_ktp': 'input[name="rw_ktp"]',
@@ -1920,7 +2000,6 @@ foreach ($missingFields as $field => $info) {
             'kota_ktp': 'select[name="kota_ktp"]',
             'kecamatan_ktp': 'select[name="kecamatan_ktp"]',
             'desa_ktp': 'input[name="desa_ktp"]',
-            // Wali (Guardian) fields
             'nama_wali': 'input[name="nama_wali"]',
             'hubungan_wali': 'select[name="hubungan_wali"]',
             'pendidikan_wali': 'select[name="pendidikan_wali"]',
@@ -1933,121 +2012,68 @@ foreach ($missingFields as $field => $info) {
             'desa_wali': 'input[name="desa_wali"]',
             'handphone_wali': 'input[name="handphone_wali"]',
         };
-
-        // Helper to toggle missing-field class and label
-        // Handles shared labels (e.g., RT / RW share one label) and nested grids
-        function toggleMissingState(element, field, isEmpty) {
-            // Find container that holds the label (traverse up if needed)
-            let container = element.closest('.grid');
-            let label = container ? container.querySelector('label') : null;
+        
+        function toggleMissingState(element, isEmpty) {
+            const label = findLabelForElement(element);
             
-            // If we found a grid but no label, it might be a nested grid (like RT/RW case)
-            // Traverse up to find the parent grid that contains the label
-            if (container && !label) {
-                let parent = container.parentElement;
-                while (parent && !parent.matches('body')) {
-                    if (parent.classList.contains('grid') && parent.querySelector('label')) {
-                        container = parent;
-                        label = parent.querySelector('label');
-                        break;
-                    }
-                    parent = parent.parentElement;
-                }
-            }
-
             if (isEmpty) {
                 element.classList.add('missing-field');
-                if (label) label.classList.add('missing-label');
-                
-                // Handle hidden inputs for custom dropdowns
+                if (label) {
+                    label.classList.remove('empty-field-label');
+                    label.classList.add('missing-label');
+                }
                 if (element.type === 'hidden' && element.nextElementSibling && element.nextElementSibling.tagName === 'BUTTON') {
                     element.nextElementSibling.classList.remove('border-[#E5E7EB]');
-                    element.nextElementSibling.classList.add('border-red-500', 'bg-red-50', 'missing-field-button');
+                    element.nextElementSibling.classList.add('border-red-500', 'bg-red-50');
                 }
             } else {
                 element.classList.remove('missing-field');
-                // Handle hidden inputs for custom dropdowns
+                if (label) {
+                    label.classList.remove('missing-label');
+                }
                 if (element.type === 'hidden' && element.nextElementSibling && element.nextElementSibling.tagName === 'BUTTON') {
-                    element.nextElementSibling.classList.remove('border-red-500', 'bg-red-50', 'missing-field-button');
+                    element.nextElementSibling.classList.remove('border-red-500', 'bg-red-50');
                     element.nextElementSibling.classList.add('border-[#E5E7EB]');
                 }
-
-                // Only remove label class if ALL inputs in this container are filled
-                if (label && container) {
-                    const allInputs = container.querySelectorAll('input, select, textarea');
-                    const anyMissing = Array.from(allInputs).some(inp => inp.classList.contains('missing-field'));
-                    if (!anyMissing) {
-                        label.classList.remove('missing-label');
-                    }
-                }
+                // Re-check if it should show empty-field-label
+                toggleEmptyLabel(element);
             }
         }
         
         missingFields.forEach(field => {
             let selector = fieldSelectors[field];
-            
-            // Handle dynamic family fields: keluarga.0.nama -> input[name="keluarga[0][nama]"]
             if (!selector && field.startsWith('keluarga.')) {
                 const parts = field.split('.');
                 if (parts.length === 3) {
-                    const index = parts[1];
-                    const subField = parts[2];
-                    // subField can be nama, hubungan, pendidikan, pekerjaan, agama
-                    // Selector structure matches: name="keluarga[0][pekerjaan]"
-                    // Note: Alpine uses :name binding but DOM will have resolved name attribute
-                    selector = `[name="keluarga[${index}][${subField}]"]`; 
+                    selector = `[name="keluarga[${parts[1]}][${parts[2]}]"]`; 
                 }
             }
-
             if (selector) {
                 const element = document.querySelector(selector);
                 if (element) {
-                    // Initially mark as missing
                     element.classList.add('missing-field');
-                    
-                    // Find container that holds the label using the same logic as toggleMissingState
-                    let container = element.closest('.grid');
-                    let label = container ? container.querySelector('label') : null;
-                    
-                    if (container && !label) {
-                        let parent = container.parentElement;
-                        while (parent && !parent.matches('body')) {
-                            if (parent.classList.contains('grid') && parent.querySelector('label')) {
-                                container = parent;
-                                label = parent.querySelector('label');
-                                break;
-                            }
-                            parent = parent.parentElement;
-                        }
-                    }
-
+                    const label = findLabelForElement(element);
                     if (label) {
+                        label.classList.remove('empty-field-label');
                         label.classList.add('missing-label');
                     }
-
-                    // Attach event listeners for dynamic updates
+                    
                     const eventType = (element.tagName === 'SELECT' || element.type === 'file') ? 'change' : 'input';
                     element.addEventListener(eventType, function() {
-                        let hasValue = false;
-                        if (element.type === 'file') {
-                            hasValue = element.files && element.files.length > 0;
-                        } else {
-                            hasValue = element.value.trim() !== '';
-                        }
-                        toggleMissingState(element, field, !hasValue);
+                        let hasValue = element.type === 'file' ? (element.files && element.files.length > 0) : element.value.trim() !== '';
+                        toggleMissingState(element, !hasValue);
                     });
                 }
             }
         });
         
-        // Scroll to first missing field after a short delay
         setTimeout(() => {
             const firstMissing = document.querySelector('.missing-field');
             if (firstMissing) {
                 firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }, 500);
+        @endif
     });
 </script>
-@endif
 @endsection

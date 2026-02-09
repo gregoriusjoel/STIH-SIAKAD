@@ -124,94 +124,52 @@
             @endif
         </div>
 
-        {{-- Quick Actions --}}
+        {{-- Quick Actions (only shown when profile is complete) --}}
+        @if($isProfileComplete)
         <div class="bg-white rounded-xl shadow-md p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
                 <i class="fas fa-bolt text-maroon mr-3"></i>
                 Akses Cepat
-                @if(!$isProfileComplete)
-                    <span class="ml-3 text-xs font-normal text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                        <i class="fas fa-lock mr-1"></i> Lengkapi profil untuk mengaktifkan
-                    </span>
-                @endif
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                @if($isProfileComplete)
-                    <a href="{{ route('mahasiswa.krs.index') }}"
-                        class="flex items-center gap-4 p-4 border-2 border-maroon rounded-lg hover:bg-maroon-light transition group">
-                        <div
-                            class="w-12 h-12 bg-maroon rounded-lg flex items-center justify-center group-hover:scale-110 transition">
-                            <i class="fas fa-clipboard-list text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-800">Isi KRS</div>
-                            <div class="text-sm text-gray-600">Status: {{ $krsStatus }}</div>
-                        </div>
-                    </a>
-                @else
+                <a href="{{ route('mahasiswa.krs.index') }}"
+                    class="flex items-center gap-4 p-4 border-2 border-maroon rounded-lg hover:bg-maroon-light transition group">
                     <div
-                        class="flex items-center gap-4 p-4 border-2 border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed opacity-60">
-                        <div class="w-12 h-12 bg-gray-400 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-clipboard-list text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-500">Isi KRS</div>
-                            <div class="text-sm text-gray-400"><i class="fas fa-lock mr-1"></i> Profil belum lengkap</div>
-                        </div>
+                        class="w-12 h-12 bg-maroon rounded-lg flex items-center justify-center group-hover:scale-110 transition">
+                        <i class="fas fa-clipboard-list text-white text-xl"></i>
                     </div>
-                @endif
+                    <div>
+                        <div class="font-bold text-gray-800">Isi KRS</div>
+                        <div class="text-sm text-gray-600">Status: {{ $krsStatus }}</div>
+                    </div>
+                </a>
 
-                @if($isProfileComplete)
-                    <a href="{{ route('mahasiswa.nilai.index') }}"
-                        class="flex items-center gap-4 p-4 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition group">
-                        <div
-                            class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
-                            <i class="fas fa-graduation-cap text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-800">Lihat Nilai</div>
-                            <div class="text-sm text-gray-600">IPK: {{ number_format($ipk, 2) }}</div>
-                        </div>
-                    </a>
-                @else
+                <a href="{{ route('mahasiswa.nilai.index') }}"
+                    class="flex items-center gap-4 p-4 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition group">
                     <div
-                        class="flex items-center gap-4 p-4 border-2 border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed opacity-60">
-                        <div class="w-12 h-12 bg-gray-400 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-graduation-cap text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-500">Lihat Nilai</div>
-                            <div class="text-sm text-gray-400"><i class="fas fa-lock mr-1"></i> Profil belum lengkap</div>
-                        </div>
+                        class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
+                        <i class="fas fa-graduation-cap text-white text-xl"></i>
                     </div>
-                @endif
+                    <div>
+                        <div class="font-bold text-gray-800">Lihat Nilai</div>
+                        <div class="text-sm text-gray-600">IPK: {{ number_format($ipk, 2) }}</div>
+                    </div>
+                </a>
 
-                @if($isProfileComplete)
-                    <a href="{{ route('mahasiswa.jadwal.index') }}"
-                        class="flex items-center gap-4 p-4 border-2 border-green-500 rounded-lg hover:bg-green-50 transition group">
-                        <div
-                            class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
-                            <i class="fas fa-calendar-alt text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-800">Jadwal Kuliah</div>
-                            <div class="text-sm text-gray-600">Semester Ini</div>
-                        </div>
-                    </a>
-                @else
+                <a href="{{ route('mahasiswa.jadwal.index') }}"
+                    class="flex items-center gap-4 p-4 border-2 border-green-500 rounded-lg hover:bg-green-50 transition group">
                     <div
-                        class="flex items-center gap-4 p-4 border-2 border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed opacity-60">
-                        <div class="w-12 h-12 bg-gray-400 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-calendar-alt text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-500">Jadwal Kuliah</div>
-                            <div class="text-sm text-gray-400"><i class="fas fa-lock mr-1"></i> Profil belum lengkap</div>
-                        </div>
+                        class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
+                        <i class="fas fa-calendar-alt text-white text-xl"></i>
                     </div>
-                @endif
+                    <div>
+                        <div class="font-bold text-gray-800">Jadwal Kuliah</div>
+                        <div class="text-sm text-gray-600">Semester Ini</div>
+                    </div>
+                </a>
             </div>
         </div>
+        @endif
 
         {{-- Info + PA Row (50:50) --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -129,7 +129,12 @@ class JadwalController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('admin.jadwal.index', compact('kelasMataKuliahs', 'allSchedules', 'mataKuliahs', 'dosens', 'rooms', 'daftarRuangan', 'jamPerkuliahanList', 'statistics', 'jadwalProposals'));
+        // Fetch Dosen Availability Checks
+        $availabilityChecks = \App\Models\DosenAvailabilityCheck::with(['dosen.user', 'mataKuliah'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.jadwal.index', compact('kelasMataKuliahs', 'allSchedules', 'mataKuliahs', 'dosens', 'rooms', 'daftarRuangan', 'jamPerkuliahanList', 'statistics', 'jadwalProposals', 'availabilityChecks'));
     }
 
     public function create()

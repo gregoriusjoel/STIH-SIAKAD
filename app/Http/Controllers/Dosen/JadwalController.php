@@ -128,6 +128,11 @@ class JadwalController extends Controller
                 ];
             });
         
+        // Get Jam Perkuliahan data for availability form
+        $jamPerkuliahans = \App\Models\JamPerkuliahan::where('is_active', true)
+            ->orderBy('jam_ke')
+            ->get();
+        
         return view('page.dosen.jadwal.index', compact(
             'schedulesByDay', 
             'activeJadwals', 
@@ -139,7 +144,8 @@ class JadwalController extends Controller
             'rejectedReschedules',
             'pendingReschedules',
             'daftarRuangan',
-            'allSchedules'
+            'allSchedules',
+            'jamPerkuliahans'
         ));
     }
 
@@ -284,5 +290,26 @@ class JadwalController extends Controller
         $weekOffset = (int) $request->input('week_offset', 0);
 
         return redirect()->route('dosen.jadwal', ['week' => $weekOffset])->with('success', 'Jadwal berhasil diubah ke ' . $request->new_hari . ' pukul ' . $request->new_jam_mulai . ' - ' . $request->new_jam_selesai . ' di ruang ' . $ruangan->kode_ruangan . '.');
+    }
+    public function checkAvailability(Request $request)
+    {
+        $request->validate([
+            'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
+            'hari' => 'required|string',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required',
+        ]);
+
+        $dosen = \App\Models\Dosen::where('user_id', auth()->id())->firstOrFail();
+
+        \App\Models\DosenAvailabilityCheck::create([
+            'dosen_id' => $dosen->id,
+            'mata_kuliah_id' => $request->mata_kuliah_id,
+            'hari' => $request->hari,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+        ]);
+
+        return redirect()->back()->with('success', 'Permintaan cek ketersediaan berhasil dikirim ke Admin.');
     }
 }

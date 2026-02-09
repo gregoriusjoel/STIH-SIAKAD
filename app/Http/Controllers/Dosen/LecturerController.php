@@ -336,135 +336,6 @@ class LecturerController extends Controller
         return view('dosen.krs.index', compact('students'));
     }
 
-    public function absensi($id)
-    {
-        $kelas = Kelas::with([
-            'mataKuliah',
-            'jadwals' => function ($q) {
-                $q->where('status', 'active');
-            }
-        ])->findOrFail($id);
-
-        $jadwal = $kelas->jadwals->first();
-
-        // Calculate current meeting
-        $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
-            ?? \App\Models\Semester::latest()->first();
-
-        $pertemuanKe = 1;
-        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
-            $start = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
-            $now = \Carbon\Carbon::now();
-            if ($now->gte($start)) {
-                $pertemuanKe = (int) min(16, $start->diffInWeeks($now) + 1);
-            }
-        }
-
-        $class_info = [
-            'name' => $kelas->mataKuliah->nama_mk,
-            'code' => $kelas->mataKuliah->kode_mk,
-            'section' => $kelas->section,
-            'pertemuan' => $pertemuanKe,
-            'topic' => 'Pertemuan Ke-' . $pertemuanKe,
-            'date' => now()->locale('id')->isoFormat('dddd, D MMMM YYYY'),
-            'room' => $jadwal?->ruangan ?? '-',
-            'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
-            'dosen_name' => $kelas->dosen->name ?? 'Dosen Belum Ditentukan',
-        ];
-
-        // Fetch students from the related KelasMataKuliah -> krs
-        // Match the same way as generateQr: prefer exact kode_kelas match, fallback to first with same mata_kuliah_id
-        $kelasMataKuliah = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where(function ($q) use ($kelas) {
-                $q->where('kode_kelas', $kelas->section)
-                    ->orWhere('kode_kelas', $kelas->section . '');
-            })->first();
-
-        if (!$kelasMataKuliah) {
-            $kelasMataKuliah = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)->first();
-        }
-
-        // Ensure the kelas_mata_kuliah has a qr_token so QR can be generated; generate if missing
-        if ($kelasMataKuliah && empty($kelasMataKuliah->qr_token)) {
-            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
-            // Do not enable the QR automatically when creating the token
-            $kelasMataKuliah->qr_enabled = $kelasMataKuliah->qr_enabled ?? false;
-            $kelasMataKuliah->save();
-        }
-
-        $krsCollection = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
-            ->where(function ($q) use ($kelasMataKuliah, $kelas) {
-                $q->where('kelas_id', $kelas->id);
-                if ($kelasMataKuliah) {
-                    $q->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
-                }
-            })->with('mahasiswa')
-            ->get();
-
-        $students = $krsCollection->map(function ($krs) {
-            $m = $krs->mahasiswa;
-            $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
-            return [
-                'name' => $userName,
-                'nim' => $m->nim ?? null,
-                'prodi' => $m->prodi ?? null,
-                'semester' => $m->semester ?? null,
-                'ipk' => $m->ipk ?? null,
-                'status' => 'Aktif',
-            ];
-        })->toArray();
-
-        // Build a `class` array expected by the blade templates (includes QR token)
-        $class = [
-            'id' => $kelas->id,
-            'name' => $kelas->mataKuliah->nama_mk,
-            'code' => $kelas->mataKuliah->kode_mk,
-            'section' => $kelas->section,
-            'pertemuan' => $pertemuanKe,
-            'topic' => 'Pertemuan Ke-' . $pertemuanKe,
-            'date' => now()->locale('id')->isoFormat('dddd, D MMMM YYYY'),
-            'room' => $jadwal?->ruangan ?? '-',
-            'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
-            'dosen_name' => $kelas->dosen->name ?? 'Dosen Belum Ditentukan',
-            'qr_token' => $kelasMataKuliah->qr_token ?? null,
-            'qr_enabled' => $kelasMataKuliah->qr_enabled ?? false,
-            'qr_expires_at' => $kelasMataKuliah->qr_expires_at ?? null,
-        ];
-
-        // Determine which pertemuan we are viewing (request param, or the kelas's QR current pertemuan, otherwise the calculated pertemuanKe)
-        $currentPertemuan = request()->input('pertemuan') ?? ($kelasMataKuliah->qr_current_pertemuan ?? $pertemuanKe);
-
-        // Load presensi records for this kelas_mata_kuliah and current pertemuan (recent first)
-        $presensis = collect();
-        if ($kelasMataKuliah) {
-            $presensiQuery = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
-                ->with(['krs.mahasiswa.user'])
-                ->orderByDesc('created_at');
-
-            // Only filter by pertemuan if the column exists in DB
-            // Include both matching pertemuan AND NULL pertemuan (legacy records)
-            if (Schema::hasColumn('presensis', 'pertemuan')) {
-                $presensiQuery->where(function($q) use ($currentPertemuan) {
-                    $q->where('pertemuan', $currentPertemuan)
-                      ->orWhereNull('pertemuan');
-                });
-            }
-
-            $presensis = $presensiQuery->get();
-        }
-
-        // Expose convenient variables expected by the Blade templates
-        $token = $class['qr_token'] ?? null;
-        $qrEnabled = (bool) ($class['qr_enabled'] ?? false);
-        $qrExpires = $class['qr_expires_at'] ?? null;
-
-        if (request()->ajax()) {
-            return view('page.dosen.kelas.partials.absensi-content', compact('class_info', 'students', 'id', 'class', 'presensis', 'token', 'qrEnabled', 'qrExpires'))->with('is_modal', true);
-        }
-
-        return view('page.dosen.kelas.absensi', compact('class_info', 'students', 'id', 'class', 'presensis', 'token', 'qrEnabled', 'qrExpires'))->with('is_modal', false);
-    }
-
     public function detail($id)
     {
         $kelas = Kelas::with([
@@ -679,7 +550,25 @@ class LecturerController extends Controller
             ->latest()
             ->get();
 
-        return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students', 'tasks'));
+        // Ensure the kelas_mata_kuliah has a qr_token so QR can be generated; generate if missing
+        if ($kelasMataKuliah && empty($kelasMataKuliah->qr_token)) {
+            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
+            $kelasMataKuliah->qr_enabled = $kelasMataKuliah->qr_enabled ?? false;
+            $kelasMataKuliah->save();
+        }
+
+        $token = $kelasMataKuliah->qr_token ?? null;
+        $qrEnabled = (bool) ($kelasMataKuliah->qr_enabled ?? false);
+        $qrExpires = $kelasMataKuliah->qr_expires_at ?? null;
+
+        // Get materials for this mata kuliah and pertemuan
+        $materis = \App\Models\Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('pertemuan', $pertemuan)
+            ->with('dosen')
+            ->latest()
+            ->get();
+
+        return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students', 'tasks', 'materis', 'token', 'qrEnabled', 'qrExpires', 'id'));
     }
 
     public function meetingMaterials($id, $pertemuan)
@@ -777,5 +666,68 @@ class LecturerController extends Controller
         \Log::info('QR token manually disabled', ['kelas_mk_id' => $kelasMataKuliah->id, 'qr_token' => $kelasMataKuliah->qr_token]);
 
         return back()->with('success', 'QR dinonaktifkan.');
+    }
+
+    /**
+     * Get attendance data for AJAX polling (real-time updates)
+     */
+    public function getAttendanceData($id)
+    {
+        $kelas = Kelas::with('mataKuliah')->findOrFail($id);
+
+        // Find the related KelasMataKuliah
+        $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where(function ($q) use ($kelas) {
+                $q->where('kode_kelas', $kelas->section)
+                    ->orWhere('kode_kelas', $kelas->section . '');
+            })->first();
+
+        if (!$kelasMataKuliah) {
+            $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)->first();
+        }
+
+        if (!$kelasMataKuliah) {
+            return response()->json([
+                'success' => false,
+                'presensis' => []
+            ]);
+        }
+
+        // Get current pertemuan
+        $currentPertemuan = request()->input('pertemuan') ?? ($kelasMataKuliah->qr_current_pertemuan ?? 1);
+
+        // Load presensi records
+        $presensiQuery = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+            ->with(['krs.mahasiswa.user', 'krs.kelas'])
+            ->orderByDesc('created_at');
+
+        // Filter by pertemuan if column exists
+        if (Schema::hasColumn('presensis', 'pertemuan')) {
+            $presensiQuery->where(function($q) use ($currentPertemuan) {
+                $q->where('pertemuan', $currentPertemuan)
+                  ->orWhereNull('pertemuan');
+            });
+        }
+
+        $presensis = $presensiQuery->get();
+
+        // Format the data for JSON response
+        $formattedPresensis = $presensis->map(function($p, $index) use ($kelas) {
+            return [
+                'id' => $p->id,
+                'no' => $index + 1,
+                'nama' => $p->nama ?? ($p->krs->mahasiswa->user->name ?? ($p->krs->mahasiswa->nama ?? '-')),
+                'kelas' => $p->krs?->kelas?->section ?? $kelas->section ?? '-',
+                'kontak' => $p->kontak ?? '-',
+                'waktu' => optional($p->waktu ?? $p->tanggal)->format('d M Y H:i') ?? (optional($p->tanggal)->format('d M Y') ?? '-'),
+                'created_at' => $p->created_at->toIso8601String(),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'presensis' => $formattedPresensis,
+            'count' => $presensis->count()
+        ]);
     }
 }

@@ -28,33 +28,42 @@
                     <p class="text-[#616889] dark:text-slate-400 text-sm">Jadwal perkuliahan Semester Ganjil 2023/2024.</p>
                 </div>
 
-                <!-- Week Navigator -->
-                <div
-                    class="flex items-center gap-2 bg-white dark:bg-[#1a1d2e] p-1 rounded-lg border border-[#dbdde6] dark:border-slate-800 shadow-sm">
-                    @if($weekOffset > 0)
-                        <a href="{{ route('dosen.jadwal', ['week' => $weekOffset - 1]) }}"
-                            class="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md text-[#616889]">
-                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-                        </a>
-                    @else
-                        <span class="p-1.5 rounded-md text-[#616889] opacity-50 cursor-not-allowed">
-                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                <div class="flex items-center gap-3">
+                    <!-- Availability Check Button -->
+                    <button @click="showAvailabilityModal = true" 
+                        class="hidden md:flex items-center gap-2 px-4 py-2 bg-[#8B1538] text-white rounded-lg text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity">
+                        <span class="material-symbols-outlined text-[20px]">event_available</span>
+                        Ketersediaan Waktu
+                    </button>
+
+                    <!-- Week Navigator -->
+                    <div
+                        class="flex items-center gap-2 bg-white dark:bg-[#1a1d2e] p-1 rounded-lg border border-[#dbdde6] dark:border-slate-800 shadow-sm">
+                        @if($weekOffset > 0)
+                            <a href="{{ route('dosen.jadwal', ['week' => $weekOffset - 1]) }}"
+                                class="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md text-[#616889]">
+                                <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                            </a>
+                        @else
+                            <span class="p-1.5 rounded-md text-[#616889] opacity-50 cursor-not-allowed">
+                                <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                            </span>
+                        @endif
+
+                        <span class="text-sm font-semibold px-2 text-[#111218] dark:text-white">
+                            @php
+                                $weekNum = ceil($weekStart->day / 7);
+                                $monthName = $weekStart->translatedFormat('M');
+                            @endphp
+                            Minggu ke-{{ $weekNum }} ({{ $weekStart->format('d') }} - {{ $weekEnd->format('d') }}
+                            {{ $monthName }})
                         </span>
-                    @endif
 
-                    <span class="text-sm font-semibold px-2 text-[#111218] dark:text-white">
-                        @php
-                            $weekNum = ceil($weekStart->day / 7);
-                            $monthName = $weekStart->translatedFormat('M');
-                        @endphp
-                        Minggu ke-{{ $weekNum }} ({{ $weekStart->format('d') }} - {{ $weekEnd->format('d') }}
-                        {{ $monthName }})
-                    </span>
-
-                    <a href="{{ route('dosen.jadwal', ['week' => $weekOffset + 1]) }}"
-                        class="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md text-[#616889]">
-                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                    </a>
+                        <a href="{{ route('dosen.jadwal', ['week' => $weekOffset + 1]) }}"
+                            class="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md text-[#616889]">
+                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -405,6 +414,108 @@
                 </div>
             </div>
 
+            <!-- Availability Check Modal -->
+            <div x-show="showAvailabilityModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center"
+                x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-black/40 backdrop-blur"
+                    style="backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);"
+                    @click="showAvailabilityModal = false">
+                </div>
+
+                <!-- Modal Card -->
+                <div x-show="showAvailabilityModal" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="relative bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 z-50">
+
+                    <!-- Header -->
+                    <div class="mb-5">
+                        <h3 class="text-lg font-black text-[#111218] dark:text-white">
+                            Cek Ketersediaan Waktu
+                        </h3>
+                        <p class="text-sm text-[#616889] dark:text-slate-400 mt-1">
+                            Pilih mata kuliah dan waktu untuk mengecek ketersediaan.
+                        </p>
+                    </div>
+
+                    <!-- Form -->
+                    <div class="space-y-4">
+                        <!-- Mata Kuliah -->
+                        <form action="{{ route('dosen.jadwal.check_availability') }}" method="POST">
+                            @csrf
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
+                                        Mata Kuliah
+                                    </label>
+                                    <select name="mata_kuliah_id" x-model="availabilityData.mata_kuliah_id" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
+                                rounded-lg bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-[#8B1538]" required>
+                                        <option value="">Pilih Mata Kuliah</option>
+                                        @php
+                                            $uniqueMKs = $kelasMataKuliahs->unique('mata_kuliah_id');
+                                        @endphp
+                                        @foreach($uniqueMKs as $mk)
+                                            <option value="{{ $mk->mata_kuliah_id }}">{{ $mk->mataKuliah->nama_mk }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+        
+                                <!-- Hari -->
+                                <div>
+                                    <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
+                                        Hari
+                                    </label>
+                                    <select name="hari" x-model="availabilityData.hari" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
+                                rounded-lg bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-[#8B1538]" required>
+                                        <option value="">Pilih Hari</option>
+                                        @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                                            <option value="{{ $hari }}">{{ $hari }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+        
+                                <!-- Jam -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
+                                            Jam Mulai
+                                        </label>
+                                        <input type="time" name="jam_mulai" x-model="availabilityData.jam_mulai" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
+                                    rounded-lg bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-[#8B1538]" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
+                                            Jam Selesai
+                                        </label>
+                                        <input type="time" name="jam_selesai" x-model="availabilityData.jam_selesai" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
+                                    rounded-lg bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-[#8B1538]" required>
+                                    </div>
+                                </div>
+        
+                                <!-- Actions -->
+                                <div class="flex justify-end gap-3 pt-4">
+                                    <button type="button" @click="showAvailabilityModal = false" class="px-4 py-2 rounded-lg border text-sm font-semibold 
+                                hover:bg-gray-100 dark:hover:bg-slate-800">
+                                        Batal
+                                    </button>
+        
+                                    <button type="submit" 
+                                        class="px-5 py-2 rounded-lg bg-[#8B1538] text-white text-sm font-semibold shadow hover:opacity-90">
+                                        Cek Ketersediaan
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Creation and pending submission UI removed -->
             <div class="mt-6"></div>
         </div>
@@ -427,6 +538,8 @@
 
                     // Modal state
                     showRescheduleModal: false,
+                    showAvailabilityModal: false,
+                    
                     rescheduleData: {
                         id: '',
                         mata_kuliah: '',
@@ -439,6 +552,13 @@
                         online_link: '',
                         asynchronous_tugas: '',
                         asynchronous_file_name: ''
+                    },
+                    
+                    availabilityData: {
+                        mata_kuliah_id: '',
+                        hari: '',
+                        jam_mulai: '',
+                        jam_selesai: ''
                     },
                     get rescheduleFormAction() {
                         return '/dosen/kelas/reschedule';

@@ -111,6 +111,46 @@ class AcademicCalendarController extends Controller
         };
     }
 
+    public function export(Request $request)
+    {
+        $semesterId = $request->query('semester_id');
+
+        $query = AcademicEvent::active();
+
+        if ($semesterId) {
+            $semester = Semester::find($semesterId);
+            if ($semester) {
+                $start = $semester->tanggal_mulai;
+                $end = $semester->tanggal_selesai;
+
+                $query->where(function ($q) use ($semesterId, $start, $end) {
+                    $q->where('semester_id', $semesterId)
+                        ->orWhere(function ($q2) use ($start, $end) {
+                            $q2->whereNull('semester_id')
+                                ->whereRaw('? <= end_date AND ? >= start_date', [$start, $end]);
+                        });
+                });
+            } else {
+                $query->where('semester_id', $semesterId);
+            }
+        }
+
+        try {
+            $events = $query->orderBy('start_date', 'asc')->get();
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.kalender-akademik.pdf', compact('events'))
+                ->setPaper('a4', 'landscape');
+
+            return $pdf->download('kalender-akademik.pdf');
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Gagal export PDF',
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    }
+
     public function downloadTemplate()
     {
         $headers = [
@@ -131,12 +171,6 @@ class AcademicCalendarController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
-    }
-
-    public function export()
-    {
-        $events = AcademicEvent::active()->get();
-        return view('admin.kalender-akademik.pdf', compact('events'));
     }
 
     public function storeEvent(Request $request)

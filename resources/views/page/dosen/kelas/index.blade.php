@@ -104,14 +104,10 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 mt-2">
-                        <a href="{{ route('dosen.kelas.absensi', $class['id']) }}"
-                            class="flex items-center justify-center py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 text-sm font-bold hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
-                            Absensi
-                        </a>
+                    <div class="grid grid-cols-1 gap-3 mt-2">
                         <a href="{{ route('dosen.kelas.detail', $class['id']) }}"
                             class="flex items-center justify-center py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
-                            Detail
+                            Detail Kelas
                         </a>
                     </div>
                 </div>

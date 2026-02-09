@@ -1,0 +1,3 @@
+nim,nama,email,prodi,angkatan,semester,phone,alamat,jenis_kelamin,tempat_lahir,tanggal_lahir,agama
+2024001001,John Doe,2024001001@student.stih.ac.id,Ilmu Hukum,2024,1,081234567890,Jl. Contoh No. 123,L,Jakarta,2000-01-15,Islam
+2024001002,Jane Smith,2024001002@student.stih.ac.id,Ilmu Hukum,2024,1,081234567891,Jl. Contoh No. 456,P,Bandung,2000-05-20,Kristen

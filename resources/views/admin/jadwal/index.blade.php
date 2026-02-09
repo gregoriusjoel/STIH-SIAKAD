@@ -138,6 +138,48 @@
                 </div>
             </div>
         </div>
+
+        {{-- Card: Checks Ketersediaan Waktu Dosen --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
+                <div class="font-semibold text-white text-lg"><i class="fas fa-history mr-2"></i>Log Cek Ketersediaan Waktu Dosen</div>
+            </div>
+            <div class="p-6">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-base">
+                        <thead class="bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-semibold">Waktu Cek</th>
+                                <th class="px-4 py-3 text-left font-semibold">Dosen</th>
+                                <th class="px-4 py-3 text-left font-semibold">Mata Kuliah</th>
+                                <th class="px-4 py-3 text-left font-semibold">Hari/Jam Diminta</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            @forelse($availabilityChecks as $check)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                    <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ $check->created_at->format('d M Y H:i') }}</td>
+                                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{{ $check->dosen->user->name ?? '-' }}</td>
+                                    <td class="px-4 py-3">
+                                        <div class="font-semibold text-gray-900 dark:text-gray-100">{{ $check->mataKuliah->nama_mk ?? '-' }}</div>
+                                        <div class="text-xs text-gray-500">{{ $check->mataKuliah->kode_mk ?? '-' }}</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 rounded bg-blue-100 text-blue-800 text-xs font-bold">
+                                            {{ $check->hari }}, {{ substr($check->jam_mulai, 0, 5) }} - {{ substr($check->jam_selesai, 0, 5) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">Belum ada data cek ketersediaan</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Modal: Tambah Jadwal Baru --}}

@@ -51,7 +51,7 @@
                             <span>Import</span>
                         </button>
 
-                        <a href="{{ route('kalender.export') }}" target="_blank"
+                        <a href="{{ route('admin.kalender.export') }}" target="_blank"
                             class="flex-1 sm:flex-none justify-center px-5 py-2.5 bg-white dark:bg-gray-800 text-slate-700 dark:text-gray-300 hover:text-maroon dark:hover:text-red-400 hover:bg-slate-50 dark:hover:bg-gray-700 border border-slate-200 dark:border-gray-700 rounded-xl hover:border-maroon/30 transition-all duration-200 shadow-sm font-bold text-sm flex items-center gap-2 group">
                             <i
                                 class="fas fa-file-pdf text-slate-400 dark:text-gray-500 group-hover:text-maroon dark:group-hover:text-red-400 transition-colors"></i>
@@ -89,7 +89,7 @@
                             <span>KRS</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-sm bg-emerald-500"></span>
+                            <span class="w-3 h-3 rounded-sm bg-green-500"></span>
                             <span>Perkuliahan</span>
                         </div>
                         <div class="flex items-center gap-1.5">
@@ -97,7 +97,7 @@
                             <span>UTS/UAS</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-sm bg-slate-400"></span>
+                            <span class="w-3 h-3 rounded-sm bg-orange-500"></span>
                             <span>Lainnya</span>
                         </div>
                     </div>
@@ -113,28 +113,29 @@
                         <h3 class="font-bold text-lg text-slate-800 dark:text-gray-100">Agenda Mendatang</h3>
                         <p class="text-xs text-slate-500 dark:text-gray-400">Jadwal terdekat selanjutnya</p>
                         <!-- Legend -->
-                        <div class="flex flex-wrap gap-2 mt-2">
+                        <div class="flex flex-wrap gap-3 mt-2">
                             <div class="flex items-center gap-1.5" title="Hari Libur">
-                                <span
-                                    class="w-2.5 h-2.5 rounded-sm bg-red-100 border border-red-200 dark:bg-red-900/50 dark:border-red-800"></span>
+                                <span class="w-2.5 h-2.5 rounded-sm bg-red-500"></span>
                                 <span
                                     class="text-[10px] font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide">Libur</span>
                             </div>
                             <div class="flex items-center gap-1.5" title="Periode KRS">
-                                <span
-                                    class="w-2.5 h-2.5 rounded-sm bg-blue-100 border border-blue-200 dark:bg-blue-900/50 dark:border-blue-800"></span>
+                                <span class="w-2.5 h-2.5 rounded-sm bg-blue-500"></span>
                                 <span
                                     class="text-[10px] font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide">KRS</span>
                             </div>
-                            <div class="flex items-center gap-1.5" title="Perkuliahan Aktif">
-                                <span
-                                    class="w-2.5 h-2.5 rounded-sm bg-emerald-100 border border-emerald-200 dark:bg-emerald-900/50 dark:border-emerald-800"></span>
+                            <div class="flex items-center gap-1.5" title="Perkuliahan">
+                                <span class="w-2.5 h-2.5 rounded-sm bg-green-500"></span>
                                 <span
                                     class="text-[10px] font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide">Kuliah</span>
                             </div>
-                            <div class="flex items-center gap-1.5" title="Agenda Lainnya">
+                            <div class="flex items-center gap-1.5" title="Ujian Tengah/Akhir Semester">
+                                <span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span>
                                 <span
-                                    class="w-2.5 h-2.5 rounded-sm bg-slate-100 border border-slate-200 dark:bg-gray-700 dark:border-gray-600"></span>
+                                    class="text-[10px] font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide">UTS/UAS</span>
+                            </div>
+                            <div class="flex items-center gap-1.5" title="Agenda Lainnya">
+                                <span class="w-2.5 h-2.5 rounded-sm bg-orange-500"></span>
                                 <span
                                     class="text-[10px] font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide">Lainnya</span>
                             </div>
@@ -1049,11 +1050,11 @@
 
                     if (upcoming.length === 0) {
                         listEl.innerHTML = `
-                                                <div class="flex flex-col items-center justify-center h-full py-10 text-slate-400 dark:text-gray-500">
-                                                    <i class="fas fa-calendar-times text-4xl mb-3 opacity-50"></i>
-                                                    <p class="text-sm">Tidak ada agenda mendatang</p>
-                                                </div>
-                                            `;
+                                                                                                                                                <div class="flex flex-col items-center justify-center h-full py-10 text-slate-400 dark:text-gray-500">
+                                                                                                                                                    <i class="fas fa-calendar-times text-4xl mb-3 opacity-50"></i>
+                                                                                                                                                    <p class="text-sm">Tidak ada agenda mendatang</p>
+                                                                                                                                                </div>
+                                                                                                                                            `;
                         return;
                     }
 
@@ -1073,14 +1074,16 @@
                         const lowerType = rawType.toLowerCase();
 
                         // --- Color Logic ---
-                        let theme = 'slate'; // default
+                        let theme = 'orange'; // default
 
                         if (lowerType.includes('libur') || lowerTitle.includes('libur')) {
                             theme = 'red';
                         } else if (lowerType.includes('krs') || lowerTitle.includes('krs')) {
                             theme = 'blue';
                         } else if (lowerType.includes('kuliah') || lowerTitle.includes('perkuliahan')) {
-                            theme = 'emerald';
+                            theme = 'green';
+                        } else if (lowerType.includes('uts') || lowerType.includes('uas') || lowerTitle.includes('uts') || lowerTitle.includes('uas') || lowerTitle.includes('ujian')) {
+                            theme = 'amber';
                         }
 
                         // Theme Styles Map
@@ -1097,43 +1100,49 @@
                                 icon: 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800',
                                 badge: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                             },
-                            emerald: {
-                                card: 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30',
-                                title: 'text-emerald-700 dark:text-emerald-400',
-                                icon: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
-                                badge: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
+                            green: {
+                                card: 'bg-green-50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30',
+                                title: 'text-green-700 dark:text-green-400',
+                                icon: 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800',
+                                badge: 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300'
                             },
-                            slate: {
-                                card: 'bg-white dark:bg-gray-800 border-slate-100 dark:border-gray-700',
-                                title: 'text-slate-800 dark:text-gray-100',
-                                icon: 'bg-slate-100 dark:bg-gray-700 text-slate-700 dark:text-gray-200 border-slate-200 dark:border-gray-600',
-                                badge: 'bg-slate-100 dark:bg-gray-700/80 text-slate-600 dark:text-gray-300'
+                            amber: {
+                                card: 'bg-amber-50 dark:bg-amber-900/10 border-amber-100 dark:border-amber-900/30',
+                                title: 'text-amber-700 dark:text-amber-400',
+                                icon: 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800',
+                                badge: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
+                            },
+                            orange: {
+                                card: 'bg-orange-50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-900/30',
+                                title: 'text-orange-700 dark:text-orange-400',
+                                icon: 'bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800',
+                                badge: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
                             }
                         };
 
                         const s = styles[theme];
 
                         html += `
-                                                <div class="${s.card} p-4 rounded-xl shadow-sm border mb-3 hover:shadow-md transition-all cursor-pointer group" onclick="calendar.gotoDate('${event.start}')">
-                                                    <div class="flex gap-4 items-center">
-                                                        <div class="flex-none flex flex-col items-center justify-center w-14 h-14 rounded-xl border ${s.icon}">
-                                                            <span class="text-xl font-bold leading-none">${day}</span>
-                                                            <span class="text-[10px] uppercase font-bold mt-1">${month}</span>
-                                                        </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <h4 class="text-sm font-bold ${s.title} line-clamp-2 leading-tight mb-1">
-                                                                ${title}
-                                                            </h4>
-                                                            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-gray-400">
-                                                                <span class="capitalize ${s.badge} px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide truncate max-w-[100px]">
-                                                                    ${type}
-                                                                </span>
-                                                                <span>${year}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            `;
+                                                                                                                                                <div class="${s.card} p-4 rounded-xl shadow-sm border mb-3 hover:shadow-md transition-all cursor-pointer group" onclick="calendar.gotoDate('${event.start}')">
+                                                                                                                                                    <div class="flex gap-4 items-center">
+                                                                                                                                                        <div class="flex-none flex flex-col items-center justify-center w-14 h-14 rounded-xl border ${s.icon}">
+                                                                                                                                                            <span class="text-xl font-bold leading-none">${day}</span>
+                                                                                                                                                            <span class="text-[10px] uppercase font-bold mt-1">${month}</span>
+                                                                                                                                                        </div>
+                                                                                                                                                        <div class="flex-1 min-w-0">
+                                                                                                                                                            <h4 class="text-sm font-bold ${s.title} line-clamp-2 leading-tight mb-1">
+                                                                                                                                                                ${title}
+                                                                                                                                                            </h4>
+                                                                                                                                                            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-gray-400">
+                                                                                                                                                                <span class="capitalize ${s.badge} px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide truncate max-w-[100px]">
+                                                                                                                                                                    ${type}
+                                                                                                                                                                </span>
+                                                                                                                                                                <span>${year}</span>
+                                                                                                                                                            </div>
+                                                                                                                                                        </div>
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                            `;
                     });
 
                     html += '</div>';
@@ -1168,11 +1177,11 @@
 
                     if (upcoming.length === 0) {
                         listEl.innerHTML = `
-                                                                                                    <div class="flex flex-col items-center justify-center h-full py-10 text-slate-400 dark:text-gray-500">
-                                                                                                        <i class="fas fa-calendar-times text-4xl mb-3 opacity-50"></i>
-                                                                                                        <p class="text-sm">Tidak ada agenda mendatang</p>
-                                                                                                    </div>
-                                                                                                `;
+                                                                                                                                                                                                    <div class="flex flex-col items-center justify-center h-full py-10 text-slate-400 dark:text-gray-500">
+                                                                                                                                                                                                        <i class="fas fa-calendar-times text-4xl mb-3 opacity-50"></i>
+                                                                                                                                                                                                        <p class="text-sm">Tidak ada agenda mendatang</p>
+                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                `;
                         return;
                     }
 
@@ -1194,26 +1203,26 @@
                         const colorStyle = event.color ? `border-left: 4px solid ${event.color};` : 'border-left: 4px solid #ccc;';
 
                         html += `
-                                                                                                    <div class="p-4 hover:bg-slate-50 dark:hover:bg-gray-700/50 transition cursor-pointer group w-full" onclick="calendar.gotoDate('${event.start}')">
-                                                                                                        <div class="flex gap-4 w-full">
-                                                                                                            <div class="flex-none flex flex-col items-center justify-center w-14 h-14 bg-slate-100 dark:bg-gray-700 rounded-xl border border-slate-200 dark:border-gray-600">
-                                                                                                                <span class="text-xl font-bold text-slate-700 dark:text-gray-200 leading-none">${day}</span>
-                                                                                                                <span class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400 mt-1">${month}</span>
-                                                                                                            </div>
-                                                                                                            <div class="flex-1 min-w-0" style="${colorStyle} padding-left: 12px;">
-                                                                                                                <h4 class="text-sm font-bold text-slate-800 dark:text-gray-100 line-clamp-2 leading-tight mb-1 group-hover:text-maroon transition-colors py-0.5">
-                                                                                                                    ${title}
-                                                                                                                </h4>
-                                                                                                                <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-gray-400">
-                                                                                                                    <span class="capitalize bg-slate-100 dark:bg-gray-700/80 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide truncate max-w-[100px]">
-                                                                                                                        ${type.replace('_', ' ')}
-                                                                                                                    </span>
-                                                                                                                    <span>${year}</span>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                `;
+                                                                                                                                                                                                    <div class="p-4 hover:bg-slate-50 dark:hover:bg-gray-700/50 transition cursor-pointer group w-full" onclick="calendar.gotoDate('${event.start}')">
+                                                                                                                                                                                                        <div class="flex gap-4 w-full">
+                                                                                                                                                                                                            <div class="flex-none flex flex-col items-center justify-center w-14 h-14 bg-slate-100 dark:bg-gray-700 rounded-xl border border-slate-200 dark:border-gray-600">
+                                                                                                                                                                                                                <span class="text-xl font-bold text-slate-700 dark:text-gray-200 leading-none">${day}</span>
+                                                                                                                                                                                                                <span class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400 mt-1">${month}</span>
+                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                            <div class="flex-1 min-w-0" style="${colorStyle} padding-left: 12px;">
+                                                                                                                                                                                                                <h4 class="text-sm font-bold text-slate-800 dark:text-gray-100 line-clamp-2 leading-tight mb-1 group-hover:text-maroon transition-colors py-0.5">
+                                                                                                                                                                                                                    ${title}
+                                                                                                                                                                                                                </h4>
+                                                                                                                                                                                                                <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-gray-400">
+                                                                                                                                                                                                                    <span class="capitalize bg-slate-100 dark:bg-gray-700/80 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide truncate max-w-[100px]">
+                                                                                                                                                                                                                        ${type.replace('_', ' ')}
+                                                                                                                                                                                                                    </span>
+                                                                                                                                                                                                                    <span>${year}</span>
+                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                `;
                     });
 
                     html += '</div>';
@@ -1481,12 +1490,12 @@
                 const icon = type === 'success' ? '<i class="fas fa-check-circle text-green-500 text-xl"></i>' : '<i class="fas fa-exclamation-circle text-red-500 text-xl"></i>';
 
                 div.innerHTML = `
-                                                                                                                                                                                                                                                                                                                ${icon}
-                                                                                                                                                                                                                                                                                                                <div>
-                                                                                                                                                                                                                                                                                                                    <h4 class="font-bold text-sm text-slate-800 dark:text-gray-100">${type === 'success' ? 'Berhasil' : 'Gagal'}</h4>
-                                                                                                                                                                                                                                                                                                                    <p class="text-xs text-slate-500 dark:text-gray-400 font-medium mt-0.5">${message}</p>
-                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                            `;
+                                                                                                                                                                                                                                                                                                                                                                                                                ${icon}
+                                                                                                                                                                                                                                                                                                                                                                                                                <div>
+                                                                                                                                                                                                                                                                                                                                                                                                                    <h4 class="font-bold text-sm text-slate-800 dark:text-gray-100">${type === 'success' ? 'Berhasil' : 'Gagal'}</h4>
+                                                                                                                                                                                                                                                                                                                                                                                                                    <p class="text-xs text-slate-500 dark:text-gray-400 font-medium mt-0.5">${message}</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                                                                                                            `;
 
                 document.body.appendChild(div);
 

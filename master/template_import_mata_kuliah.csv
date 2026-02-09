@@ -1,0 +1,4 @@
+kode_mk,nama_mk,sks,semester,jenis,praktikum,prodi_id,fakultas_id,deskripsi
+HKM101,Pengantar Ilmu Hukum,3,1,wajib_prodi,0,1,1,Mata kuliah dasar pengantar ilmu hukum
+HKM102,Hukum Pidana,3,2,wajib_prodi,0,1,1,Mata kuliah hukum pidana dasar
+HKM103,Hukum Perdata,3,2,wajib_prodi,0,1,1,Mata kuliah hukum perdata dasar

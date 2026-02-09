@@ -67,7 +67,7 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::post('/jadwal/{jadwal}/reschedule', [JadwalController::class, 'reschedule'])->name('jadwal.reschedule')->middleware('auth');
     Route::post('/jadwal/reschedule', [JadwalController::class, 'rescheduleGeneric'])->name('jadwal.reschedule.generic')->middleware('auth');
     Route::post('/kelas/reschedule', [JadwalController::class, 'kelasReschedule'])->name('kelas.reschedule')->middleware('auth');
-    Route::get('/kelas/{id}/absensi', [LecturerController::class, 'absensi'])->name('kelas.absensi');
+    Route::post('/jadwal/check-availability', [JadwalController::class, 'checkAvailability'])->name('jadwal.check_availability')->middleware('auth');
     Route::get('/kelas/{id}/detail', [LecturerController::class, 'detail'])->name('kelas.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}', [LecturerController::class, 'meetingDetail'])->name('kelas.pertemuan.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi', [LecturerController::class, 'meetingMaterials'])->name('kelas.pertemuan.materi');
@@ -85,6 +85,7 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::post('/kelas/{id}/generate-qr', [LecturerController::class, 'generateQr'])->name('kelas.generate_qr');
     Route::post('/kelas/{id}/activate-qr', [LecturerController::class, 'activateQr'])->name('kelas.activate_qr');
     Route::post('/kelas/{id}/deactivate-qr', [LecturerController::class, 'deactivateQr'])->name('kelas.deactivate_qr');
+    Route::get('/kelas/{id}/attendance-data', [LecturerController::class, 'getAttendanceData'])->name('kelas.attendance_data');
     Route::get('/krs', [LecturerController::class, 'krs'])->name('krs');
     Route::get('/input-nilai', [LecturerController::class, 'inputNilai'])->name('input-nilai');
     Route::get('/mahasiswa', [LecturerController::class, 'students'])->name('mahasiswa');
@@ -304,6 +305,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('krs/{kr}/status', [App\Http\Controllers\Admin\KrsController::class, 'updateStatus'])->name('krs.updateStatus');
     Route::post('krs/mahasiswa/{mahasiswa}/reopen', [App\Http\Controllers\Admin\KrsController::class, 'reopenForStudent'])->name('krs.reopen');
     Route::delete('krs/{kr}', [App\Http\Controllers\Admin\KrsController::class, 'destroy'])->name('krs.destroy');
+
+    // Import Data Management
+    Route::prefix('import')->name('import.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ImportController::class, 'index'])->name('index');
+        Route::get('/history', [App\Http\Controllers\Admin\ImportController::class, 'history'])->name('history');
+        Route::get('/log/{log}', [App\Http\Controllers\Admin\ImportController::class, 'showLog'])->name('log');
+        Route::get('/{type}', [App\Http\Controllers\Admin\ImportController::class, 'show'])->name('show');
+        Route::post('/{type}/preview', [App\Http\Controllers\Admin\ImportController::class, 'preview'])->name('preview');
+        Route::post('/{type}/import', [App\Http\Controllers\Admin\ImportController::class, 'import'])->name('import');
+        Route::get('/{type}/template', [App\Http\Controllers\Admin\ImportController::class, 'downloadTemplate'])->name('template');
+    });
 
     // QR management (optional admin toggles could be added later)
 });
