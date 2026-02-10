@@ -66,19 +66,23 @@
 
     @stack('styles')
 
-    <!-- Early Dark Mode Detection (prevents flash) -->
+    <!-- Theme Initialization Script -->
     <script>
         (function() {
-            if (localStorage.getItem('color-theme') === 'dark' || 
-                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            const savedTheme = localStorage.getItem('color-theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && systemTheme)) {
                 document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
             }
         })();
     </script>
 
 </head>
 
-<body class="bg-gray-50 font-inter dark:bg-slate-900" x-data="{ sidebarOpen: false }">
+<body class="bg-bg-body font-inter text-text-primary transition-colors duration-200" x-data="{ sidebarOpen: false }">
 
     <!-- Page Wrapper -->
     <div class="flex h-screen overflow-hidden">
@@ -92,7 +96,7 @@
 
         <!-- Sidebar -->
         <aside
-            class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-[#1a1d2e] border-r border-gray-200 dark:border-slate-800 flex flex-col h-full shadow-sm transition-transform duration-300 transform lg:static lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-50 w-64 bg-bg-sidebar border-r border-border-color flex flex-col h-full shadow-sm transition-transform duration-300 transform lg:static lg:translate-x-0"
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
             <div class="px-5 py-6 flex flex-col gap-8 h-full overflow-y-auto overflow-x-hidden scrollbar-thin">
                 <!-- Logo -->
@@ -102,8 +106,8 @@
                         <i class="fas fa-graduation-cap text-lg"></i>
                     </div>
                     <div class="flex flex-col min-w-0">
-                        <h1 class="text-[#1A1A1A] dark:text-white text-sm font-bold leading-tight truncate">STIH Adhyaksa</h1>
-                        <p class="text-[#6B7280] dark:text-slate-400 text-[10px] font-medium tracking-wide">STUDENT PORTAL</p>
+                        <h1 class="text-text-primary text-sm font-bold leading-tight truncate">STIH Adhyaksa</h1>
+                        <p class="text-text-muted text-[10px] font-medium tracking-wide">STUDENT PORTAL</p>
                     </div>
                 </div>
 
@@ -116,38 +120,38 @@
                     {{-- Nav Item Template --}}
                     @php
                         $navItemClass = "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group";
-                        $activeClass = "bg-[#FFF1F5] dark:bg-red-900/20 text-[#8B1538] dark:text-red-400 font-semibold";
-                        $inactiveClass = "text-[#6B7280] dark:text-slate-400 hover:bg-[#F9FAFB] dark:hover:bg-slate-800 hover:text-[#1A1A1A] dark:hover:text-white";
+                        $activeClass = "bg-primary/10 text-primary font-semibold";
+                        $inactiveClass = "text-text-secondary hover:bg-bg-hover hover:text-text-primary";
                     @endphp
 
                     <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.dashboard') ? $activeClass : $inactiveClass }}"
                         href="{{ route('mahasiswa.dashboard') }}">
                         <i
-                            class="fas fa-home text-lg w-5 {{ Request::routeIs('mahasiswa.dashboard') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
+                            class="fas fa-home text-lg w-5 {{ Request::routeIs('mahasiswa.dashboard') ? 'text-primary' : 'text-text-muted group-hover:text-primary' }}"></i>
                         <span class="text-sm">Dashboard</span>
                     </a>
 
                     <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.profil.manajemen') ? $activeClass : $inactiveClass }}"
                         href="{{ route('mahasiswa.profil.manajemen') }}">
                         <i
-                            class="fas fa-user-cog text-lg w-5 {{ Request::routeIs('mahasiswa.profil.manajemen') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
+                            class="fas fa-user-cog text-lg w-5 {{ Request::routeIs('mahasiswa.profil.manajemen') ? 'text-primary' : 'text-text-muted group-hover:text-primary' }}"></i>
                         <span class="text-sm">Manajemen Profil</span>
                     </a>
 
                     <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.krs*') ? $activeClass : $inactiveClass }}"
                         href="{{ route('mahasiswa.krs.index') }}">
                         <i
-                            class="fas fa-file-alt text-lg w-5 {{ Request::routeIs('mahasiswa.krs*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
+                            class="fas fa-file-alt text-lg w-5 {{ Request::routeIs('mahasiswa.krs*') ? 'text-primary' : 'text-text-muted group-hover:text-primary' }}"></i>
                         <span class="text-sm">KRS</span>
                     </a>
 
                     <!-- Akademik Dropdown -->
                     <div class="relative">
                         <button @click="openAkademik = !openAkademik"
-                            class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'text-[#8B1538]' : $inactiveClass }}">
+                            class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'text-primary' : $inactiveClass }}">
                             <div class="flex items-center gap-3">
                                 <i
-                                    class="fas fa-graduation-cap text-lg w-5 {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
+                                    class="fas fa-graduation-cap text-lg w-5 {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'text-primary' : 'text-text-muted group-hover:text-primary' }}"></i>
                                 <span class="text-sm">Akademik</span>
                             </div>
                             <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
@@ -204,6 +208,8 @@
                         <span class="text-sm">Pembayaran</span>
                     </a>
 
+                    <!-- Top-level Pengajuan removed: use dropdown Pengajuan -> Pengajuan Surat -->
+
                     <!-- Spacer -->
                     <div class="mt-auto pt-6 pb-2 border-t border-gray-100 dark:border-slate-700">
                         <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.profil.index') ? $activeClass : $inactiveClass }}"
@@ -228,20 +234,20 @@
                                </aside>
 
         <!-- Content Wrapper -->
-        <div class="relative flex flex-col flex-1 min-h-0 overflow-x-hidden">
+        <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
 
             <!-- Topbar -->
 
-                                        <header class="bg-white dark:bg-[#1a1d2e] border-b border-gray-200 dark:border-slate-800 px-4 sm:px-6 lg:px-8 py-3 shadow-sm sticky top-0 z-40">
+                                        <header class="bg-bg-card border-b border-border-color px-4 sm:px-6 lg:px-8 py-3 shadow-sm sticky top-0 z-40 transition-colors duration-200">
                 <div class="flex items-center justify-between">
                     <!-- Mobile Menu Button -->
-                    <button class="lg:hidden w-10 h-10 flex items-center justify-center text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors" @click="sidebarOpen = !sidebarOpen">
+                    <button class="lg:hidden w-10 h-10 flex items-center justify-center text-text-secondary hover:bg-bg-hover rounded-lg transition-colors" @click="sidebarOpen = !sidebarOpen">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
 
                     <!-- Page Title / Branding -->
                     <div class="flex items-center gap-4">
-                        <h2 class="text-lg font-extrabold text-[#1A1A1A] dark:text-white tracking-tight">@yield('page-title', 'Dashboard')</h2>
+                        <h2 class="text-lg font-extrabold text-text-primary tracking-tight">@yield('page-title', 'Dashboard')</h2>
                     </div>
 
                     <!-- Right Side -->
@@ -256,9 +262,9 @@
                         </label>
 
                         <!-- User Dropdown (minimal) -->
-                        <div class="flex items-center gap-3 pl-4 border-l border-gray-100 dark:border-slate-700">
+                        <div class="flex items-center gap-3 pl-4 border-l border-border-color">
                             <div class="text-right hidden sm:block">
-                                <p class="text-sm font-bold text-[#1A1A1A] dark:text-white">
+                                <p class="text-sm font-bold text-text-primary">
                                     
                                   {{ Auth::user()->mahasiswa->nama ?? Auth::user()->name }}
 
@@ -281,22 +287,22 @@
             <script>
                 (function() {
                     var toggle = document.getElementById('theme-toggle-input');
+                    var html = document.documentElement;
                     
-                    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                        document.documentElement.classList.add('dark');
+                    // Sync input state with current theme
+                    if (html.classList.contains('dark')) {
                         if(toggle) toggle.checked = true;
                     } else {
-                        document.documentElement.classList.remove('dark');
                         if(toggle) toggle.checked = false;
                     }
 
                     if(toggle) {
                         toggle.addEventListener('change', function(e) {
                             if(e.target.checked) {
-                                document.documentElement.classList.add('dark');
+                                html.classList.add('dark');
                                 localStorage.setItem('color-theme', 'dark');
                             } else {
-                                document.documentElement.classList.remove('dark');
+                                html.classList.remove('dark');
                                 localStorage.setItem('color-theme', 'light');
                             }
                         });
@@ -305,7 +311,7 @@
             </script>
 
             <!-- Main Content -->
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-slate-900">
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-bg-body transition-colors duration-200">
                 @if(session('success'))
                     <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6 animate-fade-in">
                         <div class="flex items-center gap-3">
@@ -328,8 +334,8 @@
             </main>
 
             <!-- Footer -->
-            <footer class="bg-white border-t border-gray-200 px-6 py-4 mt-auto">
-                <div class="text-center text-sm text-gray-600">
+            <footer class="bg-bg-card border-t border-border-color px-6 py-4 transition-colors duration-200">
+                <div class="text-center text-sm text-text-secondary">
                     <p>&copy; {{ date('Y') }} SIAKAD STIH. All rights reserved.</p>
                 </div>
             </footer>

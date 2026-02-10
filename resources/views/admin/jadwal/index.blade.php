@@ -10,7 +10,7 @@
             background-color: #FEF2F2;
         }
         .dark .tab-btn.active {
-resources/views/admin/kalender-akademik            background-color: rgba(139, 21, 56, 0.2);
+            background-color: rgba(139, 21, 56, 0.2);
             color: #f87171;
             border-color: #f87171;
         }

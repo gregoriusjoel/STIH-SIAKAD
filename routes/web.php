@@ -11,6 +11,7 @@ use App\Http\Controllers\Mahasiswa\NilaiController;
 use App\Http\Controllers\Mahasiswa\JadwalController as MahasiswaJadwalController;
 use App\Http\Controllers\Mahasiswa\PembayaranController;
 use App\Http\Controllers\Mahasiswa\ProfilController;
+use App\Http\Controllers\Mahasiswa\PengajuanController;
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -72,13 +73,13 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/kelas/{id}/pertemuan/{pertemuan}', [LecturerController::class, 'meetingDetail'])->name('kelas.pertemuan.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi', [LecturerController::class, 'meetingMaterials'])->name('kelas.pertemuan.materi');
     Route::post('/kelas/{id}/pertemuan/{pertemuan}/presensi', [LecturerController::class, 'updateAttendance'])->name('kelas.pertemuan.presensi');
-    
+
     // Materi (Dosen)
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi/list', [App\Http\Controllers\Dosen\MateriController::class, 'index'])->name('kelas.pertemuan.materi.list');
     Route::post('/kelas/{id}/pertemuan/{pertemuan}/materi', [App\Http\Controllers\Dosen\MateriController::class, 'store'])->name('kelas.pertemuan.materi.store');
     Route::delete('/kelas/{id}/pertemuan/{pertemuan}/materi/{materi}', [App\Http\Controllers\Dosen\MateriController::class, 'destroy'])->name('kelas.pertemuan.materi.destroy');
     Route::get('/materi/{materi}/download', [App\Http\Controllers\Dosen\MateriController::class, 'download'])->name('materi.download');
-    
+
     // Tugas (Dosen)
     Route::post('/kelas/{id}/pertemuan/{pertemuan}/tugas', [App\Http\Controllers\Dosen\TugasController::class, 'store'])->name('kelas.pertemuan.tugas.store');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/tugas', [App\Http\Controllers\Dosen\TugasController::class, 'index'])->name('kelas.pertemuan.tugas.index');
@@ -90,13 +91,13 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/krs', [LecturerController::class, 'krs'])->name('krs');
     Route::get('/input-nilai', [LecturerController::class, 'inputNilai'])->name('input-nilai');
     Route::get('/mahasiswa', [LecturerController::class, 'students'])->name('mahasiswa');
-    
+
     // Input Nilai per Kelas
     Route::get('/kelas/{id}/input-nilai', [LecturerController::class, 'inputNilaiKelas'])->name('kelas.input-nilai');
     Route::post('/kelas/{id}/bobot-penilaian', [LecturerController::class, 'saveBobotPenilaian'])->name('kelas.bobot-penilaian.save');
     Route::post('/kelas/{id}/simpan-nilai', [LecturerController::class, 'simpanNilai'])->name('kelas.simpan-nilai');
     Route::get('/kelas/{id}/get-bobot', [LecturerController::class, 'getBobotPenilaian'])->name('kelas.get-bobot');
-    
+
     // Jadwal Approval Routes
     Route::prefix('jadwal-approval')->name('jadwal_approval.')->group(function () {
         Route::get('/', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'index'])->name('index');
@@ -105,10 +106,10 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
         Route::post('/{id}/reject', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'reject'])->name('reject');
         Route::get('/available-slots/{hari}', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'getAvailableSlots'])->name('available_slots');
     });
-    
+
     // Availability Management for Dosen
     Route::resource('availability', App\Http\Controllers\Dosen\DosenAvailabilityController::class)->only(['index', 'create', 'store', 'destroy']);
-    
+
     // Pengumuman untuk dosen
     Route::get('/pengumuman', [App\Http\Controllers\Page\PengumumanController::class, 'index'])->name('pengumuman.index');
     Route::get('/pengumuman/{pengumuman}', [App\Http\Controllers\Page\PengumumanController::class, 'show'])->name('pengumuman.show');
@@ -154,31 +155,36 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         // Kelas Saya
         Route::get('/kelas', [App\Http\Controllers\Mahasiswa\KelasController::class, 'index'])->name('kelas.index');
         Route::get('/kelas/{id}', [App\Http\Controllers\Mahasiswa\KelasController::class, 'show'])->name('kelas.show');
-        
+
         // Materi download
         Route::get('/materi/{id}/download', [App\Http\Controllers\Mahasiswa\MateriController::class, 'download'])->name('materi.download');
-        
+
         // Tugas download and submit
         Route::get('/tugas/{id}/download', [App\Http\Controllers\Mahasiswa\TugasController::class, 'download'])->name('tugas.download');
         Route::post('/kelas/{id}/pertemuan/{pertemuan}/tugas/{tugas}/submit', [App\Http\Controllers\Mahasiswa\TugasController::class, 'submit'])->name('kelas.pertemuan.tugas.submit');
 
         // Profil
         Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
-         Route::get('/manajemen-profil', [ProfilController::class, 'manajemen'])->name('profil.manajemen');
+        Route::get('/manajemen-profil', [ProfilController::class, 'manajemen'])->name('profil.manajemen');
         Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
         Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.update-password');
-    });
-
-    // Menu Akademik Tambahan
-        Route::view('/perpustakaan', 'errors.503')->name('perpustakaan.index');
-        Route::view('/prestasi', 'errors.503')->name('prestasi.index');
 
         // Menu Pengajuan
         Route::prefix('pengajuan')->name('pengajuan.')->group(function () {
+            Route::get('/', [PengajuanController::class, 'index'])->name('index');
+            Route::post('/', [PengajuanController::class, 'store'])->name('store');
             Route::view('/sidang', 'errors.503')->name('sidang.index');
-            Route::view('/surat', 'errors.503')->name('surat.index');
+            // Route 'surat' should show the same pengajuan page (surat submissions)
+            Route::get('/surat', [PengajuanController::class, 'index'])->name('surat.index');
             Route::view('/yudisium', 'errors.503')->name('yudisium.index');
         });
+    });
+
+    // Menu Akademik Tambahan
+    Route::view('/perpustakaan', 'errors.503')->name('perpustakaan.index');
+    Route::view('/prestasi', 'errors.503')->name('prestasi.index');
+
+
 });
 
 Route::prefix('parent')->name('parent.')->middleware(['auth'])->group(function () {
@@ -291,7 +297,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('availability', [App\Http\Controllers\Admin\DosenAvailabilityController::class, 'index'])->name('availability.index');
     Route::get('availability/{dosen}', [App\Http\Controllers\Admin\DosenAvailabilityController::class, 'show'])->name('availability.show');
 
-   // Academic Calendar Management
+    // Academic Calendar Management
     Route::get('kalender-akademik', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'index'])->name('kalender.index');
     Route::get('kalender-akademik/data', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'getData'])->name('kalender.data');
     Route::post('kalender-akademik/event', [App\Http\Controllers\Admin\AcademicCalendarController::class, 'storeEvent'])->name('kalender.event.store');

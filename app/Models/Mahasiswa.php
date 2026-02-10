@@ -58,6 +58,11 @@ class Mahasiswa extends Model
         'file_ktp' => 'array',
     ];
 
+    public function pengajuans()
+    {
+        return $this->hasMany(Pengajuan::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -72,17 +77,17 @@ class Mahasiswa extends Model
     {
         return $this->hasMany(Krs::class);
     }
-    
+
     public function kuesionerAktivasi(): HasMany
     {
         return $this->hasMany(KuesionerAktivasi::class);
     }
-    
+
     public function pembayaran(): HasMany
     {
         return $this->hasMany(Pembayaran::class);
     }
-    
+
     public function isAktif(): bool
     {
         return $this->status_akun === 'aktif' || $this->status_akun === 'baru';
@@ -104,7 +109,7 @@ class Mahasiswa extends Model
 
         // Get active semester to determine which academic year and period we're in
         $activeSemester = \App\Models\Semester::where('is_active', true)->first();
-        
+
         if (!$activeSemester) {
             return 1;
         }
@@ -112,21 +117,21 @@ class Mahasiswa extends Model
         // Parse tahun ajaran (format: "2025/2026")
         $tahunParts = explode('/', $activeSemester->tahun_ajaran);
         $currentYear = (int) ($tahunParts[0] ?? date('Y'));
-        
+
         // Calculate years since enrollment
         $angkatanYear = (int) $this->angkatan;
         $yearsDiff = $currentYear - $angkatanYear;
-        
+
         // Calculate semester: 2 semesters per year
         $baseSemester = ($yearsDiff * 2);
-        
+
         // Add 1 if currently in Genap semester, 0 if Ganjil
         if ($activeSemester->nama_semester === 'Genap') {
             $baseSemester += 2;
         } else {
             $baseSemester += 1;
         }
-        
+
         // Limit to reasonable range (1-8 for undergraduate)
         return max(1, min(8, $baseSemester));
     }
@@ -138,7 +143,7 @@ class Mahasiswa extends Model
     public function getCurrentSemesterInfo(): object
     {
         $semesterNumber = $this->getCurrentSemester();
-        
+
         // Try to get the active semester record for additional metadata
         $activeSemester = \App\Models\Semester::where('is_active', true)->first();
 
@@ -161,43 +166,54 @@ class Mahasiswa extends Model
      */
     public function getPastSemesters()
     {
-        // Find submitted KRS entries (not draft) and collect distinct semester numbers from mata_kuliahs.kode_id (format: sms{n})
-        $submittedSemesterNumbers = \App\Models\Krs::where('mahasiswa_id', $this->id)
+        // Find submitted KRS entries (not draft) and collect distinct semester numbers
+        // We also want to get the tahun_ajaran associated with that semester's KRS
+        // This is tricky because KRS -> Kelas -> tahun_ajaran
+
+        $history = \App\Models\Krs::where('mahasiswa_id', $this->id)
             ->where('status', '!=', 'draft')
-            ->whereHas('mataKuliah', function ($q) {
-                $q->whereNotNull('kode_id')->where('kode_id', 'like', 'sms%');
-            })
-            ->with('mataKuliah')
+            ->with(['mataKuliah', 'kelas'])
             ->get()
-            ->pluck('mataKuliah')
-            ->filter()
-            ->pluck('kode_id')
-            ->unique()
-            ->map(function ($kode) {
-                return (int) preg_replace('/[^0-9]/', '', $kode);
-            })
-            ->filter()
-            ->sortDesc()
-            ->values();
+            ->groupBy(function ($krs) {
+                // Group by semester code from mata kuliah (e.g. sms1, sms2)
+                return $krs->mataKuliah->kode_id ?? 'unknown';
+            });
 
-        if ($submittedSemesterNumbers->isEmpty()) {
-            return collect();
-        }
+        $collection = collect();
 
-        // Attempt to get an active semester for tahun_ajaran fallback
-        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
-        $tahunAjaran = $activeSemester->tahun_ajaran ?? null;
+        foreach ($history as $kodeId => $krsItems) {
+            // Check if valid code
+            if (!preg_match('/sms(\d+)/', $kodeId, $matches)) {
+                continue;
+            }
+            $semNum = (int) $matches[1];
 
-        $collection = $submittedSemesterNumbers->map(function ($semNum) use ($tahunAjaran) {
-            return (object) [
+            // Try to find a tahun_ajaran from the kelas of these KRS items
+            // We take the most frequent or first one found
+            $tahunAjaran = null;
+            foreach ($krsItems as $krs) {
+                if ($krs->kelas && $krs->kelas->tahun_ajaran) {
+                    $tahunAjaran = $krs->kelas->tahun_ajaran;
+                    break;
+                }
+            }
+
+            // Fallback if not found in kelas: check if we have a semester record for this
+            if (!$tahunAjaran) {
+                // Approximate fallback or leave null
+                $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+                $tahunAjaran = $activeSemester->tahun_ajaran ?? '-';
+            }
+
+            $collection->push((object) [
                 'semester_number' => $semNum,
                 'semester_display' => 'Semester ' . $semNum,
                 'tahun_ajaran' => $tahunAjaran,
                 'nama_semester' => ($semNum % 2 === 1) ? 'Ganjil' : 'Genap',
-            ];
-        });
+            ]);
+        }
 
-        return $collection;
+        return $collection->sortByDesc('semester_number')->values();
     }
 
     public function dosenPa()
@@ -323,11 +339,14 @@ class Mahasiswa extends Model
         // - If Wali started but incomplete -> False
         // - If neither started -> False (must fill at least one)
         // - If (Parent complete OR empty) AND (Wali complete OR empty) AND (at least one is complete) -> True
-        
-        if ($parentHasAnyData && !$parentComplete) return false;
-        if ($waliHasAnyData && !$waliComplete) return false;
-        
-        if (!$parentHasAnyData && !$waliHasAnyData) return false;
+
+        if ($parentHasAnyData && !$parentComplete)
+            return false;
+        if ($waliHasAnyData && !$waliComplete)
+            return false;
+
+        if (!$parentHasAnyData && !$waliHasAnyData)
+            return false;
 
         return true;
     }
@@ -392,7 +411,7 @@ class Mahasiswa extends Model
 
         // Required parent/wali fields - conditional validation
         $parent = $this->parents()->first();
-        
+
         // Define required fields for Parent (Orang Tua)
         $requiredParentFields = [
             'nama_ayah' => ['label' => 'Nama Ayah', 'tab' => 'orang_tua'],
@@ -477,13 +496,13 @@ class Mahasiswa extends Model
                     $missing[$field] = $info;
                 }
             }
-            
+
             if ($waliHasAnyData) {
                 foreach ($waliMissing as $field => $info) {
                     $missing[$field] = $info;
                 }
             }
-            
+
             // If neither section has been started, show Parent missing as default
             if (!$parentHasAnyData && !$waliHasAnyData) {
                 foreach ($parentMissing as $field => $info) {
