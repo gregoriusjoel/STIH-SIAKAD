@@ -9,7 +9,7 @@
         {{-- TABLE 1: PEMBAYARAN KULIAH --}}
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div class="bg-white px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-bold text-maroon uppercase">PEMBAYARAN KULIAH</h3>
+                <h3 class="text-xl font-extrabold text-maroon uppercase">PEMBAYARAN KULIAH</h3>
                 <p class="text-xs text-gray-500 mt-1">takes 0.05 seconds to display the data on this page</p>
             </div>
 
@@ -24,7 +24,7 @@
             <div class="px-6 pb-6 overflow-x-auto">
                 <table class="w-full text-sm border-collapse border border-gray-300">
                     <thead>
-                        <tr class="bg-maroon text-white text-center font-bold uppercase text-xs">
+                        <tr class="bg-maroon text-white text-center font-extrabold uppercase text-xs">
                             <th rowspan="2" class="border border-white/20 px-2 py-3 w-12">SEM</th>
                             <th rowspan="2" class="border border-white/20 px-2 py-3">Σ TAGIHAN</th>
                             <th rowspan="2" class="border border-white/20 px-2 py-3">Σ PEMBAYARAN</th>
@@ -33,7 +33,7 @@
                             <th rowspan="2" class="border border-white/20 px-2 py-3">SKS AMBIL</th>
                             <th rowspan="2" class="border border-white/20 px-2 py-3">KET</th>
                         </tr>
-                        <tr class="bg-maroon text-white text-center font-bold uppercase text-xs">
+                        <tr class="bg-maroon text-white text-center font-extrabold uppercase text-xs">
                             <th class="border border-white/20 px-2 py-2">TANGGAL 1</th>
                             <th class="border border-white/20 px-2 py-2">BAYAR 1</th>
                             <th class="border border-white/20 px-2 py-2">TANGGAL 2</th>
@@ -74,18 +74,18 @@
 
         {{-- TABLE 2: PEMBAYARAN LAINNYA --}}
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div class="bg-white px-6 py-4 border-b border-gray-200">
-                <h3 class="text-base font-bold text-blue-600">Pembayaran selain Uang Kuliah melalui VA Bank DKI</h3>
+                <div class="bg-white px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-extrabold text-maroon">Pembayaran selain Uang Kuliah melalui VA Bank DKI</h3>
             </div>
 
             <div class="p-6 overflow-x-auto">
                 <table class="w-full text-sm border-collapse">
                     <thead>
                         <tr class="border-b border-gray-200">
-                            <th class="py-3 px-4 text-center font-bold text-black uppercase w-48">TANGGAL</th>
-                            <th class="py-3 px-4 text-right font-bold text-black uppercase w-40">Σ TAGIHAN</th>
-                            <th class="py-3 px-4 text-right font-bold text-black uppercase w-40">Σ PEMBAYARAN</th>
-                            <th class="py-3 px-4 text-left font-bold text-black uppercase">JENIS</th>
+                            <th class="py-3 px-4 text-center font-extrabold text-black uppercase w-48">TANGGAL</th>
+                            <th class="py-3 px-4 text-right font-extrabold text-black uppercase w-40">Σ TAGIHAN</th>
+                            <th class="py-3 px-4 text-right font-extrabold text-black uppercase w-40">Σ PEMBAYARAN</th>
+                            <th class="py-3 px-4 text-left font-extrabold text-black uppercase">JENIS</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-800">
@@ -95,14 +95,14 @@
                                 $isOrange = $idx === 0; // Just mimicking the image where first row is orange
                             @endphp
                             <tr
-                                class="{{ $isOrange ? 'bg-orange-500 text-white' : 'border-b border-gray-200 hover:bg-gray-50' }}">
+                                class="{{ $isOrange ? 'bg-maroon text-white font-semibold shadow-md border border-maroon' : 'border-b border-gray-200 hover:bg-gray-50' }}">
                                 <td class="py-3 px-4 text-center {{ $isOrange ? 'text-white' : 'text-gray-600' }}">
                                     {{ $item['tanggal'] }}
                                 </td>
-                                <td class="py-3 px-4 text-right font-medium {{ $isOrange ? 'text-white' : 'text-gray-800' }}">
+                                <td class="py-3 px-4 text-right {{ $isOrange ? 'font-semibold text-white' : 'font-medium text-gray-800' }}">
                                     {{ number_format($item['tagihan'], 2, '.', ',') }}
                                 </td>
-                                <td class="py-3 px-4 text-right font-medium {{ $isOrange ? 'text-white' : 'text-gray-800' }}">
+                                <td class="py-3 px-4 text-right {{ $isOrange ? 'font-semibold text-white' : 'font-medium text-gray-800' }}">
                                     {{ number_format($item['bayar'], 2, '.', ',') }}
                                 </td>
                                 <td

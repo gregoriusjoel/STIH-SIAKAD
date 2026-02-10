@@ -1,4 +1,4 @@
-    @extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Persetujuan Jadwal - Admin')
 @section('page-title', 'Persetujuan Jadwal')
@@ -190,9 +190,25 @@
                                         <a href="{{ route('admin.jadwal_admin_approval.show', $proposal->id) }}" class="p-2 bg-maroon/10 text-maroon rounded-lg hover:bg-maroon/20 transition" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <form action="{{ route('admin.jadwal_admin_approval.approve', $proposal->id) }}" method="POST">
+                                        <form action="{{ route('admin.jadwal_admin_approval.approve', $proposal->id) }}" method="POST" id="approve-form-{{ $proposal->id }}">
                                             @csrf
-                                            <button type="submit" onclick="event.preventDefault(); showConfirm('Apakah Anda yakin ingin menyetujui proposal ini?', () => this.closest('form').submit());" class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition" title="Setujui Langsung">
+                                            <button type="button" 
+                                                onclick="Swal.fire({
+                                                    title: 'Setujui Jadwal?',
+                                                    text: 'Jadwal akan disetujui dan status akan diperbarui.',
+                                                    icon: 'question',
+                                                    iconColor: '#8B1538',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#8B1538', // green-500
+                                                    cancelButtonColor: '#6B7280',
+                                                    confirmButtonText: 'Ya, Setujui',
+                                                    cancelButtonText: 'Batal'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        document.getElementById('approve-form-{{ $proposal->id }}').submit();
+                                                    }
+                                                })"
+                                                class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition" title="Setujui Langsung">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         </form>

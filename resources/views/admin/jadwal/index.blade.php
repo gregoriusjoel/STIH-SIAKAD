@@ -10,7 +10,7 @@
             background-color: #FEF2F2;
         }
         .dark .tab-btn.active {
-            background-color: rgba(139, 21, 56, 0.2);
+resources/views/admin/kalender-akademik            background-color: rgba(139, 21, 56, 0.2);
             color: #f87171;
             border-color: #f87171;
         }
@@ -183,7 +183,7 @@
     </div>
 
     {{-- Modal: Tambah Jadwal Baru --}}
-    <div id="tambahJadwalModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div id="tambahJadwalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="sticky top-0 p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white rounded-t-xl flex items-center justify-between">
                 <div class="font-semibold text-lg flex items-center text-white">
@@ -503,7 +503,7 @@
                     <button type="button" onclick="closeRejectModalWeekly()"
                         class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Batal</button>
                     <button type="submit" class="px-4 py-2 bg-maroon text-white rounded-lg hover:bg-maroon-700 transition"
-                        onclick="event.preventDefault(); showConfirm('Yakin ingin menolak permintaan reschedule ini?', () => this.closest('form').submit());">Tolak</button>
+                        onclick="return confirm('Yakin ingin menolak permintaan reschedule ini?')">Tolak</button>
                 </div>
             </form>
         </div>

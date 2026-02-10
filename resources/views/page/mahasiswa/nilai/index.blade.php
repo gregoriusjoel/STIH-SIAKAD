@@ -49,13 +49,13 @@
         </div>
 
         {{-- Akademik Tabs (Rangkuman Nilai / KHS) --}}
-        <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-sm px-4 py-3 mt-6">
+        <div class="bg-bg-card rounded-xl shadow-sm px-4 py-3 mt-6">
             <nav class="flex items-center space-x-2" id="akademikTabs">
                 <button data-target="rangkuman"
                     class="tab-btn px-4 py-2 text-sm rounded-t-lg border-b-2 -mb-px border-maroon text-maroon font-semibold">Rangkuman
                     Nilai</button>
                 <button data-target="khs"
-                    class="tab-btn px-4 py-2 text-sm rounded-t-lg border-b-2 -mb-px border-transparent text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 transition-colors">KHS</button>
+                    class="tab-btn px-4 py-2 text-sm rounded-t-lg border-b-2 -mb-px border-transparent text-text-secondary hover:text-text-primary transition-colors">KHS</button>
             </nav>
         </div>
 
@@ -83,11 +83,11 @@
                 // toggle buttons
                 tabs.forEach(t => {
                     if (t.dataset.target === target) {
-                        t.classList.remove('border-transparent', 'text-gray-600', 'dark:text-slate-400');
-                        t.classList.add('border-maroon', 'dark:border-red-400', 'text-maroon', 'dark:text-red-400', 'font-semibold');
+                        t.classList.remove('border-transparent', 'text-text-secondary');
+                        t.classList.add('border-maroon', 'text-maroon', 'font-semibold');
                     } else {
-                        t.classList.remove('border-maroon', 'dark:border-red-400', 'text-maroon', 'dark:text-red-400', 'font-semibold');
-                        t.classList.add('border-transparent', 'text-gray-600', 'dark:text-slate-400');
+                        t.classList.remove('border-maroon', 'text-maroon', 'font-semibold');
+                        t.classList.add('border-transparent', 'text-text-secondary');
                     }
                 });
 

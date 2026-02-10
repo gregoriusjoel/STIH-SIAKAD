@@ -105,50 +105,79 @@
             return;
         }
 
-        const formData = new FormData();
-        formData.append('_token', '{{ csrf_token() }}');
-        formData.append('alasan_penolakan', this.alasanPenolakan);
-        formData.append('hari_pengganti', this.hariPengganti);
-        formData.append('jam_mulai_pengganti', this.jamMulaiPengganti);
-        formData.append('jam_selesai_pengganti', this.jamSelesaiPengganti);
-        fetch(`{{ route('dosen.jadwal_approval.reject', ':id') }}`.replace(':id', this.rejectProposalId), {
-            method: 'POST',
-            body: formData,
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(res => {
-            return res.text().then(text => {
-                // Try to parse JSON, otherwise return raw text
-                try { return JSON.parse(text); } catch (e) { return { __raw: text, ok: res.ok }; }
-            });
-        })
-        .then(data => {
-            if (data && data.success) {
-                location.reload();
-                return;
-            }
+        // Confirm rejection
+        Swal.fire({
+            title: 'Tolak Proposal?',
+            text: 'Proposal jadwal ini akan ditolak dan dosen akan diberitahu.',
+            icon: 'warning',
+            iconColor: '#8B1538',
+            showCancelButton: true,
+            confirmButtonColor: '#8B1538',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Ya, Tolak',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('alasan_penolakan', this.alasanPenolakan);
+                formData.append('hari_pengganti', this.hariPengganti);
+                formData.append('jam_mulai_pengganti', this.jamMulaiPengganti);
+                formData.append('jam_selesai_pengganti', this.jamSelesaiPengganti);
 
-            // Determine message from possible keys
-            let msg = 'Terjadi kesalahan';
-            if (!data) msg = 'No response from server';
-            else if (data.message) msg = data.message;
-            else if (data.error) msg = data.error;
-            else if (data.errors) {
-                // Laravel validation errors
-                const errs = Object.values(data.errors).flat();
-                msg = errs.join(', ');
-            } else if (data.__raw) {
-                msg = data.__raw;
-            }
+                fetch(`{{ route('dosen.jadwal_approval.reject', ':id') }}`.replace(':id', this.rejectProposalId), {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => {
+                    return res.text().then(text => {
+                        try { return JSON.parse(text); } catch (e) { return { __raw: text, ok: res.ok }; }
+                    });
+                })
+                .then(data => {
+                    if (data && data.success) {
+                        Swal.fire({
+                            title: 'Ditolak!',
+                            text: 'Proposal berhasil ditolak.',
+                            icon: 'success',
+                            confirmButtonColor: '#8B1538'
+                        }).then(() => location.reload());
+                        return;
+                    }
 
-            alert('Gagal menolak proposal: ' + msg);
-        })
-        .catch(err => {
-            let msg = 'Error';
-            if (err && typeof err === 'object') {
-                msg = err.message || err.error || JSON.stringify(err);
-            } else msg = String(err);
-            alert('Gagal menolak proposal: ' + msg);
+                    let msg = 'Terjadi kesalahan';
+                    if (!data) msg = 'No response from server';
+                    else if (data.message) msg = data.message;
+                    else if (data.error) msg = data.error;
+                    else if (data.errors) {
+                        const errs = Object.values(data.errors).flat();
+                        msg = errs.join(', ');
+                    } else if (data.__raw) {
+                        msg = data.__raw;
+                    }
+
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: 'Gagal menolak proposal: ' + msg,
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
+                    });
+                })
+                .catch(err => {
+                    let msg = 'Error';
+                    if (err && typeof err === 'object') {
+                        msg = err.message || err.error || JSON.stringify(err);
+                    } else msg = String(err);
+                    
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan sistem: ' + msg,
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
+                    });
+                });
+            }
         });
     }
 }">

@@ -330,10 +330,13 @@
                             <div class="flex items-center gap-2">
                                 <input type="file" name="asynchronous_file" accept="application/pdf" x-ref="asyncFile"
                                     @change="(e) => { const f = e.target.files[0]; rescheduleData.asynchronous_file_name = f ? f.name : ''; }"
-                                    class="text-sm">
-                                <div class="text-sm text-gray-600"
-                                    x-text="rescheduleData.asynchronous_file_name ? rescheduleData.asynchronous_file_name : 'Belum ada file yang dipilih'">
-                                    Belum ada file yang dipilih</div>
+                                    class="block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-red-50 file:text-[#8B1538]
+                                    hover:file:bg-red-100
+                                    cursor-pointer">
                             </div>
                         </div>
 

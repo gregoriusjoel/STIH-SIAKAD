@@ -6,23 +6,7 @@
 @section('content')
     <div class="space-y-6">
 
-        @if(session('success'))
-            <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                    <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
-                </div>
-            </div>
-        @endif
 
-        @if(session('error'))
-            <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
-                    <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
-                </div>
-            </div>
-        @endif
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -61,12 +45,12 @@
                                 <span class="sr-only">Pilih Foto</span>
                                 <input type="file" name="foto" accept="image/*" required
                                     @change="fileName = $event.target.files[0].name" class="block w-full text-sm text-gray-500 dark:text-slate-400
-                                                file:mr-4 file:py-2 file:px-4
-                                                file:rounded-full file:border-0
-                                                file:text-xs file:font-semibold
-                                                file:bg-maroon file:text-white
-                                                hover:file:bg-maroon-hover
-                                                cursor-pointer">
+                                                    file:mr-4 file:py-2 file:px-4
+                                                    file:rounded-full file:border-0
+                                                    file:text-xs file:font-semibold
+                                                    file:bg-maroon file:text-white
+                                                    hover:file:bg-maroon-hover
+                                                    cursor-pointer">
                             </label>
                             <div x-show="fileName" class="text-xs text-center mt-2 text-green-600 dark:text-green-400">
                                 <span x-text="fileName"></span> siap diupload

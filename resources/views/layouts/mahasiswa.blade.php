@@ -228,7 +228,7 @@
                                </aside>
 
         <!-- Content Wrapper -->
-        <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        <div class="relative flex flex-col flex-1 min-h-0 overflow-x-hidden">
 
             <!-- Topbar -->
 
@@ -305,7 +305,7 @@
             </script>
 
             <!-- Main Content -->
-            <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-slate-900">
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-slate-900">
                 @if(session('success'))
                     <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6 animate-fade-in">
                         <div class="flex items-center gap-3">
@@ -328,7 +328,7 @@
             </main>
 
             <!-- Footer -->
-            <footer class="bg-white border-t border-gray-200 px-6 py-4">
+            <footer class="bg-white border-t border-gray-200 px-6 py-4 mt-auto">
                 <div class="text-center text-sm text-gray-600">
                     <p>&copy; {{ date('Y') }} SIAKAD STIH. All rights reserved.</p>
                 </div>

@@ -93,9 +93,9 @@
                 $pengumuman = \App\Models\Pengumuman::whereNotNull('published_at')->orderByDesc('published_at')->get();
             }
         @endphp
-        <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="bg-bg-card rounded-xl shadow-md p-6">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-bold text-gray-800">Berita Terikini</h3>
+                <h3 class="text-xl font-bold text-text-primary">Berita Terikini</h3>
                 @php
                     $pengumumanIndexUrl = Route::has('mahasiswa.pengumuman.index') ? route('mahasiswa.pengumuman.index') : '#';
                 @endphp
@@ -105,70 +105,73 @@
             @if(isset($pengumuman) && $pengumuman->count())
                 <div class="space-y-4">
                     @foreach($pengumuman->take(2) as $p)
-                        <div class="flex items-start gap-4 p-4 border rounded-lg hover:shadow-sm transition">
+                        <div
+                            class="flex items-start gap-4 p-4 border border-border-color rounded-lg hover:shadow-sm transition bg-bg-hover/20">
                             <div class="flex-shrink-0 w-3 h-12 rounded-full bg-maroon mt-1"></div>
                             <div class="flex-1">
                                 @php $showUrl = Route::has('mahasiswa.pengumuman.show') ? route('mahasiswa.pengumuman.show', $p->id) : '#'; @endphp
                                 <a href="{{ $showUrl }}"
-                                    class="text-md font-semibold text-gray-800 hover:text-maroon">{{ $p->judul }}</a>
-                                <p class="text-sm text-gray-600 mt-1">
-                                    {{ \Illuminate\Support\Str::limit(strip_tags($p->isi ?? ''), 140) }}</p>
-                                <div class="text-xs text-gray-400 mt-2">{{ $p->created_at ? $p->created_at->format('d M Y') : '' }}
+                                    class="text-md font-semibold text-text-primary hover:text-maroon">{{ $p->judul }}</a>
+                                <p class="text-sm text-text-secondary mt-1">
+                                    {{ \Illuminate\Support\Str::limit(strip_tags($p->isi ?? ''), 140) }}
+                                </p>
+                                <div class="text-xs text-text-muted mt-2">
+                                    {{ $p->created_at ? $p->created_at->format('d M Y') : '' }}
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             @else
-                <div class="text-sm text-gray-600">Belum ada pengumuman terbaru.</div>
+                <div class="text-sm text-text-secondary">Belum ada pengumuman terbaru.</div>
             @endif
         </div>
 
         {{-- Quick Actions (only shown when profile is complete) --}}
         @if($isProfileComplete)
-        <div class="bg-white rounded-xl shadow-md p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                <i class="fas fa-bolt text-maroon mr-3"></i>
-                Akses Cepat
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <a href="{{ route('mahasiswa.krs.index') }}"
-                    class="flex items-center gap-4 p-4 border-2 border-maroon rounded-lg hover:bg-maroon-light transition group">
-                    <div
-                        class="w-12 h-12 bg-maroon rounded-lg flex items-center justify-center group-hover:scale-110 transition">
-                        <i class="fas fa-clipboard-list text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <div class="font-bold text-gray-800">Isi KRS</div>
-                        <div class="text-sm text-gray-600">Status: {{ $krsStatus }}</div>
-                    </div>
-                </a>
+            <div class="bg-bg-card rounded-xl shadow-md p-6">
+                <h3 class="text-xl font-bold text-text-primary mb-6 flex items-center">
+                    <i class="fas fa-bolt text-maroon mr-3"></i>
+                    Akses Cepat
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <a href="{{ route('mahasiswa.krs.index') }}"
+                        class="flex items-center gap-4 p-4 border-2 border-maroon rounded-lg hover:bg-maroon-light dark:hover:bg-maroon/10 transition group">
+                        <div
+                            class="w-12 h-12 bg-maroon rounded-lg flex items-center justify-center group-hover:scale-110 transition">
+                            <i class="fas fa-clipboard-list text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-text-primary">Isi KRS</div>
+                            <div class="text-sm text-text-secondary">Status: {{ $krsStatus }}</div>
+                        </div>
+                    </a>
 
-                <a href="{{ route('mahasiswa.nilai.index') }}"
-                    class="flex items-center gap-4 p-4 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition group">
-                    <div
-                        class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
-                        <i class="fas fa-graduation-cap text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <div class="font-bold text-gray-800">Lihat Nilai</div>
-                        <div class="text-sm text-gray-600">IPK: {{ number_format($ipk, 2) }}</div>
-                    </div>
-                </a>
+                    <a href="{{ route('mahasiswa.nilai.index') }}"
+                        class="flex items-center gap-4 p-4 border-2 border-blue-500 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition group">
+                        <div
+                            class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
+                            <i class="fas fa-graduation-cap text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-text-primary">Lihat Nilai</div>
+                            <div class="text-sm text-text-secondary">IPK: {{ number_format($ipk, 2) }}</div>
+                        </div>
+                    </a>
 
-                <a href="{{ route('mahasiswa.jadwal.index') }}"
-                    class="flex items-center gap-4 p-4 border-2 border-green-500 rounded-lg hover:bg-green-50 transition group">
-                    <div
-                        class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
-                        <i class="fas fa-calendar-alt text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <div class="font-bold text-gray-800">Jadwal Kuliah</div>
-                        <div class="text-sm text-gray-600">Semester Ini</div>
-                    </div>
-                </a>
+                    <a href="{{ route('mahasiswa.jadwal.index') }}"
+                        class="flex items-center gap-4 p-4 border-2 border-green-500 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition group">
+                        <div
+                            class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition">
+                            <i class="fas fa-calendar-alt text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-text-primary">Jadwal Kuliah</div>
+                            <div class="text-sm text-text-secondary">Semester Ini</div>
+                        </div>
+                    </a>
+                </div>
             </div>
-        </div>
         @endif
 
         {{-- Info + PA Row (50:50) --}}
@@ -188,23 +191,24 @@
             </div>
 
             {{-- PA Contact Box (right) --}}
-            <div class="bg-white border border-red-200 rounded-lg p-4">
-                <div class="bg-red-100 border border-red-200 rounded-t-lg p-4">
-                    <h4 class="font-bold text-red-800">Kontak Layanan dan Konsultasi (PA):</h4>
+            <div class="bg-bg-card border border-red-200 dark:border-red-900/30 rounded-lg p-4">
+                <div class="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 rounded-t-lg p-4">
+                    <h4 class="font-bold text-red-800 dark:text-red-400">Kontak Layanan dan Konsultasi (PA):</h4>
                 </div>
-                <div class="p-4 text-sm text-gray-700">
+                <div class="p-4 text-sm text-text-primary">
                     @php
                         $paList = $mahasiswa->dosenPa()->with('user')->get();
                     @endphp
 
                     @if($paList->isEmpty())
-                        <p class="text-gray-600">Kami menyediakan dosen Penasihat Akademik (PA) untuk membimbing dan melayani
+                        <p class="text-text-secondary">Kami menyediakan dosen Penasihat Akademik (PA) untuk membimbing dan
+                            melayani
                             Anda apabila ada pertanyaan atau masalah saat melakukan pengisian KRS. Silakan menghubungi bagian
                             akademik untuk penempatan PA.</p>
-                        <p class="mt-3 text-xs text-gray-500">Waktu pelayanan: <strong>Hari Kerja, JAM 09.00 - 15.00
+                        <p class="mt-3 text-xs text-text-muted">Waktu pelayanan: <strong>Hari Kerja, JAM 09.00 - 15.00
                                 WIB</strong></p>
                     @else
-                        <p class="text-gray-700 mb-3">Berikut kontak PA Anda. Klik nama untuk membuka chat WhatsApp.</p>
+                        <p class="text-text-secondary mb-3">Berikut kontak PA Anda. Klik nama untuk membuka chat WhatsApp.</p>
                         <div class="space-y-3">
                             @foreach($paList as $pa)
                                 @php
@@ -221,15 +225,16 @@
                                     $waLink = $waNumber ? ('https://wa.me/' . $waNumber) : null;
                                 @endphp
 
-                                <div class="p-3 border rounded-lg">
+                                <div class="p-3 border border-border-color rounded-lg bg-bg-hover/20">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <div class="font-semibold text-gray-800">{{ $pa->user->name ?? ($pa->nidn ?? 'PA') }}
+                                            <div class="font-semibold text-text-primary">
+                                                {{ $pa->user->name ?? ($pa->nidn ?? 'PA') }}
                                             </div>
-                                            <div class="text-xs text-gray-500">NIDN: {{ $pa->nidn ?? '-' }}</div>
+                                            <div class="text-xs text-text-muted">NIDN: {{ $pa->nidn ?? '-' }}</div>
                                         </div>
                                         <div class="text-right">
-                                            <div class="text-sm text-gray-600">{{ $pa->pendidikan ?? '-' }}</div>
+                                            <div class="text-sm text-text-secondary">{{ $pa->pendidikan ?? '-' }}</div>
                                             @if($waLink)
                                                 <a href="{{ $waLink }}" target="_blank" rel="noopener"
                                                     class="inline-flex items-center mt-2 px-3 py-1 rounded-full bg-green-50 text-green-700 border border-green-100 text-sm hover:bg-green-100">
@@ -237,7 +242,7 @@
                                                     Chat WA
                                                 </a>
                                             @else
-                                                <div class="text-xs text-gray-400 mt-2">Nomor tidak tersedia</div>
+                                                <div class="text-xs text-text-muted mt-2">Nomor tidak tersedia</div>
                                             @endif
                                         </div>
                                     </div>
@@ -245,7 +250,7 @@
                             @endforeach
                         </div>
 
-                        <div class="mt-4 text-xs text-gray-500">
+                        <div class="mt-4 text-xs text-text-muted">
                             <strong>WAKTU PELAYANAN (WA Only!):</strong><br>
                             HARI KERJA, JAM 09.00 - 15.00 WIB
                         </div>
