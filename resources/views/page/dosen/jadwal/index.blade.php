@@ -91,6 +91,28 @@
             @endif
 
             <!-- Schedule Grid -->
+            @if(session('success'))
+                <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+                        <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                    </div>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-red-500 text-xl">error</span>
+                        <div>
+                            @foreach($errors->all() as $error)
+                                <p class="text-sm font-medium text-red-800">{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 @php
@@ -146,10 +168,32 @@
                                                     </div>
                                                 @endif
                                             </div>
-                                            <div class="flex items-center gap-1 text-xs text-[#616889] mt-0.5">
-                                                <span class="material-symbols-outlined text-[14px]">location_on</span>
-                                                {{ $kelas->display_ruang ?: 'Belum ditentukan' }}
-                                            </div>
+                                            @if($kelas->metode_pengajaran === 'online' && $kelas->online_link)
+                                                <div class="flex items-center gap-1 text-xs text-blue-600 mt-0.5">
+                                                    <span class="material-symbols-outlined text-[14px]">videocam</span>
+                                                    <a href="{{ $kelas->online_link }}" target="_blank" class="hover:underline truncate max-w-[180px]" title="{{ $kelas->online_link }}">
+                                                        Link Meeting
+                                                    </a>
+                                                </div>
+                                            @elseif($kelas->metode_pengajaran === 'asynchronous')
+                                                <div class="flex items-center gap-1 text-xs text-purple-600 mt-0.5">
+                                                    <span class="material-symbols-outlined text-[14px]">menu_book</span>
+                                                    Asynchronous (Tugas Mandiri)
+                                                </div>
+                                                @if($kelas->asynchronous_file)
+                                                    <div class="flex items-center gap-1 text-xs text-red-600 mt-0.5">
+                                                        <span class="material-symbols-outlined text-[14px]">picture_as_pdf</span>
+                                                        <a href="{{ asset($kelas->asynchronous_file) }}" target="_blank" class="hover:underline font-semibold">
+                                                            Lihat File PDF
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            @else
+                                                <div class="flex items-center gap-1 text-xs text-[#616889] mt-0.5">
+                                                    <span class="material-symbols-outlined text-[14px]">location_on</span>
+                                                    {{ $kelas->display_ruang ?: 'Belum ditentukan' }}
+                                                </div>
+                                            @endif
                                             <!-- Reschedule Button (only show if not already rescheduled this week and no pending request) -->
                                             @if($kelas->is_rescheduled)
                                                 {{-- Already rescheduled badge shown above --}}
@@ -329,7 +373,21 @@
                                 (opsional)</label>
                             <div class="flex items-center gap-2">
                                 <input type="file" name="asynchronous_file" accept="application/pdf" x-ref="asyncFile"
-                                    @change="(e) => { const f = e.target.files[0]; rescheduleData.asynchronous_file_name = f ? f.name : ''; }"
+                                    @change="(e) => { 
+                                        const f = e.target.files[0]; 
+                                        if (f && !f.name.toLowerCase().endsWith('.pdf')) {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Format File Tidak Didukung',
+                                                text: 'Hanya file dengan format PDF yang diperbolehkan.',
+                                                confirmButtonColor: '#8B1538'
+                                            });
+                                            e.target.value = '';
+                                            rescheduleData.asynchronous_file_name = '';
+                                            return;
+                                        }
+                                        rescheduleData.asynchronous_file_name = f ? f.name : ''; 
+                                    }"
                                     class="block w-full text-sm text-gray-500
                                     file:mr-4 file:py-2 file:px-4
                                     file:rounded-full file:border-0

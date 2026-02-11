@@ -63,4 +63,28 @@ class Kelas extends Model
             ->withPivot('status')
             ->wherePivotIn('status', ['approved', 'disetujui']);
     }
+
+    /**
+     * Get all documents for this class
+     */
+    public function dokumen(): HasMany
+    {
+        return $this->hasMany(DokumenKelas::class, 'kelas_id');
+    }
+
+    /**
+     * Get silabus document for this class
+     */
+    public function silabus()
+    {
+        return $this->hasOne(DokumenKelas::class, 'kelas_id')->where('tipe_dokumen', 'silabus');
+    }
+
+    /**
+     * Get RPS document for this class
+     */
+    public function rps()
+    {
+        return $this->hasOne(DokumenKelas::class, 'kelas_id')->where('tipe_dokumen', 'rps');
+    }
 }

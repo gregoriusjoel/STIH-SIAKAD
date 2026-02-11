@@ -8,6 +8,7 @@ use App\Models\KelasMataKuliah;
 use App\Models\Mahasiswa;
 use App\Models\Krs;
 use App\Models\Presensi;
+use App\Models\Pertemuan;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -20,15 +21,23 @@ class LoginController extends Controller
     {
         $token = $request->query('token');
         $kelas = null;
+        $pertemuanRecord = null;
+        
         if ($token) {
-            $kelas = KelasMataKuliah::where('qr_token', $token)
-                ->with(['mataKuliah', 'dosen.user'])
+            // ✅ Query from pertemuans table
+            $pertemuanRecord = Pertemuan::where('qr_token', $token)
+                ->with(['kelasMataKuliah.mataKuliah', 'kelasMataKuliah.dosen.user'])
                 ->first();
-            if (!$kelas) {
-                abort(404);
+            
+            if (!$pertemuanRecord) {
+                abort(404, 'QR code tidak valid atau tidak ditemukan.');
             }
-            if (! $kelas->qr_enabled || ($kelas->qr_expires_at && Carbon::now()->gt($kelas->qr_expires_at))) {
-                return view('absen.login', compact('kelas', 'token'))->withErrors(['token' => 'Kelas tidak aktif untuk absen.']);
+            
+            $kelas = $pertemuanRecord->kelasMataKuliah;
+            
+            // Validate QR is enabled and not expired
+            if (!$pertemuanRecord->isQrValid()) {
+                return view('absen.login', compact('kelas', 'token'))->withErrors(['token' => 'QR code sudah kadaluarsa atau tidak aktif.']);
             }
         }
 
@@ -44,14 +53,21 @@ class LoginController extends Controller
         ]);
 
         $token = $data['token'];
-        $kelas = KelasMataKuliah::where('qr_token', $token)->first();
-        if (! $kelas) {
-            return back()->withErrors(['token' => 'Kelas tidak ditemukan atau token tidak valid.']);
+        
+        // ✅ Query from pertemuans table
+        $pertemuanRecord = Pertemuan::where('qr_token', $token)->first();
+        
+        if (!$pertemuanRecord) {
+            return back()->withErrors(['token' => 'QR code tidak valid atau tidak ditemukan.']);
         }
 
-        if (! $kelas->qr_enabled || ($kelas->qr_expires_at && Carbon::now()->gt($kelas->qr_expires_at))) {
-            return back()->withErrors(['token' => 'Kelas tidak aktif untuk absen.']);
+        // Validate QR is enabled and not expired
+        if (!$pertemuanRecord->isQrValid()) {
+            return back()->withErrors(['token' => 'QR code sudah kadaluarsa atau tidak aktif.']);
         }
+        
+        $kelas = $pertemuanRecord->kelasMataKuliah;
+        $pertemuan = $pertemuanRecord->nomor_pertemuan;
 
         $identifier = $data['identifier'];
         $user = User::where('email', $identifier)->first();
@@ -81,9 +97,8 @@ class LoginController extends Controller
             return back()->withErrors(['identifier' => 'Anda tidak terdaftar di kelas ini.']);
         }
 
-        // Prevent duplicate attendance for same class/date or pertemuan (if present)
+        // Prevent duplicate attendance: only use pertemuan column if it exists
         $canRecordPertemuan = Schema::hasColumn('presensis', 'pertemuan');
-        $pertemuan = $kelas->qr_current_pertemuan ?? null;
 
         $alreadyQuery = Presensi::where('mahasiswa_id', $mahasiswa->id)
             ->where('kelas_mata_kuliah_id', $kelas->id);
@@ -91,7 +106,7 @@ class LoginController extends Controller
         if ($canRecordPertemuan && ! is_null($pertemuan)) {
             $alreadyQuery->where('pertemuan', $pertemuan);
         } else {
-            // fallback: prevent same tanggal
+            // Fallback: prevent duplicate for same date
             $alreadyQuery->where('tanggal', Carbon::now()->toDateString());
         }
 
@@ -107,7 +122,7 @@ class LoginController extends Controller
             return redirect()->route('absen.thankyou');
         }
 
-        // Create presensi
+        // Create presensi with correct pertemuan number if supported
         $createData = [
             'krs_id' => $krs->id,
             'mahasiswa_id' => $mahasiswa->id,

@@ -57,9 +57,19 @@
                 </div>
                 <div>
                     <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Materi / Topik</p>
+                    @php
+                        $headerTopic = '-';
+                        if(isset($materis) && $materis->count()) {
+                            $headerTopic = $materis->first()->judul;
+                        } elseif(!empty($meeting['topic'])) {
+                            $headerTopic = $meeting['topic'];
+                        } elseif(!empty($meeting['title'])) {
+                            $headerTopic = $meeting['title'];
+                        }
+                    @endphp
                     <p class="font-bold text-gray-800 flex items-center gap-2">
                         <span class="material-symbols-outlined text-gray-400 text-[18px]">topic</span>
-                        -
+                        {{ $headerTopic }}
                     </p>
                 </div>
             </div>
@@ -409,7 +419,7 @@
 
                                         <div class="mt-3 flex gap-2">
                                             <form method="POST"
-                                                action="{{ route('kelas.pertemuan.tugas.destroy', ['id' => $kelas->id, 'pertemuan' => $meeting['no'], 'tugas' => $t->id]) }}"
+                                                action="{{ route('dosen.kelas.pertemuan.tugas.destroy', ['id' => $kelas->id, 'pertemuan' => $meeting['no'], 'tugas' => $t->id]) }}"
                                                 onsubmit="event.preventDefault(); showDeleteConfirm('tugas', () => this.submit());">
                                                 @csrf
                                                 @method('DELETE')
@@ -719,22 +729,15 @@
         @endif
     </script>
     {{-- TinyMCE CDN --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" integrity="sha512-6JR4bbn8rCKvrkOGMcleNghLnmwDKb8oQn6eBNZpbhaOQCSytnzeXrePOCtqhRs/qfpzjlgrYbrVuZxvni1GkWg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         document.addEventListener('alpine:init', () => {
             tinymce.init({
                 selector: '#description',
                 height: 300,
                 menubar: false,
-                plugins: [
-                    'advlist autolink lists link image charmap print preview anchor',
-                    'searchreplace visualblocks code fullscreen',
-                    'insertdatetime media table paste code help wordcount'
-                ],
-                toolbar: 'undo redo | formatselect | ' +
-                'bold italic backcolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
+                plugins: 'lists link',
+                toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link | removeformat',
                 content_style: 'body { font-family:Inter,sans-serif; font-size:14px }',
                 setup: function (editor) {
                     editor.on('change', function () {

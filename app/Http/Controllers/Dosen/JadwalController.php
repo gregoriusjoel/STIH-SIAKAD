@@ -234,14 +234,29 @@ class JadwalController extends Controller
      */
     public function kelasReschedule(Request $request)
     {
-        $request->validate([
+        $metode = $request->input('metode_pengajaran', 'offline');
+
+        $rules = [
             'kelas_mata_kuliah_id' => 'required|exists:kelas_mata_kuliahs,id',
             'new_hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'new_jam_mulai' => 'required|date_format:H:i',
             'new_jam_selesai' => 'required|date_format:H:i|after:new_jam_mulai',
-            'ruangan_id' => 'required|exists:ruangans,id',
+            'metode_pengajaran' => 'required|in:offline,online,asynchronous',
             'week_offset' => 'nullable|integer|min:0',
-        ]);
+        ];
+
+        // Room is only required for offline mode
+        if ($metode === 'offline') {
+            $rules['new_ruang'] = 'required|string';
+        }
+        if ($metode === 'online') {
+            $rules['online_link'] = 'required|url';
+        }
+        if ($metode === 'asynchronous') {
+            $rules['asynchronous_tugas'] = 'required|string';
+        }
+
+        $request->validate($rules);
 
         $user = Auth::user();
         $dosen = \App\Models\Dosen::where('user_id', $user->id)->first();
@@ -257,39 +272,72 @@ class JadwalController extends Controller
             return redirect()->back()->withErrors('Anda tidak memiliki izin untuk mereschedule kelas ini.');
         }
 
-        // Get the selected ruangan for validation
-        $ruangan = Ruangan::findOrFail($request->ruangan_id);
-
-        // Check for room conflict (same day, same room, overlapping time)
-        $conflict = \App\Models\KelasMataKuliah::where('id', '!=', $kelasMataKuliah->id)
-            ->where('hari', $request->new_hari)
-            ->where('ruangan_id', $request->ruangan_id)
-            ->where(function($q) use ($request) {
-                $q->where('jam_mulai', '<', $request->new_jam_selesai)
-                  ->where('jam_selesai', '>', $request->new_jam_mulai);
-            })
-            ->with(['mataKuliah', 'dosen.user'])
-            ->first();
-
-        if ($conflict) {
-            $conflictInfo = ($conflict->dosen->user->name ?? 'Dosen lain') . 
-                           ' (' . ($conflict->mataKuliah->nama_mk ?? '-') . ') ' .
-                           'pukul ' . substr($conflict->jam_mulai, 0, 5) . '-' . substr($conflict->jam_selesai, 0, 5);
-            return redirect()->back()->withErrors("Ruangan {$ruangan->kode_ruangan} sudah terpakai oleh {$conflictInfo}. Silakan pilih ruangan atau waktu lain.");
-        }
-
-        // Directly update the kelas mata kuliah
-        $kelasMataKuliah->update([
+        $updateData = [
             'hari' => $request->new_hari,
             'jam_mulai' => $request->new_jam_mulai,
             'jam_selesai' => $request->new_jam_selesai,
-            'ruangan_id' => $request->ruangan_id,
-            'ruang' => $ruangan->kode_ruangan, // Keep legacy field updated for backward compatibility
-        ]);
+            'metode_pengajaran' => $metode,
+            'online_link' => $metode === 'online' ? $request->online_link : null,
+            'asynchronous_tugas' => $metode === 'asynchronous' ? $request->asynchronous_tugas : null,
+        ];
+
+        // Handle asynchronous file upload
+        if ($metode === 'asynchronous' && $request->hasFile('asynchronous_file')) {
+            $file = $request->file('asynchronous_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('asynchronous_files'), $filename);
+            $updateData['asynchronous_file'] = 'asynchronous_files/' . $filename;
+        } elseif ($metode !== 'asynchronous') {
+            $updateData['asynchronous_file'] = null;
+        }
+
+        $ruanganLabel = '';
+
+        if ($metode === 'offline') {
+            // Look up the ruangan by kode_ruangan
+            $ruangan = Ruangan::where('kode_ruangan', $request->new_ruang)->first();
+
+            if (!$ruangan) {
+                return redirect()->back()->withErrors('Ruangan tidak ditemukan.');
+            }
+
+            // Check for room conflict (same day, same room, overlapping time)
+            $conflict = \App\Models\KelasMataKuliah::where('id', '!=', $kelasMataKuliah->id)
+                ->where('hari', $request->new_hari)
+                ->where(function($q) use ($ruangan) {
+                    $q->where('ruangan_id', $ruangan->id)
+                      ->orWhere('ruang', $ruangan->kode_ruangan);
+                })
+                ->where(function($q) use ($request) {
+                    $q->where('jam_mulai', '<', $request->new_jam_selesai)
+                      ->where('jam_selesai', '>', $request->new_jam_mulai);
+                })
+                ->with(['mataKuliah', 'dosen.user'])
+                ->first();
+
+            if ($conflict) {
+                $conflictInfo = ($conflict->dosen->user->name ?? 'Dosen lain') . 
+                               ' (' . ($conflict->mataKuliah->nama_mk ?? '-') . ') ' .
+                               'pukul ' . substr($conflict->jam_mulai, 0, 5) . '-' . substr($conflict->jam_selesai, 0, 5);
+                return redirect()->back()->withErrors("Ruangan {$ruangan->kode_ruangan} sudah terpakai oleh {$conflictInfo}. Silakan pilih ruangan atau waktu lain.");
+            }
+
+            $updateData['ruangan_id'] = $ruangan->id;
+            $updateData['ruang'] = $ruangan->kode_ruangan;
+            $ruanganLabel = ' di ruang ' . $ruangan->kode_ruangan;
+        } else {
+            // For online/asynchronous, keep existing room assignment (ruang column is NOT NULL)
+        }
+
+        // Directly update the kelas mata kuliah
+        $kelasMataKuliah->update($updateData);
 
         $weekOffset = (int) $request->input('week_offset', 0);
 
-        return redirect()->route('dosen.jadwal', ['week' => $weekOffset])->with('success', 'Jadwal berhasil diubah ke ' . $request->new_hari . ' pukul ' . $request->new_jam_mulai . ' - ' . $request->new_jam_selesai . ' di ruang ' . $ruangan->kode_ruangan . '.');
+        $metodeLabels = ['offline' => 'Tatap Muka', 'online' => 'Online', 'asynchronous' => 'Asynchronous'];
+        $metodeLabel = $metodeLabels[$metode] ?? $metode;
+
+        return redirect()->route('dosen.jadwal', ['week' => $weekOffset])->with('success', 'Jadwal berhasil diubah ke ' . $request->new_hari . ' pukul ' . $request->new_jam_mulai . ' - ' . $request->new_jam_selesai . $ruanganLabel . ' (' . $metodeLabel . ').');
     }
     public function checkAvailability(Request $request)
     {

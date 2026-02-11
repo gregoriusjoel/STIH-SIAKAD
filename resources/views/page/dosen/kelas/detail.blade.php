@@ -49,7 +49,10 @@
         }
     @endphp
 
-    <div class="flex flex-col gap-8 w-full flex-1 px-4 max-w-[1400px] mx-auto" x-data="detailKelas()">
+    @section('main-class', 'p-0')
+    
+    <div x-data="detailKelas()">
+    <div class="flex flex-col gap-8 w-full flex-1 mx-auto">
 
         {{-- BREADCRUMB & HEADER --}}
         <div class="flex flex-col gap-4">
@@ -58,6 +61,27 @@
                 <span class="material-symbols-outlined text-[16px]">chevron_right</span>
                 <span class="font-medium text-gray-800 dark:text-white">{{ $class_info['name'] }}</span>
             </nav>
+
+            {{-- Success/Error Messages --}}
+            @if(session('success'))
+                <div class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-xl flex items-center gap-3">
+                    <span class="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
+                    <span class="font-medium">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-xl">
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-red-600 dark:text-red-400">error</span>
+                        <div class="flex-1">
+                            @foreach($errors->all() as $error)
+                                <p class="font-medium">{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-start gap-4">
@@ -97,6 +121,37 @@
                         <span class="material-symbols-outlined text-[20px]">edit_note</span>
                         Input Nilai
                     </a>
+
+                    {{-- Button Silabus --}}
+                    @if($kelas->silabus)
+                        <a href="{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'silabus']) }}"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-green-200 dark:border-green-700 text-green-600 dark:text-green-400 rounded-xl font-bold text-sm hover:bg-green-50 dark:hover:bg-green-900/30 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[20px]">description</span>
+                            Silabus
+                        </a>
+                    @else
+                        <button @click="openUploadModal('silabus')"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[20px]">upload_file</span>
+                            Upload Silabus
+                        </button>
+                    @endif
+
+                    {{-- Button RPS --}}
+                    @if($kelas->rps)
+                        <a href="{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'rps']) }}"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 rounded-xl font-bold text-sm hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[20px]">article</span>
+                            RPS
+                        </a>
+                    @else
+                        <button @click="openUploadModal('rps')"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[20px]">upload_file</span>
+                            Upload RPS
+                        </button>
+                    @endif
+
                     <button
                         class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
                         <span class="material-symbols-outlined text-[20px]">download</span>
@@ -406,6 +461,73 @@
                 </div>
             </div>
         </div>
+
+    </div>
+
+    {{-- Upload Modal - Moved outside main container to prevent sidebar showing --}}
+    <div x-show="showUploadModal" 
+         x-cloak
+         class="fixed inset-0 z-[9999] overflow-y-auto"
+         style="margin: 0 !important;"
+         @keydown.escape.window="closeUploadModal()">
+        
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+             @click="closeUploadModal()"></div>
+
+        <!-- Modal -->
+        <div class="flex min-h-screen items-center justify-center p-4">
+            <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 z-[10000]"
+                 @click.stop
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100">
+                
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white capitalize">
+                        Upload <span x-text="uploadType"></span>
+                    </h3>
+                    <button @click="closeUploadModal()"
+                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <!-- Form -->
+                <form action="{{ route('dosen.kelas.dokumen.upload', $id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="tipe_dokumen" x-model="uploadType">
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                            Pilih File (PDF/DOC - Max 10MB)
+                        </label>
+                        <input type="file" 
+                               name="file" 
+                               accept=".pdf,.doc,.docx"
+                               required
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-700 dark:text-white">
+                        <p class="mt-2 text-xs text-gray-500 dark:text-slate-400">
+                            Format yang didukung: PDF, DOC, DOCX (Maksimal 10MB)
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="button" 
+                                @click="closeUploadModal()"
+                                class="flex-1 px-4 py-2.5 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-slate-700 transition-all">
+                            Batal
+                        </button>
+                        <button type="submit"
+                                class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
+                            Upload
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     </div>
 
     @push('scripts')
@@ -457,6 +579,20 @@
                     updateCount() {
                         const visibleRows = document.querySelectorAll('tbody tr:not([style*="display: none"])').length;
                         this.filteredCount = visibleRows;
+                    },
+
+                    // Upload Modal
+                    showUploadModal: false,
+                    uploadType: '',
+
+                    openUploadModal(type) {
+                        this.uploadType = type;
+                        this.showUploadModal = true;
+                    },
+
+                    closeUploadModal() {
+                        this.showUploadModal = false;
+                        this.uploadType = '';
                     }
                 }
             }

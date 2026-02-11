@@ -10,9 +10,13 @@ use App\Models\Semester;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Presensi;
+use App\Models\Pertemuan;
 use App\Models\Dosen;
+use App\Models\DokumenKelas;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 
 class LecturerController extends Controller
 {
@@ -389,7 +393,9 @@ class LecturerController extends Controller
             'mataKuliah',
             'jadwals' => function ($q) {
                 $q->where('status', 'active');
-            }
+            },
+            'silabus',
+            'rps'
         ])->findOrFail($id);
 
         $jadwal = $kelas->jadwals->first();
@@ -454,10 +460,10 @@ class LecturerController extends Controller
 
 
         if (request()->ajax()) {
-            return view('page.dosen.kelas.partials.detail-content', compact('class_info', 'students', 'id'))->with('is_modal', true);
+            return view('page.dosen.kelas.partials.detail-content', compact('class_info', 'students', 'id', 'kelas'))->with('is_modal', true);
         }
 
-        return view('page.dosen.kelas.detail', compact('class_info', 'students', 'id'))->with('is_modal', false);
+        return view('page.dosen.kelas.detail', compact('class_info', 'students', 'id', 'kelas'))->with('is_modal', false);
     }
 
     /**
@@ -483,23 +489,30 @@ class LecturerController extends Controller
             return back()->with('error', 'Tidak dapat menemukan record KelasMataKuliah untuk kelas ini. Silakan buat kelas mata kuliah terlebih dahulu.');
         }
 
-        // Always generate a fresh QR token when the lecturer requests it.
-        // Do NOT enable the QR or start the expiry window here — activation must be explicit by the lecturer.
-        $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
-        $kelasMataKuliah->qr_enabled = $kelasMataKuliah->qr_enabled ?? false;
-        // If the lecturer submitted a pertemuan in the request, store it so the QR refers to that meeting
-        $requestedPertemuan = request()->input('pertemuan');
-        if ($requestedPertemuan) {
-            $kelasMataKuliah->qr_current_pertemuan = (int) $requestedPertemuan;
-        }
-        $kelasMataKuliah->save();
+        // ✅ Get pertemuan number from request
+        $pertemuanNo = request()->input('pertemuan', 1);
+        
+        // ✅ Find or create Pertemuan record
+        $pertemuan = Pertemuan::firstOrCreate(
+            [
+                'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
+                'nomor_pertemuan' => $pertemuanNo
+            ],
+            [
+                'topik' => 'Pertemuan ' . $pertemuanNo,
+                'status' => 'scheduled'
+            ]
+        );
 
-        // Log and return debug info in session so UI can show whether token was created
-        \Log::info('Generated QR token', ['kelas_mk_id' => $kelasMataKuliah->id, 'qr_token' => $kelasMataKuliah->qr_token]);
+        // ✅ Generate QR token (but don't activate yet)
+        $pertemuan->generateQrToken(5);
+
+        \Log::info('Generated QR token', ['pertemuan_id' => $pertemuan->id, 'nomor' => $pertemuanNo, 'qr_token' => $pertemuan->qr_token]);
 
         $debug = [
-            'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
-            'qr_token' => $kelasMataKuliah->qr_token,
+            'pertemuan_id' => $pertemuan->id,
+            'nomor_pertemuan' => $pertemuanNo,
+            'qr_token' => $pertemuan->qr_token,
         ];
 
         return back()->with(['success' => 'QR dibuat dan diaktifkan.', 'debug_info' => $debug]);
@@ -557,13 +570,10 @@ class LecturerController extends Controller
         if ($kelasMataKuliah) {
             $attendanceQuery = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id);
             
-            // Get records for current meeting
+            // Get records for current meeting only
             $currentMeetingQuery = clone $attendanceQuery;
             if (Schema::hasColumn('presensis', 'pertemuan')) {
-                $currentMeetingQuery->where(function($q) use ($pertemuan) {
-                    $q->where('pertemuan', $pertemuan)
-                      ->orWhereNull('pertemuan');
-                });
+                $currentMeetingQuery->where('pertemuan', $pertemuan);
             }
             $attendanceRecords = $currentMeetingQuery->get()->keyBy('mahasiswa_id');
 
@@ -613,15 +623,23 @@ class LecturerController extends Controller
 
 
 
-        if ($kelasMataKuliah && empty($kelasMataKuliah->qr_token)) {
-            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
-            $kelasMataKuliah->qr_enabled = $kelasMataKuliah->qr_enabled ?? false;
-            $kelasMataKuliah->save();
-        }
+        // ✅ Read QR from pertemuans table
+        $pertemuanRecord = null;
+        $token = null;
+        $qrEnabled = false;
+        $qrExpires = null;
 
-        $token = $kelasMataKuliah->qr_token ?? null;
-        $qrEnabled = (bool) ($kelasMataKuliah->qr_enabled ?? false);
-        $qrExpires = $kelasMataKuliah->qr_expires_at ?? null;
+        if ($kelasMataKuliah) {
+            $pertemuanRecord = Pertemuan::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+                ->where('nomor_pertemuan', $pertemuan)
+                ->first();
+            
+            if ($pertemuanRecord) {
+                $token = $pertemuanRecord->qr_token;
+                $qrEnabled = (bool) $pertemuanRecord->qr_enabled;
+                $qrExpires = $pertemuanRecord->qr_expires_at;
+            }
+        }
 
         // Get materials for this mata kuliah and pertemuan
         $materis = \App\Models\Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
@@ -747,22 +765,32 @@ class LecturerController extends Controller
             return back()->with('error', 'Tidak dapat menemukan record kelas mata kuliah untuk mengaktifkan QR.');
         }
 
-        // Ensure token exists
-        if (empty($kelasMataKuliah->qr_token)) {
-            $kelasMataKuliah->qr_token = \Illuminate\Support\Str::random(40);
-        }
+        // ✅ Get pertemuan number from request
+        $pertemuanNo = $request->input('pertemuan', 1);
+        
+        // ✅ Find or create Pertemuan record
+        $pertemuan = Pertemuan::firstOrCreate(
+            [
+                'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
+                'nomor_pertemuan' => $pertemuanNo
+            ],
+            [
+                'topik' => 'Pertemuan ' . $pertemuanNo,
+                'status' => 'scheduled'
+            ]
+        );
 
-        $kelasMataKuliah->qr_enabled = true;
-        $kelasMataKuliah->qr_expires_at = Carbon::now()->addMinutes(5);
-        $kelasMataKuliah->save();
+        // ✅ Activate QR on this specific pertemuan
+        $pertemuan->activateQr(5);
 
-        \Log::info('Activated QR token', ['kelas_mk_id' => $kelasMataKuliah->id, 'qr_token' => $kelasMataKuliah->qr_token]);
+        \Log::info('Activated QR token', ['pertemuan_id' => $pertemuan->id, 'nomor' => $pertemuanNo, 'qr_token' => $pertemuan->qr_token]);
 
         return back()->with('success', 'QR ditampilkan untuk 5 menit.');
     }
 
     /**
-     * Manually deactivate the QR for the class.
+     * Manually deactivate the QR for the pertemuan.
+     * ✅ NOW: Deactivate QR in pertemuans table
      */
     public function deactivateQr(Request $request, $id)
     {
@@ -775,14 +803,18 @@ class LecturerController extends Controller
             })->first();
 
         if (!$kelasMataKuliah) {
-            return back()->with('error', 'Tidak dapat menemukan record kelas mata kuliah untuk menonaktifkan QR.');
+            return back()->with('error', 'Tidak dapat menemukan record kelas mata kuliah.');
         }
 
-        $kelasMataKuliah->qr_enabled = false;
-        $kelasMataKuliah->qr_expires_at = null;
-        $kelasMataKuliah->save();
+        // ✅ Disable all active QR for this kelas
+        Pertemuan::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+            ->where('qr_enabled', true)
+            ->update([
+                'qr_enabled' => false,
+                'qr_expires_at' => null,
+            ]);
 
-        \Log::info('QR token manually disabled', ['kelas_mk_id' => $kelasMataKuliah->id, 'qr_token' => $kelasMataKuliah->qr_token]);
+        \Log::info('QR disabled for kelas', ['kelas_mk_id' => $kelasMataKuliah->id]);
 
         return back()->with('success', 'QR dinonaktifkan.');
     }
@@ -1124,5 +1156,148 @@ class LecturerController extends Controller
             'success' => true,
             'data' => $bobot
         ]);
+    }
+
+    /**
+     * Upload dokumen (Silabus / RPS)
+     */
+    public function uploadDokumen(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'tipe_dokumen' => 'required|in:silabus,rps',
+                'file' => 'required|file|mimes:pdf,doc,docx|max:10240', // Max 10MB
+            ]);
+
+            $kelas = Kelas::findOrFail($id);
+
+            // Get dosen record for logged-in user
+            $dosen = Dosen::where('user_id', auth()->user()->id)->first();
+            
+            if (!$dosen) {
+                Log::warning('Dosen record not found for user', [
+                    'user_id' => auth()->user()->id
+                ]);
+                return back()->withErrors(['error' => 'Data dosen tidak ditemukan.']);
+            }
+
+            // Verify that the logged-in dosen owns this class
+            if ($dosen->id != $kelas->dosen_id) {
+                Log::warning('Unauthorized document upload attempt', [
+                    'user_id' => auth()->user()->id,
+                    'dosen_id' => $dosen->id,
+                    'kelas_id' => $kelas->id,
+                    'kelas_dosen_id' => $kelas->dosen_id
+                ]);
+                return back()->withErrors(['error' => 'Anda tidak memiliki akses untuk mengupload dokumen ke kelas ini.']);
+            }
+
+            $tipeDokumen = $request->input('tipe_dokumen');
+            $file = $request->file('file');
+
+            // Check if document already exists
+            $existingDoc = DokumenKelas::where('kelas_id', $kelas->id)
+                ->where('tipe_dokumen', $tipeDokumen)
+                ->first();
+
+            // Delete old file if exists
+            if ($existingDoc) {
+                Storage::disk('public')->delete($existingDoc->path_file);
+                $existingDoc->delete();
+            }
+
+            // Store new file
+            $fileName = $tipeDokumen . '_' . $kelas->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('dokumen', $fileName, 'public');
+
+            // Create database record
+            DokumenKelas::create([
+                'kelas_id' => $kelas->id,
+                'tipe_dokumen' => $tipeDokumen,
+                'nama_file' => $file->getClientOriginalName(),
+                'path_file' => $path,
+                'uploaded_by' => auth()->user()->id,
+            ]);
+
+            Log::info('Document uploaded successfully', [
+                'kelas_id' => $kelas->id,
+                'tipe_dokumen' => $tipeDokumen,
+                'file_name' => $fileName
+            ]);
+
+            return back()->with('success', ucfirst($tipeDokumen) . ' berhasil diupload.');
+        } catch (\Exception $e) {
+            Log::error('Document upload failed', [
+                'kelas_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat mengupload dokumen. Silakan coba lagi.']);
+        }
+    }
+
+    /**
+     * Download dokumen
+     */
+    public function downloadDokumen($id, $tipe)
+    {
+        $kelas = Kelas::findOrFail($id);
+        
+        $dokumen = DokumenKelas::where('kelas_id', $kelas->id)
+            ->where('tipe_dokumen', $tipe)
+            ->firstOrFail();
+
+        $filePath = storage_path('app/public/' . $dokumen->path_file);
+
+        if (!file_exists($filePath)) {
+            Log::error('Document file not found', [
+                'kelas_id' => $id,
+                'tipe' => $tipe,
+                'path' => $filePath
+            ]);
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->download($filePath, $dokumen->nama_file);
+    }
+
+    /**
+     * Delete dokumen
+     */
+    public function deleteDokumen($id, $tipe)
+    {
+        $kelas = Kelas::findOrFail($id);
+
+        // Get dosen record for logged-in user
+        $dosen = Dosen::where('user_id', auth()->user()->id)->first();
+        
+        if (!$dosen) {
+            return back()->withErrors(['error' => 'Data dosen tidak ditemukan.']);
+        }
+
+        // Verify that the logged-in dosen owns this class
+        if ($dosen->id != $kelas->dosen_id) {
+            return back()->withErrors(['error' => 'Anda tidak memiliki akses untuk menghapus dokumen dari kelas ini.']);
+        }
+
+        $dokumen = DokumenKelas::where('kelas_id', $kelas->id)
+            ->where('tipe_dokumen', $tipe)
+            ->first();
+
+        if ($dokumen) {
+            // Delete file from storage
+            Storage::disk('public')->delete($dokumen->path_file);
+            // Delete database record
+            $dokumen->delete();
+
+            Log::info('Document deleted successfully', [
+                'kelas_id' => $kelas->id,
+                'tipe_dokumen' => $tipe
+            ]);
+
+            return back()->with('success', ucfirst($tipe) . ' berhasil dihapus.');
+        }
+
+        return back()->withErrors(['error' => 'Dokumen tidak ditemukan.']);
     }
 }

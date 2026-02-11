@@ -23,6 +23,7 @@ class KelasMataKuliah extends Model
         'metode_pengajaran',
         'online_link',
         'asynchronous_tugas',
+        'asynchronous_file',
         'qr_token',
         'qr_enabled',
         'qr_expires_at',
@@ -64,6 +65,11 @@ class KelasMataKuliah extends Model
     public function krs(): HasMany
     {
         return $this->hasMany(Krs::class);
+    }
+
+    public function pertemuans(): HasMany
+    {
+        return $this->hasMany(Pertemuan::class);
     }
     
     // Accessor for backward compatibility

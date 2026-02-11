@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\KelasMataKuliah;
+use App\Models\Pertemuan;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -11,13 +12,17 @@ class QrController extends Controller
 {
     /**
      * Return QR image PNG for a kelas by token if enabled and not expired.
+     * ✅ NOW: Query from pertemuans table
      */
     public function image(\Illuminate\Http\Request $request, $token)
     {
-        $kelas = KelasMataKuliah::where('qr_token', $token)->first();
-        if (!$kelas) {
+        // ✅ Query from Pertemuan table
+        $pertemuan = Pertemuan::where('qr_token', $token)->with('kelasMataKuliah.dosen')->first();
+        if (!$pertemuan) {
             abort(404);
         }
+
+        $kelas = $pertemuan->kelasMataKuliah;
 
         // Allow lecturers and admins to preview/download the QR even if it's not currently enabled
         $user = auth()->user();
@@ -29,18 +34,13 @@ class QrController extends Controller
             if ($isDosen && $kelas->dosen_id && $user->id == $kelas->dosen_id) $canBypass = true;
         }
 
-        if (! $canBypass) {
-            if (!$kelas->qr_enabled) {
-                abort(410, 'QR code disabled');
-            }
-
-            if ($kelas->qr_expires_at && Carbon::now()->gt($kelas->qr_expires_at)) {
-                abort(410, 'QR code expired');
-            }
+        // ✅ Validate QR from Pertemuan record
+        if (! $canBypass && !$pertemuan->isQrValid()) {
+            abort(410, 'QR code disabled or expired');
         }
 
         // Generate a URL the QR should point to (attendance/check-in)
-        $target = url('/kelas/qr-redirect/' . $kelas->qr_token);
+        $target = url('/kelas/qr-redirect/' . $pertemuan->qr_token);
 
         // Support forcing SVG via ?format=svg for reliable inline rendering or download
         $format = strtolower($request->query('format', '')) === 'svg' ? 'svg' : 'png';
@@ -57,20 +57,24 @@ class QrController extends Controller
 
     /**
      * Redirect target when scanning QR. Checks enable/expire and then redirects to attendance page.
+     * ✅ NOW: Query from pertemuans table
      */
     public function redirect($token)
     {
-        $kelas = KelasMataKuliah::where('qr_token', $token)->first();
-        if (!$kelas || !$kelas->qr_enabled) {
-            abort(410);
+        // ✅ Query from Pertemuan table
+        $pertemuan = Pertemuan::where('qr_token', $token)->first();
+        if (!$pertemuan) {
+            abort(410, 'QR code not found');
         }
-        if ($kelas->qr_expires_at && Carbon::now()->gt($kelas->qr_expires_at)) {
-            abort(410);
+
+        // ✅ Validate QR from Pertemuan record
+        if (!$pertemuan->isQrValid()) {
+            abort(410, 'QR code disabled or expired');
         }
 
         // Redirect to the absen login flow for this kelas (login-based attendance)
         // This preserves the existing permission/expiry checks above but sends scanners
         // to the login-only attendance flow instead of the manual form.
-        return redirect()->route('absen.login', ['token' => $kelas->qr_token]);
+        return redirect()->route('absen.login', ['token' => $pertemuan->qr_token]);
     }
 }

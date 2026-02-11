@@ -98,6 +98,11 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::post('/kelas/{id}/simpan-nilai', [LecturerController::class, 'simpanNilai'])->name('kelas.simpan-nilai');
     Route::get('/kelas/{id}/get-bobot', [LecturerController::class, 'getBobotPenilaian'])->name('kelas.get-bobot');
 
+    // Dokumen (Silabus & RPS)
+    Route::post('/kelas/{id}/dokumen/upload', [LecturerController::class, 'uploadDokumen'])->name('kelas.dokumen.upload')->middleware('auth');
+    Route::get('/kelas/{id}/dokumen/{tipe}/download', [LecturerController::class, 'downloadDokumen'])->name('kelas.dokumen.download')->middleware('auth');
+    Route::delete('/kelas/{id}/dokumen/{tipe}', [LecturerController::class, 'deleteDokumen'])->name('kelas.dokumen.delete')->middleware('auth');
+
     // Jadwal Approval Routes
     Route::prefix('jadwal-approval')->name('jadwal_approval.')->group(function () {
         Route::get('/', [App\Http\Controllers\Dosen\JadwalApprovalController::class, 'index'])->name('index');

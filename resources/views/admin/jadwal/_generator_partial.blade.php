@@ -6,19 +6,19 @@
 @endphp
 
 <div x-data="{}" x-cloak class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden h-full">
-    <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
-        <div class="font-bold text-white text-xl flex items-center gap-3">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="font-bold text-white text-xl flex items-center gap-3 w-full md:w-auto">
             <div class="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
                 <i class="fas fa-magic"></i>
             </div>
-            Auto Generate Jadwal
+            <span>Auto Generate Jadwal</span>
         </div>
-        <div class="flex gap-2">
-            <a href="{{ route('admin.jadwal_admin_approval.index') }}" class="px-4 py-2 bg-white hover:bg-gray-100 text-maroon rounded-lg font-semibold transition-all duration-200 shadow-sm inline-flex items-center">
+        <div class="flex flex-wrap gap-2 w-full md:w-auto justify-end">
+            <a href="{{ route('admin.jadwal_admin_approval.index') }}" class="flex-1 md:flex-none justify-center px-4 py-2 bg-white hover:bg-gray-100 text-maroon rounded-lg font-semibold transition-all duration-200 shadow-sm inline-flex items-center text-sm md:text-base">
                 <i class="fas fa-eye mr-2"></i>Lihat Data Dosen
             </a>
             <button @click="$refs.genModal.classList.remove('hidden'); $refs.genModal.style.display = 'flex'" 
-                class="px-4 py-2 bg-white hover:bg-gray-100 text-maroon rounded-lg font-semibold transition-all duration-200 shadow-sm">
+                class="flex-1 md:flex-none justify-center px-4 py-2 bg-white hover:bg-gray-100 text-maroon rounded-lg font-semibold transition-all duration-200 shadow-sm text-sm md:text-base">
                 <i class="fas fa-plus mr-2"></i>Generate Jadwal
             </button>
         </div>

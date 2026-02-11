@@ -48,22 +48,22 @@
 
             {{-- Card: Active Schedules (Full Width) --}}
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden h-full flex flex-col">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
-                    <div class="font-semibold text-white text-lg"><i class="fas fa-check-circle mr-2"></i>Jadwal Aktif
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="font-semibold text-white text-lg w-full md:w-auto"><i class="fas fa-check-circle mr-2"></i>Jadwal Aktif
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
                         <button type="button" onclick="openTambahJadwalModal()"
-                            class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition flex items-center gap-2 border border-white/20 font-semibold">
+                            class="flex-1 md:flex-none justify-center px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition flex items-center gap-2 border border-white/20 font-semibold">
                             <i class="fas fa-plus-circle"></i>
-                            <span>Tambah Jadwal Baru</span>
+                            <span class="whitespace-nowrap">Tambah Jadwal Baru</span>
                         </button>
                         <button type="button" onclick="openRoomUsageModal()"
-                            class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition flex items-center gap-2 border border-white/20">
+                            class="flex-1 md:flex-none justify-center px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg transition flex items-center gap-2 border border-white/20">
                             <i class="fas fa-door-open"></i>
-                            <span>Lihat Penggunaan Ruangan</span>
+                            <span class="whitespace-nowrap">Lihat Penggunaan Ruangan</span>
                         </button>
                         @if($kelasMataKuliahs->count() > 0)
-                            <span class="px-2 py-0.5 bg-white text-maroon text-xs rounded-full font-bold">{{ $kelasMataKuliahs->total() }}</span>
+                            <span class="px-2 py-0.5 bg-white text-maroon text-xs rounded-full font-bold hidden md:inline-block">{{ $kelasMataKuliahs->total() }}</span>
                         @endif
                     </div>
                 </div>
