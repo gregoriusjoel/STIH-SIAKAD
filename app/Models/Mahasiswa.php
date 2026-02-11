@@ -198,11 +198,15 @@ class Mahasiswa extends Model
                 }
             }
 
-            // Fallback if not found in kelas: check if we have a semester record for this
+            // Fallback: calculate tahun_ajaran based on angkatan and semester number
             if (!$tahunAjaran) {
-                // Approximate fallback or leave null
-                $activeSemester = \App\Models\Semester::where('is_active', true)->first();
-                $tahunAjaran = $activeSemester->tahun_ajaran ?? '-';
+                $baseYear = (int) $this->angkatan;
+                // Calculate which academic year this semester falls into
+                // Semester 1-2: First year, Semester 3-4: Second year, etc.
+                $yearOffset = floor(($semNum - 1) / 2);
+                $academicStartYear = $baseYear + $yearOffset;
+                $academicEndYear = $academicStartYear + 1;
+                $tahunAjaran = $academicStartYear . '/' . $academicEndYear;
             }
 
             $collection->push((object) [

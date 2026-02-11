@@ -187,7 +187,12 @@ class KRSController extends Controller
         // If student has not yet started filling KRS and has no existing KRS, show confirmation page first
         if ($existingKrs->isEmpty() && !$request->has('start')) {
             // Get semester history for downloads (past semesters)
-            $semesterHistory = $mahasiswa->getPastSemesters();
+            // Filter to only show semesters 1 through current semester
+            $allPastSemesters = $mahasiswa->getPastSemesters();
+            $currentSemester = $mahasiswa->getCurrentSemester();
+            $semesterHistory = $allPastSemesters->filter(function ($semester) use ($currentSemester) {
+                return $semester->semester_number <= $currentSemester;
+            });
             
             // Check if current semester KRS is already submitted
             $currentKodeId = 'sms' . $mahasiswaSemester;
@@ -197,17 +202,30 @@ class KRSController extends Controller
                     $q->where('kode_id', $currentKodeId);
                 })->exists();
             
-            // If current semester is already submitted, add it to the list
-            if ($currentSemesterSubmitted) {
+// If current semester is already submitted, add it to the list (only if not already present)
+        if ($currentSemesterSubmitted) {
+            $alreadyExists = $semesterHistory->contains(function ($semester) use ($mahasiswaSemester) {
+                return $semester->semester_number == $mahasiswaSemester;
+            });
+            
+            if (!$alreadyExists) {
                 $isGanjil = ($mahasiswaSemester % 2 === 1);
+                // Calculate proper tahun_ajaran based on angkatan and semester
+                $baseYear = (int) $mahasiswa->angkatan;
+                $yearOffset = floor(($mahasiswaSemester - 1) / 2);
+                $academicStartYear = $baseYear + $yearOffset;
+                $academicEndYear = $academicStartYear + 1;
+                $calculatedTahunAjaran = $academicStartYear . '/' . $academicEndYear;
+                
                 $currentSemesterObj = (object) [
                     'semester_number' => $mahasiswaSemester,
                     'semester_display' => 'Semester ' . $mahasiswaSemester,
-                    'tahun_ajaran' => $semesterAktif->tahun_ajaran,
+                    'tahun_ajaran' => $calculatedTahunAjaran,
                     'nama_semester' => $isGanjil ? 'Ganjil' : 'Genap',
                 ];
                 // Add to beginning of collection
                 $semesterHistory = collect([$currentSemesterObj])->merge($semesterHistory);
+            }
             }
 
             // Determine which semesters the student can download (has submitted KRS for that semester)
@@ -556,7 +574,12 @@ class KRSController extends Controller
         $semesterAktif = $mahasiswa->getCurrentSemesterInfo();
 
         // Get semester history for downloads (past semesters)
-        $semesterHistory = $mahasiswa->getPastSemesters();
+        // Filter to only show semesters 1 through current semester
+        $allPastSemesters = $mahasiswa->getPastSemesters();
+        $currentSemester = $mahasiswa->getCurrentSemester();
+        $semesterHistory = $allPastSemesters->filter(function ($semester) use ($currentSemester) {
+            return $semester->semester_number <= $currentSemester;
+        });
         
         // Get current semester number
         $currentSemester = $mahasiswa->getCurrentSemester();
@@ -569,17 +592,30 @@ class KRSController extends Controller
                 $q->where('kode_id', $currentKodeId);
             })->exists();
         
-        // If current semester is already submitted, add it to the list
+        // If current semester is already submitted, add it to the list (only if not already present)
         if ($currentSemesterSubmitted) {
-            $isGanjil = ($currentSemester % 2 === 1);
-            $currentSemesterObj = (object) [
-                'semester_number' => $currentSemester,
-                'semester_display' => 'Semester ' . $currentSemester,
-                'tahun_ajaran' => $semesterAktif->tahun_ajaran,
-                'nama_semester' => $isGanjil ? 'Ganjil' : 'Genap',
-            ];
-            // Add to beginning of collection
-            $semesterHistory = collect([$currentSemesterObj])->merge($semesterHistory);
+            $alreadyExists = $semesterHistory->contains(function ($semester) use ($currentSemester) {
+                return $semester->semester_number == $currentSemester;
+            });
+            
+            if (!$alreadyExists) {
+                $isGanjil = ($currentSemester % 2 === 1);
+                // Calculate proper tahun_ajaran based on angkatan and semester
+                $baseYear = (int) $mahasiswa->angkatan;
+                $yearOffset = floor(($currentSemester - 1) / 2);
+                $academicStartYear = $baseYear + $yearOffset;
+                $academicEndYear = $academicStartYear + 1;
+                $calculatedTahunAjaran = $academicStartYear . '/' . $academicEndYear;
+                
+                $currentSemesterObj = (object) [
+                    'semester_number' => $currentSemester,
+                    'semester_display' => 'Semester ' . $currentSemester,
+                    'tahun_ajaran' => $calculatedTahunAjaran,
+                    'nama_semester' => $isGanjil ? 'Ganjil' : 'Genap',
+                ];
+                // Add to beginning of collection
+                $semesterHistory = collect([$currentSemesterObj])->merge($semesterHistory);
+            }
         }
 
         // Determine which semesters the student can download (has submitted KRS for that semester)

@@ -238,7 +238,7 @@
 
             <!-- Topbar -->
 
-                                        <header class="bg-bg-card border-b border-border-color px-4 sm:px-6 lg:px-8 py-3 shadow-sm sticky top-0 z-40 transition-colors duration-200">
+                                        <header class="bg-white dark:bg-[#1a1d2e] border-b border-border-color px-4 sm:px-6 lg:px-8 py-3 shadow-sm sticky top-0 z-40 transition-colors duration-200">
                 <div class="flex items-center justify-between">
                     <!-- Mobile Menu Button -->
                     <button class="lg:hidden w-10 h-10 flex items-center justify-center text-text-secondary hover:bg-bg-hover rounded-lg transition-colors" @click="sidebarOpen = !sidebarOpen">

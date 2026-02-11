@@ -1346,66 +1346,57 @@
             // --- Logic for Drag & Drop Updates ---
             function confirmUpdateDate(info) {
                 // FRONTEND -> BACKEND (Write)
-                // FC uses Exclusive End.
-                // Database needs Inclusive End.
+                // FC uses Exclusive End. Database stores inclusive end dates.
 
                 let startStr = info.event.startStr;
-                let endStr = info.event.endStr; // Use endStr (Exclusive)
+                let endStr = info.event.endStr; // Exclusive end from FullCalendar
 
                 if (info.event.allDay) {
-                    // Safety trim just in case (e.g. contains 'T')
+                    // Trim any time portion
                     startStr = startStr.split('T')[0];
                     if (endStr) {
                         endStr = endStr.split('T')[0];
                         // Convert Exclusive -> Inclusive (Subtract 1 Day)
                         endStr = addDaysToString(endStr, -1);
                     } else {
-                        // null end means 1 day event -> end = start
+                        // null end means single-day event
                         endStr = startStr;
                     }
                 }
 
                 showConfirm(
                     `Update tanggal event ke ${startStr} s/d ${endStr}?`,
-                    function() {
-                        // Update logic here  
+                    async function() {
+                        const eventId = info.event.extendedProps.event_id;
+                        try {
+                            const res = await fetch(`/admin/kalender-akademik/event/${eventId}/date`, {
+                                method: 'PUT',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ start: startStr, end: endStr })
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                                showNotification('Jadwal diperbarui', 'success');
+                                calendar.refetchEvents();
+                            } else {
+                                info.revert();
+                                showNotification('Gagal update', 'error');
+                            }
+                        } catch (e) {
+                            info.revert();
+                            showNotification('Error koneksi', 'error');
+                        }
                     },
                     function() {
-                        // Revert logic
+                        // Cancelled by user -> revert
+                        info.revert();
                     },
                     'Konfirmasi Update'
                 );
-                    info.revert();
-                    return;
-                }
-
-                const eventId = info.event.extendedProps.event_id;
-                fetch(`/admin/kalender-akademik/event/${eventId}/date`, {
-                    method: 'PUT',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        start: startStr,
-                        end: endStr
-                    })
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            showNotification('Jadwal diperbarui', 'success');
-                            calendar.refetchEvents(); // Ensure visuals are synced with DB
-                        } else {
-                            info.revert();
-                            showNotification('Gagal update', 'error');
-                        }
-                    })
-                    .catch(() => {
-                        info.revert();
-                        showNotification('Error koneksi', 'error');
-                    });
             }
 
             // --- Modal Functions ---

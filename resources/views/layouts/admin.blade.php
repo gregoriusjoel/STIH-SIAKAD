@@ -176,7 +176,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900">
+<body class="bg-gray-100 dark:bg-gray-900 overflow-hidden">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         @include('admin.sidebar-admin')

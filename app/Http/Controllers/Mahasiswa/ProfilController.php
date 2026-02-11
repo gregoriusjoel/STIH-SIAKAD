@@ -252,6 +252,16 @@ class ProfilController extends Controller
             'file_ktp.*' => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
         ]);
 
+        // Require at least one source of contact: either parent (ayah/ibu) or wali
+        $hasParentName = filled($request->input('nama_ayah')) || filled($request->input('nama_ibu'));
+        $hasWaliName = filled($request->input('nama_wali'));
+
+        if (! $hasParentName && ! $hasWaliName) {
+            return back()
+                ->withErrors(['orang_tua_wali' => 'Mohon isi data Orang Tua (Nama Ayah atau Nama Ibu) atau isi data Wali.'])
+                ->withInput();
+        }
+
         // Update user
         $user->name = $request->name;
         $user->email = $request->email;
