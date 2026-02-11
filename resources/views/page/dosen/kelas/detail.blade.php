@@ -123,12 +123,12 @@
                     </a>
 
                     {{-- Button Silabus --}}
-                    @if($kelas->silabus)
-                        <a href="{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'silabus']) }}"
+@if($kelas->silabus)
+                        <button @click="openPreviewModal('{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'silabus']) }}?view=1', 'Silabus')"
                             class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-green-200 dark:border-green-700 text-green-600 dark:text-green-400 rounded-xl font-bold text-sm hover:bg-green-50 dark:hover:bg-green-900/30 transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[20px]">description</span>
                             Silabus
-                        </a>
+                        </button>
                     @else
                         <button @click="openUploadModal('silabus')"
                             class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
@@ -528,6 +528,55 @@
             </div>
         </div>
     </div>
+
+    {{-- Preview Modal --}}
+    <div x-show="showPreviewModal" 
+         x-cloak
+         class="fixed inset-0 z-[9999] overflow-hidden flex items-center justify-center p-4 px-4 md:px-8"
+         style="margin: 0 !important;"
+         @keydown.escape.window="closePreviewModal()">
+        
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+             @click="closePreviewModal()"></div>
+
+        <!-- Modal -->
+        <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col z-[10000]"
+             @click.stop
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100">
+            
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-slate-700">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">visibility</span>
+                    Preview <span x-text="previewTitle"></span>
+                </h3>
+                <div class="flex items-center gap-2">
+                    <a :href="previewUrl ? previewUrl.replace('?view=1', '') : '#'" 
+                       target="_blank"
+                       class="text-sm font-bold text-primary hover:text-primary-hover px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors">
+                        Download / Buka di Tab Baru
+                    </a>
+                    <button @click="closePreviewModal()"
+                            class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 bg-gray-50 dark:bg-slate-900 relative rounded-b-2xl overflow-hidden p-0">
+                <template x-if="showPreviewModal">
+                    <iframe :src="previewUrl" class="w-full h-full border-0" allowfullscreen></iframe>
+                </template>
+                <div x-show="!previewUrl" class="absolute inset-0 flex items-center justify-center text-gray-500">
+                    Loading...
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     @push('scripts')
@@ -593,6 +642,23 @@
                     closeUploadModal() {
                         this.showUploadModal = false;
                         this.uploadType = '';
+                    },
+
+                    // Preview Modal
+                    showPreviewModal: false,
+                    previewUrl: '',
+                    previewTitle: '',
+
+                    openPreviewModal(url, title) {
+                        this.previewUrl = url;
+                        this.previewTitle = title;
+                        this.showPreviewModal = true;
+                    },
+
+                    closePreviewModal() {
+                        this.showPreviewModal = false;
+                        this.previewUrl = '';
+                        this.previewTitle = '';
                     }
                 }
             }

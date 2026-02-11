@@ -53,47 +53,49 @@
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 translate-y-0"
                         x-transition:leave-end="opacity-0 translate-y-1"
-                        class="absolute right-0 mt-2 w-72 bg-white dark:bg-[#1a1d2e] rounded-xl border border-gray-200 dark:border-slate-700 shadow-xl z-50 p-4">
+                        style="width: 500px !important; max-width: 90vw;"
+                        class="absolute right-0 mt-2 bg-white dark:bg-[#1a1d2e] rounded-xl shadow-xl z-50 p-6 border border-gray-100 dark:border-slate-700">
 
-                        <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-sm font-bold text-gray-700 dark:text-white">Filter Kelas</h4>
+                        <div class="flex items-center justify-between mb-5">
+                            <h4 class="text-base font-bold text-gray-800 dark:text-white">Filter Kelas</h4>
                             <button @click="resetFilters()" class="text-xs text-primary hover:underline font-medium"
                                 x-show="activeFilterCount > 0">Reset</button>
                         </div>
 
                         {{-- Filter by Hari --}}
-                        <div class="mb-4">
-                            <label class="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">Hari</label>
-                            <div class="flex flex-wrap gap-1.5">
+                        <div class="mb-5">
+                            <label class="text-[11px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2.5 block">HARI</label>
+                            <div class="flex flex-wrap gap-2">
                                 <template x-for="day in availableDays" :key="day">
                                     <button @click="toggleDay(day)"
-                                        class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150"
+                                        class="px-4 py-2 bg-white dark:bg-slate-800 border rounded-lg text-sm font-medium transition-all duration-200"
                                         :class="selectedDays.includes(day)
-                                            ? 'bg-primary text-white border-primary shadow-sm'
-                                            : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:border-primary hover:text-primary'"
+                                            ? 'border-primary text-primary bg-primary/5 ring-1 ring-primary/20'
+                                            : 'border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'"
                                         x-text="day"></button>
                                 </template>
                             </div>
                         </div>
 
                         {{-- Filter by Kelas/Section --}}
-                        <div class="mb-3">
-                            <label class="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">Kelas</label>
-                            <div class="flex flex-wrap gap-1.5">
+                        <div class="mb-5">
+                            <label class="text-[11px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2.5 block">KELAS</label>
+                            <div class="flex flex-wrap gap-2">
                                 <template x-for="sec in availableSections" :key="sec">
                                     <button @click="toggleSection(sec)"
-                                        class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150"
+                                        class="px-4 py-2 bg-white dark:bg-slate-800 border rounded-lg text-sm font-medium transition-all duration-200"
                                         :class="selectedSections.includes(sec)
-                                            ? 'bg-primary text-white border-primary shadow-sm'
-                                            : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:border-primary hover:text-primary'"
+                                            ? 'border-primary text-primary bg-primary/5 ring-1 ring-primary/20'
+                                            : 'border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'"
                                         x-text="sec"></button>
                                 </template>
                             </div>
                         </div>
 
-                        <div class="pt-3 border-t border-gray-100 dark:border-slate-700">
+                        <div class="pt-4 border-t border-gray-100 dark:border-slate-700 mt-2">
                             <button @click="open = false"
-                                class="w-full py-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary-hover transition-colors">
+                                style="background-color: #A91D3C !important; color: white !important;"
+                                class="w-full py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-red-900/10 hover:opacity-90 transition-all">
                                 Terapkan
                             </button>
                         </div>

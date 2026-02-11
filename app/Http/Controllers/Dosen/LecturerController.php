@@ -1255,7 +1255,11 @@ class LecturerController extends Controller
                 'tipe' => $tipe,
                 'path' => $filePath
             ]);
-            abort(404, 'File tidak ditemukan.');
+            return back()->with('error', 'File dokumen tidak ditemukan (file fisik hilang). Silakan hubungi admin atau upload ulang.');
+        }
+
+        if (request()->has('view')) {
+            return response()->file($filePath);
         }
 
         return response()->download($filePath, $dokumen->nama_file);

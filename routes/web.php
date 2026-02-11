@@ -247,6 +247,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Kelas Mata Kuliah Management
     Route::resource('kelas-mata-kuliah', App\Http\Controllers\Admin\KelasMataKuliahController::class);
+    Route::get('kelas-mata-kuliah/{kelasId}/attendance', [App\Http\Controllers\Admin\KelasMataKuliahController::class, 'getAttendanceData'])->name('kelas-mata-kuliah.attendance');
 
     // Jadwal Management
     Route::resource('jadwal', App\Http\Controllers\Admin\JadwalController::class);

@@ -51,19 +51,6 @@
         </button>
         <ul class="mt-1 space-y-1 pb-2 sidebar-section hidden">
             <li>
-                @if(Route::has('admin.prodi.index'))
-                    <a href="{{ route('admin.prodi.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.prodi.*') ? 'active' : '' }}">
-                        <i class="fas fa-graduation-cap w-5 mr-3"></i>
-                        <span class="text-sm font-medium">Prodi</span>
-                    </a>
-                @else
-                    <a href="{{ url('/admin/prodi') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
-                        <i class="fas fa-graduation-cap w-5 mr-3"></i>
-                        <span class="text-sm font-medium">Prodi</span>
-                    </a>
-                @endif
-            </li>
-            <li>
                 @if(Route::has('admin.fakultas.index'))
                     <a href="{{ route('admin.fakultas.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.fakultas.*') ? 'active' : '' }}">
                         <i class="fas fa-university w-5 mr-3"></i>
@@ -73,6 +60,19 @@
                     <a href="{{ url('/admin/fakultas') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
                         <i class="fas fa-university w-5 mr-3"></i>
                         <span class="text-sm font-medium">Fakultas</span>
+                    </a>
+                @endif
+            </li>
+            <li>
+                @if(Route::has('admin.prodi.index'))
+                    <a href="{{ route('admin.prodi.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.prodi.*') ? 'active' : '' }}">
+                        <i class="fas fa-graduation-cap w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Prodi</span>
+                    </a>
+                @else
+                    <a href="{{ url('/admin/prodi') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
+                        <i class="fas fa-graduation-cap w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Prodi</span>
                     </a>
                 @endif
             </li>

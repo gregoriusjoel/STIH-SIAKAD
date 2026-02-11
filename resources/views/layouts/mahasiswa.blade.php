@@ -85,7 +85,7 @@
 <body class="bg-bg-body font-inter text-text-primary transition-colors duration-200" x-data="{ sidebarOpen: false }">
 
     <!-- Page Wrapper -->
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex min-h-screen bg-bg-body">
 
         <!-- Mobile Backdrop -->
         <div x-show="sidebarOpen" @click="sidebarOpen = false"
@@ -95,194 +95,13 @@
             class="fixed inset-0 bg-gray-900/80 z-40 lg:hidden" style="display: none;"></div>
 
         <!-- Sidebar -->
-        <aside
-            class="fixed inset-y-0 left-0 z-50 w-64 bg-bg-sidebar border-r border-border-color flex flex-col h-full shadow-sm transition-transform duration-300 transform lg:static lg:translate-x-0"
-            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
-            <div class="px-5 py-6 flex flex-col gap-8 h-full overflow-y-auto overflow-x-hidden scrollbar-thin">
-                <!-- Logo -->
-                <div class="flex items-center gap-3 px-1">
-                    <div
-                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8B1538] to-[#6D1029] flex items-center justify-center text-white shadow-lg shadow-maroon/20 shrink-0">
-                        <i class="fas fa-graduation-cap text-lg"></i>
-                    </div>
-                    <div class="flex flex-col min-w-0">
-                        <h1 class="text-text-primary text-sm font-bold leading-tight truncate">STIH Adhyaksa</h1>
-                        <p class="text-text-muted text-[10px] font-medium tracking-wide">STUDENT PORTAL</p>
-                    </div>
-                </div>
-
-                <!-- Navigation -->
-                <nav class="flex flex-col gap-1.5 grow" x-data="{ 
-                        openAkademik: {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'true' : 'false' }},
-                        openPengajuan: {{ Request::routeIs('mahasiswa.pengajuan*') ? 'true' : 'false' }} 
-                    }">
-
-                    {{-- Nav Item Template --}}
-                    @php
-                        $navItemClass = "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group";
-                        $activeClass = "bg-primary/10 text-primary font-semibold";
-                        $inactiveClass = "text-text-secondary hover:bg-bg-hover hover:text-text-primary";
-                    @endphp
-
-                    <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.dashboard') ? $activeClass : $inactiveClass }}"
-                        href="{{ route('mahasiswa.dashboard') }}">
-                        <i
-                            class="fas fa-home text-lg w-5 {{ Request::routeIs('mahasiswa.dashboard') ? 'text-primary' : 'text-text-muted group-hover:text-primary' }}"></i>
-                        <span class="text-sm">Dashboard</span>
-                    </a>
-
-                    <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.profil.manajemen') ? $activeClass : $inactiveClass }}"
-                        href="{{ route('mahasiswa.profil.manajemen') }}">
-                        <i
-                            class="fas fa-user-cog text-lg w-5 {{ Request::routeIs('mahasiswa.profil.manajemen') ? 'text-primary' : 'text-text-muted group-hover:text-primary' }}"></i>
-                        <span class="text-sm">Manajemen Profil</span>
-                    </a>
-
-                    <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.krs*') ? $activeClass : $inactiveClass }}"
-                        href="{{ route('mahasiswa.krs.index') }}">
-                        <i
-                            class="fas fa-file-alt text-lg w-5 {{ Request::routeIs('mahasiswa.krs*') ? 'text-primary' : 'text-text-muted group-hover:text-primary' }}"></i>
-                        <span class="text-sm">KRS</span>
-                    </a>
-
-                    <!-- Akademik Dropdown -->
-                    <div class="relative">
-                        <button @click="openAkademik = !openAkademik"
-                            class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'text-primary' : $inactiveClass }}">
-                            <div class="flex items-center gap-3">
-                                <i
-                                    class="fas fa-graduation-cap text-lg w-5 {{ Request::routeIs('mahasiswa.nilai*', 'mahasiswa.kelas*', 'mahasiswa.jadwal*', 'mahasiswa.perpustakaan*', 'mahasiswa.prestasi*') ? 'text-primary' : 'text-text-muted group-hover:text-primary' }}"></i>
-                                <span class="text-sm">Akademik</span>
-                            </div>
-                            <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
-                                :class="{'rotate-180': openAkademik}"></i>
-                        </button>
-
-                        <div x-show="openAkademik" x-collapse class="pl-12 pr-2 py-1 space-y-1">
-                            @foreach([
-                                    'mahasiswa.nilai.index' => ['label' => 'Kartu Hasil Studi', 'icon' => 'fa-chart-bar'],
-                                    'mahasiswa.jadwal.index' => ['label' => 'Jadwal Kelas', 'icon' => 'fa-calendar-alt'],
-                                    'mahasiswa.kelas.index' => ['label' => 'E-Learning', 'icon' => 'fa-laptop-code'],
-                                    'mahasiswa.perpustakaan.index' => ['label' => 'Perpustakaan', 'icon' => 'fa-book'],
-                                    'mahasiswa.prestasi.index' => ['label' => 'Prestasi Mahasiswa', 'icon' => 'fa-trophy'],
-                                ] as $route => $data)
-                                    <a class="block py-1.5 text-[13px] {{ Request::routeIs($route) ? 'text-[#8B1538] dark:text-red-400 font-bold' : 'text-[#6B7280] dark:text-slate-400 hover:text-[#1A1A1A] dark:hover:text-white' }} transition-colors"
-                                        href="{{ route($route) }}">
-                                        {{ $data['label'] }}
-                                    </a>
-                            @endforeach
-                        </div>
-                    </div>
-
-
-                                                       <!-- Pengajuan Dropdown -->
-                    <div class="relative">
-                        <button @click="openPengajuan = !openPengajuan"
-                            class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.pengajuan*') ? 'text-[#8B1538]' : $inactiveClass }}">
-                            <div class="flex items-center gap-3">
-                                <i class="fas fa-file-signature text-lg w-5 {{ Request::routeIs('mahasiswa.pengajuan*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
-                                <span class="text-sm">Pengajuan</span>
-                            </div>
-                        <i class="fas fa-chevron-down text-[10px] transition-transform duration-300"
-                            :class="{'rotate-180': openPengajuan}"></i>
-                    </button>
-                        <div x-show="openPengajuan" x-collapse class="pl-12 pr-2 py-1 space-y-1">
-                            @foreach([
-                                    'mahasiswa.pengajuan.sidang.index' => 'Pengajuan Sidang',
-                                    'mahasiswa.pengajuan.surat.index' => 'Pengajuan Surat',
-                                    'mahasiswa.pengajuan.yudisium.index' => 'Pengajuan Yudisium',
-                                ] as $route => $label)
-
-                                     <a class="block py-1.5 text-[13px] {{ Request::routeIs($route) ? 'text-[#8B1538] dark:text-red-400 font-bold' : 'text-[#6B7280] dark:text-slate-400 hover:text-[#1A1A1A] dark:hover:text-white' }} transition-colors"
-                                        href="{{ route($route) }}">
-                                        {{ $label }}
-                                    </a>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <a class="
-    {{ $navItemClass }} {{ Request::routeIs('mahasiswa.pembayaran*') ? $activeClass : $inactiveClass }}"
-                        href="{{ route('mahasiswa.pembayaran.index') }}">
-                        <i class="fas fa-credit-card text-lg w-5 {{ Request::routeIs('mahasiswa.pembayaran*') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
-                        <span class="text-sm">Pembayaran</span>
-                    </a>
-
-                    <!-- Top-level Pengajuan removed: use dropdown Pengajuan -> Pengajuan Surat -->
-
-                    <!-- Spacer -->
-                    <div class="mt-auto pt-6 pb-2 border-t border-gray-100 dark:border-slate-700">
-                        <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.profil.index') ? $activeClass : $inactiveClass }}"
-                            href="{{ route('mahasiswa.profil.index') }}">
-                            <i class="fas fa-user-circle text-lg w-5 {{ Request::routeIs('mahasiswa.profil.index') ? 'text-[#8B1538]' : 'text-[#9CA3AF] dark:text-slate-500 group-hover:text-[#8B1538]' }}"></i>
-                            <span class="text-sm">Profil</span>
-                        </a>
-
-                        <form method="POST" action="{{ route('logout') }}" class="w-full">
-                            @csrf
-                            <button type="submit"
-                                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[#DC2626] dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-medium">
-                                <i class="fas fa-sign-out-alt text-lg w-5"></i>
-                                <span class="text-sm">Logout</span>
-                            </button>
-                        </form>
-                    </div>
-                </nav>
-            </div>
-
-                       
-                               </aside>
+        @include('layouts.partials.sidebar-mahasiswa')
 
         <!-- Content Wrapper -->
-        <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        <div class="relative flex flex-col flex-1 overflow-hidden">
 
             <!-- Topbar -->
-
-                                        <header class="bg-white dark:bg-[#1a1d2e] border-b border-border-color px-4 sm:px-6 lg:px-8 py-3 shadow-sm sticky top-0 z-40 transition-colors duration-200">
-                <div class="flex items-center justify-between">
-                    <!-- Mobile Menu Button -->
-                    <button class="lg:hidden w-10 h-10 flex items-center justify-center text-text-secondary hover:bg-bg-hover rounded-lg transition-colors" @click="sidebarOpen = !sidebarOpen">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-
-                    <!-- Page Title / Branding -->
-                    <div class="flex items-center gap-4">
-                        <h2 class="text-lg font-extrabold text-text-primary tracking-tight">@yield('page-title', 'Dashboard')</h2>
-                    </div>
-
-                    <!-- Right Side -->
-                    <div class="flex items-center gap-4">
-                        <!-- Dark Mode Toggle - Simple Sun/Moon -->
-                        <label class="theme-switch">
-                            <input id="theme-toggle-input" type="checkbox" />
-                            <span class="theme-slider">
-                                <span class="theme-icon sun">☀️</span>
-                                <span class="theme-icon moon">🌙</span>
-                            </span>
-                        </label>
-
-                        <!-- User Dropdown (minimal) -->
-                        <div class="flex items-center gap-3 pl-4 border-l border-border-color">
-                            <div class="text-right hidden sm:block">
-                                <p class="text-sm font-bold text-text-primary">
-                                    
-                                  {{ Auth::user()->mahasiswa->nama ?? Auth::user()->name }}
-
-                                                                </p>
-                                <p class="text-[10px] text-[#9CA3AF] dark:text-slate-400 font-bold uppercase tracking-wider">
-                                    NIM: {{ Auth::user()->mahasiswa->nim ?? '-' }}
-                                </p>
-                            </div>
-                            <div class="relative">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B1538] to-[#6D1029] flex items-center justify-center text-white font-bold shadow-md border-2 border-white">
-                                    {{ substr(Auth::user()->name, 0, 1) }}
-                                </div>
-                                <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            @include('layouts.partials.navbar-mahasiswa')
 
             <script>
                 (function() {

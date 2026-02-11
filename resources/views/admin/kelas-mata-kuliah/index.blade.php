@@ -6,28 +6,39 @@
     showDetail: false,
     selectedKelasId: null,
     selectedMeeting: 1,
-    get searchDate() {
-        // Base date: 12 January 2026
-        let date = new Date('2026-01-12'); 
-        // Add 7 days for each subsequent meeting
-        date.setDate(date.getDate() + ((this.selectedMeeting - 1) * 7));
-        
-        return date.toLocaleDateString('id-ID', { 
-            day: 'numeric', 
-            month: 'long', 
-            year: 'numeric' 
-        });
-    },
+    loadingData: false,
+    attendanceData: null,
     toggleDetail(id) {
         if (this.selectedKelasId === id) {
             this.showDetail = !this.showDetail;
         } else {
             this.selectedKelasId = id;
             this.showDetail = true;
+            this.loadAttendanceData();
             this.$nextTick(() => $refs.detailCard.scrollIntoView({ behavior: 'smooth', block: 'start' }));
         }
+    },
+    loadAttendanceData() {
+        if (!this.selectedKelasId) return;
+        this.loadingData = true;
+        this.attendanceData = null; // Reset data
+        fetch(`/admin/kelas-mata-kuliah/${this.selectedKelasId}/attendance?pertemuan=${this.selectedMeeting}`)
+            .then(res => {
+                if (!res.ok) throw new Error('Server error: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                this.attendanceData = data;
+                this.loadingData = false;
+            })
+            .catch(err => {
+                console.error('Error loading attendance:', err);
+                this.attendanceData = null;
+                this.loadingData = false;
+                alert('Gagal memuat data kehadiran. Silakan coba lagi.');
+            });
     }
-}">
+}" x-init="$watch('selectedMeeting', () => { if (showDetail) loadAttendanceData(); })">
     <div class="mb-6 flex items-start justify-between">
         <div>
             <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-chalkboard-teacher text-maroon mr-2"></i>Daftar Kelas Mata Kuliah</h3>
@@ -86,6 +97,12 @@
                 <option value="8">Pertemuan 8</option>
                 <option value="9">Pertemuan 9</option>
                 <option value="10">Pertemuan 10</option>
+                <option value="11">Pertemuan 11</option>
+                <option value="12">Pertemuan 12</option>
+                <option value="13">Pertemuan 13</option>
+                <option value="14">Pertemuan 14</option>
+                <option value="15">Pertemuan 15</option>
+                <option value="16">Pertemuan 16</option>
             </select>
         </div>
     </div>
@@ -96,28 +113,32 @@
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tanggal</p>
             <p class="font-bold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-calendar-day text-gray-400"></i>
-                <span x-text="searchDate"></span>
+                <span x-show="!loadingData && attendanceData?.pertemuan?.tanggal" x-text="attendanceData?.pertemuan?.tanggal ? new Date(attendanceData.pertemuan.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'"></span>
+                <span x-show="loadingData || !attendanceData?.pertemuan?.tanggal">-</span>
             </p>
         </div>
         <div>
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Waktu</p>
             <p class="font-bold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-clock text-gray-400"></i>
-                08:00 - 10:30 WIB
+                <span x-show="!loadingData && attendanceData?.jadwal" x-text="`${attendanceData?.jadwal?.jam_mulai || '-'} - ${attendanceData?.jadwal?.jam_selesai || '-'} WIB`"></span>
+                <span x-show="loadingData || !attendanceData?.jadwal">-</span>
             </p>
         </div>
         <div>
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Ruangan</p>
             <p class="font-bold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-door-open text-gray-400"></i>
-                R.101 (Lantai 1)
+                <span x-show="!loadingData" x-text="attendanceData?.jadwal?.ruangan || '-'"></span>
+                <span x-show="loadingData">-</span>
             </p>
         </div>
         <div>
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Materi / Topik</p>
             <p class="font-bold text-gray-800 flex items-center gap-2">
                 <i class="fas fa-book-open text-gray-400"></i>
-                Pengenalan Ilmu Hukum
+                <span x-show="!loadingData" x-text="attendanceData?.materi_topik || '-'"></span>
+                <span x-show="loadingData">-</span>
             </p>
         </div>
     </div>
@@ -134,23 +155,60 @@
                 </tr>
             </thead>
                 <tbody class="divide-y divide-gray-200">
-                    <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                             <div class="flex flex-col items-center justify-center">
-                                <i class="fas fa-user-slash text-4xl text-gray-300 mb-3"></i>
-                                <p class="text-gray-500 font-medium">Tidak ada mahasiswa terdaftar di kelas ini.</p>
-                             </div>
-                        </td>
-                    </tr>
+                    <!-- Loading State -->
+                    <template x-if="loadingData">
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fas fa-spinner fa-spin text-4xl text-gray-300 mb-3"></i>
+                                    <p class="text-gray-500 font-medium">Memuat data...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                    
+                    <!-- No Data State -->
+                    <template x-if="!loadingData && (!attendanceData || !attendanceData.students || attendanceData.students.length === 0)">
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fas fa-user-slash text-4xl text-gray-300 mb-3"></i>
+                                    <p class="text-gray-500 font-medium">Tidak ada mahasiswa terdaftar di kelas ini.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                    
+                    <!-- Data Rows -->
+                    <template x-if="!loadingData && attendanceData?.students && attendanceData.students.length > 0">
+                        <template x-for="student in attendanceData.students" :key="student.nim">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 text-sm text-gray-900" x-text="student.no"></td>
+                                <td class="px-6 py-3">
+                                    <div class="text-sm font-semibold text-gray-900" x-text="student.nama"></div>
+                                </td>
+                                <td class="px-6 py-3 text-sm text-gray-600" x-text="student.nim"></td>
+                                <td class="px-6 py-3 text-center">
+                                    <span :class="{
+                                        'bg-green-100 text-green-800': student.status === 'hadir',
+                                        'bg-red-100 text-red-800': student.status === 'tidak hadir',
+                                        'bg-yellow-100 text-yellow-800': student.status === 'izin',
+                                        'bg-gray-100 text-gray-800': student.status !== 'hadir' && student.status !== 'tidak hadir' && student.status !== 'izin'
+                                    }" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold" x-text="student.status.toUpperCase()"></span>
+                                </td>
+                                <td class="px-6 py-3 text-center text-sm text-gray-600" x-text="student.waktu_scan"></td>
+                            </tr>
+                        </template>
+                    </template>
                 </tbody>
             </table>
         </div>
         <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
-             <div class="text-xs text-gray-500">Menampilkan 0 dari 0 mahasiswa</div>
-            <div class="flex gap-1">
-                 <button class="px-3 py-1 rounded border border-gray-200 text-xs font-bold text-gray-500 bg-white hover:text-gray-800 disabled:opacity-50" disabled>Prev</button>
-                 <button class="px-3 py-1 rounded border border-gray-200 text-xs font-bold text-gray-500 bg-white hover:text-gray-800" disabled>Next</button>
-            </div>
+             <div class="text-xs text-gray-500">
+                <span x-show="!loadingData" x-text="`Menampilkan ${attendanceData?.students?.length || 0} dari ${attendanceData?.total_students || 0} mahasiswa`"></span>
+                <span x-show="loadingData">Memuat...</span>
+                <span x-show="!loadingData && attendanceData && typeof attendanceData.total_hadir !== 'undefined'" class="ml-4 font-semibold text-green-600" x-text="`Hadir: ${attendanceData?.total_hadir || 0}`"></span>
+             </div>
         </div>
     </div>
 </div>

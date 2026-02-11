@@ -9,6 +9,10 @@ use App\Models\Dosen;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\Semester;
+use App\Models\Pertemuan;
+use App\Models\Presensi;
+use App\Models\Krs;
+use App\Models\Materi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -18,6 +22,98 @@ class KelasMataKuliahController extends Controller
     {
         $kelasMatKul = KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])->paginate(10);
         return view('admin.kelas-mata-kuliah.index', compact('kelasMatKul'));
+    }
+    
+    /**
+     * Get attendance data for specific class and meeting
+     */
+    public function getAttendanceData(Request $request, $kelasId)
+    {
+        $pertemuanNo = $request->input('pertemuan', 1);
+        
+        $kelas = KelasMataKuliah::with(['mataKuliah', 'jadwal', 'dosen.user', 'ruangan'])
+            ->findOrFail($kelasId);
+        
+        // Get pertemuan data
+        $pertemuan = Pertemuan::where('kelas_mata_kuliah_id', $kelasId)
+            ->where('nomor_pertemuan', $pertemuanNo)
+            ->first();
+        
+        // Get schedule for this class
+        $jadwal = $kelas->jadwal;
+        
+        // Get all students enrolled in this class
+        $students = Krs::where('kelas_mata_kuliah_id', $kelasId)
+            ->with(['mahasiswa.user'])
+            ->get();
+        
+        // Get attendance records for this meeting
+        $attendances = Presensi::where('kelas_mata_kuliah_id', $kelasId)
+            ->where('pertemuan', $pertemuanNo)
+            ->get()
+            ->keyBy('mahasiswa_id');
+        
+        // Get materi for this meeting
+        $materis = Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('dosen_id', $kelas->dosen_id)
+            ->where('pertemuan', $pertemuanNo)
+            ->get();
+        
+        // Build student list with attendance status
+        $studentData = $students->map(function($krs, $index) use ($attendances) {
+            $mahasiswa = $krs->mahasiswa;
+            $attendance = $attendances->get($mahasiswa->id);
+            
+            return [
+                'no' => $index + 1,
+                'nama' => $mahasiswa->user->name ?? '-',
+                'nim' => $mahasiswa->nim ?? '-',
+                'status' => $attendance ? $attendance->status : 'tidak hadir',
+                'waktu_scan' => $attendance && $attendance->waktu ? $attendance->waktu->format('H:i:s') : '-',
+            ];
+        });
+        
+        // Format room display
+        $roomDisplay = '-';
+        if ($jadwal) {
+            if (isset($jadwal->ruangan) && is_object($jadwal->ruangan)) {
+                // Ruangan relationship loaded
+                $roomDisplay = $jadwal->ruangan->kode_ruangan;
+                if ($jadwal->ruangan->lantai) {
+                    $roomDisplay .= ' (Lantai ' . $jadwal->ruangan->lantai . ')';
+                }
+            } elseif ($jadwal->ruangan && is_string($jadwal->ruangan)) {
+                // String field from jadwal
+                $roomDisplay = $jadwal->ruangan;
+            }
+        }
+        
+        // Fallback to kelas ruang if no jadwal room found
+        if ($roomDisplay === '-' && $kelas->ruang) {
+            $roomDisplay = $kelas->ruang;
+        }
+        
+        // Get materi/topik display
+        $materiTopik = '-';
+        if ($materis->isNotEmpty()) {
+            $materiTopik = $materis->first()->judul;
+        } elseif ($pertemuan && $pertemuan->topik) {
+            $materiTopik = $pertemuan->topik;
+        }
+        
+        return response()->json([
+            'pertemuan' => $pertemuan,
+            'jadwal' => $jadwal ? [
+                'jam_mulai' => $jadwal->jam_mulai,
+                'jam_selesai' => $jadwal->jam_selesai,
+                'ruangan' => $roomDisplay,
+                'hari' => $jadwal->hari,
+            ] : null,
+            'materi_topik' => $materiTopik,
+            'students' => $studentData,
+            'total_students' => $students->count(),
+            'total_hadir' => $attendances->where('status', 'hadir')->count(),
+        ]);
     }
 
     public function create()
