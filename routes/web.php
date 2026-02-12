@@ -172,12 +172,15 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
         Route::get('/manajemen-profil', [ProfilController::class, 'manajemen'])->name('profil.manajemen');
         Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+        Route::put('/profil/foto', [ProfilController::class, 'updateFoto'])->name('profil.update-foto');
         Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.update-password');
 
         // Menu Pengajuan
         Route::prefix('pengajuan')->name('pengajuan.')->group(function () {
             Route::get('/', [PengajuanController::class, 'index'])->name('index');
             Route::post('/', [PengajuanController::class, 'store'])->name('store');
+            Route::get('/{pengajuan}/download', [PengajuanController::class, 'download'])->name('download');
+            Route::get('/{pengajuan}/preview', [PengajuanController::class, 'preview'])->name('preview');
             Route::view('/sidang', 'errors.503')->name('sidang.index');
             // Route 'surat' should show the same pengajuan page (surat submissions)
             Route::get('/surat', [PengajuanController::class, 'index'])->name('surat.index');
@@ -224,6 +227,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('dosen/{dosen}/toggle-status', [App\Http\Controllers\Admin\DosenController::class, 'toggleStatus'])->name('dosen.toggle-status');
     Route::resource('dosen-pa', App\Http\Controllers\Admin\DosenPaController::class);
     Route::get('dosen-pa/{id}/mahasiswa', [App\Http\Controllers\Admin\DosenPaController::class, 'getMahasiswa'])->name('dosen-pa.mahasiswa');
+
+    // Admin Password Verification (for sensitive actions)
+    Route::post('verify-password', function (\Illuminate\Http\Request $request) {
+        $request->validate(['password' => 'required|string']);
+        if (\Illuminate\Support\Facades\Hash::check($request->password, $request->user()->password)) {
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'Password salah.'], 422);
+    })->name('verify-password');
 
     // Parent Management
     Route::resource('parents', App\Http\Controllers\Admin\ParentController::class);
@@ -324,6 +336,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('krs/{kr}/status', [App\Http\Controllers\Admin\KrsController::class, 'updateStatus'])->name('krs.updateStatus');
     Route::post('krs/mahasiswa/{mahasiswa}/reopen', [App\Http\Controllers\Admin\KrsController::class, 'reopenForStudent'])->name('krs.reopen');
     Route::delete('krs/{kr}', [App\Http\Controllers\Admin\KrsController::class, 'destroy'])->name('krs.destroy');
+
+    // Pengajuan Management (Surat Mahasiswa)
+    Route::prefix('pengajuan')->name('pengajuan.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\PengajuanController::class, 'index'])->name('index');
+        Route::get('/{pengajuan}', [App\Http\Controllers\Admin\PengajuanController::class, 'show'])->name('show');
+        Route::post('/{pengajuan}/approve', [App\Http\Controllers\Admin\PengajuanController::class, 'approve'])->name('approve');
+        Route::post('/{pengajuan}/reject', [App\Http\Controllers\Admin\PengajuanController::class, 'reject'])->name('reject');
+        Route::get('/{pengajuan}/download', [App\Http\Controllers\Admin\PengajuanController::class, 'download'])->name('download');
+        Route::get('/{pengajuan}/preview', [App\Http\Controllers\Admin\PengajuanController::class, 'preview'])->name('preview');
+    });
 
     // Import Data Management
     Route::prefix('import')->name('import.')->group(function () {

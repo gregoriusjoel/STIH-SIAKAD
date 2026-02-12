@@ -168,12 +168,12 @@
                 @if(Route::has('admin.parents.index'))
                     <a href="{{ route('admin.parents.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.parents.*') ? 'active' : '' }}">
                         <i class="fas fa-user-friends w-5 mr-3"></i>
-                        <span class="text-sm font-medium">Data Parent</span>
+                        <span class="text-sm font-medium">Data Orang Tua</span>
                     </a>
                 @else
                     <a href="{{ url('/admin/parent') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
                         <i class="fas fa-user-friends w-5 mr-3"></i>
-                        <span class="text-sm font-medium">Data Parent</span>
+                        <span class="text-sm font-medium">Data Orang Tua</span>
                     </a>
                 @endif
             </li>
@@ -224,6 +224,27 @@
                     <a href="{{ url('/admin/krs') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40">
                         <i class="fas fa-file-alt w-5 mr-3"></i>
                         <span class="text-sm font-medium">Manajemen KRS</span>
+                    </a>
+                @endif
+            </li>
+            <li>
+                @if(Route::has('admin.pengajuan.index'))
+                    <a href="{{ route('admin.pengajuan.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.pengajuan.*') ? 'active' : '' }}">
+                        <i class="fas fa-file-signature w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Pengajuan Surat</span>
+                        @php
+                            $pendingCount = \App\Models\Pengajuan::where('status', 'pending')->count();
+                        @endphp
+                        @if($pendingCount > 0)
+                            <span class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                {{ $pendingCount }}
+                            </span>
+                        @endif
+                    </a>
+                @else
+                    <a href="{{ url('/admin/pengajuan') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40">
+                        <i class="fas fa-file-signature w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Pengajuan Surat</span>
                     </a>
                 @endif
             </li>

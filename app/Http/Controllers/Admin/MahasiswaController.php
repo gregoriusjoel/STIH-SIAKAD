@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Krs;
 use App\Models\Mahasiswa;
+use App\Models\Prodi;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -27,7 +28,8 @@ class MahasiswaController extends Controller
      */
     public function create()
     {
-        return view('admin.mahasiswa.create');
+        $prodis = Prodi::where('status', 'aktif')->orderBy('nama_prodi')->get();
+        return view('admin.mahasiswa.create', compact('prodis'));
     }
 
     /**
@@ -79,7 +81,8 @@ class MahasiswaController extends Controller
      */
     public function edit(Mahasiswa $mahasiswa)
     {
-        return view('admin.mahasiswa.edit', compact('mahasiswa'));
+        $prodis = Prodi::where('status', 'aktif')->orderBy('nama_prodi')->get();
+        return view('admin.mahasiswa.edit', compact('mahasiswa', 'prodis'));
     }
 
     /**

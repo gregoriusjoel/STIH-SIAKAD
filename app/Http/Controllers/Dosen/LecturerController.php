@@ -1200,24 +1200,41 @@ class LecturerController extends Controller
                 ->where('tipe_dokumen', $tipeDokumen)
                 ->first();
 
-            // Delete old file if exists
-            if ($existingDoc) {
-                Storage::disk('public')->delete($existingDoc->path_file);
-                $existingDoc->delete();
-            }
-
-            // Store new file
+            // Generate new filename & store file terlebih dahulu
             $fileName = $tipeDokumen . '_' . $kelas->id . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('dokumen', $fileName, 'public');
 
-            // Create database record
-            DokumenKelas::create([
-                'kelas_id' => $kelas->id,
-                'tipe_dokumen' => $tipeDokumen,
-                'nama_file' => $file->getClientOriginalName(),
-                'path_file' => $path,
-                'uploaded_by' => auth()->user()->id,
-            ]);
+            if ($existingDoc) {
+                // Hapus file lama secara aman (abaikan jika gagal, jangan gagalkan upload baru)
+                if (!empty($existingDoc->path_file)) {
+                    try {
+                        Storage::disk('public')->delete($existingDoc->path_file);
+                    } catch (\Throwable $deleteError) {
+                        Log::warning('Gagal menghapus file dokumen lama', [
+                            'kelas_id' => $kelas->id,
+                            'tipe_dokumen' => $tipeDokumen,
+                            'path_file' => $existingDoc->path_file,
+                            'error' => $deleteError->getMessage(),
+                        ]);
+                    }
+                }
+
+                // Update record yang sudah ada
+                $existingDoc->update([
+                    'nama_file' => $file->getClientOriginalName(),
+                    'path_file' => $path,
+                    'uploaded_by' => auth()->user()->id,
+                ]);
+            } else {
+                // Buat record baru jika belum ada
+                DokumenKelas::create([
+                    'kelas_id' => $kelas->id,
+                    'tipe_dokumen' => $tipeDokumen,
+                    'nama_file' => $file->getClientOriginalName(),
+                    'path_file' => $path,
+                    'uploaded_by' => auth()->user()->id,
+                ]);
+            }
 
             Log::info('Document uploaded successfully', [
                 'kelas_id' => $kelas->id,
@@ -1259,7 +1276,11 @@ class LecturerController extends Controller
         }
 
         if (request()->has('view')) {
-            return response()->file($filePath);
+            return response()->file($filePath, [
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ]);
         }
 
         return response()->download($filePath, $dokumen->nama_file);

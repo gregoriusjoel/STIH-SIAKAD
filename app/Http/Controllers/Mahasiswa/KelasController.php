@@ -52,7 +52,7 @@ class KelasController extends Controller
                 'sks' => $krs->mataKuliah->sks,
                 'semester' => $krs->mataKuliah->semester,
                 'section' => $kelas ? $kelas->section : '-',
-                'dosen' => $dosen ? $dosen->name : 'Belum ditentukan',
+                'dosen' => $dosen ? $dosen->nama : 'Belum ditentukan',
                 'hari' => $jadwal ? $jadwal->hari : '-',
                 'jam' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
                 'ruangan' => $jadwal ? $jadwal->ruangan : '-',
@@ -114,6 +114,11 @@ class KelasController extends Controller
 
         for ($i = 1; $i <= $totalPertemuan; $i++) {
             $meetingDate = $startDate->copy()->addDays(($i - 1) * 7);
+
+            // Skip future meetings - only show meetings that have occurred or are happening today
+            if ($meetingDate->isAfter(now()->endOfDay())) {
+                continue;
+            }
 
             // Find attendance for this specific date/meeting
             // Since we don't have 'pertemuan_ke' in Presensi, we might match by date range or just assume 
@@ -211,7 +216,7 @@ class KelasController extends Controller
             'sks' => $kelas->mataKuliah->sks,
             'semester' => $kelas->mataKuliah->semester,
             'section' => $kelas->section,
-            'dosen' => $kelas->dosen->name ?? 'Belum ditentukan',
+            'dosen' => $kelas->dosen->nama ?? 'Belum ditentukan',
             'day' => $jadwal ? $jadwal->hari : '-',
             'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
             'room' => $jadwal ? $jadwal->ruangan : '-',

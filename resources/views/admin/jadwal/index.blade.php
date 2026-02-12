@@ -224,8 +224,11 @@
                                                               }
                                                               const select = document.querySelector('select[name=jam_perkuliahan_id]');
                                                               const option = select.options[select.selectedIndex];
-                                                              this.jamMulai = option.dataset.mulai || '';
-                                                              this.jamSelesai = option.dataset.selesai || '';
+                                                              const mulai = option.dataset.mulai || '';
+                                                              const selesai = option.dataset.selesai || '';
+                                                              // Normalize to H:i (strip seconds if present)
+                                                              this.jamMulai = mulai.length > 5 ? mulai.substring(0, 5) : mulai;
+                                                              this.jamSelesai = selesai.length > 5 ? selesai.substring(0, 5) : selesai;
                                                           },
 
                                                           async fetchDosens() {
@@ -286,6 +289,17 @@
                                                           }
                                                       }">
                 @csrf
+                {{-- Hidden inputs for jam_mulai and jam_selesai --}}
+                <input type="hidden" name="jam_mulai" :value="jamMulai">
+                <input type="hidden" name="jam_selesai" :value="jamSelesai">
+
+                {{-- Error message for schedule conflict --}}
+                @if(session('error'))
+                    <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
+                        <i class="fas fa-exclamation-circle mt-0.5 text-red-500"></i>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                @endif
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
@@ -701,6 +715,11 @@
                     closeTambahJadwalModal();
                 }
             });
+
+            // Auto-open modal if there's a schedule conflict error
+            @if(session('error'))
+                openTambahJadwalModal();
+            @endif
 
             // SweetAlert Delete Confirmation
             document.querySelectorAll('.delete-form').forEach(form => {

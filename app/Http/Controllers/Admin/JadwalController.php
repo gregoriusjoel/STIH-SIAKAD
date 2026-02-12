@@ -491,8 +491,8 @@ class JadwalController extends Controller
     {
         $request->validate([
             'hari' => 'required|string',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required',
             'ruangan_id' => 'nullable|exists:ruangans,id',
             'ruangan' => 'nullable|string',
             'ignore_id' => 'nullable|integer'
@@ -502,6 +502,10 @@ class JadwalController extends Controller
         $mulai = $request->jam_mulai;
         $selesai = $request->jam_selesai;
         $ignoreId = $request->ignore_id;
+
+        // Normalize to H:i format (strip seconds if present)
+        if (strlen($mulai) > 5) $mulai = substr($mulai, 0, 5);
+        if (strlen($selesai) > 5) $selesai = substr($selesai, 0, 5);
 
         // If ruangan_id is provided, get the kode_ruangan
         if ($request->ruangan_id) {
@@ -518,7 +522,7 @@ class JadwalController extends Controller
             ]);
         }
 
-        // Cek clash: Check both old ruang field and new ruangan_id relationship
+        // 1. Check KelasMataKuliah table
         $query = \App\Models\KelasMataKuliah::where('hari', $hari)
             ->where(function($q) use ($ruangan, $request) {
                 $q->where('ruang', $ruangan);
@@ -544,6 +548,54 @@ class JadwalController extends Controller
                     ($conflict->dosen->user->name ?? 'Dosen') .
                     " (" . ($conflict->mataKuliah->nama_mk ?? '-') . ") " .
                     "pukul " . substr($conflict->jam_mulai, 0, 5) . "-" . substr($conflict->jam_selesai, 0, 5)
+            ]);
+        }
+
+        // 2. Check Jadwal table (active schedules)
+        $jadwalConflict = Jadwal::where('hari', $hari)
+            ->where('ruangan', $ruangan)
+            ->where('status', 'active')
+            ->where(function ($q) use ($mulai, $selesai) {
+                $q->where('jam_mulai', '<', $selesai)
+                    ->where('jam_selesai', '>', $mulai);
+            })
+            ->with(['kelas.mataKuliah', 'kelas.dosen'])
+            ->first();
+
+        if ($jadwalConflict) {
+            $dosenName = $jadwalConflict->kelas->dosen->name ?? 'Dosen';
+            $mkName = $jadwalConflict->kelas->mataKuliah->nama_mk ?? '-';
+            return response()->json([
+                'available' => false,
+                'message' => "Ruangan $ruangan sudah terpakai oleh $dosenName ($mkName) " .
+                    "pukul " . substr($jadwalConflict->jam_mulai, 0, 5) . "-" . substr($jadwalConflict->jam_selesai, 0, 5)
+            ]);
+        }
+
+        // 3. Check JadwalProposal table (approved/pending proposals)
+        $proposalConflict = \App\Models\JadwalProposal::where('hari', $hari)
+            ->where(function($q) use ($ruangan, $request) {
+                $q->where('ruangan', $ruangan);
+                if ($request->ruangan_id) {
+                    $q->orWhere('ruangan_id', $request->ruangan_id);
+                }
+            })
+            ->whereIn('status', ['approved_dosen', 'approved_admin', 'pending_admin'])
+            ->where(function ($q) use ($mulai, $selesai) {
+                $q->where('jam_mulai', '<', $selesai)
+                    ->where('jam_selesai', '>', $mulai);
+            })
+            ->with(['mataKuliah', 'dosen.user'])
+            ->first();
+
+        if ($proposalConflict) {
+            $dosenName = $proposalConflict->dosen->user->name ?? 'Dosen';
+            $mkName = $proposalConflict->mataKuliah->nama_mk ?? '-';
+            return response()->json([
+                'available' => false,
+                'message' => "Ruangan $ruangan sudah terpakai oleh $dosenName ($mkName) " .
+                    "pukul " . substr($proposalConflict->jam_mulai, 0, 5) . "-" . substr($proposalConflict->jam_selesai, 0, 5) .
+                    " (dari proposal jadwal)"
             ]);
         }
 

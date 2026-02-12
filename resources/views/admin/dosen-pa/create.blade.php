@@ -6,12 +6,17 @@
 @section('content')
 <div class="w-full">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
-        <div class="p-6 border-b border-gray-200 bg-maroon text-white">
-            <h3 class="text-xl font-bold flex items-center">
-                <i class="fas fa-user-tie mr-3 text-2xl"></i>
-                Form Tambah Dosen PA
-            </h3>
-            <p class="text-sm mt-1 text-white text-opacity-90">Tetapkan Dosen Pembimbing Akademik untuk Mahasiswa</p>
+        <div class="p-6 border-b border-gray-200 bg-maroon text-white flex justify-between items-center">
+            <div>
+                <h3 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-user-tie mr-3 text-2xl"></i>
+                    Form Tambah Dosen PA
+                </h3>
+                <p class="text-sm mt-1 text-white text-opacity-90">Tetapkan Dosen Pembimbing Akademik untuk Mahasiswa</p>
+            </div>
+            <button type="button" id="customSlotBtn" class="px-3 py-1 bg-white text-maroon rounded-md text-xs font-bold hover:bg-gray-100 transition shadow-sm flex items-center gap-1">
+                <i class="fas fa-cog"></i> Custom Slot
+            </button>
         </div>
 
         <form action="{{ route('admin.dosen-pa.store') }}" method="POST" class="p-6">
@@ -57,6 +62,7 @@
                                     @endphp
                                     <option value="{{ $dosen->id }}"
                                         data-count="{{ $count }}"
+                                        data-name="{{ $dosen->user->name }}"
                                         data-prodi='@json($dosen->prodi)'
                                         {{ $isFull ? 'disabled' : '' }}
                                         {{ old('dosen_id') == $dosen->id ? 'selected' : '' }}
@@ -68,7 +74,7 @@
                             @error('dosen_id')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
-                            <p class="text-xs text-gray-500 mt-1">Dosen dengan status "PENUH" sudah mencapai batas 6 mahasiswa.</p>
+                            <p id="dosenCapacityHint" class="text-xs text-gray-500 mt-1">Dosen dengan status "PENUH" sudah mencapai batas 6 mahasiswa.</p>
                         </div>
 
                         <!-- Dropdown Mahasiswa -->
@@ -154,7 +160,7 @@
     @push('scripts')
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const MAX_PER_DOSEN = 6;
+        let MAX_PER_DOSEN = 6; // Changed to let to allow customization
         const dosenSelect = document.querySelector('select[name="dosen_id"]');
         const container = document.getElementById('mahasiswaContainer');
         const addBtn = document.getElementById('addMahasiswaBtn');
@@ -162,6 +168,90 @@
         const slotsInfo = document.getElementById('slotsInfo');
         const form = document.querySelector('form');
         const submitBtn = form.querySelector('button[type="submit"]');
+        const customSlotBtn = document.getElementById('customSlotBtn');
+
+        // Custom Slot Button Logic
+        customSlotBtn.addEventListener('click', function() {
+            Swal.fire({
+                title: 'Atur Batas Slot',
+                text: `Masukkan batas maksimal mahasiswa per Dosen PA (Saat ini: ${MAX_PER_DOSEN})`,
+                input: 'number',
+                inputValue: MAX_PER_DOSEN,
+                showCancelButton: true,
+                confirmButtonText: 'Lanjutkan',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#8B1538',
+                inputValidator: (value) => {
+                    if (!value || value < 1) {
+                        return 'Harap masukkan angka yang valid (minimal 1)!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const newSlot = parseInt(result.value);
+                    // Step 2: Ask for admin password
+                    Swal.fire({
+                        title: 'Konfirmasi Password',
+                        text: 'Masukkan password akun admin untuk menyimpan perubahan slot.',
+                        input: 'password',
+                        inputPlaceholder: 'Password admin...',
+                        showCancelButton: true,
+                        confirmButtonText: 'Simpan',
+                        cancelButtonText: 'Batal',
+                        confirmButtonColor: '#8B1538',
+                        showLoaderOnConfirm: true,
+                        inputValidator: (value) => {
+                            if (!value) return 'Password tidak boleh kosong!';
+                        },
+                        preConfirm: (password) => {
+                            return fetch('{{ route("admin.verify-password") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({ password: password })
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(data => {
+                                        throw new Error(data.message || 'Password salah.');
+                                    });
+                                }
+                                return response.json();
+                            })
+                            .catch(error => {
+                                Swal.showValidationMessage(error.message);
+                            });
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    }).then((pwResult) => {
+                        if (pwResult.isConfirmed) {
+                            MAX_PER_DOSEN = newSlot;
+
+                            // Trim excess mahasiswa rows if current count exceeds new slot limit
+                            const occupied = getDosenCount();
+                            const maxAllowed = Math.max(0, MAX_PER_DOSEN - occupied);
+                            const rows = Array.from(container.querySelectorAll('.mahasiswa-row'));
+                            while (rows.length > maxAllowed) {
+                                rows.pop().remove();
+                            }
+
+                            updateSlots();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: `Batas slot berhasil diubah menjadi ${MAX_PER_DOSEN}`,
+                                confirmButtonColor: '#8B1538',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+                }
+            });
+        });
 
         function getDosenCount() {
             const opt = dosenSelect.options[dosenSelect.selectedIndex];
@@ -185,6 +275,21 @@
             }
             // Keep addBtn enabled so we can show an alert when user attempts to add beyond quota
             addBtn.disabled = false;
+
+            // Update dosen dropdown options text and disabled state to reflect current MAX_PER_DOSEN
+            Array.from(dosenSelect.options).forEach(opt => {
+                if (!opt.value) return; // skip placeholder
+                const count = parseInt(opt.dataset.count || '0', 10);
+                const name = opt.dataset.name || '';
+                const isFull = count >= MAX_PER_DOSEN;
+                opt.textContent = `${name} (${count}/${MAX_PER_DOSEN})${isFull ? ' - PENUH' : ''}`;
+                opt.disabled = isFull;
+                opt.className = isFull ? 'text-gray-400' : '';
+            });
+
+            // Update hint text
+            const hint = document.getElementById('dosenCapacityHint');
+            if (hint) hint.textContent = `Dosen dengan status "PENUH" sudah mencapai batas ${MAX_PER_DOSEN} mahasiswa.`;
         }
 
         function syncOptions() {
@@ -277,11 +382,11 @@
                     Swal.fire({
                         icon: 'warning',
                         title: 'Slot penuh',
-                        text: 'Slot sudah penuh untuk dosen ini. Hapus pilihan atau pilih dosen lain.',
+                        text: 'Slot sudah penuh. Hapus pilihan atau custom slot.',
                         confirmButtonColor: '#8B1538'
                     });
                 } else {
-                    showError('Slot sudah penuh untuk dosen ini. Hapus pilihan atau pilih dosen lain.');
+                    showError('Slot sudah penuh. Hapus pilihan atau custom slot.');
                 }
                 return;
             }

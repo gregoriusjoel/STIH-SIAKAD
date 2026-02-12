@@ -63,12 +63,12 @@
         }
 
         .input-group input:focus {
-            box-shadow: 0 0 0 3px rgba(178, 32, 44, 0.1);
-            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
+            border-color: #800020;
         }
 
         .input-group input:focus + .input-icon {
-            color: var(--color-primary);
+            color: #800020;
         }
 
         .input-icon {
@@ -126,18 +126,36 @@
 
         /* Custom checkbox */
         input[type="checkbox"] {
-            accent-color: var(--color-primary);
+            accent-color: #800020;
             cursor: pointer;
         }
 
         input[type="checkbox"]:checked {
-            background-color: var(--color-primary);
-            border-color: var(--color-primary);
+            background-color: #800020;
+            border-color: #800020;
         }
 
         input[type="checkbox"]:focus {
-            ring-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(178, 32, 44, 0.2);
+            ring-color: #800020;
+            box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.2);
+        }
+
+        /* Logo shine animation */
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(30deg);
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(30deg);
+            }
+        }
+
+        .logo-container:hover .logo-shine {
+            animation: shine 0.6s ease-in-out;
+        }
+
+        .logo-shine {
+            pointer-events: none;
         }
 
         /* Custom scrollbar */
@@ -155,7 +173,32 @@
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--color-primary-dark);
+            background: #600018;
+        }
+
+        /* Explicit Maroon Classes */
+        .bg-maroon {
+            background-color: #800020 !important;
+        }
+
+        .text-maroon {
+            color: #800020 !important;
+        }
+
+        .border-maroon {
+            border-color: #800020 !important;
+        }
+
+        .hover\:bg-maroon-dark:hover {
+            background-color: #600018 !important;
+        }
+
+        .focus\:ring-maroon:focus {
+            --tw-ring-color: rgba(128, 0, 32, 0.3) !important;
+        }
+
+        .focus\:border-maroon:focus {
+            border-color: #800020 !important;
         }
     </style>
 </head>
@@ -169,12 +212,10 @@
             <div class="text-center mb-10">
                 <div class="flex justify-center mb-5">
                     <div class="logo-container relative cursor-pointer">
-                        <!-- Outer Glow -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-dark/20 rounded-2xl blur-xl"></div>
                         <!-- Middle Ring -->
-                        <div class="relative bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl p-1 shadow-lg">
+                        <div class="relative bg-white rounded-2xl p-1 shadow-lg">
                             <!-- Inner Logo Box -->
-                            <div class="logo-box w-20 h-20 bg-gradient-to-br from-primary via-primary to-primary-dark rounded-xl flex items-center justify-center shadow-inner relative overflow-hidden">
+                            <div class="logo-box w-20 h-20 bg-maroon rounded-xl flex items-center justify-center shadow-inner relative overflow-hidden">
                                 <!-- Shine Effect -->
                                 <div class="logo-shine absolute inset-0 w-full h-full bg-gradient-to-br from-transparent via-white/30 to-transparent"></div>
                                 <img src="{{ asset('images/logo_stih_white.png') }}" alt="STIH Logo" class="w-12 h-12 relative z-10 drop-shadow-lg">
@@ -220,7 +261,7 @@
                             id="email" 
                             name="email" 
                             value="{{ old('email') }}"
-                            class="w-full px-4 py-3.5 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:border-primary bg-gray-50 @error('email') border-red-500 bg-red-50 @enderror" 
+                            class="w-full px-4 py-3.5 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:border-maroon bg-gray-50 @error('email') border-red-500 bg-red-50 @enderror" 
                             placeholder="your.email@example.com"
                             autocomplete="email"
                             required
@@ -244,7 +285,7 @@
                             type="password" 
                             id="password" 
                             name="password" 
-                            class="w-full px-4 py-3.5 pl-12 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-primary bg-gray-50 @error('password') border-red-500 bg-red-50 @enderror" 
+                            class="w-full px-4 py-3.5 pl-12 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-maroon bg-gray-50 @error('password') border-red-500 bg-red-50 @enderror" 
                             placeholder="Enter your password"
                             autocomplete="current-password"
                             required>
@@ -252,7 +293,7 @@
                         <button 
                             type="button" 
                             id="togglePassword"
-                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary transition-colors duration-200 focus:outline-none"
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-maroon transition-colors duration-200 focus:outline-none"
                             title="Show/Hide Password">
                             <i class="fas fa-eye" id="eyeIcon"></i>
                         </button>
@@ -267,7 +308,7 @@
                 <!-- Remember Me -->
                 <div class="flex items-center mb-7">
                     <label class="flex items-center cursor-pointer group">
-                        <input type="checkbox" name="remember" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-2 focus:ring-primary">
+                        <input type="checkbox" name="remember" class="w-4 h-4 text-maroon border-gray-300 rounded focus:ring-2 focus:ring-maroon">
                         <span class="ml-2 text-sm text-gray-600 group-hover:text-gray-900">Remember me</span>
                     </label>
                 </div>
@@ -275,7 +316,7 @@
                 <!-- Submit Button -->
                 <button 
                     type="submit" 
-                    class="btn-login w-full bg-gradient-to-r from-primary to-primary-dark text-white font-semibold py-3.5 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-30">
+                    class="btn-login w-full bg-maroon hover:bg-maroon-dark text-white font-semibold py-3.5 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-maroon focus:ring-opacity-30">
                     <i class="fas fa-sign-in-alt mr-2"></i>
                     Sign In
                 </button>

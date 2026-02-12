@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProfilController extends Controller
 {
@@ -406,5 +407,32 @@ class ProfilController extends Controller
         ]);
 
         return back()->with('success', 'Password berhasil diubah!');
+    }
+
+    public function updateFoto(Request $request)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $user = Auth::user();
+        $mahasiswa = $user->mahasiswa;
+
+        if ($request->hasFile('foto')) {
+            // Delete old foto if exists
+            if ($mahasiswa->foto) {
+                Storage::disk('public')->delete($mahasiswa->foto);
+            }
+
+            $fotoPath = $request->file('foto')->store('mahasiswa/foto', 'public');
+            
+            $mahasiswa->update([
+                'foto' => $fotoPath
+            ]);
+
+            return back()->with('success', 'Foto profil berhasil diperbarui!');
+        }
+
+        return back()->with('error', 'Gagal mengupload foto.');
     }
 }

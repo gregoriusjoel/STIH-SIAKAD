@@ -1,106 +1,79 @@
 <aside
-    class="fixed inset-y-0 left-0 z-50 w-64
-    bg-bg-sidebar border border-border-color
-    flex flex-col overflow-hidden
-
-    /* floating card style */
-    lg:sticky lg:top-6
-    lg:m-6
-    lg:h-[calc(100vh-3rem)]
-    lg:rounded-[36px]
-    shadow-xl
-
-    transition-transform duration-300 transform
-    lg:translate-x-0
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-[#1f1616] flex flex-col md:sticky md:top-0 md:h-screen shadow-xl md:shadow-none transition-transform duration-300 transform md:translate-x-0"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
 
-    <div class="px-6 py-7 flex flex-col gap-7 h-full overflow-y-auto overflow-x-hidden scrollbar-thin">
-
-        <!-- Logo -->
-        <div class="flex items-center gap-3 px-1">
-            <div
-                class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8B1538] to-[#6D1029]
-                flex items-center justify-center text-white shadow-lg shrink-0">
-                <i class="fas fa-graduation-cap text-lg"></i>
-            </div>
-
-            <div class="flex flex-col min-w-0">
-                <h1 class="text-text-primary text-sm font-bold truncate">
-                    STIH Adhyaksa
-                </h1>
-                <p class="text-text-muted text-[10px] font-medium tracking-wide">
-                    STUDENT PORTAL
-                </p>
-            </div>
+    {{-- Header --}}
+    <div class="h-16 flex items-center gap-3 px-6 border-b border-white/10 bg-[#8B1538] dark:bg-[#3a0a1a]">
+        <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white shadow-sm border border-white/20 shrink-0">
+             <img src="{{ asset('images/logo_stih_white.png') }}" alt="STIH" class="w-6 h-6 object-contain">
         </div>
+        <div class="flex flex-col min-w-0">
+            <h1 class="text-white text-sm font-bold truncate leading-tight drop-shadow-sm">
+                STIH Adhyaksa
+            </h1>
+            <p class="text-white/70 text-[10px] font-medium tracking-wider uppercase">
+                Student Portal
+            </p>
+        </div>
+    </div>
 
-        <!-- Navigation -->
-        <nav class="flex flex-col gap-2 grow"
-            x-data="{
-                openAkademik: {{ Request::routeIs('mahasiswa.nilai*','mahasiswa.kelas*','mahasiswa.jadwal*','mahasiswa.perpustakaan*','mahasiswa.prestasi*') ? 'true' : 'false' }},
-                openPengajuan: {{ Request::routeIs('mahasiswa.pengajuan*') ? 'true' : 'false' }}
-            }">
+    {{-- Navigation --}}
+    <div class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar py-6 px-4 space-y-1 border-r border-gray-100 dark:border-gray-800">
+        
+        @php
+            $navItemClass = "group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-medium text-sm relative overflow-hidden";
+            $activeClass = "bg-gradient-to-r from-[#8B1538] to-[#6D1029] text-white shadow-md shadow-red-900/20";
+            $inactiveClass = "text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-[#8B1538] dark:hover:text-red-400";
+        @endphp
 
-            @php
-            $navItemClass = "flex items-center gap-4 px-5 py-3.5 rounded-xl
-            transition-all duration-300 hover:translate-x-1 hover:shadow-sm group";
+        <div x-data="{
+            openAkademik: {{ Request::routeIs('mahasiswa.nilai*','mahasiswa.kelas*','mahasiswa.jadwal*','mahasiswa.perpustakaan*','mahasiswa.prestasi*') ? 'true' : 'false' }},
+            openPengajuan: {{ Request::routeIs('mahasiswa.pengajuan*') ? 'true' : 'false' }}
+        }" class="space-y-1">
 
-            $activeClass = "bg-primary/10 text-primary font-semibold";
-            $inactiveClass = "text-text-secondary hover:bg-bg-hover hover:text-text-primary";
-            @endphp
-
-            <!-- Dashboard -->
-            <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.dashboard') ? $activeClass : $inactiveClass }}"
-                href="{{ route('mahasiswa.dashboard') }}">
-                <i class="fas fa-home w-5 text-lg
-                    {{ Request::routeIs('mahasiswa.dashboard')
-                        ? 'text-primary'
-                        : 'text-text-muted group-hover:text-primary' }}"></i>
-                <span class="text-sm">Dashboard</span>
+            {{-- Dashboard --}}
+            <a href="{{ route('mahasiswa.dashboard') }}"
+               class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.dashboard') ? $activeClass : $inactiveClass }}">
+                <i class="fas fa-home w-5 text-center transition-transform group-hover:scale-110"></i>
+                <span class="tracking-wide">Dashboard</span>
+                @if(Request::routeIs('mahasiswa.dashboard'))
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white/20 rounded-l-full"></div>
+                @endif
             </a>
 
-            <!-- Profil -->
-            <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.profil.manajemen') ? $activeClass : $inactiveClass }}"
-                href="{{ route('mahasiswa.profil.manajemen') }}">
-                <i class="fas fa-user-cog w-5 text-lg
-                    {{ Request::routeIs('mahasiswa.profil.manajemen')
-                        ? 'text-primary'
-                        : 'text-text-muted group-hover:text-primary' }}"></i>
-                <span class="text-sm">Manajemen Profil</span>
+            {{-- Profil --}}
+            <a href="{{ route('mahasiswa.profil.manajemen') }}"
+               class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.profil.manajemen') ? $activeClass : $inactiveClass }}">
+                <i class="fas fa-user-cog w-5 text-center transition-transform group-hover:scale-110"></i>
+                <span class="tracking-wide">Manajemen Profil</span>
             </a>
 
-            <!-- KRS -->
-            <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.krs*') ? $activeClass : $inactiveClass }}"
-                href="{{ route('mahasiswa.krs.index') }}">
-                <i class="fas fa-file-alt w-5 text-lg
-                    {{ Request::routeIs('mahasiswa.krs*')
-                        ? 'text-primary'
-                        : 'text-text-muted group-hover:text-primary' }}"></i>
-                <span class="text-sm">KRS</span>
-            </a>
+            {{-- KRS --}}
+            <a href="{{ route('mahasiswa.krs.index') }}"
+                class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.krs*') ? $activeClass : $inactiveClass }}">
+                 <i class="fas fa-file-alt w-5 text-center transition-transform group-hover:scale-110"></i>
+                 <span class="tracking-wide">KRS</span>
+             </a>
 
-            <!-- Akademik Dropdown -->
+            {{-- Separator --}}
+            <div class="pt-4 pb-2">
+                <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Akademik</p>
+            </div>
+
+            {{-- Akademik Dropdown --}}
             <div>
                 <button @click="openAkademik=!openAkademik"
-                    class="w-full flex items-center justify-between
-                    {{ $navItemClass }}
-                    {{ Request::routeIs('mahasiswa.nilai*','mahasiswa.kelas*','mahasiswa.jadwal*','mahasiswa.perpustakaan*','mahasiswa.prestasi*')
-                        ? 'text-primary'
-                        : $inactiveClass }}">
-
-                    <div class="flex items-center gap-4">
-                        <i class="fas fa-graduation-cap w-5 text-lg"></i>
-                        <span class="text-sm">Akademik</span>
+                    class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.nilai*','mahasiswa.kelas*','mahasiswa.jadwal*','mahasiswa.perpustakaan*','mahasiswa.prestasi*') ? 'bg-red-50 dark:bg-red-900/10 text-[#8B1538] dark:text-red-400 font-bold' : $inactiveClass }}">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-graduation-cap w-5 text-center"></i>
+                        <span class="tracking-wide">Akademik</span>
                     </div>
-
-                    <i class="fas fa-chevron-down text-[10px]
-                        transition-transform duration-300"
-                        :class="{'rotate-180':openAkademik}"></i>
+                    <i class="fas fa-chevron-right text-[10px] transition-transform duration-300"
+                       :class="{'rotate-90':openAkademik}"></i>
                 </button>
 
-                <div x-show="openAkademik" x-collapse
-                    class="pl-14 pr-2 py-1 space-y-2">
-
+                <div x-show="openAkademik" x-collapse x-cloak
+                     class="mt-1 ml-4 pl-4 border-l-2 border-gray-100 dark:border-gray-800 space-y-1">
                     @foreach([
                         'mahasiswa.nilai.index'=>'Kartu Hasil Studi',
                         'mahasiswa.jadwal.index'=>'Jadwal Kelas',
@@ -108,87 +81,87 @@
                         'mahasiswa.perpustakaan.index'=>'Perpustakaan',
                         'mahasiswa.prestasi.index'=>'Prestasi Mahasiswa',
                     ] as $route=>$label)
-
-                    <a href="{{ route($route) }}"
-                        class="block py-2 text-[13px]
-                        {{ Request::routeIs($route)
-                            ? 'text-[#8B1538] font-bold'
-                            : 'text-[#6B7280] hover:text-black' }}">
-                        {{ $label }}
-                    </a>
-
+                        <a href="{{ route($route) }}"
+                           class="block px-4 py-2 text-xs rounded-lg transition-colors
+                           {{ Request::routeIs($route) ? 'text-[#8B1538] dark:text-red-400 font-bold bg-red-50 dark:bg-red-900/10' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
+                            {{ $label }}
+                        </a>
                     @endforeach
                 </div>
             </div>
 
-            <!-- Pengajuan Dropdown -->
-            <div>
+             {{-- Pengajuan Dropdown --}}
+             <div>
                 <button @click="openPengajuan=!openPengajuan"
-                    class="w-full flex items-center justify-between
-                    {{ $navItemClass }}
-                    {{ Request::routeIs('mahasiswa.pengajuan*'). 
-                        ? 'text-primary'
-                        : $inactiveClass }}">
-
-                    <div class="flex items-center gap-4">
-                        <i class="fas fa-file-signature w-5 text-lg"></i>
-                        <span class="text-sm">Pengajuan</span>
+                    class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.pengajuan*') ? 'bg-red-50 dark:bg-red-900/10 text-[#8B1538] dark:text-red-400 font-bold' : $inactiveClass }}">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-file-signature w-5 text-center"></i>
+                        <span class="tracking-wide">Pengajuan</span>
                     </div>
-
-                    <i class="fas fa-chevron-down text-[10px]
-                        transition-transform duration-300"
-                        :class="{'rotate-180':openPengajuan}"></i>
+                    <i class="fas fa-chevron-right text-[10px] transition-transform duration-300"
+                       :class="{'rotate-90':openPengajuan}"></i>
                 </button>
 
-                <div x-show="openPengajuan" x-collapse
-                    class="pl-14 pr-2 py-1 space-y-2">
-
+                <div x-show="openPengajuan" x-collapse x-cloak
+                     class="mt-1 ml-4 pl-4 border-l-2 border-gray-100 dark:border-gray-800 space-y-1">
                     @foreach([
                         'mahasiswa.pengajuan.sidang.index'=>'Pengajuan Sidang',
                         'mahasiswa.pengajuan.surat.index'=>'Pengajuan Surat',
                         'mahasiswa.pengajuan.yudisium.index'=>'Pengajuan Yudisium',
                     ] as $route=>$label)
-
-                    <a href="{{ route($route) }}"
-                        class="block py-2 text-[13px]
-                        {{ Request::routeIs($route)
-                            ? 'text-[#8B1538] font-bold'
-                            : 'text-[#6B7280] hover:text-black' }}">
-                        {{ $label }}
-                    </a>
-
+                        <a href="{{ route($route) }}"
+                           class="block px-4 py-2 text-xs rounded-lg transition-colors
+                           {{ Request::routeIs($route) ? 'text-[#8B1538] dark:text-red-400 font-bold bg-red-50 dark:bg-red-900/10' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
+                            {{ $label }}
+                        </a>
                     @endforeach
                 </div>
             </div>
 
-            <!-- Pembayaran -->
-            <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.pembayaran*') ? $activeClass : $inactiveClass }}"
-                href="{{ route('mahasiswa.pembayaran.index') }}">
-                <i class="fas fa-credit-card w-5 text-lg"></i>
-                <span class="text-sm">Pembayaran</span>
-            </a>
-
-            <!-- Footer -->
-            <div class="mt-auto pt-5 pb-4 border-t border-border-color/60">
-
-                <a class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.profil.index') ? $activeClass : $inactiveClass }}"
-                    href="{{ route('mahasiswa.profil.index') }}">
-                    <i class="fas fa-user-circle w-5 text-lg"></i>
-                    <span class="text-sm">Profil</span>
-                </a>
-
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit"
-                        class="w-full flex items-center gap-4 px-5 py-3.5 rounded-xl
-                        text-red-600 hover:bg-red-50 transition-all hover:translate-x-1">
-                        <i class="fas fa-sign-out-alt w-5 text-lg"></i>
-                        <span class="text-sm">Logout</span>
-                    </button>
-                </form>
-
+            {{-- Separator --}}
+            <div class="pt-4 pb-2">
+                <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Keuangan</p>
             </div>
 
-        </nav>
+            {{-- Pembayaran --}}
+            <a href="{{ route('mahasiswa.pembayaran.index') }}"
+                class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.pembayaran*') ? $activeClass : $inactiveClass }}">
+                 <i class="fas fa-credit-card w-5 text-center transition-transform group-hover:scale-110"></i>
+                 <span class="tracking-wide">Pembayaran</span>
+             </a>
+
+        </div>
     </div>
+
+    {{-- Footer --}}
+    <div class="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-black/20 border-r border-gray-100 dark:border-gray-800">
+        
+        {{-- Profile Card --}}
+        <a href="{{ route('mahasiswa.profil.index') }}" class="flex items-center gap-3 mb-3 px-3 py-2 rounded-xl hover:bg-white dark:hover:bg-white/5 transition border border-transparent hover:border-gray-200 dark:hover:border-gray-700 group">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B1538] to-[#6D1029] text-white flex items-center justify-center font-bold shadow-sm shrink-0">
+                @if(Auth::user()->mahasiswa && Auth::user()->mahasiswa->foto)
+                    <img src="{{ asset('storage/' . Auth::user()->mahasiswa->foto) }}" alt="Foto" class="w-full h-full rounded-full object-cover">
+                @else
+                    {{ substr(Auth::user()->mahasiswa->nama ?? Auth::user()->name, 0, 1) }}
+                @endif
+            </div>
+            <div class="overflow-hidden">
+                <p class="text-sm font-bold text-gray-700 dark:text-gray-200 truncate group-hover:text-[#8B1538] dark:group-hover:text-red-400 transition">
+                    {{ Auth::user()->mahasiswa->nama ?? Auth::user()->name }}
+                </p>
+                <p class="text-[10px] text-gray-500 dark:text-gray-400 truncate flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online
+                </p>
+            </div>
+        </a>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                class="group w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white dark:hover:bg-red-900/80 transition-all shadow-sm hover:shadow-red-600/20">
+                <i class="fas fa-sign-out-alt w-5 text-center transition-transform group-hover:-translate-x-1"></i>
+                <span class="font-semibold text-sm">Logout</span>
+            </button>
+        </form>
+    </div>
+
 </aside>

@@ -145,7 +145,10 @@ class Mahasiswa extends Model
         $semesterNumber = $this->getCurrentSemester();
 
         // Try to get the active semester record for additional metadata
-        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+        // Priority: status='aktif' -> is_active=true -> latest
+        $activeSemester = \App\Models\Semester::where('status', 'aktif')->first() 
+            ?? \App\Models\Semester::where('is_active', true)->first()
+            ?? \App\Models\Semester::latest()->first();
 
         $tahunAjaran = $activeSemester->tahun_ajaran ?? null;
         $namaSemester = $activeSemester->nama_semester ?? (($semesterNumber % 2 === 1) ? 'Ganjil' : 'Genap');

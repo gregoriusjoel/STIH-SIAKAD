@@ -168,22 +168,22 @@
                                                     </div>
                                                 @endif
                                             </div>
-                                            @if($kelas->metode_pengajaran === 'online' && $kelas->online_link)
+                                            @if($kelas->display_metode === 'online' && $kelas->display_online_link)
                                                 <div class="flex items-center gap-1 text-xs text-blue-600 mt-0.5">
                                                     <span class="material-symbols-outlined text-[14px]">videocam</span>
-                                                    <a href="{{ $kelas->online_link }}" target="_blank" class="hover:underline truncate max-w-[180px]" title="{{ $kelas->online_link }}">
+                                                    <a href="{{ $kelas->display_online_link }}" target="_blank" class="hover:underline truncate max-w-[180px]" title="{{ $kelas->display_online_link }}">
                                                         Link Meeting
                                                     </a>
                                                 </div>
-                                            @elseif($kelas->metode_pengajaran === 'asynchronous')
+                                            @elseif($kelas->display_metode === 'asynchronous')
                                                 <div class="flex items-center gap-1 text-xs text-purple-600 mt-0.5">
                                                     <span class="material-symbols-outlined text-[14px]">menu_book</span>
                                                     Asynchronous (Tugas Mandiri)
                                                 </div>
-                                                @if($kelas->asynchronous_file)
+                                                @if($kelas->display_asynchronous_file)
                                                     <div class="flex items-center gap-1 text-xs text-red-600 mt-0.5">
                                                         <span class="material-symbols-outlined text-[14px]">picture_as_pdf</span>
-                                                        <a href="{{ asset($kelas->asynchronous_file) }}" target="_blank" class="hover:underline font-semibold">
+                                                        <a href="{{ asset($kelas->display_asynchronous_file) }}" target="_blank" class="hover:underline font-semibold">
                                                             Lihat File PDF
                                                         </a>
                                                     </div>
@@ -194,10 +194,8 @@
                                                     {{ $kelas->display_ruang ?: 'Belum ditentukan' }}
                                                 </div>
                                             @endif
-                                            <!-- Reschedule Button (only show if not already rescheduled this week and no pending request) -->
-                                            @if($kelas->is_rescheduled)
-                                                {{-- Already rescheduled badge shown above --}}
-                                            @elseif($kelas->has_pending_reschedule)
+                                            <!-- Reschedule Button (always show, even if already rescheduled this week) -->
+                                            @if($kelas->has_pending_reschedule)
                                                 <div class="mt-2">
                                                     <span
                                                         class="inline-flex items-center gap-1 px-3 py-1.5 bg-yellow-100 text-yellow-700 border border-yellow-300 rounded-md text-xs font-semibold">
@@ -213,9 +211,11 @@
                                                                     id: {{ $kelas->id }},
                                                                     mata_kuliah: '{{ $kelas->mataKuliah->nama_mk }}',
                                                                     kode_kelas: '{{ $kelas->kode_kelas }}',
-                                                                    hari: '{{ $kelas->hari }}',
-                                                                    jam_mulai: '{{ $kelas->jam_mulai ? substr($kelas->jam_mulai, 0, 5) : '' }}',
-                                                                    jam_selesai: '{{ $kelas->jam_selesai ? substr($kelas->jam_selesai, 0, 5) : '' }}'
+                                                                    sks: {{ $kelas->mataKuliah->sks }},
+                                                                    hari: '{{ $kelas->display_hari }}',
+                                                                    metode_pengajaran: '{{ $kelas->display_metode ?? 'offline' }}',
+                                                                    online_link: '{{ $kelas->display_online_link ?? '' }}',
+                                                                    asynchronous_tugas: '{{ $kelas->display_asynchronous_tugas ?? '' }}'
                                                                 })">
                                                         <span class="material-symbols-outlined text-[14px]">calendar_month</span>
                                                         Reschedule
@@ -285,7 +285,7 @@
                         <input type="hidden" name="kelas_mata_kuliah_id" :value="rescheduleData.id">
                         <input type="hidden" name="week_offset" value="{{ $weekOffset }}">
 
-                        <!-- Mata Kuliah -->
+                        <!-- Mata Kuliah & SKS Info -->
                         <div>
                             <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
                                 Mata Kuliah
@@ -293,6 +293,18 @@
                             <input type="text" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
                         rounded-lg bg-gray-100 dark:bg-slate-800 text-sm"
                                 :value="rescheduleData.mata_kuliah + ' (' + rescheduleData.kode_kelas + ')'" readonly>
+                        </div>
+
+                        <!-- SKS Display -->
+                        <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-lg">schedule</span>
+                                <span class="text-blue-700 dark:text-blue-300">
+                                    <strong x-text="rescheduleData.sks"></strong> SKS = 
+                                    <strong x-text="rescheduleData.sks"></strong> Slot Jam Perkuliahan 
+                                    (<span x-text="rescheduleData.sks * 45"></span> menit)
+                                </span>
+                            </div>
                         </div>
 
                         <!-- Hari -->
@@ -309,26 +321,38 @@
                             </select>
                         </div>
 
-                        <!-- Jam -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
-                                    Jam Mulai <span class="text-red-500">*</span>
-                                </label>
-                                <input type="time" name="new_jam_mulai" x-model="rescheduleData.jam_mulai"
-                                    @change="checkRoomAvailability()" required class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
-                            rounded-lg bg-white dark:bg-slate-800 text-sm
-                            focus:outline-none focus:ring-1 focus:ring-[#8B1538]">
-                            </div>
+                        <!-- Jam Perkuliahan Dropdown -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
+                                Jam Perkuliahan <span class="text-red-500">*</span>
+                            </label>
+                            <select name="jam_perkuliahan_start_id" x-model="rescheduleData.jam_perkuliahan_start_id" 
+                                @change="updateCalculatedTime(); checkRoomAvailability()" 
+                                class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
+                                rounded-lg bg-white dark:bg-slate-800 text-sm
+                                focus:outline-none focus:ring-1 focus:ring-[#8B1538]" required>
+                                <option value="">Pilih Jam Mulai</option>
+                                @foreach($jamPerkuliahans as $jam)
+                                    <option value="{{ $jam->id }}" 
+                                        data-jam-ke="{{ $jam->jam_ke }}"
+                                        data-jam-mulai="{{ $jam->jam_mulai }}"
+                                        data-jam-selesai="{{ $jam->jam_selesai }}">
+                                        Jam {{ $jam->jam_ke }} ({{ substr($jam->jam_mulai, 0, 5) }} - {{ substr($jam->jam_selesai, 0, 5) }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                            <div>
-                                <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
-                                    Jam Selesai <span class="text-red-500">*</span>
-                                </label>
-                                <input type="time" name="new_jam_selesai" x-model="rescheduleData.jam_selesai"
-                                    @change="checkRoomAvailability()" required class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
-                            rounded-lg bg-white dark:bg-slate-800 text-sm
-                            focus:outline-none focus:ring-1 focus:ring-[#8B1538]">
+                        <!-- Calculated Time Display -->
+                        <div x-show="rescheduleData.jam_perkuliahan_start_id && rescheduleData.calculated_jam_selesai" 
+                            x-cloak
+                            class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-lg">check_circle</span>
+                                <span class="text-green-700 dark:text-green-300">
+                                    Waktu terjadwal: <strong x-text="rescheduleData.calculated_jam_mulai"></strong> - 
+                                    <strong x-text="rescheduleData.calculated_jam_selesai"></strong>
+                                </span>
                             </div>
                         </div>
 
@@ -465,8 +489,8 @@
                             </button>
 
                             <button type="submit"
-                                :disabled="!( (rescheduleData.metode_pengajaran !== 'offline' || rescheduleData.ruang) && rescheduleData.hari && rescheduleData.jam_mulai && rescheduleData.jam_selesai && (rescheduleData.metode_pengajaran !== 'online' || rescheduleData.online_link) && (rescheduleData.metode_pengajaran !== 'asynchronous' || rescheduleData.asynchronous_tugas) )"
-                                :class="{'opacity-50 cursor-not-allowed': !( (rescheduleData.metode_pengajaran !== 'offline' || rescheduleData.ruang) && rescheduleData.hari && rescheduleData.jam_mulai && rescheduleData.jam_selesai && (rescheduleData.metode_pengajaran !== 'online' || rescheduleData.online_link) && (rescheduleData.metode_pengajaran !== 'asynchronous' || rescheduleData.asynchronous_tugas) ) }"
+                                :disabled="!( (rescheduleData.metode_pengajaran !== 'offline' || rescheduleData.ruang) && rescheduleData.hari && rescheduleData.jam_perkuliahan_start_id && rescheduleData.calculated_jam_mulai && rescheduleData.calculated_jam_selesai && (rescheduleData.metode_pengajaran !== 'online' || rescheduleData.online_link) && (rescheduleData.metode_pengajaran !== 'asynchronous' || rescheduleData.asynchronous_tugas) )"
+                                :class="{'opacity-50 cursor-not-allowed': !( (rescheduleData.metode_pengajaran !== 'offline' || rescheduleData.ruang) && rescheduleData.hari && rescheduleData.jam_perkuliahan_start_id && rescheduleData.calculated_jam_mulai && rescheduleData.calculated_jam_selesai && (rescheduleData.metode_pengajaran !== 'online' || rescheduleData.online_link) && (rescheduleData.metode_pengajaran !== 'asynchronous' || rescheduleData.asynchronous_tugas) ) }"
                                 class="px-5 py-2 rounded-lg bg-[#8B1538] text-white text-sm font-semibold shadow hover:opacity-90">
                                 Ubah Jadwal
                             </button>
@@ -605,9 +629,11 @@
                         id: '',
                         mata_kuliah: '',
                         kode_kelas: '',
+                        sks: 0,
                         hari: '',
-                        jam_mulai: '',
-                        jam_selesai: '',
+                        jam_perkuliahan_start_id: '',
+                        calculated_jam_mulai: '',
+                        calculated_jam_selesai: '',
                         ruang: '',
                         metode_pengajaran: 'offline',
                         online_link: '',
@@ -625,8 +651,56 @@
                         return '/dosen/kelas/reschedule';
                     },
                     openRescheduleModal(kelas) {
-                        this.rescheduleData = { ...kelas, ruang: '', metode_pengajaran: 'offline', online_link: '', asynchronous_tugas: '' };
+                        this.rescheduleData = {
+                            ...kelas,
+                            sks: kelas.sks || 0,
+                            jam_perkuliahan_start_id: '',
+                            calculated_jam_mulai: '',
+                            calculated_jam_selesai: '',
+                            ruang: '',
+                            metode_pengajaran: kelas.metode_pengajaran || 'offline',
+                            online_link: kelas.online_link || '',
+                            asynchronous_tugas: kelas.asynchronous_tugas || ''
+                        };
                         this.showRescheduleModal = true;
+                    },
+
+                    updateCalculatedTime() {
+                        if (!this.rescheduleData.jam_perkuliahan_start_id || !this.rescheduleData.sks) {
+                            this.rescheduleData.calculated_jam_mulai = '';
+                            this.rescheduleData.calculated_jam_selesai = '';
+                            return;
+                        }
+
+                        // Get selected option element
+                        const select = document.querySelector('select[name=jam_perkuliahan_start_id]');
+                        const selectedOption = select.options[select.selectedIndex];
+                        
+                        if (!selectedOption || !selectedOption.value) {
+                            this.rescheduleData.calculated_jam_mulai = '';
+                            this.rescheduleData.calculated_jam_selesai = '';
+                            return;
+                        }
+
+                        const startJamKe = parseInt(selectedOption.getAttribute('data-jam-ke'));
+                        const startJamMulai = selectedOption.getAttribute('data-jam-mulai');
+                        
+                        // Find the end slot based on SKS
+                        const endJamKe = startJamKe + this.rescheduleData.sks - 1;
+                        
+                        // Find the option for the end slot
+                        const allOptions = Array.from(select.options);
+                        const endOption = allOptions.find(opt => parseInt(opt.getAttribute('data-jam-ke')) === endJamKe);
+                        
+                        if (endOption) {
+                            const endJamSelesai = endOption.getAttribute('data-jam-selesai');
+                            this.rescheduleData.calculated_jam_mulai = startJamMulai.substring(0, 5);
+                            this.rescheduleData.calculated_jam_selesai = endJamSelesai.substring(0, 5);
+                        } else {
+                            // Not enough consecutive slots
+                            this.rescheduleData.calculated_jam_mulai = '';
+                            this.rescheduleData.calculated_jam_selesai = '';
+                        }
                     },
 
                     onMetodeChange() {
@@ -646,7 +720,7 @@
 
                     // Check if a room is available for the selected day and time
                     isRoomAvailable(room) {
-                        if (!this.rescheduleData.hari || !this.rescheduleData.jam_mulai || !this.rescheduleData.jam_selesai) {
+                        if (!this.rescheduleData.hari || !this.rescheduleData.calculated_jam_mulai || !this.rescheduleData.calculated_jam_selesai) {
                             return true; // Show all as available if time not selected yet
                         }
 
@@ -656,8 +730,8 @@
                             if (s.hari !== this.rescheduleData.hari) return false;
 
                             // Check time overlap: (StartA < EndB) && (EndA > StartB)
-                            return s.jam_mulai < this.rescheduleData.jam_selesai &&
-                                s.jam_selesai > this.rescheduleData.jam_mulai;
+                            return s.jam_mulai < this.rescheduleData.calculated_jam_selesai &&
+                                s.jam_selesai > this.rescheduleData.calculated_jam_mulai;
                         });
 
                         return !conflict;
@@ -665,7 +739,7 @@
 
                     // Get conflict info for tooltip
                     getRoomConflict(room) {
-                        if (!this.rescheduleData.hari || !this.rescheduleData.jam_mulai || !this.rescheduleData.jam_selesai) {
+                        if (!this.rescheduleData.hari || !this.rescheduleData.calculated_jam_mulai || !this.rescheduleData.calculated_jam_selesai) {
                             return '';
                         }
 
@@ -673,8 +747,8 @@
                             if (s.id === this.rescheduleData.id) return false;
                             if (s.ruang !== room) return false;
                             if (s.hari !== this.rescheduleData.hari) return false;
-                            return s.jam_mulai < this.rescheduleData.jam_selesai &&
-                                s.jam_selesai > this.rescheduleData.jam_mulai;
+                            return s.jam_mulai < this.rescheduleData.calculated_jam_selesai &&
+                                s.jam_selesai > this.rescheduleData.calculated_jam_mulai;
                         });
 
                         if (conflict) {

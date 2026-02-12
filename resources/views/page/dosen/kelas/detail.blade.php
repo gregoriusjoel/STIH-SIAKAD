@@ -115,23 +115,23 @@
                     </div>
                 </div>
 
-                <div class="flex gap-3">
+                <div class="grid grid-cols-2 md:flex gap-3 w-full md:w-auto">
                     <a href="{{ route('dosen.kelas.input-nilai', $id) }}"
-                        class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                        class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                         <span class="material-symbols-outlined text-[20px]">edit_note</span>
                         Input Nilai
                     </a>
 
                     {{-- Button Silabus --}}
-@if($kelas->silabus)
-                        <button @click="openPreviewModal('{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'silabus']) }}?view=1', 'Silabus')"
-                            class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-green-200 dark:border-green-700 text-green-600 dark:text-green-400 rounded-xl font-bold text-sm hover:bg-green-50 dark:hover:bg-green-900/30 transition-all shadow-sm">
+                    @if($kelas->silabus)
+                        <button @click="openPreviewModal('{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'silabus']) }}?view=1&t={{ time() }}', 'Silabus', 'silabus')"
+                            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-green-200 dark:border-green-700 text-green-600 dark:text-green-400 rounded-xl font-bold text-sm hover:bg-green-50 dark:hover:bg-green-900/30 transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[20px]">description</span>
                             Silabus
                         </button>
                     @else
                         <button @click="openUploadModal('silabus')"
-                            class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[20px]">upload_file</span>
                             Upload Silabus
                         </button>
@@ -140,20 +140,20 @@
                     {{-- Button RPS --}}
                     @if($kelas->rps)
                         <a href="{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'rps']) }}"
-                            class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 rounded-xl font-bold text-sm hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-all shadow-sm">
+                            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 rounded-xl font-bold text-sm hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[20px]">article</span>
                             RPS
                         </a>
                     @else
                         <button @click="openUploadModal('rps')"
-                            class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[20px]">upload_file</span>
                             Upload RPS
                         </button>
                     @endif
 
                     <button
-                        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
+                        class="flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
                         <span class="material-symbols-outlined text-[20px]">download</span>
                         Export Data
                     </button>
@@ -497,7 +497,7 @@
                 <!-- Form -->
                 <form action="{{ route('dosen.kelas.dokumen.upload', $id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" name="tipe_dokumen" x-model="uploadType">
+                    <input type="hidden" name="tipe_dokumen" :value="uploadType">
 
                     <div class="mb-6">
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
@@ -507,6 +507,26 @@
                                name="file" 
                                accept=".pdf,.doc,.docx"
                                required
+                               onchange="
+                                   if (this.files.length > 0) {
+                                       const ext = this.files[0].name.split('.').pop().toLowerCase();
+                                       if (!['pdf', 'doc', 'docx'].includes(ext)) {
+                                           Swal.fire({
+                                               icon: 'error',
+                                               title: 'Format File Tidak Didukung',
+                                               text: 'Hanya file dengan format PDF, DOC, dan DOCX yang diperbolehkan.',
+                                               confirmButtonColor: '#8B1538',
+                                               didOpen: () => {
+                                                   const container = Swal.getContainer();
+                                                   if (container) {
+                                                       container.style.zIndex = '11000';
+                                                   }
+                                               }
+                                           });
+                                           this.value = '';
+                                       }
+                                   }
+                               "
                                class="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-700 dark:text-white">
                         <p class="mt-2 text-xs text-gray-500 dark:text-slate-400">
                             Format yang didukung: PDF, DOC, DOCX (Maksimal 10MB)
@@ -541,27 +561,33 @@
              @click="closePreviewModal()"></div>
 
         <!-- Modal -->
-        <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col z-[10000]"
+        <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-[98%] h-[95vh] flex flex-col z-[10000]"
              @click.stop
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 transform scale-95"
              x-transition:enter-end="opacity-100 transform scale-100">
             
             <!-- Header -->
-            <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-slate-700">
+            <div class="flex flex-col md:flex-row md:items-center justify-between p-4 gap-4 border-b border-gray-100 dark:border-slate-700">
                 <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary">visibility</span>
-                    Preview <span x-text="previewTitle"></span>
+                    Preview<span x-text="previewTitle"></span>
                 </h3>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-nowrap items-center gap-1.5 md:gap-2 overflow-x-auto no-scrollbar">
+                    <button @click="let t = previewType; closePreviewModal(); openUploadModal(t)"
+                            class="text-[10px] sm:text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-2 py-1.5 md:px-3 rounded-lg bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors flex-shrink-0 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[18px]">upload_file</span>
+                        <span>Ganti File</span>
+                    </button>
                     <a :href="previewUrl ? previewUrl.replace('?view=1', '') : '#'" 
                        target="_blank"
-                       class="text-sm font-bold text-primary hover:text-primary-hover px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors">
-                        Download / Buka di Tab Baru
+                       class="text-[10px] sm:text-xs md:text-sm font-bold text-primary hover:text-primary-hover px-2 py-1.5 md:px-3 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors flex-shrink-0 flex items-center gap-1">
+                       <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[18px]">open_in_new</span>
+                        <span>Download</span>
                     </a>
                     <button @click="closePreviewModal()"
-                            class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
-                        <span class="material-symbols-outlined">close</span>
+                            class="p-1 md:p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors flex-shrink-0">
+                        <span class="material-symbols-outlined text-[18px] md:text-[24px]">close</span>
                     </button>
                 </div>
             </div>
@@ -648,10 +674,12 @@
                     showPreviewModal: false,
                     previewUrl: '',
                     previewTitle: '',
+                    previewType: '',
 
-                    openPreviewModal(url, title) {
+                    openPreviewModal(url, title, type) {
                         this.previewUrl = url;
                         this.previewTitle = title;
+                        this.previewType = type;
                         this.showPreviewModal = true;
                     },
 
@@ -659,6 +687,7 @@
                         this.showPreviewModal = false;
                         this.previewUrl = '';
                         this.previewTitle = '';
+                        this.previewType = '';
                     }
                 }
             }

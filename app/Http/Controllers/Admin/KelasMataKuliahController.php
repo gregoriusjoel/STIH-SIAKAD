@@ -7,12 +7,9 @@ use App\Models\KelasMataKuliah;
 use App\Models\MataKuliah;
 use App\Models\Dosen;
 use App\Models\Jadwal;
+use App\Models\JamPerkuliahan;
 use App\Models\Kelas;
 use App\Models\Semester;
-use App\Models\Pertemuan;
-use App\Models\Presensi;
-use App\Models\Krs;
-use App\Models\Materi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -22,98 +19,6 @@ class KelasMataKuliahController extends Controller
     {
         $kelasMatKul = KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])->paginate(10);
         return view('admin.kelas-mata-kuliah.index', compact('kelasMatKul'));
-    }
-    
-    /**
-     * Get attendance data for specific class and meeting
-     */
-    public function getAttendanceData(Request $request, $kelasId)
-    {
-        $pertemuanNo = $request->input('pertemuan', 1);
-        
-        $kelas = KelasMataKuliah::with(['mataKuliah', 'jadwal', 'dosen.user', 'ruangan'])
-            ->findOrFail($kelasId);
-        
-        // Get pertemuan data
-        $pertemuan = Pertemuan::where('kelas_mata_kuliah_id', $kelasId)
-            ->where('nomor_pertemuan', $pertemuanNo)
-            ->first();
-        
-        // Get schedule for this class
-        $jadwal = $kelas->jadwal;
-        
-        // Get all students enrolled in this class
-        $students = Krs::where('kelas_mata_kuliah_id', $kelasId)
-            ->with(['mahasiswa.user'])
-            ->get();
-        
-        // Get attendance records for this meeting
-        $attendances = Presensi::where('kelas_mata_kuliah_id', $kelasId)
-            ->where('pertemuan', $pertemuanNo)
-            ->get()
-            ->keyBy('mahasiswa_id');
-        
-        // Get materi for this meeting
-        $materis = Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('dosen_id', $kelas->dosen_id)
-            ->where('pertemuan', $pertemuanNo)
-            ->get();
-        
-        // Build student list with attendance status
-        $studentData = $students->map(function($krs, $index) use ($attendances) {
-            $mahasiswa = $krs->mahasiswa;
-            $attendance = $attendances->get($mahasiswa->id);
-            
-            return [
-                'no' => $index + 1,
-                'nama' => $mahasiswa->user->name ?? '-',
-                'nim' => $mahasiswa->nim ?? '-',
-                'status' => $attendance ? $attendance->status : 'tidak hadir',
-                'waktu_scan' => $attendance && $attendance->waktu ? $attendance->waktu->format('H:i:s') : '-',
-            ];
-        });
-        
-        // Format room display
-        $roomDisplay = '-';
-        if ($jadwal) {
-            if (isset($jadwal->ruangan) && is_object($jadwal->ruangan)) {
-                // Ruangan relationship loaded
-                $roomDisplay = $jadwal->ruangan->kode_ruangan;
-                if ($jadwal->ruangan->lantai) {
-                    $roomDisplay .= ' (Lantai ' . $jadwal->ruangan->lantai . ')';
-                }
-            } elseif ($jadwal->ruangan && is_string($jadwal->ruangan)) {
-                // String field from jadwal
-                $roomDisplay = $jadwal->ruangan;
-            }
-        }
-        
-        // Fallback to kelas ruang if no jadwal room found
-        if ($roomDisplay === '-' && $kelas->ruang) {
-            $roomDisplay = $kelas->ruang;
-        }
-        
-        // Get materi/topik display
-        $materiTopik = '-';
-        if ($materis->isNotEmpty()) {
-            $materiTopik = $materis->first()->judul;
-        } elseif ($pertemuan && $pertemuan->topik) {
-            $materiTopik = $pertemuan->topik;
-        }
-        
-        return response()->json([
-            'pertemuan' => $pertemuan,
-            'jadwal' => $jadwal ? [
-                'jam_mulai' => $jadwal->jam_mulai,
-                'jam_selesai' => $jadwal->jam_selesai,
-                'ruangan' => $roomDisplay,
-                'hari' => $jadwal->hari,
-            ] : null,
-            'materi_topik' => $materiTopik,
-            'students' => $studentData,
-            'total_students' => $students->count(),
-            'total_hadir' => $attendances->where('status', 'hadir')->count(),
-        ]);
     }
 
     public function create()
@@ -133,9 +38,109 @@ class KelasMataKuliahController extends Controller
             'kuota' => 'required|integer|min:1',
             'ruangan_id' => 'nullable|exists:ruangans,id',
             'hari' => 'nullable|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
-            'jam_mulai' => 'nullable|date_format:H:i',
-            'jam_selesai' => 'nullable|date_format:H:i',
+            'jam_mulai' => 'nullable',
+            'jam_selesai' => 'nullable',
+            'jam_perkuliahan_id' => 'nullable|exists:jam_perkuliahan,id',
         ]);
+
+        // Resolve jam_mulai / jam_selesai from jam_perkuliahan_id if not provided directly
+        if ($request->jam_perkuliahan_id && (!$request->jam_mulai || !$request->jam_selesai)) {
+            $jamPerkuliahan = JamPerkuliahan::find($request->jam_perkuliahan_id);
+            if ($jamPerkuliahan) {
+                $request->merge([
+                    'jam_mulai' => substr($jamPerkuliahan->jam_mulai, 0, 5),
+                    'jam_selesai' => substr($jamPerkuliahan->jam_selesai, 0, 5),
+                ]);
+            }
+        }
+
+        // Normalize jam_mulai / jam_selesai to H:i format (strip seconds if present)
+        if ($request->jam_mulai && strlen($request->jam_mulai) > 5) {
+            $request->merge(['jam_mulai' => substr($request->jam_mulai, 0, 5)]);
+        }
+        if ($request->jam_selesai && strlen($request->jam_selesai) > 5) {
+            $request->merge(['jam_selesai' => substr($request->jam_selesai, 0, 5)]);
+        }
+
+        // Server-side schedule conflict check: same room + day + overlapping time
+        if ($request->hari && $request->jam_mulai && $request->jam_selesai && $request->ruangan_id) {
+            $ruanganObj = \App\Models\Ruangan::find($request->ruangan_id);
+            $ruanganKode = $ruanganObj ? $ruanganObj->kode_ruangan : null;
+            $mulai = $request->jam_mulai;
+            $selesai = $request->jam_selesai;
+
+            // 1. Check KelasMataKuliah table
+            $conflict = KelasMataKuliah::where('hari', $request->hari)
+                ->where(function($q) use ($ruanganKode, $request) {
+                    $q->where('ruang', $ruanganKode);
+                    if ($request->ruangan_id) {
+                        $q->orWhere('ruangan_id', $request->ruangan_id);
+                    }
+                })
+                ->where(function ($q) use ($mulai, $selesai) {
+                    $q->where('jam_mulai', '<', $selesai)
+                        ->where('jam_selesai', '>', $mulai);
+                })
+                ->with(['mataKuliah', 'dosen.user'])
+                ->first();
+
+            if ($conflict) {
+                $conflictMsg = 'Jadwal bentrok! Ruangan ' . ($ruanganKode ?? '-') . ' sudah dipakai oleh ' .
+                    ($conflict->dosen->user->name ?? 'Dosen') .
+                    ' (' . ($conflict->mataKuliah->nama_mk ?? '-') . ') ' .
+                    'pada ' . $conflict->hari . ' pukul ' . substr($conflict->jam_mulai, 0, 5) . '-' . substr($conflict->jam_selesai, 0, 5);
+
+                return redirect()->back()->withInput()->with('error', $conflictMsg);
+            }
+
+            // 2. Check Jadwal table (active schedules)
+            $jadwalConflict = Jadwal::where('hari', $request->hari)
+                ->where('ruangan', $ruanganKode)
+                ->where('status', 'active')
+                ->where(function ($q) use ($mulai, $selesai) {
+                    $q->where('jam_mulai', '<', $selesai)
+                        ->where('jam_selesai', '>', $mulai);
+                })
+                ->with(['kelas.mataKuliah', 'kelas.dosen'])
+                ->first();
+
+            if ($jadwalConflict) {
+                $dosenName = $jadwalConflict->kelas->dosen->name ?? 'Dosen';
+                $mkName = $jadwalConflict->kelas->mataKuliah->nama_mk ?? '-';
+                $conflictMsg = 'Jadwal bentrok! Ruangan ' . ($ruanganKode ?? '-') . ' sudah dipakai oleh ' .
+                    $dosenName . ' (' . $mkName . ') ' .
+                    'pada ' . $request->hari . ' pukul ' . substr($jadwalConflict->jam_mulai, 0, 5) . '-' . substr($jadwalConflict->jam_selesai, 0, 5);
+
+                return redirect()->back()->withInput()->with('error', $conflictMsg);
+            }
+
+            // 3. Check JadwalProposal table (approved/pending proposals)
+            $proposalConflict = \App\Models\JadwalProposal::where('hari', $request->hari)
+                ->where(function($q) use ($ruanganKode, $request) {
+                    $q->where('ruangan', $ruanganKode);
+                    if ($request->ruangan_id) {
+                        $q->orWhere('ruangan_id', $request->ruangan_id);
+                    }
+                })
+                ->whereIn('status', ['approved_dosen', 'approved_admin', 'pending_admin'])
+                ->where(function ($q) use ($mulai, $selesai) {
+                    $q->where('jam_mulai', '<', $selesai)
+                        ->where('jam_selesai', '>', $mulai);
+                })
+                ->with(['mataKuliah', 'dosen.user'])
+                ->first();
+
+            if ($proposalConflict) {
+                $dosenName = $proposalConflict->dosen->user->name ?? 'Dosen';
+                $mkName = $proposalConflict->mataKuliah->nama_mk ?? '-';
+                $conflictMsg = 'Jadwal bentrok! Ruangan ' . ($ruanganKode ?? '-') . ' sudah dipakai oleh ' .
+                    $dosenName . ' (' . $mkName . ') ' .
+                    'pada ' . $request->hari . ' pukul ' . substr($proposalConflict->jam_mulai, 0, 5) . '-' . substr($proposalConflict->jam_selesai, 0, 5) .
+                    ' (dari proposal jadwal)';
+
+                return redirect()->back()->withInput()->with('error', $conflictMsg);
+            }
+        }
 
         // Get semester from mata_kuliah
         $mataKuliah = MataKuliah::findOrFail($request->mata_kuliah_id);
