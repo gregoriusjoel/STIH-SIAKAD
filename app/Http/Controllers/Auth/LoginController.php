@@ -21,6 +21,8 @@ class LoginController extends Controller
                 return redirect()->route('admin.dashboard');
             } elseif ($user->role === 'mahasiswa') {
                 return redirect()->route('mahasiswa.dashboard');
+            } elseif ($user->role === 'finance') {
+                return redirect()->route('finance.invoices.index');
             }
             return redirect()->route('dosen.dashboard');
         }
@@ -44,8 +46,8 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
 
-            // Only allow admin, dosen, mahasiswa, and parent roles
-            if (!in_array($user->role, ['admin', 'dosen', 'mahasiswa', 'parent'])) {
+            // Allow admin, dosen, mahasiswa, parent, and finance roles
+            if (!in_array($user->role, ['admin', 'dosen', 'mahasiswa', 'parent', 'finance'])) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
@@ -73,6 +75,9 @@ class LoginController extends Controller
                     ->with('login_success', 'Selamat datang, ' . $user->name . '!');
             } elseif ($user->role === 'parent') {
                 return redirect()->route('parent.dashboard')
+                    ->with('login_success', 'Selamat datang, ' . $user->name . '!');
+            } elseif ($user->role === 'finance') {
+                return redirect()->route('finance.invoices.index')
                     ->with('login_success', 'Selamat datang, ' . $user->name . '!');
             }
 

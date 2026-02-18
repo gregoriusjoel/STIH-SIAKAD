@@ -14,15 +14,7 @@
 
         <!-- Right Side -->
         <div class="flex items-center gap-4">
-            <!-- Dark Mode Toggle - Custom Style for Maroon BG -->
-            <label class="theme-switch relative inline-flex items-center cursor-pointer">
-                <input id="theme-toggle-input" type="checkbox" class="sr-only peer" />
-                <div class="w-11 h-6 bg-black/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white/20"></div>
-                <span class="ml-2 text-sm font-medium text-white hidden sm:block">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:inline"></i>
-                </span>
-            </label>
+
 
             <!-- User Dropdown (minimal) -->
             <div class="flex items-center gap-3 pl-4 border-l border-white/20">

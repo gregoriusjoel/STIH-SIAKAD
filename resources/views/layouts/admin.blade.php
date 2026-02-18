@@ -164,19 +164,11 @@
         }
     </style>
 
-    <!-- Early Dark Mode Detection (prevents flash) -->
-    <script>
-        (function () {
-            if (localStorage.getItem('color-theme') === 'dark' ||
-                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            }
-        })();
-    </script>
+
     @stack('styles')
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 overflow-hidden">
+<body class="bg-gray-100 overflow-hidden">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         @include('admin.sidebar-admin')
@@ -238,14 +230,7 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <!-- Dark Mode Toggle - Simple Sun/Moon -->
-                        <label class="theme-switch">
-                            <input id="theme-toggle-input" type="checkbox" />
-                            <span class="theme-slider">
-                                <span class="theme-icon sun">☀️</span>
-                                <span class="theme-icon moon">🌙</span>
-                            </span>
-                        </label>
+
 
                         <div class="flex items-center space-x-3">
                             <div class="text-right mr-2 hidden sm:block">
@@ -262,34 +247,10 @@
                 </div>
             </header>
 
-            <script>
-                (function () {
-                    var toggle = document.getElementById('theme-toggle-input');
 
-                    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                        document.documentElement.classList.add('dark');
-                        if (toggle) toggle.checked = true;
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                        if (toggle) toggle.checked = false;
-                    }
-
-                    if (toggle) {
-                        toggle.addEventListener('change', function (e) {
-                            if (e.target.checked) {
-                                document.documentElement.classList.add('dark');
-                                localStorage.setItem('color-theme', 'dark');
-                            } else {
-                                document.documentElement.classList.remove('dark');
-                                localStorage.setItem('color-theme', 'light');
-                            }
-                        });
-                    }
-                })();
-            </script>
 
             <!-- Content Area -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-6">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 <!-- Flash Messages -->
                 @if(session('success'))
                     <div class="mb-4">

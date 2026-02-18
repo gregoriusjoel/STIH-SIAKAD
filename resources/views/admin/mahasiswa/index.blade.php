@@ -57,7 +57,16 @@
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     @forelse($mahasiswas as $mahasiswa)
                         <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition cursor-pointer"
-                            @click='selectedMahasiswa = { nim: @js($mahasiswa->nim), name: @js($mahasiswa->user->name), email: @js($mahasiswa->user->email), no_hp: @js($mahasiswa->no_hp ?? "-"), prodi: @js($mahasiswa->prodi), angkatan: @js($mahasiswa->angkatan), status: @js(ucfirst($mahasiswa->status)), foto: @js($mahasiswa->foto ? asset("storage/" . $mahasiswa->foto) : null) }'
+                            @click="selectedMahasiswa = {{ Js::from([
+                                'nim' => $mahasiswa->nim,
+                                'name' => $mahasiswa->user->name,
+                                'email' => $mahasiswa->user->email,
+                                'no_hp' => $mahasiswa->no_hp ?? '-',
+                                'prodi' => $mahasiswa->prodi,
+                                'angkatan' => $mahasiswa->angkatan,
+                                'status' => ucfirst($mahasiswa->status),
+                                'foto' => $mahasiswa->foto ? asset('storage/' . $mahasiswa->foto) : null,
+                            ]) }}"
                             :class="{ 'bg-blue-50 dark:bg-blue-900/30': selectedMahasiswa && selectedMahasiswa.nim === '{{ $mahasiswa->nim }}' }">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
                                 {{ ($mahasiswas->currentPage() - 1) * $mahasiswas->perPage() + $loop->iteration }}

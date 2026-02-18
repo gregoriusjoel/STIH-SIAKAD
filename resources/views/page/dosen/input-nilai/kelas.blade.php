@@ -8,6 +8,20 @@
 @endpush
 
 @section('content')
+    @section('navbar_breadcrumb')
+        <nav class="flex items-center gap-3 text-sm text-white/60 font-bold tracking-tight">
+            <a class="hover:text-white transition-all duration-300 flex items-center group" href="{{ route('dosen.dashboard') }}">
+                <span class="material-symbols-outlined text-[19px] group-hover:scale-110 opacity-80">home</span>
+            </a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <a href="{{ route('dosen.kelas') }}" class="hover:text-white transition-all duration-300">Kelas</a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <a href="{{ route('dosen.kelas.detail', $class_info['id']) }}" class="hover:text-white transition-all duration-300">Detail Kelas</a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <span class="text-white font-black text-[13px] uppercase tracking-wider">Input Nilai</span>
+        </nav>
+    @endsection
+
     <div class="pt-6 px-6 md:px-8 pb-8 w-full flex flex-col gap-6" 
          x-data="nilaiApp(@js($students), @js($bobot), @js($class_info))">
 
@@ -248,7 +262,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700" style="min-width: 1200px;">
                     <thead class="bg-gray-50 dark:bg-slate-800">
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap">

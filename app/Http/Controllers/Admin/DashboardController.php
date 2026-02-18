@@ -7,6 +7,7 @@ use App\Models\AcademicEvent;
 use App\Models\Dosen;
 use App\Models\KelasMataKuliah;
 use App\Models\Krs;
+use App\Models\Jadwal;
 use App\Models\Mahasiswa;
 use App\Models\MataKuliah;
 use App\Models\ParentModel;
@@ -23,6 +24,7 @@ class DashboardController extends Controller
             'total_parent' => ParentModel::count(),
             'total_kelas' => KelasMataKuliah::count(),
             'total_krs' => Krs::count(),
+            'total_jadwal' => Jadwal::count(),
             'krs_pending' => Krs::where('status', 'pending')->count(),
             'recent_krs' => Krs::with(['mahasiswa.user', 'kelas.mataKuliah'])
                 ->orderBy('created_at', 'desc')

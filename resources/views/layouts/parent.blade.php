@@ -57,15 +57,7 @@
     </style>
     @stack('styles')
 
-    <!-- Early Dark Mode Detection (prevents flash) -->
-    <script>
-        (function () {
-            if (localStorage.getItem('color-theme') === 'dark' ||
-                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            }
-        })();
-    </script>
+
 </head>
 
 <body class="bg-gray-100">
@@ -171,21 +163,14 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <!-- Dark Mode Toggle - Simple Sun/Moon -->
-                        <label class="theme-switch">
-                            <input id="theme-toggle-input" type="checkbox" />
-                            <span class="theme-slider">
-                                <span class="theme-icon sun">☀️</span>
-                                <span class="theme-icon moon">🌙</span>
-                            </span>
-                        </label>
+
 
                         <div class="flex items-center space-x-3">
                             <div class="text-right mr-2 hidden sm:block">
-                                <div class="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                <div class="text-sm font-medium text-gray-800">
                                     {{ Auth::user()->name }}
                                 </div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">Orang Tua</div>
+                                <div class="text-xs text-gray-500">Orang Tua</div>
                             </div>
                             <div
                                 class="w-10 h-10 bg-maroon rounded-full flex items-center justify-center text-white font-bold shadow-md">
@@ -196,31 +181,7 @@
                 </div>
             </header>
 
-            <script>
-                (function () {
-                    var toggle = document.getElementById('theme-toggle-input');
 
-                    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                        document.documentElement.classList.add('dark');
-                        if (toggle) toggle.checked = true;
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                        if (toggle) toggle.checked = false;
-                    }
-
-                    if (toggle) {
-                        toggle.addEventListener('change', function (e) {
-                            if (e.target.checked) {
-                                document.documentElement.classList.add('dark');
-                                localStorage.setItem('color-theme', 'dark');
-                            } else {
-                                document.documentElement.classList.remove('dark');
-                                localStorage.setItem('color-theme', 'light');
-                            }
-                        });
-                    }
-                })();
-            </script>
 
             <!-- Content Area -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">

@@ -68,8 +68,12 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $parent->mahasiswa->user->name }}</div>
-                                <div class="text-xs text-gray-500">NIM: {{ $parent->mahasiswa->nim }}</div>
+                                @if($parent->mahasiswa)
+                                    <div class="text-sm font-medium text-gray-900">{{ $parent->mahasiswa->user->name }}</div>
+                                    <div class="text-xs text-gray-500">NIM: {{ $parent->mahasiswa->nim }}</div>
+                                @else
+                                    <div class="text-sm font-medium text-gray-400 italic">Belum Tertaut</div>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span

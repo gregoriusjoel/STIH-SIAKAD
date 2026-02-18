@@ -2,6 +2,19 @@
 
 @section('title', 'Menunggu Approval Jadwal')
 
+@section('navbar_breadcrumb')
+    <nav class="flex items-center gap-3 text-sm text-white/60 font-bold tracking-tight">
+        <a class="hover:text-white transition-all duration-300 flex items-center group" href="{{ route('dosen.dashboard') }}">
+            <span class="material-symbols-outlined text-[19px] group-hover:scale-110 opacity-80">home</span>
+        </a>
+        <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+        <a href="{{ route('dosen.jadwal') }}" class="hover:text-white transition-all duration-300">Jadwal Mengajar</a>
+        <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+        <span class="text-white font-black text-[13px] uppercase tracking-wider">Menunggu Approval</span>
+    </nav>
+@endsection
+
+
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 <style>

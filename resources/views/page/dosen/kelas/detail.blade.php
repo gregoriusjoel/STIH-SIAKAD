@@ -30,6 +30,20 @@
 @endpush
 
 @section('content')
+    @section('navbar_breadcrumb')
+        <nav class="flex items-center gap-3 text-sm text-white/60 font-bold tracking-tight">
+            <a class="hover:text-white transition-all duration-300 flex items-center group" href="{{ route('dosen.dashboard') }}">
+                <span class="material-symbols-outlined text-[19px] group-hover:scale-110 opacity-80">home</span>
+            </a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <a href="{{ route('dosen.kelas') }}" class="hover:text-white transition-all duration-300">Kelas</a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <span class="text-white font-black text-[13px] uppercase tracking-wider">
+                {{ $class_info['name'] }}
+            </span>
+        </nav>
+    @endsection
+
     @php
         $meetings = [];
         $startDate = !empty($class_info['semester_start_date'])
@@ -54,14 +68,7 @@
     <div x-data="detailKelas()">
     <div class="flex flex-col gap-8 w-full flex-1 mx-auto">
 
-        {{-- BREADCRUMB & HEADER --}}
         <div class="flex flex-col gap-4">
-            <nav class="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
-                <a href="{{ route('dosen.kelas') }}" class="hover:text-primary transition-colors">Kelas</a>
-                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                <span class="font-medium text-gray-800 dark:text-white">{{ $class_info['name'] }}</span>
-            </nav>
-
             {{-- Success/Error Messages --}}
             @if(session('success'))
                 <div class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-xl flex items-center gap-3">
@@ -139,11 +146,11 @@
 
                     {{-- Button RPS --}}
                     @if($kelas->rps)
-                        <a href="{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'rps']) }}"
+                        <button @click="openPreviewModal('{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'rps']) }}?view=1&t={{ time() }}', 'RPS', 'rps')"
                             class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 rounded-xl font-bold text-sm hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[20px]">article</span>
                             RPS
-                        </a>
+                        </button>
                     @else
                         <button @click="openUploadModal('rps')"
                             class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
@@ -353,7 +360,8 @@
                 {{-- TABLE --}}
                 <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto -mx-6 px-6">
+                        <table class="w-full text-left border-collapse" style="min-width: 700px;">
                             <thead>
                                 <tr
                                     class="bg-gray-50/80 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-800 text-xs uppercase tracking-wider text-gray-500 dark:text-slate-400 font-bold">

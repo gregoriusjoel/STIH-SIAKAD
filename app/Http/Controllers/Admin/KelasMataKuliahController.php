@@ -361,4 +361,92 @@ class KelasMataKuliahController extends Controller
         
         return redirect()->route('admin.jadwal.index')->with('success', 'Kelas mata kuliah berhasil dihapus');
     }
+
+    /**
+     * Get attendance data for AJAX polling
+     */
+    public function getAttendanceData($id)
+    {
+        $kelasMataKuliah = KelasMataKuliah::with(['mataKuliah', 'ruangan', 'semester'])->findOrFail($id);
+        $pertemuanKe = request('pertemuan', 1);
+
+        // Get pertemuan detail
+        $pertemuan = \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $id)
+            ->where('nomor_pertemuan', $pertemuanKe)
+            ->first();
+
+        // Fallback Date Calculation (if no pertemuans record)
+        $tanggal = $pertemuan ? ($pertemuan->tanggal ? $pertemuan->tanggal->format('Y-m-d') : null) : null;
+        if (!$tanggal) {
+            $semester = $kelasMataKuliah->semester ?? \App\Models\Semester::where('status', 'aktif')->first() ?? \App\Models\Semester::where('is_active', true)->first();
+            if ($semester && $semester->tanggal_mulai && $kelasMataKuliah->hari) {
+                try {
+                    $start = \Carbon\Carbon::parse($semester->tanggal_mulai);
+                    $dayMap = ['Minggu' => 0, 'Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6];
+                    $targetDay = $dayMap[$kelasMataKuliah->hari] ?? null;
+                    
+                    if ($targetDay !== null) {
+                        $firstOccurrence = $start->copy();
+                        while ($firstOccurrence->dayOfWeek !== $targetDay) { $firstOccurrence->addDay(); }
+                        $tanggal = $firstOccurrence->addWeeks($pertemuanKe - 1)->format('Y-m-d');
+                    }
+                } catch (\Exception $e) { $tanggal = null; }
+            }
+        }
+
+        // Fallback Topic (from Materi table)
+        $topik = $pertemuan->topik ?? null;
+        if (!$topik) {
+            $materi = \App\Models\Materi::where('mata_kuliah_id', $kelasMataKuliah->mata_kuliah_id)
+                ->where('pertemuan', $pertemuanKe)
+                ->first();
+            $topik = $materi->judul ?? '-';
+        }
+
+        // Get students from KRS (checking both specific KMK and generic Kelas)
+        $students = \App\Models\Krs::where(function($q) use ($id, $kelasMataKuliah) {
+                $q->where('kelas_mata_kuliah_id', $id);
+                // Fallback to finding students linked to any "Kelas" that matches this MK and section
+                $kelasId = \App\Models\Kelas::where('mata_kuliah_id', $kelasMataKuliah->mata_kuliah_id)
+                    ->where('section', $kelasMataKuliah->kode_kelas)
+                    ->value('id');
+                if ($kelasId) {
+                    $q->orWhere('kelas_id', $kelasId);
+                }
+            })
+            ->with(['mahasiswa.user'])
+            ->get();
+
+        // Get attendance records for this meeting
+        $presensis = \App\Models\Presensi::where('kelas_mata_kuliah_id', $id)
+            ->where('pertemuan', $pertemuanKe)
+            ->get()
+            ->keyBy('mahasiswa_id');
+
+        $formattedStudents = $students->map(function ($krs, $index) use ($presensis) {
+            $presensi = $presensis->get($krs->mahasiswa_id);
+            return [
+                'no' => $index + 1,
+                'nama' => $krs->mahasiswa->user->name ?? $krs->mahasiswa->nama ?? '-',
+                'nim' => $krs->mahasiswa->nim ?? '-',
+                'status' => $presensi ? ($presensi->status ?? 'hadir') : 'tidak hadir',
+                'waktu_scan' => $presensi && $presensi->created_at ? ($presensi->created_at->format('H:i') . ' WIB') : '-',
+            ];
+        });
+
+        return response()->json([
+            'pertemuan' => [
+                'tanggal' => $tanggal,
+            ],
+            'jadwal' => [
+                'jam_mulai' => $kelasMataKuliah->jam_mulai ? substr($kelasMataKuliah->jam_mulai, 0, 5) : '-',
+                'jam_selesai' => $kelasMataKuliah->jam_selesai ? substr($kelasMataKuliah->jam_selesai, 0, 5) : '-',
+                'ruangan' => $kelasMataKuliah->ruangan->kode_ruangan ?? $kelasMataKuliah->ruang ?? '-',
+            ],
+            'materi_topik' => $topik,
+            'students' => $formattedStudents,
+            'total_students' => $students->count(),
+            'total_hadir' => $formattedStudents->where('status', 'hadir')->count(),
+        ]);
+    }
 }

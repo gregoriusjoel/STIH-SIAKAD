@@ -149,13 +149,13 @@
             <div class="border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-[#1a1d2e]">
                 {{-- Desktop View --}}
                 <div class="hidden md:block overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700" style="min-width: 700px;">
                         <thead class="bg-gray-50 dark:bg-slate-800">
                             <tr>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">
                                     Semester
                                 </th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap w-full">
                                     Tahun Ajaran
                                 </th>
                                 <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">
@@ -172,7 +172,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white capitalize">
                                         Semester {{ $sem->semester_number ?? 1 }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-slate-300">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-600 dark:text-slate-300">
                                         {{ $sem->tahun_ajaran ?? '-' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

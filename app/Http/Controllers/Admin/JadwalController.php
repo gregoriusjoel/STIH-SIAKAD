@@ -16,18 +16,9 @@ class JadwalController extends Controller
 {
     public function index()
     {
-        // Load active jadwals that have been approved by dosen
-        // Only show jadwals that have approval record from dosen
+        // Load all active jadwals directly from jadwals table
         $activeJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
             ->where('status', 'active')
-            ->whereHas('kelas', function($query) {
-                // Only include jadwals where there's a corresponding approved proposal
-                $query->whereIn('id', function($subquery) {
-                    $subquery->select('kelas_id')
-                        ->from('jadwal_proposals')
-                        ->whereIn('status', ['approved_dosen', 'approved_admin']);
-                });
-            })
             ->get()
             ->map(function ($j) {
                 return (object)[
@@ -41,7 +32,7 @@ class JadwalController extends Controller
                     'nama_mk' => $j->kelas->mataKuliah->nama_mk ?? '-',
                     'sks' => $j->kelas->mataKuliah->sks ?? 0,
                     'kode_kelas' => $j->kelas->section ?? '-',
-                    'dosen_name' => $j->kelas->dosen->name ?? 'N/A',
+                    'dosen_name' => $j->kelas->dosen->nama ?? 'N/A',
                     'dosen_id' => $j->kelas->dosen_id ?? null,
                     'mata_kuliah_id' => $j->kelas->mata_kuliah_id ?? null,
                 ];
@@ -70,19 +61,23 @@ class JadwalController extends Controller
             $dayB = $hariOrder[$b->hari] ?? 99;
             if ($dayA != $dayB) return $dayA <=> $dayB;
             return $a->jam_mulai <=> $b->jam_mulai;
-        });
+        })->values();
 
-        // Pagination for the merged collection
-        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
-        $perPage = 5;
+        // Use unique pageName 'active_page' for the active schedules paginator
+        $pageName = 'active_page';
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage($pageName) ?: 1;
+        $perPage = 4;
         $currentPageItems = $sortedSchedules->slice(($currentPage - 1) * $perPage, $perPage)->all();
         $kelasMataKuliahs = new \Illuminate\Pagination\LengthAwarePaginator(
             $currentPageItems,
             $sortedSchedules->count(),
             $perPage,
             $currentPage,
-            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
-        );
+            [
+                'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
+                'pageName' => $pageName
+            ]
+        )->withQueryString();
 
         // Load ALL schedules for room visualization (not paginated)
         $allSchedules = $sortedSchedules;
@@ -127,7 +122,8 @@ class JadwalController extends Controller
 
         $jadwalProposals = JadwalProposal::with(['mataKuliah', 'kelas', 'dosen', 'generatedBy'])
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(4, ['*'], 'proposal_page')
+            ->withQueryString();
 
         // Fetch Dosen Availability Checks
         $availabilityChecks = \App\Models\DosenAvailabilityCheck::with(['dosen.user', 'mataKuliah'])
@@ -195,7 +191,10 @@ class JadwalController extends Controller
     public function update(Request $request, Jadwal $jadwal)
     {
         $request->validate([
-            'kelas_id' => 'required|exists:kelas,id',
+            'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
+            'dosen_id' => 'required|exists:dosens,id',
+            'nama_kelas' => 'required|string|max:10',
+            'kuota' => 'required|integer|min:1',
             'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
@@ -204,18 +203,42 @@ class JadwalController extends Controller
 
         $ruangan = Ruangan::findOrFail($request->ruangan_id);
         
+        // Update related Kelas (pointing to Kelas table)
+        // Note: Dosen ID in Kelas table points to users.id, but the form gives dosens.id
+        $dosen = \App\Models\Dosen::findOrFail($request->dosen_id);
+        
+        $jadwal->kelas->update([
+            'mata_kuliah_id' => $request->mata_kuliah_id,
+            'dosen_id' => $dosen->user_id, // Map correctly to users.id
+            'section' => $request->nama_kelas,
+            'kapasitas' => $request->kuota,
+        ]);
+
         $jadwal->update([
-            'kelas_id' => $request->kelas_id,
             'hari' => $request->hari,
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
             'ruangan' => $ruangan->kode_ruangan,
+            'ruangan_id' => $ruangan->id,
         ]);
+
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil diperbarui');
     }
 
     public function destroy(Jadwal $jadwal)
     {
+        $kelas = $jadwal->kelas;
+        
+        // Delete related Kelas and any other records
+        if ($kelas) {
+            // Find and delete the record in kelas_mata_kuliahs if it exists
+            \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+                ->where('kode_kelas', $kelas->section)
+                ->delete();
+                
+            $kelas->delete();
+        }
+
         $jadwal->delete();
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil dihapus');
     }
@@ -563,7 +586,7 @@ class JadwalController extends Controller
             ->first();
 
         if ($jadwalConflict) {
-            $dosenName = $jadwalConflict->kelas->dosen->name ?? 'Dosen';
+            $dosenName = $jadwalConflict->kelas->dosen->nama ?? 'Dosen';
             $mkName = $jadwalConflict->kelas->mataKuliah->nama_mk ?? '-';
             return response()->json([
                 'available' => false,

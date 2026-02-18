@@ -13,19 +13,26 @@
 @endpush
 
 @section('content')
-    <div class="px-4 py-6 max-w-[1200px] mx-auto">
-        {{-- BREADCRUMB --}}
-        <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
-            <a href="{{ route('dosen.kelas') }}" class="hover:text-primary transition-colors">Kelas</a>
-            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <a href="{{ route('dosen.kelas.detail', $kelas->id) }}" class="hover:text-primary transition-colors">Detail
+    @section('navbar_breadcrumb')
+        <nav class="flex items-center gap-3 text-sm text-white/60 font-bold tracking-tight">
+            <a class="hover:text-white transition-all duration-300 flex items-center group" href="{{ route('dosen.dashboard') }}">
+                <span class="material-symbols-outlined text-[19px] group-hover:scale-110 opacity-80">home</span>
+            </a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <a href="{{ route('dosen.kelas') }}" class="hover:text-white transition-all duration-300">Kelas</a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <a href="{{ route('dosen.kelas.detail', $kelas->id) }}" class="hover:text-white transition-all duration-300">Detail
                 Kelas</a>
-            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
             <a href="{{ route('dosen.kelas.pertemuan.detail', ['id' => $kelas->id, 'pertemuan' => $meeting['no']]) }}"
-                class="hover:text-primary transition-colors">{{ $meeting['label'] }}</a>
-            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <span class="font-medium text-gray-800">Materi</span>
+                class="hover:text-white transition-all duration-300 uppercase tracking-wider text-[13px]">{{ $meeting['label'] }}</a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <span class="text-white font-black text-[13px] uppercase tracking-wider">Materi</span>
         </nav>
+    @endsection
+
+    <div class="px-4 py-6 max-w-[1200px] mx-auto">
+
 
         {{-- HEADER --}}
         <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm mb-6">

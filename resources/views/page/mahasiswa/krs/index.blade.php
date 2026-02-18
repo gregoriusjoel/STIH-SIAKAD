@@ -7,17 +7,17 @@
     <div class="space-y-6">
 
         {{-- Header --}}
-        <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-4 mb-4">
-            <div class="flex items-center justify-between">
+        <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-4 sm:p-6 mb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Kartu Rencana Studi (KRS)</h2>
-                    <p class="text-gray-600 dark:text-slate-400">Semester: <span
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2">Kartu Rencana Studi (KRS)</h2>
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-slate-400">Semester: <span
                         class="font-semibold">{{ $semesterAktif->nama_semester ?? 'Tidak ada semester aktif' }}</span> •
                     <span class="font-semibold">Semester {{ $mahasiswaSemester ?? 1 }}</span></p>
                 </div>
-                <div class="text-right">
-                    <p class="text-sm text-gray-600 mb-1">Status KRS:</p>
-                    <span class="px-4 py-2 rounded-lg font-bold text-sm
+                <div class="text-left sm:text-right">
+                    <p class="text-sm text-gray-600 dark:text-slate-400 mb-1">Status KRS:</p>
+                    <span class="inline-block px-4 py-2 rounded-lg font-bold text-sm
                         @if($statusKrs === 'approved') bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400
                         @elseif($statusKrs === 'diajukan') bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400
                         @else bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300
@@ -367,7 +367,7 @@
                         </div>
 
                         {{-- RIGHT COLUMN: Table Details --}}
-                        <div class="w-full xl:w-[450px] h-[35vh] xl:h-auto flex flex-col bg-white shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] z-20 order-1 xl:order-2 border-b xl:border-b-0 border-gray-200">
+                        <div class="w-[450px] flex flex-col bg-white shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] z-20">
                              <div class="px-5 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center shrink-0">
                                 <h5 class="font-bold text-gray-800 flex items-center gap-2">
                                     <i class="fas fa-list text-maroon"></i> Rincian Jadwal
@@ -469,7 +469,7 @@
 
                 {{-- Table Content --}}
                 <div class="overflow-x-auto">
-                    <table class="w-full" id="krsTable">
+                    <table class="w-full min-w-[1000px]" id="krsTable">
                         <thead class="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-200 dark:border-slate-700">
                             <tr>
                                 <th class="px-4 py-3 text-left text-sm font-bold text-gray-700 dark:text-slate-300">No</th>
@@ -645,31 +645,31 @@
                 </div>
 
                 {{-- Summary Footer --}}
-                <div class="bg-gray-50 dark:bg-slate-800 px-6 py-5 border-t-2 border-gray-200 dark:border-slate-700">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-8">
+                <div class="bg-gray-50 dark:bg-slate-800 px-4 sm:px-6 py-5 border-t-2 border-gray-200 dark:border-slate-700">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                        <div class="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8">
                             <div>
-                                <p class="text-sm text-gray-600 dark:text-slate-400 mb-1">Total Mata Kuliah Diambil:</p>
-                                <p class="text-2xl font-bold text-gray-800 dark:text-white" id="totalMk">0</p>
+                                <p class="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-1">Total Mata Kuliah Diambil:</p>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white" id="totalMk">0</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-600 mb-1">Total SKS:</p>
-                                <p class="text-2xl font-bold" id="totalSks">0</p>
+                                <p class="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-1">Total SKS:</p>
+                                <p class="text-xl sm:text-2xl font-bold" id="totalSks">0</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-600 mb-1">Maksimal SKS:</p>
-                                <p class="text-2xl font-bold text-gray-500">24</p>
+                                <p class="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-1">Maksimal SKS:</p>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-500">24</p>
                             </div>
                         </div>
 
-                        <div class="flex gap-3">
-                            <button type="submit" name="action" value="draft" class="px-6 py-3 font-bold rounded-lg transition shadow-md hover:shadow-lg flex items-center gap-2 text-white border {{ !$isEditable ? 'bg-maroon border-maroon cursor-not-allowed opacity-50' : 'bg-maroon border-maroon hover:bg-red-800' }}" @if(!$isEditable) disabled aria-disabled="true" @endif>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <button type="submit" name="action" value="draft" class="w-full sm:w-auto px-4 sm:px-6 py-3 font-bold rounded-lg transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-white border {{ !$isEditable ? 'bg-maroon border-maroon cursor-not-allowed opacity-50' : 'bg-maroon border-maroon hover:bg-red-800' }}" @if(!$isEditable) disabled aria-disabled="true" @endif>
                                 <i class="fas {{ !$isEditable ? 'fa-lock' : 'fa-save' }}"></i>
-                                Simpan Draft
+                                <span class="text-sm sm:text-base">Simpan Draft</span>
                             </button>
-                            <button type="submit" name="action" value="submit" class="px-6 py-3 font-bold rounded-lg transition shadow-md hover:shadow-lg flex items-center gap-2 text-white {{ !$isEditable ? 'bg-maroon cursor-not-allowed opacity-50' : 'bg-maroon hover:bg-red-800' }}" id="submitBtn" @if(!$isEditable) disabled aria-disabled="true" @endif>
+                            <button type="submit" name="action" value="submit" class="w-full sm:w-auto px-4 sm:px-6 py-3 font-bold rounded-lg transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-white {{ !$isEditable ? 'bg-maroon cursor-not-allowed opacity-50' : 'bg-maroon hover:bg-red-800' }}" id="submitBtn" @if(!$isEditable) disabled aria-disabled="true" @endif>
                                 <i class="fas {{ !$isEditable ? 'fa-lock' : 'fa-paper-plane' }}"></i>
-                                Submit 
+                                <span class="text-sm sm:text-base">Submit</span>
                             </button>
                         </div>
                     </div>

@@ -12,6 +12,16 @@
 @endpush
 
 @section('content')
+    @section('navbar_breadcrumb')
+        <nav class="flex items-center gap-3 text-sm text-white/60 font-bold tracking-tight">
+            <a class="hover:text-white transition-all duration-300 flex items-center group" href="{{ route('dosen.dashboard') }}">
+                <span class="material-symbols-outlined text-[19px] group-hover:scale-110 opacity-80">home</span>
+            </a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <span class="text-white font-black text-[13px] uppercase tracking-wider">Input Jadwal</span>
+        </nav>
+    @endsection
+
 <div class="flex flex-col min-w-0 h-full">
     <div class="p-0 w-full flex flex-col gap-0">
         <!-- Full Page Card -->

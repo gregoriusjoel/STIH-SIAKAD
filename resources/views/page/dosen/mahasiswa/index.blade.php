@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('title', 'Daftar Mahasiswa | Portal Dosen')
+
+@section('navbar_breadcrumb')
+    <nav class="flex items-center gap-3 text-sm text-white/60 font-bold tracking-tight">
+        <a class="hover:text-white transition-all duration-300 flex items-center group" href="{{ route('dosen.dashboard') }}">
+            <span class="material-symbols-outlined text-[19px] group-hover:scale-110 opacity-80">home</span>
+        </a>
+        <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+        <span class="text-white font-black text-[13px] uppercase tracking-wider">Daftar Mahasiswa</span>
+    </nav>
+@endsection
+
 @section('header_title', 'Daftar Mahasiswa')
 
 @section('content')
@@ -33,7 +44,7 @@
         <!-- Student List -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="min-w-full divide-y divide-gray-200" style="min-width: 900px;">
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col"

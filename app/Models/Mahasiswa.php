@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Mahasiswa extends Model
 {
+    protected $table = 'mahasiswas';
+
     protected $fillable = [
         'user_id',
         'nim',
@@ -15,6 +17,7 @@ class Mahasiswa extends Model
         'prodi',
         'angkatan',
         'semester',
+        'last_semester_id',
         'phone',
         'address',
         'status',
@@ -68,6 +71,28 @@ class Mahasiswa extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Payment System Relationships
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'student_id');
+    }
+
+    public function installmentRequests(): HasMany
+    {
+        return $this->hasMany(InstallmentRequest::class, 'student_id');
+    }
+
+    // Payment System Accessors
+    public function getNpmAttribute()
+    {
+        return $this->nim;
+    }
+
+    public function getNamaAttribute()
+    {
+        return $this->user?->name ?? '';
+    }
+
     public function parents(): HasMany
     {
         return $this->hasMany(ParentModel::class);
@@ -86,6 +111,11 @@ class Mahasiswa extends Model
     public function pembayaran(): HasMany
     {
         return $this->hasMany(Pembayaran::class);
+    }
+
+    public function lastSemester(): BelongsTo
+    {
+        return $this->belongsTo(Semester::class, 'last_semester_id');
     }
 
     public function isAktif(): bool

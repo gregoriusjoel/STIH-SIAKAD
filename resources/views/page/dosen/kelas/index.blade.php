@@ -18,6 +18,16 @@
 @endpush
 
 @section('content')
+    @section('navbar_breadcrumb')
+        <nav class="flex items-center gap-3 text-sm text-white/60 font-bold tracking-tight">
+            <a class="hover:text-white transition-all duration-300 flex items-center group" href="{{ route('dosen.dashboard') }}">
+                <span class="material-symbols-outlined text-[19px] group-hover:scale-110 opacity-80">home</span>
+            </a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <span class="text-white font-black text-[13px] uppercase tracking-wider">Kelas Saya</span>
+        </nav>
+    @endsection
+
     <div class="px-6 md:px-8 py-6 w-full flex flex-col gap-6">
 
         <!-- Header -->

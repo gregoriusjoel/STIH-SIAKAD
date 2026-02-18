@@ -100,25 +100,14 @@
                                             <td class="px-4 py-3 font-medium">{{ $k->ruang ?: '-' }}</td>
                                             <td class="px-4 py-3 text-center">
                                                 <div class="flex justify-center space-x-1">
-                                                    @if($k->type === 'jadwal')
-                                                        <a href="{{ route('admin.jadwal.edit', $k->db_id) }}"
-                                                            class="bg-yellow-500 text-white p-1.5 rounded hover:bg-yellow-600 transition"
-                                                            title="Edit"><i class="fas fa-edit text-xs"></i></a>
-                                                        <form action="{{ route('admin.jadwal.destroy', $k->db_id) }}"
-                                                            method="POST" class="delete-form">@csrf
-                                                            @method('DELETE')<button type="submit"
-                                                                class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition"
-                                                                title="Hapus"><i class="fas fa-trash text-xs"></i></button></form>
-                                                    @else
-                                                        <a href="{{ route('admin.kelas-mata-kuliah.edit', $k->db_id) }}"
-                                                            class="bg-yellow-500 text-white p-1.5 rounded hover:bg-yellow-600 transition"
-                                                            title="Edit"><i class="fas fa-edit text-xs"></i></a>
-                                                        <form action="{{ route('admin.kelas-mata-kuliah.destroy', $k->db_id) }}"
-                                                            method="POST" class="delete-form">@csrf
-                                                            @method('DELETE')<button type="submit"
-                                                                class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition"
-                                                                title="Hapus"><i class="fas fa-trash text-xs"></i></button></form>
-                                                    @endif
+                                                    <a href="{{ route('admin.jadwal.edit', $k->db_id) }}"
+                                                        class="bg-yellow-500 text-white p-1.5 rounded hover:bg-yellow-600 transition"
+                                                        title="Edit"><i class="fas fa-edit text-xs"></i></a>
+                                                    <form action="{{ route('admin.jadwal.destroy', $k->db_id) }}"
+                                                        method="POST" class="delete-form">@csrf
+                                                        @method('DELETE')<button type="submit"
+                                                            class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition"
+                                                            title="Hapus"><i class="fas fa-trash text-xs"></i></button></form>
                                                 </div>
                                             </td>
                                         </tr>
@@ -536,8 +525,8 @@
                         'hari' => $s->hari,
                         'ruang' => $s->ruang,
                         'jam' => substr($s->jam_mulai, 0, 5) . '-' . substr($s->jam_selesai, 0, 5),
-                        'mk' => $s->mataKuliah->nama_mk ?? '',
-                        'dosen' => $s->dosen->user->name ?? ''
+                        'mk' => $s->nama_mk,
+                        'dosen' => $s->dosen_name
                     ];
                 })),
                 getRoomSchedules(room) {

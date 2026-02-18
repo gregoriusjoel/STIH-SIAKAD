@@ -32,4 +32,50 @@ class Semester extends Model
     {
         return $this->hasMany(KelasMataKuliah::class);
     }
+
+    /**
+     * Get mahasiswa who were updated in this semester
+     */
+    public function mahasiswas(): HasMany
+    {
+        return $this->hasMany(Mahasiswa::class, 'last_semester_id');
+    }
+
+    /**
+     * Scope to get only active semester
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope to get upcoming semesters
+     */
+    public function scopeUpcoming($query)
+    {
+        return $query->where('tanggal_mulai', '>', now())
+            ->orderBy('tanggal_mulai', 'asc');
+    }
+
+    /**
+     * Check if semester has ended
+     */
+    public function hasEnded(): bool
+    {
+        return $this->tanggal_selesai < now();
+    }
+
+    /**
+     * Check if KRS period is active
+     */
+    public function isKRSPeriodActive(): bool
+    {
+        if (!$this->krs_dapat_diisi) {
+            return false;
+        }
+
+        $now = now();
+        return $now >= $this->krs_mulai && $now <= $this->krs_selesai;
+    }
 }

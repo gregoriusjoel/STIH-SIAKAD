@@ -62,6 +62,12 @@ class User extends Authenticatable
         return $this->hasOne(Mahasiswa::class);
     }
 
+    // Alias for backward compatibility (student = mahasiswa)
+    public function student(): HasOne
+    {
+        return $this->mahasiswa();
+    }
+
     public function parent(): HasOne
     {
         return $this->hasOne(ParentModel::class);

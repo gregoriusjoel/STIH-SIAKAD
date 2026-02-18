@@ -59,7 +59,7 @@
             Daftar Mahasiswa
         </h4>
         <div class="overflow-x-auto border border-gray-200 rounded-lg">
-            <table class="w-full text-sm text-left">
+            <table class="w-full text-sm text-left" style="min-width: 700px;">
                 <thead class="bg-gray-50 text-[#616889]">
                     <tr>
                         <th class="px-4 py-3 font-semibold">NIM</th>

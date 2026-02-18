@@ -72,8 +72,7 @@
                                     Mahasiswa *
                                 </label>
                                 <select name="mahasiswa_id"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    required>
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
                                     <option value="">Pilih Mahasiswa</option>
                                     @foreach($mahasiswas as $mhs)
                                         <option value="{{ $mhs->id }}" {{ old('mahasiswa_id', $parent->mahasiswa_id) == $mhs->id ? 'selected' : '' }}>

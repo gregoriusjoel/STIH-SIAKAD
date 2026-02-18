@@ -56,19 +56,11 @@
 
     @stack('styles')
 
-    <!-- Early Dark Mode Detection (prevents flash) -->
-    <script>
-        (function () {
-            if (localStorage.getItem('color-theme') === 'dark' ||
-                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            }
-        })();
-    </script>
+
 
 </head>
 
-<body id="page-top" class="bg-gray-100 dark:bg-gray-900 font-nunito">
+<body id="page-top" class="bg-gray-100 font-nunito">
 
     <!-- Page Wrapper -->
     <div id="page-wrapper" class="flex h-screen overflow-hidden" x-data="{ sidebarOpen: false }">
@@ -83,7 +75,7 @@
             @include('layouts.partials.navbar')
 
             <!-- Main Content -->
-            <main class="w-full flex-grow bg-gray-100 dark:bg-gray-900 p-6">
+            <main class="w-full flex-grow bg-gray-100 p-6">
                 @yield('content')
             </main>
 

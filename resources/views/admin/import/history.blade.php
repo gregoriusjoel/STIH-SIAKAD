@@ -19,7 +19,7 @@
             <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Daftar semua aktivitas import data</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.import.index') }}" 
+            <a href="{{ route('admin.import.index') }}"
                 class="bg-maroon hover:bg-red-900 text-white px-4 py-2 rounded-lg transition flex items-center gap-2 shadow-md">
                 <i class="fas fa-file-import"></i>
                 <span>Import Baru</span>
@@ -33,12 +33,12 @@
     <form method="GET" action="{{ route('admin.import.history') }}" class="flex flex-wrap items-center gap-4">
         <div class="flex items-center gap-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Tipe:</label>
-            <select name="type" class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 text-sm">
+            <select name="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-maroon focus:border-maroon block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
                 <option value="">Semua Tipe</option>
                 @foreach($importTypes as $type => $config)
-                    <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
-                        {{ $config['title'] }}
-                    </option>
+                <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
+                    {{ $config['title'] }}
+                </option>
                 @endforeach
             </select>
         </div>
@@ -47,9 +47,9 @@
             Filter
         </button>
         @if(request('type'))
-            <a href="{{ route('admin.import.history') }}" class="text-sm text-gray-500 hover:text-maroon">
-                <i class="fas fa-times mr-1"></i>Reset
-            </a>
+        <a href="{{ route('admin.import.history') }}" class="text-sm text-gray-500 hover:text-maroon">
+            <i class="fas fa-times mr-1"></i>Reset
+        </a>
         @endif
     </form>
 </div>
@@ -123,7 +123,7 @@
                         <div class="text-xs">{{ $log->created_at->format('H:i:s') }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                        <a href="{{ route('admin.import.log', $log) }}" 
+                        <a href="{{ route('admin.import.log', $log) }}"
                             class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                             <i class="fas fa-eye"></i>
                         </a>

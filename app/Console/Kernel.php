@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\ImportLocationsCommand::class,
+        \App\Console\Commands\ProcessSemesterTransition::class,
     ];
 
     /**
@@ -21,7 +22,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        //
+        // Run semester transition check daily at 00:01 AM
+        $schedule->command('semester:process-transition')
+            ->dailyAt('00:01')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/semester-transition.log'));
+
+        // Optional: Send reminder 7 days before semester ends
+        // $schedule->command('semester:process-transition --status')
+        //     ->dailyAt('08:00');
     }
 
     /**

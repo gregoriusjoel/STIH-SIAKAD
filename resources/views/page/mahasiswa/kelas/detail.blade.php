@@ -32,8 +32,8 @@
         </nav>
     @endsection
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-24 2xl:px-48 py-6" x-data="{ activeTab: 'pertemuan' }">
-        <div class="mx-auto w-full max-w-[1800px] space-y-6">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-none" x-data="{ activeTab: 'pertemuan' }">
+        <div class="w-full space-y-6">
 
         <!-- Header Card -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

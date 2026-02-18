@@ -11,15 +11,15 @@ $highlightMissing = session('highlight_missing', false);
 
 // Count missing fields per tab
 $missingByTab = [
-    'akademik' => 0,
-    'data_pribadi' => 0,
-    'orang_tua' => 0,
-    'asal_sekolah' => 0, // Keep for backwards compatibility
+'akademik' => 0,
+'data_pribadi' => 0,
+'orang_tua' => 0,
+'asal_sekolah' => 0, // Keep for backwards compatibility
 ];
 foreach ($missingFields as $field => $info) {
-    if (isset($info['tab']) && isset($missingByTab[$info['tab']])) {
-        $missingByTab[$info['tab']]++;
-    }
+if (isset($info['tab']) && isset($missingByTab[$info['tab']])) {
+$missingByTab[$info['tab']]++;
+}
 }
 @endphp
 
@@ -79,9 +79,9 @@ foreach ($missingFields as $field => $info) {
     <div class="mb-8 border-b border-gray-200">
         <div class="flex overflow-x-auto no-scrollbar -mb-px">
             @foreach([
-                'akademik' => 'Akademik',
-                'data_pribadi' => 'Data Lanjutan',
-                'orang_tua' => 'Orang Tua / Wali'
+            'akademik' => 'Akademik',
+            'data_pribadi' => 'Data Lanjutan',
+            'orang_tua' => 'Orang Tua / Wali'
             ] as $key => $label)
             <button @click="activeTab = '{{ $key }}'" type="button"
                 class="whitespace-nowrap px-8 py-4 text-sm font-bold transition-all duration-200 border-b-2 relative"
@@ -115,7 +115,7 @@ foreach ($missingFields as $field => $info) {
 
                     {{-- Grid Container for Data Akademik --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                        
+
                         {{-- Left Column: Foto & Upload --}}
                         <div class="space-y-4">
                             {{-- Foto Profil --}}
@@ -177,14 +177,14 @@ foreach ($missingFields as $field => $info) {
 
                         {{-- Full Width or 2-Col for Readonly --}}
                         @foreach([
-                            'NIM' => $mahasiswa->nim,
-                            'Jurusan' => $mahasiswa->prodi,
-                            'Program' => '1 - REGULER',
-                            'Kurikulum' => '32 - Kurikulum ' . $mahasiswa->prodi . ' ' . $mahasiswa->angkatan,
-                            'Angkatan' => $mahasiswa->angkatan,
-                            'Penasehat Akademik' => 'Dosen PA',
-                            'Status Awal' => 'B - Baru',
-                            'Status Mahasiswa' => 'A - Aktif'
+                        'NIM' => $mahasiswa->nim,
+                        'Jurusan' => $mahasiswa->prodi,
+                        'Program' => '1 - REGULER',
+                        'Kurikulum' => '32 - Kurikulum ' . $mahasiswa->prodi . ' ' . $mahasiswa->angkatan,
+                        'Angkatan' => $mahasiswa->angkatan,
+                        'Penasehat Akademik' => 'Dosen PA',
+                        'Status Awal' => 'B - Baru',
+                        'Status Mahasiswa' => 'A - Aktif'
                         ] as $label => $value)
                         <div>
                             <label class="block text-sm text-gray-600 font-medium mb-2">{{ $label }}</label>
@@ -209,193 +209,197 @@ foreach ($missingFields as $field => $info) {
                 </div>
                 <div class="space-y-5">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                    {{-- Alamat Lengkap (Full Width) --}}
-                    <div class="md:col-span-2 space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Alamat Lengkap</label>
-                        <textarea name="alamat" rows="3"
-                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $mahasiswa->alamat }}</textarea>
-                    </div>
-
-                    {{-- RT / RW --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">RT / RW</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" name="rt" value="{{ $mahasiswa->rt }}" placeholder="RT"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
-                            <input type="text" name="rw" value="{{ $mahasiswa->rw }}" placeholder="RW"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        {{-- Alamat Lengkap (Full Width) --}}
+                        <div class="md:col-span-2 space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Alamat Lengkap</label>
+                            <textarea name="alamat" rows="3"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $mahasiswa->alamat }}</textarea>
                         </div>
-                    </div>
 
-                    {{-- Provinsi --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
-                        <select name="provinsi" id="provinsiSelect" 
-                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                            <option value="">Pilih Provinsi</option>
-                            @foreach($provinces as $prov)
-                            <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                        {{-- RT / RW --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">RT / RW</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" name="rt" value="{{ $mahasiswa->rt }}" placeholder="RT"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                                <input type="text" name="rw" value="{{ $mahasiswa->rw }}" placeholder="RW"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                            </div>
+                        </div>
 
-                    {{-- Kota/Kabupaten --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
-                        <select name="kota" id="kotaSelect" 
-                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                            <option value="">Pilih Kota/Kabupaten</option>
-                        </select>
-                    </div>
+                        {{-- Provinsi --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
+                            <select name="provinsi" id="provinsiSelect"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                                <option value="">Pilih Provinsi</option>
+                                @foreach($provinces as $prov)
+                                <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    {{-- Kecamatan --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
-                        <select name="kecamatan" id="kecamatanSelect" 
-                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                            <option value="">Pilih Kecamatan</option>
-                        </select>
-                    </div>
+                        {{-- Kota/Kabupaten --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
+                            <select name="kota" id="kotaSelect"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                <option value="">Pilih Kota/Kabupaten</option>
+                            </select>
+                        </div>
 
-                    {{-- Desa/Kelurahan --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
-                        <!-- Custom Searchable Dropdown -->
-                        <div x-data="desaDropdown()" class="relative" x-init="init()">
-                            <!-- Hidden input for form submission -->
-                            <input type="hidden" name="desa" :value="selected" x-ref="desaInput">
-                            
-                            <!-- Dropdown Trigger -->
-                            <button type="button" @click="updateDistrict(); open = !open; if(open) $nextTick(() => $refs.searchInput.focus())" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
-                                <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
-                                <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                            
-                            <!-- Dropdown Panel -->
-                            <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                                class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
-                                <!-- Search Input Inside Dropdown -->
-                                <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
-                                    <input type="text" x-model="search" x-ref="searchInput" @click.stop @keydown.escape="open = false"
-                                        placeholder="Cari desa/kelurahan..." 
-                                        class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
-                                </div>
-                                <!-- Options List -->
-                                <div class="max-h-52 overflow-y-auto">
-                                    <!-- No City Selected Message -->
-                                    <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
-                                        <div class="text-orange-400 mb-1">
-                                            <i class="fas fa-exclamation-circle text-xl"></i>
-                                        </div>
-                                        <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
+                        {{-- Kecamatan --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
+                            <select name="kecamatan" id="kecamatanSelect"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
+                        </div>
+
+                        {{-- Desa/Kelurahan --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
+                            <!-- Custom Searchable Dropdown -->
+                            <div x-data="desaDropdown()" class="relative" x-init="init()">
+                                <!-- Hidden input for form submission -->
+                                <input type="hidden" name="desa" :value="selected" x-ref="desaInput">
+
+                                <!-- Dropdown Trigger -->
+                                <button type="button" @click="updateDistrict(); open = !open; if(open) $nextTick(() => $refs.searchInput.focus())"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
+                                    <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
+                                    <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Dropdown Panel -->
+                                <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
+                                    <!-- Search Input Inside Dropdown -->
+                                    <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                        <input type="text" x-model="search" x-ref="searchInput" @click.stop @keydown.escape="open = false"
+                                            placeholder="Cari desa/kelurahan..."
+                                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
                                     </div>
-                                    <!-- Hint Message -->
-                                    <div x-show="showHint" class="px-4 py-8 text-center">
-                                        <div class="text-gray-400 mb-1">
-                                            <i class="fas fa-search text-xl"></i>
+                                    <!-- Options List -->
+                                    <div class="max-h-52 overflow-y-auto">
+                                        <!-- No City Selected Message -->
+                                        <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
+                                            <div class="text-orange-400 mb-1">
+                                                <i class="fas fa-exclamation-circle text-xl"></i>
+                                            </div>
+                                            <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
                                         </div>
-                                        <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
-                                    </div>
+                                        <!-- Hint Message -->
+                                        <div x-show="showHint" class="px-4 py-8 text-center">
+                                            <div class="text-gray-400 mb-1">
+                                                <i class="fas fa-search text-xl"></i>
+                                            </div>
+                                            <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
+                                        </div>
 
-                                    <template x-for="(opt, index) in filteredOptions" :key="index">
-                                        <div @click="selectOption(opt)" 
-                                            class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
-                                            :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
-                                            <span x-text="opt.text"></span>
+                                        <template x-for="(opt, index) in filteredOptions" :key="index">
+                                            <div @click="selectOption(opt)"
+                                                class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
+                                                :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
+                                                <span x-text="opt.text"></span>
+                                            </div>
+                                        </template>
+                                        <div x-show="!showHint && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
+                                            Tidak ditemukan
                                         </div>
-                                    </template>
-                                    <div x-show="!showHint && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
-                                        Tidak ditemukan
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <script>
-                            function desaDropdown() {
-                                return {
-                                    open: false,
-                                    search: '',
-                                    selected: @json($mahasiswa->desa ?? ''),
-                                    selectedText: @json($mahasiswa->desa ?? 'Pilih Desa'),
-                                    allOptions: window.villagesData,
-                                    currentDistrictCode: '',
-                                    isLoading: false,
-                                    noKecamatanSelected: true,
-                                    init() {
-                                        if (!this.selected) {
-                                            this.selectedText = 'Pilih Desa';
-                                        }
-                                        // Listen to Kecamatan dropdown changes
-                                        const kecamatanSelect = document.getElementById('kecamatanSelect');
-                                        if (kecamatanSelect) {
-                                            // Initial district code
-                                            const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
-                                            if (initialOpt && initialOpt.dataset.districtCode) {
-                                                this.currentDistrictCode = initialOpt.dataset.districtCode;
-                                                this.noKecamatanSelected = false;
-                                            } else {
-                                                this.noKecamatanSelected = true;
+
+                            <script>
+                                function desaDropdown() {
+                                    return {
+                                        open: false,
+                                        search: '',
+                                        selected: @json($mahasiswa->desa ?? ''),
+                                        selectedText: @json($mahasiswa->desa ?? 'Pilih Desa'),
+                                        allOptions: window.villagesData,
+                                        currentDistrictCode: '',
+                                        isLoading: false,
+                                        noKecamatanSelected: true,
+                                        init() {
+                                            if (!this.selected) {
+                                                this.selectedText = 'Pilih Desa';
                                             }
-                                            // On change
-                                            kecamatanSelect.addEventListener('change', (e) => {
-                                                const opt = e.target.options[e.target.selectedIndex];
+                                            // Listen to Kecamatan dropdown changes
+                                            const kecamatanSelect = document.getElementById('kecamatanSelect');
+                                            if (kecamatanSelect) {
+                                                // Initial district code
+                                                const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                if (initialOpt && initialOpt.dataset.districtCode) {
+                                                    this.currentDistrictCode = initialOpt.dataset.districtCode;
+                                                    this.noKecamatanSelected = false;
+                                                } else {
+                                                    this.noKecamatanSelected = true;
+                                                }
+                                                // On change
+                                                kecamatanSelect.addEventListener('change', (e) => {
+                                                    const opt = e.target.options[e.target.selectedIndex];
+                                                    this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                    this.noKecamatanSelected = !this.currentDistrictCode;
+                                                    // Reset selection when kecamatan changes
+                                                    this.selected = '';
+                                                    this.selectedText = 'Pilih Desa';
+                                                    this.search = '';
+                                                });
+                                            }
+                                        },
+                                        get options() {
+                                            if (!this.currentDistrictCode) return [];
+                                            return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
+                                        },
+                                        get filteredOptions() {
+                                            // Only show options when user types at least 2 characters
+                                            if (!this.search || this.search.trim().length < 2) return [];
+                                            const term = this.search.toLowerCase().trim();
+                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                        },
+                                        get showHint() {
+                                            if (this.noKecamatanSelected) return false;
+                                            return !this.search || this.search.trim().length < 2;
+                                        },
+                                        get showNoCityMessage() {
+                                            return this.noKecamatanSelected;
+                                        },
+                                        selectOption(opt) {
+                                            this.selected = opt.value;
+                                            this.selectedText = opt.text;
+                                            this.open = false;
+                                            this.search = '';
+                                            this.$nextTick(() => {
+                                                const input = this.$refs.desaInput;
+                                                if (input) {
+                                                    input.dispatchEvent(new Event('input', {
+                                                        bubbles: true
+                                                    }));
+                                                    input.dispatchEvent(new Event('change', {
+                                                        bubbles: true
+                                                    }));
+                                                }
+                                            });
+                                        },
+                                        updateDistrict() {
+                                            const kecamatanSelect = document.getElementById('kecamatanSelect');
+                                            if (kecamatanSelect) {
+                                                const opt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
                                                 this.currentDistrictCode = opt?.dataset?.districtCode || '';
                                                 this.noKecamatanSelected = !this.currentDistrictCode;
-                                                // Reset selection when kecamatan changes
-                                                this.selected = '';
-                                                this.selectedText = 'Pilih Desa';
-                                                this.search = '';
-                                            });
-                                        }
-                                    },
-                                    get options() {
-                                        if (!this.currentDistrictCode) return [];
-                                        return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
-                                    },
-                                    get filteredOptions() {
-                                        // Only show options when user types at least 2 characters
-                                        if (!this.search || this.search.trim().length < 2) return [];
-                                        const term = this.search.toLowerCase().trim();
-                                        return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
-                                    },
-                                    get showHint() {
-                                        if (this.noKecamatanSelected) return false;
-                                        return !this.search || this.search.trim().length < 2;
-                                    },
-                                    get showNoCityMessage() {
-                                        return this.noKecamatanSelected;
-                                    },
-                                    selectOption(opt) {
-                                        this.selected = opt.value;
-                                        this.selectedText = opt.text;
-                                        this.open = false;
-                                        this.search = '';
-                                        this.$nextTick(() => {
-                                            const input = this.$refs.desaInput;
-                                            if(input) {
-                                                input.dispatchEvent(new Event('input', {bubbles:true}));
-                                                input.dispatchEvent(new Event('change', {bubbles:true}));
                                             }
-                                        });
-                                    },
-                                    updateDistrict() {
-                                        const kecamatanSelect = document.getElementById('kecamatanSelect');
-                                        if (kecamatanSelect) {
-                                            const opt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
-                                            this.currentDistrictCode = opt?.dataset?.districtCode || '';
-                                            this.noKecamatanSelected = !this.currentDistrictCode;
                                         }
                                     }
                                 }
-                            }
-                        </script>
+                            </script>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
 
@@ -407,202 +411,206 @@ foreach ($missingFields as $field => $info) {
                 </div>
                 <div class="space-y-5">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                    {{-- Alamat Lengkap (Full Width) --}}
-                    <div class="md:col-span-2 space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Alamat</label>
-                        <textarea name="alamat_ktp" rows="3"
-                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $mahasiswa->alamat_ktp }}</textarea>
-                    </div>
-
-                    {{-- RT / RW --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">RT / RW</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" name="rt_ktp" value="{{ $mahasiswa->rt_ktp }}" placeholder="RT"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
-                            <input type="text" name="rw_ktp" value="{{ $mahasiswa->rw_ktp }}" placeholder="RW"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        {{-- Alamat Lengkap (Full Width) --}}
+                        <div class="md:col-span-2 space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Alamat</label>
+                            <textarea name="alamat_ktp" rows="3"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $mahasiswa->alamat_ktp }}</textarea>
                         </div>
-                    </div>
 
-                    {{-- Provinsi --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
-                        <select name="provinsi_ktp" id="provinsiKtpSelect" 
-                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                            <option value="">Pilih Provinsi</option>
-                            @foreach($provinces as $prov)
-                            <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi_ktp ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                        {{-- RT / RW --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">RT / RW</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" name="rt_ktp" value="{{ $mahasiswa->rt_ktp }}" placeholder="RT"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                                <input type="text" name="rw_ktp" value="{{ $mahasiswa->rw_ktp }}" placeholder="RW"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                            </div>
+                        </div>
 
-                    {{-- Kota/Kabupaten --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
-                        <select name="kota_ktp" id="kotaKtpSelect" 
-                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                            <option value="">Pilih Kota/Kabupaten</option>
-                        </select>
-                    </div>
+                        {{-- Provinsi --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
+                            <select name="provinsi_ktp" id="provinsiKtpSelect"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                                <option value="">Pilih Provinsi</option>
+                                @foreach($provinces as $prov)
+                                <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi_ktp ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    {{-- Kecamatan --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
-                        <select name="kecamatan_ktp" id="kecamatanKtpSelect" 
-                            class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                            <option value="">Pilih Kecamatan</option>
-                        </select>
-                    </div>
+                        {{-- Kota/Kabupaten --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
+                            <select name="kota_ktp" id="kotaKtpSelect"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                <option value="">Pilih Kota/Kabupaten</option>
+                            </select>
+                        </div>
 
-                    {{-- Desa/Kelurahan --}}
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
-                        <!-- Custom Searchable Dropdown for KTP -->
-                        <div x-data="desaKtpDropdown()" class="relative" x-init="init()">
-                            <!-- Hidden input for form submission -->
-                            <input type="hidden" name="desa_ktp" :value="selected" x-ref="desaKtpInput">
-                            
-                            <!-- Dropdown Trigger -->
-                            <button type="button" @click="updateDistrict(); open = !open; if(open) $nextTick(() => $refs.searchInputKtp.focus())" 
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
-                                <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
-                                <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                            
-                            <!-- Dropdown Panel -->
-                            <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                                class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
-                                <!-- Search Input Inside Dropdown -->
-                                <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
-                                    <input type="text" x-model="search" x-ref="searchInputKtp" @click.stop @keydown.escape="open = false"
-                                        placeholder="Cari desa/kelurahan..." 
-                                        class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
-                                </div>
-                                <!-- Options List -->
-                                <div class="max-h-52 overflow-y-auto">
-                                    <!-- No City Selected Message -->
-                                    <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
-                                        <div class="text-orange-400 mb-1">
-                                            <i class="fas fa-exclamation-circle text-xl"></i>
-                                        </div>
-                                        <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
+                        {{-- Kecamatan --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
+                            <select name="kecamatan_ktp" id="kecamatanKtpSelect"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
+                        </div>
+
+                        {{-- Desa/Kelurahan --}}
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Desa/Kelurahan</label>
+                            <!-- Custom Searchable Dropdown for KTP -->
+                            <div x-data="desaKtpDropdown()" class="relative" x-init="init()">
+                                <!-- Hidden input for form submission -->
+                                <input type="hidden" name="desa_ktp" :value="selected" x-ref="desaKtpInput">
+
+                                <!-- Dropdown Trigger -->
+                                <button type="button" @click="updateDistrict(); open = !open; if(open) $nextTick(() => $refs.searchInputKtp.focus())"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white text-left flex items-center justify-between">
+                                    <span x-text="selectedText" :class="selected ? 'text-gray-900' : 'text-gray-400'"></span>
+                                    <svg class="w-5 h-5 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Dropdown Panel -->
+                                <div x-show="open" @click.away="open = false; search = ''" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
+                                    <!-- Search Input Inside Dropdown -->
+                                    <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                        <input type="text" x-model="search" x-ref="searchInputKtp" @click.stop @keydown.escape="open = false"
+                                            placeholder="Cari desa/kelurahan..."
+                                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
                                     </div>
-                                    <!-- Hint Message -->
-                                    <div x-show="showHint" class="px-4 py-8 text-center">
-                                        <div class="text-gray-400 mb-1">
-                                            <i class="fas fa-search text-xl"></i>
+                                    <!-- Options List -->
+                                    <div class="max-h-52 overflow-y-auto">
+                                        <!-- No City Selected Message -->
+                                        <div x-show="showNoCityMessage" class="px-4 py-8 text-center">
+                                            <div class="text-orange-400 mb-1">
+                                                <i class="fas fa-exclamation-circle text-xl"></i>
+                                            </div>
+                                            <p class="text-xs text-orange-500 font-medium">Pilih Kecamatan terlebih dahulu</p>
                                         </div>
-                                        <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
-                                    </div>
+                                        <!-- Hint Message -->
+                                        <div x-show="showHint" class="px-4 py-8 text-center">
+                                            <div class="text-gray-400 mb-1">
+                                                <i class="fas fa-search text-xl"></i>
+                                            </div>
+                                            <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
+                                        </div>
 
-                                    <template x-for="(opt, index) in filteredOptions" :key="index">
-                                        <div @click="selectOption(opt)" 
-                                            class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
-                                            :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
-                                            <span x-text="opt.text"></span>
+                                        <template x-for="(opt, index) in filteredOptions" :key="index">
+                                            <div @click="selectOption(opt)"
+                                                class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
+                                                :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
+                                                <span x-text="opt.text"></span>
+                                            </div>
+                                        </template>
+                                        <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
+                                            Tidak ditemukan
                                         </div>
-                                    </template>
-                                    <div x-show="!showHint && !showNoCityMessage && filteredOptions.length === 0" class="px-4 py-3 text-sm text-gray-400 text-center">
-                                        Tidak ditemukan
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <script>
-                            function desaKtpDropdown() {
-                                return {
-                                    open: false,
-                                    search: '',
-                                    selected: @json($mahasiswa->desa_ktp ?? ''),
-                                    selectedText: @json($mahasiswa->desa_ktp ?? 'Pilih Desa'),
-                                    allOptions: window.villagesData,
-                                    currentDistrictCode: '',
-                                    isLoading: false,
-                                    noKecamatanSelected: true,
-                                    init() {
-                                        if (!this.selected) {
-                                            this.selectedText = 'Pilih Desa';
-                                        }
-                                        // Listen to Kecamatan KTP dropdown changes
-                                        const kecamatanSelect = document.getElementById('kecamatanKtpSelect');
-                                        if (kecamatanSelect) {
-                                            // Initial district code
-                                            const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
-                                            if (initialOpt && initialOpt.dataset.districtCode) {
-                                                this.currentDistrictCode = initialOpt.dataset.districtCode;
-                                                this.noKecamatanSelected = false;
-                                            } else {
-                                                this.noKecamatanSelected = true;
+
+                            <script>
+                                function desaKtpDropdown() {
+                                    return {
+                                        open: false,
+                                        search: '',
+                                        selected: @json($mahasiswa->desa_ktp ?? ''),
+                                        selectedText: @json($mahasiswa->desa_ktp ?? 'Pilih Desa'),
+                                        allOptions: window.villagesData,
+                                        currentDistrictCode: '',
+                                        isLoading: false,
+                                        noKecamatanSelected: true,
+                                        init() {
+                                            if (!this.selected) {
+                                                this.selectedText = 'Pilih Desa';
                                             }
-                                            // On change
-                                            kecamatanSelect.addEventListener('change', (e) => {
-                                                const opt = e.target.options[e.target.selectedIndex];
+                                            // Listen to Kecamatan KTP dropdown changes
+                                            const kecamatanSelect = document.getElementById('kecamatanKtpSelect');
+                                            if (kecamatanSelect) {
+                                                // Initial district code
+                                                const initialOpt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
+                                                if (initialOpt && initialOpt.dataset.districtCode) {
+                                                    this.currentDistrictCode = initialOpt.dataset.districtCode;
+                                                    this.noKecamatanSelected = false;
+                                                } else {
+                                                    this.noKecamatanSelected = true;
+                                                }
+                                                // On change
+                                                kecamatanSelect.addEventListener('change', (e) => {
+                                                    const opt = e.target.options[e.target.selectedIndex];
+                                                    this.currentDistrictCode = opt?.dataset?.districtCode || '';
+                                                    this.noKecamatanSelected = !this.currentDistrictCode;
+                                                    // Reset selection when kecamatan changes
+                                                    this.selected = '';
+                                                    this.selectedText = 'Pilih Desa';
+                                                    this.search = '';
+                                                });
+                                            }
+                                        },
+                                        get options() {
+                                            if (!this.currentDistrictCode) return [];
+                                            return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
+                                        },
+                                        get filteredOptions() {
+                                            // Only show options when user types at least 2 characters
+                                            if (!this.search || this.search.trim().length < 2) return [];
+                                            const term = this.search.toLowerCase().trim();
+                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                        },
+                                        get showHint() {
+                                            if (this.noKecamatanSelected) return false;
+                                            return !this.search || this.search.trim().length < 2;
+                                        },
+                                        get showNoCityMessage() {
+                                            return this.noKecamatanSelected;
+                                        },
+                                        selectOption(opt) {
+                                            this.selected = opt.value;
+                                            this.selectedText = opt.text;
+                                            this.open = false;
+                                            this.search = '';
+                                            this.$nextTick(() => {
+                                                const input = this.$refs.desaKtpInput;
+                                                if (input) {
+                                                    input.dispatchEvent(new Event('input', {
+                                                        bubbles: true
+                                                    }));
+                                                    input.dispatchEvent(new Event('change', {
+                                                        bubbles: true
+                                                    }));
+                                                }
+                                            });
+                                        },
+                                        updateDistrict() {
+                                            const kecamatanSelect = document.getElementById('kecamatanKtpSelect');
+                                            if (kecamatanSelect) {
+                                                const opt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
                                                 this.currentDistrictCode = opt?.dataset?.districtCode || '';
                                                 this.noKecamatanSelected = !this.currentDistrictCode;
-                                                // Reset selection when kecamatan changes
-                                                this.selected = '';
-                                                this.selectedText = 'Pilih Desa';
-                                                this.search = '';
-                                            });
-                                        }
-                                    },
-                                    get options() {
-                                        if (!this.currentDistrictCode) return [];
-                                        return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
-                                    },
-                                    get filteredOptions() {
-                                        // Only show options when user types at least 2 characters
-                                        if (!this.search || this.search.trim().length < 2) return [];
-                                        const term = this.search.toLowerCase().trim();
-                                        return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
-                                    },
-                                    get showHint() {
-                                        if (this.noKecamatanSelected) return false;
-                                        return !this.search || this.search.trim().length < 2;
-                                    },
-                                    get showNoCityMessage() {
-                                        return this.noKecamatanSelected;
-                                    },
-                                    selectOption(opt) {
-                                        this.selected = opt.value;
-                                        this.selectedText = opt.text;
-                                        this.open = false;
-                                        this.search = '';
-                                        this.$nextTick(() => {
-                                            const input = this.$refs.desaKtpInput;
-                                            if(input) {
-                                                input.dispatchEvent(new Event('input', {bubbles:true}));
-                                                input.dispatchEvent(new Event('change', {bubbles:true}));
                                             }
-                                        });
-                                    },
-                                    updateDistrict() {
-                                        const kecamatanSelect = document.getElementById('kecamatanKtpSelect');
-                                        if (kecamatanSelect) {
-                                            const opt = kecamatanSelect.options[kecamatanSelect.selectedIndex];
-                                            this.currentDistrictCode = opt?.dataset?.districtCode || '';
-                                            this.noKecamatanSelected = !this.currentDistrictCode;
                                         }
                                     }
                                 }
-                            }
-                        </script>
+                            </script>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
 
             {{-- Scripts for Address Dropdowns --}}
             <script>
-                (function(){
+                (function() {
                     const cities = @json($cities);
                     const districts = @json($districts);
-                    
+
                     function setupAddressGroup(provId, kotaId, kecamatanId, initialKota, initialKecamatan) {
                         const provSelect = document.getElementById(provId);
                         const kotaSelect = document.getElementById(kotaId);
@@ -689,7 +697,7 @@ foreach ($missingFields as $field => $info) {
 
                     setupAddressGroup('provinsiSelect', 'kotaSelect', 'kecamatanSelect', @json($mahasiswa->kota ?? ''), @json($mahasiswa->kecamatan ?? ''));
                     setupAddressGroup('provinsiKtpSelect', 'kotaKtpSelect', 'kecamatanKtpSelect', @json($mahasiswa->kota_ktp ?? ''), @json($mahasiswa->kecamatan_ktp ?? ''));
-                    
+
                     // Setup for Orang Tua and Wali sections (delayed to ensure elements exist)
                     document.addEventListener('DOMContentLoaded', function() {
                         // Small delay to ensure Alpine.js has rendered the elements
@@ -776,25 +784,25 @@ foreach ($missingFields as $field => $info) {
                         Upload dokumen dalam format PDF atau JPEG/PNG (Maksimal 5MB per file).
                     </p>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     @foreach([
-                        ['name' => 'file_ijazah', 'label' => 'Ijazah', 'data' => $mahasiswa->file_ijazah],
-                        ['name' => 'file_transkrip', 'label' => 'Transkrip Nilai', 'data' => $mahasiswa->file_transkrip],
-                        ['name' => 'file_kk', 'label' => 'Kartu Keluarga (KK)', 'data' => $mahasiswa->file_kk],
-                        ['name' => 'file_ktp', 'label' => 'KTP', 'data' => $mahasiswa->file_ktp],
+                    ['name' => 'file_ijazah', 'label' => 'Ijazah', 'data' => $mahasiswa->file_ijazah],
+                    ['name' => 'file_transkrip', 'label' => 'Transkrip Nilai', 'data' => $mahasiswa->file_transkrip],
+                    ['name' => 'file_kk', 'label' => 'Kartu Keluarga (KK)', 'data' => $mahasiswa->file_kk],
+                    ['name' => 'file_ktp', 'label' => 'KTP', 'data' => $mahasiswa->file_ktp],
                     ] as $doc)
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
                             <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">{{ $doc['label'] }}</label>
                             @if($doc['data'] && count($doc['data']) > 0)
-                                <span class="text-[10px] font-bold text-green-600 uppercase flex items-center gap-1">
-                                    <i class="fas fa-check-circle"></i> Terupload
-                                </span>
+                            <span class="text-[10px] font-bold text-green-600 uppercase flex items-center gap-1">
+                                <i class="fas fa-check-circle"></i> Terupload
+                            </span>
                             @else
-                                <span class="text-[10px] font-bold text-red-500 uppercase flex items-center gap-1">
-                                    <i class="fas fa-exclamation-circle"></i> Belum Upload
-                                </span>
+                            <span class="text-[10px] font-bold text-red-500 uppercase flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle"></i> Belum Upload
+                            </span>
                             @endif
                         </div>
                         <div class="relative group">
@@ -804,15 +812,20 @@ foreach ($missingFields as $field => $info) {
                                 class="w-full px-4 py-3 bg-[#F9FAFB] border border-[#E5E7EB] border-dashed rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-[#8B1538] file:text-white hover:file:bg-[#6D1029]">
                         </div>
                         @if($doc['data'] && count($doc['data']) > 0)
-                            <div class="flex flex-wrap gap-2">
-                                @foreach($doc['data'] as $file)
-                                <a href="{{ asset('storage/' . $file) }}" target="_blank" 
-                                    class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#4B5563] text-[11px] font-bold rounded-lg transition-colors border border-[#E5E7EB]">
-                                    <i class="fas fa-file-pdf text-[#8B1538]"></i>
-                                    {{ Str::limit(basename($file), 20) }}
-                                </a>
-                                @endforeach
-                            </div>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($doc['data'] as $file)
+                            @php
+                            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                            $iconClass = in_array($ext, ['jpg','jpeg','png']) ? 'fa-file-image text-blue-600' : 'fa-file-pdf text-[#8B1538]';
+                            @endphp
+                            <button type="button"
+                                onclick="openFilePreview('{{ asset('storage/' . $file) }}', 'Preview {{ $doc['label'] }}', '{{ $ext }}')"
+                                class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#4B5563] text-[11px] font-bold rounded-lg transition-colors border border-[#E5E7EB] cursor-pointer">
+                                <i class="fas {{ $iconClass }}"></i>
+                                {{ Str::limit(basename($file), 20) }}
+                            </button>
+                            @endforeach
+                        </div>
                         @endif
                     </div>
                     @endforeach
@@ -1074,7 +1087,7 @@ foreach ($missingFields as $field => $info) {
                                         class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
                                         <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
                                             <input type="text" x-model="search" x-ref="searchInputAyah" @click.stop @keydown.escape="open = false"
-                                                placeholder="Cari desa/kelurahan..." 
+                                                placeholder="Cari desa/kelurahan..."
                                                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
                                         </div>
                                         <div class="max-h-52 overflow-y-auto">
@@ -1087,7 +1100,7 @@ foreach ($missingFields as $field => $info) {
                                                 <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
                                             </div>
                                             <template x-for="(opt, index) in filteredOptions" :key="index">
-                                                <div @click="selectOption(opt)" 
+                                                <div @click="selectOption(opt)"
                                                     class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
                                                     :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
                                                     <span x-text="opt.text"></span>
@@ -1151,9 +1164,13 @@ foreach ($missingFields as $field => $info) {
                                                 this.search = '';
                                                 this.$nextTick(() => {
                                                     const input = this.$refs.desaAyahInput;
-                                                    if(input) {
-                                                        input.dispatchEvent(new Event('input', {bubbles:true}));
-                                                        input.dispatchEvent(new Event('change', {bubbles:true}));
+                                                    if (input) {
+                                                        input.dispatchEvent(new Event('input', {
+                                                            bubbles: true
+                                                        }));
+                                                        input.dispatchEvent(new Event('change', {
+                                                            bubbles: true
+                                                        }));
                                                     }
                                                 });
                                             },
@@ -1169,7 +1186,7 @@ foreach ($missingFields as $field => $info) {
                                     }
                                 </script>
                             </div>
-                            
+
                             {{-- Handphone Ayah (Using Grid Flow to fit in remaining space) --}}
                             <div>
                                 <label class="block text-sm text-gray-600 font-medium mb-2">Handphone Ayah</label>
@@ -1244,7 +1261,7 @@ foreach ($missingFields as $field => $info) {
                                         class="absolute z-50 w-full mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden" style="display: none;">
                                         <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
                                             <input type="text" x-model="search" x-ref="searchInputIbu" @click.stop @keydown.escape="open = false"
-                                                placeholder="Cari desa/kelurahan..." 
+                                                placeholder="Cari desa/kelurahan..."
                                                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
                                         </div>
                                         <div class="max-h-52 overflow-y-auto">
@@ -1257,7 +1274,7 @@ foreach ($missingFields as $field => $info) {
                                                 <p class="text-xs text-gray-500 font-medium">Ketik minimal 2 karakter<br>untuk mencari desa/kelurahan</p>
                                             </div>
                                             <template x-for="(opt, index) in filteredOptions" :key="index">
-                                                <div @click="selectOption(opt)" 
+                                                <div @click="selectOption(opt)"
                                                     class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
                                                     :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
                                                     <span x-text="opt.text"></span>
@@ -1321,9 +1338,13 @@ foreach ($missingFields as $field => $info) {
                                                 this.search = '';
                                                 this.$nextTick(() => {
                                                     const input = this.$refs.desaIbuInput;
-                                                    if(input) {
-                                                        input.dispatchEvent(new Event('input', {bubbles:true}));
-                                                        input.dispatchEvent(new Event('change', {bubbles:true}));
+                                                    if (input) {
+                                                        input.dispatchEvent(new Event('input', {
+                                                            bubbles: true
+                                                        }));
+                                                        input.dispatchEvent(new Event('change', {
+                                                            bubbles: true
+                                                        }));
                                                     }
                                                 });
                                             },
@@ -1339,7 +1360,7 @@ foreach ($missingFields as $field => $info) {
                                     }
                                 </script>
                             </div>
-                            
+
                             {{-- Handphone Ibu --}}
                             <div>
                                 <label class="block text-sm text-gray-600 font-medium mb-2">Handphone Ibu</label>
@@ -1489,7 +1510,7 @@ foreach ($missingFields as $field => $info) {
                                         <!-- Search Input Inside Dropdown -->
                                         <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
                                             <input type="text" x-model="search" x-ref="searchInputWali" @click.stop @keydown.escape="open = false"
-                                                placeholder="Cari desa/kelurahan..." 
+                                                placeholder="Cari desa/kelurahan..."
                                                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#8B1538] focus:ring-2 focus:ring-[#8B1538]/10 outline-none">
                                         </div>
                                         <!-- Options List -->
@@ -1510,7 +1531,7 @@ foreach ($missingFields as $field => $info) {
                                             </div>
 
                                             <template x-for="(opt, index) in filteredOptions" :key="index">
-                                                <div @click="selectOption(opt)" 
+                                                <div @click="selectOption(opt)"
                                                     class="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#8B1538]/5 transition-colors border-b border-gray-50 last:border-0"
                                                     :class="selected === opt.value ? 'bg-[#8B1538]/10 text-[#8B1538] font-semibold' : 'text-gray-700'">
                                                     <span x-text="opt.text"></span>
@@ -1522,7 +1543,7 @@ foreach ($missingFields as $field => $info) {
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <script>
                                     function desaWaliDropdown() {
                                         return {
@@ -1583,9 +1604,13 @@ foreach ($missingFields as $field => $info) {
                                                 this.search = '';
                                                 this.$nextTick(() => {
                                                     const input = this.$refs.desaWaliInput;
-                                                    if(input) {
-                                                        input.dispatchEvent(new Event('input', {bubbles:true}));
-                                                        input.dispatchEvent(new Event('change', {bubbles:true}));
+                                                    if (input) {
+                                                        input.dispatchEvent(new Event('input', {
+                                                            bubbles: true
+                                                        }));
+                                                        input.dispatchEvent(new Event('change', {
+                                                            bubbles: true
+                                                        }));
                                                     }
                                                 });
                                             },
@@ -1715,18 +1740,18 @@ foreach ($missingFields as $field => $info) {
 
             {{-- Actions (inside Orang Tua/Wali tab) --}}
             <div class="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-end gap-3">
-                <a href="{{ route('mahasiswa.profil.index') }}" 
+                <a href="{{ route('mahasiswa.profil.index') }}"
                     class="w-full sm:w-auto px-8 py-3 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#4B5563] text-sm font-bold rounded-xl transition-all hover:-translate-y-0.5 text-center">
                     <i class="fas fa-times mr-2 font-medium"></i> Batal
                 </a>
-                
+
                 @if(!$isLocked)
-                <button type="submit" 
+                <button type="submit"
                     class="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] hover:from-[#6D1029] hover:to-[#550c20] text-white text-sm font-bold rounded-xl shadow-lg shadow-maroon/20 transition-all hover:-translate-y-0.5 flex items-center justify-center">
                     <i class="fas fa-save mr-2 font-medium"></i> Update Profil Mahasiswa
                 </button>
                 @else
-                <button type="submit" 
+                <button type="submit"
                     class="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] hover:from-[#6D1029] hover:to-[#550c20] text-white text-sm font-bold rounded-xl shadow-lg shadow-maroon/20 transition-all hover:-translate-y-0.5 flex items-center justify-center">
                     <i class="fas fa-save mr-2 font-medium"></i> Update Profil Mahasiswa
                 </button>
@@ -1742,16 +1767,16 @@ foreach ($missingFields as $field => $info) {
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
         const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png'];
         const files = input.files;
-        
+
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const fileName = file.name.toLowerCase();
             const fileType = file.type;
-            
+
             // Check if file type is allowed
             const isValidType = allowedTypes.includes(fileType);
             const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
-            
+
             if (!isValidType && !isValidExtension) {
                 Swal.fire({
                     icon: 'error',
@@ -1914,7 +1939,6 @@ foreach ($missingFields as $field => $info) {
             }
         });
     });
-
 </script>
 
 {{-- Dynamic "Belum Diisi" Label Styles (always active) --}}
@@ -1925,22 +1949,34 @@ foreach ($missingFields as $field => $info) {
         font-weight: normal;
         color: #9CA3AF;
     }
+
     .missing-field {
         border-color: #ef4444 !important;
         background-color: #fef2f2 !important;
         animation: pulse-red 2s ease-in-out;
     }
+
     .missing-field:focus {
         border-color: #ef4444 !important;
         ring-color: rgba(239, 68, 68, 0.2) !important;
     }
+
     @keyframes pulse-red {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-        50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); }
+
+        0%,
+        100% {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+        }
+
+        50% {
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+        }
     }
+
     .missing-label {
         color: #ef4444 !important;
     }
+
     .missing-label::after {
         content: ' (Belum diisi)';
         font-size: 10px;
@@ -1968,12 +2004,12 @@ foreach ($missingFields as $field => $info) {
             }
             return null;
         }
-        
+
         // Toggle the empty-field-label class based on whether the field has a value
         function toggleEmptyLabel(element) {
             const label = findLabelForElement(element);
             if (!label) return;
-            
+
             let hasValue = false;
             if (element.type === 'file') {
                 hasValue = element.files && element.files.length > 0;
@@ -1982,7 +2018,7 @@ foreach ($missingFields as $field => $info) {
             } else {
                 hasValue = element.value.trim() !== '';
             }
-            
+
             if (hasValue) {
                 label.classList.remove('empty-field-label');
             } else {
@@ -1992,14 +2028,14 @@ foreach ($missingFields as $field => $info) {
                 }
             }
         }
-        
+
         // Apply to all visible form fields
         const allFields = document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea');
-        
+
         allFields.forEach(element => {
             // Initial check
             toggleEmptyLabel(element);
-            
+
             // Add event listeners
             const eventType = (element.tagName === 'SELECT' || element.type === 'file') ? 'change' : 'input';
             element.addEventListener(eventType, function() {
@@ -2009,35 +2045,39 @@ foreach ($missingFields as $field => $info) {
                 toggleEmptyLabel(element);
             });
         });
-        
+
         // Handle hidden inputs for custom dropdowns (like Desa/Kelurahan)
         const hiddenInputs = document.querySelectorAll('input[type="hidden"][name^="desa"]');
-        
+
         // Store previous values to detect changes
         const previousValues = {};
         hiddenInputs.forEach(element => {
             previousValues[element.name] = element.value;
             toggleEmptyLabel(element);
         });
-        
+
         // Poll hidden inputs for changes (since they are updated by Alpine)
         setInterval(() => {
             hiddenInputs.forEach(element => {
                 const currentValue = element.value;
                 const prevValue = previousValues[element.name];
-                
+
                 // Always update the label state
                 toggleEmptyLabel(element);
-                
+
                 // If value changed, dispatch a change event for other listeners
                 if (currentValue !== prevValue) {
                     previousValues[element.name] = currentValue;
-                    element.dispatchEvent(new Event('input', { bubbles: true }));
-                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                    element.dispatchEvent(new Event('input', {
+                        bubbles: true
+                    }));
+                    element.dispatchEvent(new Event('change', {
+                        bubbles: true
+                    }));
                 }
             });
         }, 200);
-        
+
         // Backend-driven missing fields highlight (additional red styling)
         @if($highlightMissing && count($missingFields) > 0)
         const missingFields = @json(array_keys($missingFields));
@@ -2102,10 +2142,10 @@ foreach ($missingFields as $field => $info) {
             'desa_wali': 'input[name="desa_wali"]',
             'handphone_wali': 'input[name="handphone_wali"]',
         };
-        
+
         function toggleMissingState(element, isEmpty) {
             const label = findLabelForElement(element);
-            
+
             if (isEmpty) {
                 element.classList.add('missing-field');
                 if (label) {
@@ -2129,13 +2169,13 @@ foreach ($missingFields as $field => $info) {
                 toggleEmptyLabel(element);
             }
         }
-        
+
         missingFields.forEach(field => {
             let selector = fieldSelectors[field];
             if (!selector && field.startsWith('keluarga.')) {
                 const parts = field.split('.');
                 if (parts.length === 3) {
-                    selector = `[name="keluarga[${parts[1]}][${parts[2]}]"]`; 
+                    selector = `[name="keluarga[${parts[1]}][${parts[2]}]"]`;
                 }
             }
             if (selector) {
@@ -2147,7 +2187,7 @@ foreach ($missingFields as $field => $info) {
                         label.classList.remove('empty-field-label');
                         label.classList.add('missing-label');
                     }
-                    
+
                     const eventType = (element.tagName === 'SELECT' || element.type === 'file') ? 'change' : 'input';
                     element.addEventListener(eventType, function() {
                         let hasValue = element.type === 'file' ? (element.files && element.files.length > 0) : element.value.trim() !== '';
@@ -2156,14 +2196,115 @@ foreach ($missingFields as $field => $info) {
                 }
             }
         });
-        
+
         setTimeout(() => {
             const firstMissing = document.querySelector('.missing-field');
             if (firstMissing) {
-                firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstMissing.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
             }
         }, 500);
         @endif
+    });
+</script>
+
+{{-- File Preview Modal --}}
+<div id="filePreviewModal"
+    class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden"
+    onclick="if(event.target === this) closeFilePreview()">
+    {{-- Backdrop --}}
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    {{-- Modal Content --}}
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden z-10 animate-fade-in">
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-lg bg-maroon/10 flex items-center justify-center shrink-0">
+                    <i class="fas fa-eye text-maroon text-sm"></i>
+                </div>
+                <span id="previewFileName" class="text-sm font-bold text-gray-800 truncate"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <a id="previewOpenNewTabBtn" href="#" target="_blank"
+                    class="px-2 md:px-3 py-1.5 text-xs font-bold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition shadow-sm flex items-center"
+                    title="Buka di tab baru">
+                    <i class="fas fa-external-link-alt md:mr-1.5"></i><span class="hidden md:inline ml-1">Buka Tab Baru</span>
+                </a>
+                <a id="previewDownloadBtn" href="#" download
+                    class="inline-flex items-center px-2 md:px-3 py-1.5 bg-[#8B1538] hover:bg-[#6D1029] text-white text-xs font-bold rounded-lg transition-colors">
+                    <i class="fas fa-download"></i><span class="hidden md:inline ml-1.5">Download</span>
+                </a>
+                <button type="button" onclick="closeFilePreview()"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200 text-gray-500 hover:text-gray-800 transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+        </div>
+        {{-- Body --}}
+        <div id="previewBody" class="flex-1 overflow-auto bg-gray-100 flex items-center justify-center min-h-[50vh] md:min-h-[400px]">
+            {{-- Content will be injected by JS --}}
+        </div>
+    </div>
+</div>
+
+<style>
+    #filePreviewModal .animate-fade-in {
+        animation: modalFadeIn 0.2s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>
+
+<script>
+    function openFilePreview(url, filename, ext) {
+        const modal = document.getElementById('filePreviewModal');
+        const body = document.getElementById('previewBody');
+        const nameEl = document.getElementById('previewFileName');
+        // const iconEl = document.getElementById('previewIcon');
+        const downloadBtn = document.getElementById('previewDownloadBtn');
+        const newTabBtn = document.getElementById('previewOpenNewTabBtn');
+
+        nameEl.textContent = filename;
+        downloadBtn.href = url;
+        if (newTabBtn) newTabBtn.href = url;
+
+        const isImage = ['jpg', 'jpeg', 'png'].includes(ext.toLowerCase());
+
+        if (isImage) {
+            // iconEl.className = 'fas fa-file-image text-blue-600 text-lg';
+            body.innerHTML = '<img src="' + url + '" alt="' + filename + '" class="max-w-full max-h-[75vh] object-contain rounded shadow-sm" />';
+        } else {
+            // iconEl.className = 'fas fa-file-pdf text-[#8B1538] text-lg';
+            body.innerHTML = '<iframe src="' + url + '" class="w-full h-full border-0 min-h-[60vh] md:min-h-[75vh]"></iframe>';
+        }
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFilePreview() {
+        const modal = document.getElementById('filePreviewModal');
+        const body = document.getElementById('previewBody');
+        modal.classList.add('hidden');
+        body.innerHTML = '';
+        document.body.style.overflow = '';
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeFilePreview();
     });
 </script>
 @endsection

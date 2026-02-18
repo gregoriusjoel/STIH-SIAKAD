@@ -26,7 +26,8 @@
                 <h3 class="font-bold text-gray-800">Riwayat Kehadiran Terakhir</h3>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full">
+            <div class="overflow-x-auto">
+                <table class="w-full" style="min-width: 800px;">
                     <thead class="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase font-semibold">
                         <tr>
                             <th class="px-6 py-3 text-left">Tanggal & Waktu</th>

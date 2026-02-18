@@ -134,72 +134,27 @@
                     </div>
                 </a>
 
-                <!-- KRS Pending Card -->
-                <a href="{{ route('admin.krs.index', ['status' => 'pending']) }}" class="group block">
+                <!-- Jadwal Perkuliahan Card -->
+                <a href="{{ route('admin.jadwal.index') }}" class="group block">
                     <div class="relative bg-white dark:bg-gray-700/60 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border border-red-100 dark:border-red-900/30 hover:border-red-400 dark:hover:border-red-600">
                         <div class="flex items-start justify-between mb-2">
                             <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-md p-2 shadow-sm">
-                                <i class="fas fa-clock text-base text-white"></i>
+                                <i class="fas fa-calendar-alt text-base text-white"></i>
                             </div>
                         </div>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">KRS Pending</p>
-                        <h4 class="text-2xl font-bold text-gray-800 dark:text-gray-100 my-1">{{ $krs_pending }}</h4>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Jadwal Perkuliahan</p>
+                        <h4 class="text-2xl font-bold text-gray-800 dark:text-gray-100 my-1">{{ $total_jadwal }}</h4>
                         <p class="text-red-600 dark:text-red-400 text-sm font-semibold flex items-center">
                             Detail <i class="fas fa-arrow-right ml-1 text-xs group-hover:translate-x-0.5 transition-transform"></i>
                         </p>
                     </div>
                 </a>
             </div>
-        </div>
+        </div>  
     </div>
 </div>
 
-<!-- Menu Cepat - Full Width -->
-<div class="relative overflow-hidden bg-gradient-to-br from-slate-500/5 via-gray-400/5 to-slate-500/5 dark:from-gray-900/40 dark:to-gray-800/40 rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 border border-gray-200/50 dark:border-gray-700/50 mb-4">
-    <div class="absolute top-0 right-0 w-32 h-32 bg-maroon/5 dark:bg-maroon/10 rounded-full -mr-16 -mt-16"></div>
-    <div class="relative">
-        <div class="flex items-center mb-3">
-            <div class="bg-gradient-to-br from-maroon to-red-700 rounded-lg p-2 mr-2 shadow-sm">
-                <i class="fas fa-bolt text-white text-sm"></i>
-            </div>
-            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-200">Menu Cepat</h3>
-        </div>
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <a href="{{ route('admin.mahasiswa.create') }}" class="group block bg-white dark:bg-gray-700/60 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border border-maroon/20 hover:border-maroon dark:border-maroon/30">
-                <div class="bg-gradient-to-br from-maroon/10 to-red-600/10 dark:from-maroon/20 dark:to-red-600/20 rounded-md p-2 mb-2 w-fit">
-                    <i class="fas fa-user-plus text-base text-maroon dark:text-red-400"></i>
-                </div>
-                <h4 class="font-bold text-sm text-gray-800 dark:text-gray-100">Mahasiswa</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 leading-tight">Daftar baru</p>
-            </a>
 
-            <a href="{{ route('admin.dosen.create') }}" class="group block bg-white dark:bg-gray-700/60 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border border-green-500/20 hover:border-green-500 dark:border-green-500/30">
-                <div class="bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/40 dark:to-green-800/40 rounded-md p-2 mb-2 w-fit">
-                    <i class="fas fa-chalkboard-teacher text-base text-green-600 dark:text-green-400"></i>
-                </div>
-                <h4 class="font-bold text-sm text-gray-800 dark:text-gray-100">Dosen</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 leading-tight">Daftar baru</p>
-            </a>
-
-            <a href="{{ route('admin.mata-kuliah.create') }}" class="group block bg-white dark:bg-gray-700/60 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border border-purple-500/20 hover:border-purple-500 dark:border-purple-500/30">
-                <div class="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/40 dark:to-purple-800/40 rounded-md p-2 mb-2 w-fit">
-                    <i class="fas fa-book text-base text-purple-600 dark:text-purple-400"></i>
-                </div>
-                <h4 class="font-bold text-sm text-gray-800 dark:text-gray-100">Mata Kuliah</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 leading-tight">Buat baru</p>
-            </a>
-
-            <a href="{{ route('admin.krs.index', ['status' => 'pending']) }}" class="group block bg-white dark:bg-gray-700/60 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border border-blue-500/20 hover:border-blue-500 dark:border-blue-500/30">
-                <div class="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/40 rounded-md p-2 mb-2 w-fit">
-                    <i class="fas fa-tasks text-base text-blue-600 dark:text-blue-400"></i>
-                </div>
-                <h4 class="font-bold text-sm text-gray-800 dark:text-gray-100">Verifikasi</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 leading-tight">KRS pending</p>
-            </a>
-        </div>
-    </div>
-</div>
 
 <!-- Kalender Akademik - Full Width -->
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
@@ -208,7 +163,7 @@
             <div class="bg-gradient-to-br from-maroon to-red-700 rounded-lg p-1.5 mr-2 shadow-sm">
                 <i class="fas fa-calendar-alt text-white text-xs"></i>
             </div>
-            <h3 class="text-xs font-bold text-gray-700 dark:text-gray-200">Kalender Akademik</h3>
+            <h3 class="text-base font-bold text-gray-700 dark:text-gray-200">Kalender Akademik</h3>
         </div>
     </div>
     <div class="p-3">

@@ -4,13 +4,19 @@
 
 @section('content')
     @section('navbar_breadcrumb')
-        <nav class="flex items-center gap-2 text-sm text-[#616889]">
-            <a href="{{ route('dosen.kelas') }}" class="hover:text-primary transition-colors">Kelas</a>
-            <span class="material-symbols-outlined text-xs">chevron_right</span>
-            <a href="{{ route('dosen.kelas.detail', $kelas->id) }}" class="hover:text-primary transition-colors">Detail
+        <nav class="flex items-center gap-3 text-sm text-white/60 font-bold tracking-tight">
+            <a class="hover:text-white transition-all duration-300 flex items-center group" href="{{ route('dosen.dashboard') }}">
+                <span class="material-symbols-outlined text-[19px] group-hover:scale-110 opacity-80">home</span>
+            </a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <a href="{{ route('dosen.kelas') }}" class="hover:text-white transition-all duration-300">Kelas</a>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <a href="{{ route('dosen.kelas.detail', $kelas->id) }}" class="hover:text-white transition-all duration-300">Detail
                 Kelas</a>
-            <span class="material-symbols-outlined text-xs">chevron_right</span>
-            <span class="text-[#111218] font-medium">{{ $meeting['label'] }}</span>
+            <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
+            <span class="text-white font-black text-[13px] uppercase tracking-wider">
+                {{ $meeting['label'] }}
+            </span>
         </nav>
     @endsection
 
@@ -268,8 +274,8 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
+                <div class="overflow-x-auto -mx-6 px-6">
+                    <table class="w-full text-left" style="min-width: 800px;">
                         <thead>
                             <tr class="bg-gray-50/50 text-xs uppercase tracking-wider text-gray-500 font-bold">
                                 <th class="px-6 py-4 w-16">No</th>

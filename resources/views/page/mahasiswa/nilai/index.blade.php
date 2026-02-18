@@ -7,55 +7,70 @@
     <div class="space-y-6">
 
         {{-- Summary Cards --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {{-- IPK Card --}}
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-blue-100 dark:border-blue-900/30 group hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-trophy text-2xl"></i>
+                    <div class="size-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl fill-current">trophy</span>
                     </div>
-                    <span class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">Overall</span>
                 </div>
-                <h3 class="text-3xl font-bold mb-1">{{ number_format($ipk, 2) }}</h3>
-                <p class="text-blue-100 text-sm">Indeks Prestasi Kumulatif</p>
+                <h3 class="text-4xl font-black text-slate-900 dark:text-white mb-1">{{ number_format($ipk, 2) }}</h3>
+                <p class="text-xs font-black text-slate-400 uppercase tracking-widest leading-none">IP Kumulatif</p>
             </div>
 
             {{-- Total SKS Card --}}
-            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-green-100 dark:border-green-900/30 group hover:shadow-xl hover:shadow-green-500/5 transition-all duration-300">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-book text-2xl"></i>
+                    <div class="size-12 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl fill-current">menu_book</span>
                     </div>
-                    <span class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">Credits</span>
                 </div>
-                <h3 class="text-3xl font-bold mb-1">{{ $totalSks }}</h3>
-                <p class="text-green-100 text-sm">Total SKS Diambil</p>
+                <h3 class="text-4xl font-black text-slate-900 dark:text-white mb-1">{{ $totalSks }}</h3>
+                <p class="text-xs font-black text-slate-400 uppercase tracking-widest leading-none">Total SKS</p>
+            </div>
+
+            {{-- IPS Card --}}
+            @php
+                $latestSemester = $ipsPerSemester ? collect($ipsPerSemester)->last() : null;
+                $latestIps = $latestSemester['ips'] ?? 0;
+            @endphp
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-amber-100 dark:border-amber-900/30 group hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="size-12 bg-amber-50 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl fill-current">trending_up</span>
+                    </div>
+                </div>
+                <h3 class="text-4xl font-black text-slate-900 dark:text-white mb-1">{{ number_format($latestIps, 2) }}</h3>
+                <p class="text-xs font-black text-slate-400 uppercase tracking-widest leading-none">IP Semester</p>
             </div>
 
             {{-- Total MK Card --}}
-            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-purple-100 dark:border-purple-900/30 group hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-graduation-cap text-2xl"></i>
+                    <div class="size-12 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl fill-current">school</span>
                     </div>
-                    <span class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">Courses</span>
                 </div>
-                <h3 class="text-3xl font-bold mb-1">
+                <h3 class="text-4xl font-black text-slate-900 dark:text-white mb-1">
                     {{ $nilaiPerSemester->sum(function ($items) {
-        return $items->count(); }) }}
+                        return $items->count(); }) }}
                 </h3>
-                <p class="text-purple-100 text-sm">Mata Kuliah Selesai</p>
+                <p class="text-xs font-black text-slate-400 uppercase tracking-widest leading-none">MK Selesai</p>
             </div>
         </div>
 
         {{-- Akademik Tabs (Rangkuman Nilai / KHS) --}}
-        <div class="bg-bg-card rounded-xl shadow-sm px-4 py-3 mt-6">
-            <nav class="flex items-center space-x-2" id="akademikTabs">
+        <div class="bg-white dark:bg-slate-800 rounded-[32px] shadow-sm px-8 py-5 mt-8 border border-slate-100 dark:border-slate-700/50">
+            <nav class="flex items-center gap-3" id="akademikTabs">
                 <button data-target="rangkuman"
-                    class="tab-btn px-4 py-2 text-sm rounded-t-lg border-b-2 -mb-px border-maroon text-maroon font-semibold">Rangkuman
-                    Nilai</button>
+                    class="tab-btn px-8 py-3 text-[14px] rounded-2xl border-2 transition-all duration-300 tracking-wider uppercase font-black">
+                    Rangkuman Nilai
+                </button>
                 <button data-target="khs"
-                    class="tab-btn px-4 py-2 text-sm rounded-t-lg border-b-2 -mb-px border-transparent text-text-secondary hover:text-text-primary transition-colors">KHS</button>
+                    class="tab-btn px-8 py-3 text-[14px] rounded-2xl border-2 transition-all duration-300 tracking-wider uppercase font-black">
+                    KHS
+                </button>
             </nav>
         </div>
 
@@ -83,11 +98,11 @@
                 // toggle buttons
                 tabs.forEach(t => {
                     if (t.dataset.target === target) {
-                        t.classList.remove('border-transparent', 'text-text-secondary');
-                        t.classList.add('border-maroon', 'text-maroon', 'font-semibold');
+                        t.classList.remove('border-transparent', 'text-slate-400', 'bg-transparent');
+                        t.classList.add('border-primary/20', 'bg-primary/5', 'text-primary');
                     } else {
-                        t.classList.remove('border-maroon', 'text-maroon', 'font-semibold');
-                        t.classList.add('border-transparent', 'text-text-secondary');
+                        t.classList.remove('border-primary/20', 'bg-primary/5', 'text-primary');
+                        t.classList.add('border-transparent', 'text-slate-400', 'bg-transparent');
                     }
                 });
 

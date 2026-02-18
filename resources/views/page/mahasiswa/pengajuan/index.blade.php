@@ -13,11 +13,16 @@
             </div>
             <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
                 <button @click="$dispatch('open-modal', 'pengajuan-modal')" 
-                    class="btn bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/30 rounded-xl px-5 py-2.5 flex items-center gap-2 transition-all transform hover:scale-[1.02]">
-                    <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 16 16">
-                        <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
-                    </svg>
-                    <span class="hidden xs:block font-medium">Buat Pengajuan Baru</span>
+                    class="group relative flex items-center h-10 bg-primary text-white rounded-full transition-[width] duration-300 ease-in-out w-10 hover:w-50 overflow-hidden shadow-lg active:scale-95">
+                    {{-- Icon Container --}}
+                    <div class="flex items-center justify-center w-10 h-10 flex-shrink-0">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    
+                    {{-- Sliding Text --}}
+                    <span class="opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300 ease-in-out font-bold text-sm whitespace-nowrap pr-4">
+                        Buat Pengajuan Baru
+                    </span>
                 </button>
             </div>
         </div>
@@ -74,7 +79,7 @@
                 <div class="text-xs text-text-muted">Menampilkan {{ $pengajuans->count() }} data terakhir</div>
             </header>
             <div class="overflow-x-auto">
-                <table class="table-auto w-full">
+                <table class="table-auto w-full" style="min-width: 900px;">
                     <thead class="bg-gray-50/50 dark:bg-bg-hover/30 border-b border-border-color">
                         <tr>
                             <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-text-secondary text-left w-1/6">Jenis Pengajuan</th>

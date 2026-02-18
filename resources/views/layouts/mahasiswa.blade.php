@@ -17,6 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -65,24 +66,68 @@
 
     @stack('styles')
 
-    <!-- Theme Initialization -->
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem('color-theme');
-            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-            if (savedTheme === 'dark' || (!savedTheme && systemTheme)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        })();
-    </script>
 
 </head>
 
 <body class="bg-bg-body font-inter text-text-primary transition-colors duration-200 overflow-x-hidden"
-      x-data="{ sidebarOpen: false }">
+      x-data="{ sidebarOpen: false }"
+      @open-sidebar.window="sidebarOpen = true">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let touchStartX = 0;
+            let touchStartY = 0;
+            
+            console.log('Swipe gesture initialized');
+            
+            document.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].clientX;
+                touchStartY = e.changedTouches[0].clientY;
+                console.log('Touch start:', touchStartX, touchStartY);
+            }, false);
+            
+            document.addEventListener('touchend', function(e) {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                
+                console.log('Touch end:', touchEndX, touchEndY);
+                console.log('Window width:', window.innerWidth);
+                
+                // Only on mobile devices
+                if (window.innerWidth >= 768) {
+                    console.log('Not mobile, skipping');
+                    return;
+                }
+                
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+                
+                console.log('Delta X:', deltaX, 'Delta Y:', deltaY);
+                console.log('Touch start X:', touchStartX);
+                
+                // Check if swipe starts from left edge (0-80px for easier triggering)
+                if (touchStartX > 80) {
+                    console.log('Not from left edge');
+                    return;
+                }
+                
+                // Check if movement is primarily horizontal
+                if (Math.abs(deltaX) < Math.abs(deltaY)) {
+                    console.log('Movement is vertical, not horizontal');
+                    return;
+                }
+                
+                // Check if swipe is to the right and meets minimum threshold
+                if (deltaX > 50) {
+                    console.log('Valid swipe detected! Opening sidebar...');
+                    window.dispatchEvent(new CustomEvent('open-sidebar'));
+                } else {
+                    console.log('Swipe distance too short:', deltaX);
+                }
+            }, false);
+        });
+    </script>
 
     <!-- Page Wrapper -->
     <div class="flex min-h-screen bg-bg-body">
@@ -103,36 +148,14 @@
         @include('layouts.partials.sidebar-mahasiswa')
 
         <!-- Content Wrapper -->
-        <!-- ✅ overflow-hidden DIHAPUS supaya scroll natural -->
         <div class="relative flex flex-col flex-1">
 
             <!-- Topbar -->
             @include('layouts.partials.navbar-mahasiswa')
 
-            <!-- Theme Toggle Script -->
-            <script>
-                (function() {
-                    var toggle = document.getElementById('theme-toggle-input');
-                    var html = document.documentElement;
 
-                    if(toggle){
-                        toggle.checked = html.classList.contains('dark');
-
-                        toggle.addEventListener('change', function(e) {
-                            if(e.target.checked){
-                                html.classList.add('dark');
-                                localStorage.setItem('color-theme', 'dark');
-                            } else {
-                                html.classList.remove('dark');
-                                localStorage.setItem('color-theme', 'light');
-                            }
-                        });
-                    }
-                })();
-            </script>
 
             <!-- Main Content -->
-            <!-- ✅ min-h-screen supaya halaman tinggi natural -->
             <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-bg-body transition-colors duration-200">
 
                 @if(session('success'))

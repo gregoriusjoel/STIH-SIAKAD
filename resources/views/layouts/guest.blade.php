@@ -25,18 +25,10 @@
         }
     </style>
 
-    <!-- Early Dark Mode Detection -->
-    <script>
-        (function() {
-            if (localStorage.getItem('color-theme') === 'dark' || 
-                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            }
-        })();
-    </script>
+
 </head>
 
-<body class="bg-gray-50 dark:bg-[#0f111a] font-inter antialiased">
+<body class="bg-gray-50 font-inter antialiased">
 
     <!-- Main Content -->
     <main class="min-h-screen flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8">

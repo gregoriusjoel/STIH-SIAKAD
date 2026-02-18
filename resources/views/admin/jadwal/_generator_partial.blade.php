@@ -5,7 +5,7 @@
         ?? \App\Models\Semester::where('is_active', true)->first();
 @endphp
 
-<div x-data="{}" x-cloak class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden h-full">
+<div x-data="{}" x-cloak class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden h-full flex flex-col">
     <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="font-bold text-white text-xl flex items-center gap-3 w-full md:w-auto">
             <div class="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
@@ -25,32 +25,32 @@
     </div>
 
     {{-- Statistics + Recent Proposals (condensed) --}}
-    <div class="p-6 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-700/50 dark:to-blue-900/20 border-b border-gray-200 dark:border-gray-700">
+    <div class="p-6 bg-white dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 flex-1 flex flex-col min-h-0">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-blue-100 dark:border-blue-900/30">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="text-sm text-gray-600 dark:text-gray-400">Total Proposal</div>
-                <div class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ $statistics['total_proposals'] ?? 0 }}</div>
+                <div class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ $statistics['total_proposals'] ?? 0 }}</div>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-yellow-100 dark:border-yellow-900/30">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="text-sm text-gray-600 dark:text-gray-400">Pending Dosen</div>
-                <div class="text-lg font-bold text-yellow-600 dark:text-yellow-400">{{ $statistics['pending_dosen'] ?? 0 }}</div>
+                <div class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ $statistics['pending_dosen'] ?? 0 }}</div>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-green-100 dark:border-green-900/30">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="text-sm text-gray-600 dark:text-gray-400">Approved</div>
-                <div class="text-lg font-bold text-green-600 dark:text-green-400">{{ $statistics['approved_admin'] ?? 0 }}</div>
+                <div class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ $statistics['approved_admin'] ?? 0 }}</div>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-red-100 dark:border-red-900/30">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="text-sm text-gray-600 dark:text-gray-400">Rejected</div>
-                <div class="text-lg font-bold text-red-600 dark:text-red-400">{{ $statistics['rejected'] ?? 0 }}</div>
+                <div class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ $statistics['rejected'] ?? 0 }}</div>
             </div>
         </div>
 
         @if($jadwalProposals->count())
-            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex-1 flex flex-col min-h-0">
                 <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                    <h4 class="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2"><i class="fas fa-history text-blue-600 dark:text-blue-400"></i>Proposals Terbaru</h4>
+                    <h4 class="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2"><i class="fas fa-history text-blue-600 dark:text-blue-400"></i>Pengajuan Terbaru</h4>
                 </div>
-                <div class="max-h-48 overflow-y-auto px-4 py-2">
+                <div class="flex-1 overflow-y-auto px-4 py-2">
                     @foreach($jadwalProposals as $proposal)
                         <div class="py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 flex items-center justify-between">
                             <div>
@@ -71,6 +71,11 @@
                         </div>
                     @endforeach
                 </div>
+                @if($jadwalProposals->hasPages())
+                    <div class="px-4 py-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30">
+                        {{ $jadwalProposals->links() }}
+                    </div>
+                @endif
             </div>
         @endif
     </div>

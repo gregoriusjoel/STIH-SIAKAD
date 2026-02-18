@@ -32,6 +32,8 @@ Route::get('/', function () {
             return redirect()->route('mahasiswa.dashboard');
         } elseif ($user->role === 'parent') {
             return redirect()->route('parent.dashboard');
+        } elseif ($user->role === 'finance') {
+            return redirect()->route('finance.invoices.index');
         }
         return redirect()->route('dosen.dashboard');
     }
@@ -282,6 +284,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('semester-manage', [App\Http\Controllers\Admin\SemesterController::class, 'manage'])->name('semester.manage');
     Route::post('semester/set-active', [App\Http\Controllers\Admin\SemesterController::class, 'setActive'])->name('semester.set-active');
     Route::put('semester/{semester}/krs-settings', [App\Http\Controllers\Admin\SemesterController::class, 'updateKrsSettings'])->name('semester.update-krs-settings');
+    
+    // Semester Transition (Auto Increment)
+    Route::prefix('semester-transition')->name('semester-transition.')->group(function () {
+        Route::get('/status', [App\Http\Controllers\Admin\SemesterTransitionController::class, 'status'])->name('status');
+        Route::get('/preview', [App\Http\Controllers\Admin\SemesterTransitionController::class, 'preview'])->name('preview');
+        Route::post('/process', [App\Http\Controllers\Admin\SemesterTransitionController::class, 'process'])->name('process');
+    });
+    
     // Global search
     Route::get('search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
 
@@ -360,3 +370,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // QR management (optional admin toggles could be added later)
 });
+
+// Payment System Routes (Finance & Mahasiswa)
+require __DIR__.'/payment_routes.php';

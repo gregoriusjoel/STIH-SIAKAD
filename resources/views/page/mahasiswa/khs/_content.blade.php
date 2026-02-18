@@ -23,7 +23,7 @@
         @endphp
 
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-full text-sm" style="min-width: 800px;">
                 <thead>
                     <tr class="bg-bg-hover">
                         <th

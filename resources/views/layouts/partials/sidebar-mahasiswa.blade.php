@@ -83,7 +83,7 @@
                     ] as $route=>$label)
                         <a href="{{ route($route) }}"
                            class="block px-4 py-2 text-xs rounded-lg transition-colors
-                           {{ Request::routeIs($route) ? 'text-[#8B1538] dark:text-red-400 font-bold bg-red-50 dark:bg-red-900/10' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
+                           {{ Request::routeIs($route) ? 'bg-gradient-to-r from-[#8B1538] to-[#6D1029] text-white shadow-md shadow-red-900/20' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
                             {{ $label }}
                         </a>
                     @endforeach
@@ -111,7 +111,7 @@
                     ] as $route=>$label)
                         <a href="{{ route($route) }}"
                            class="block px-4 py-2 text-xs rounded-lg transition-colors
-                           {{ Request::routeIs($route) ? 'text-[#8B1538] dark:text-red-400 font-bold bg-red-50 dark:bg-red-900/10' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
+                           {{ Request::routeIs($route) ? 'bg-gradient-to-r from-[#8B1538] to-[#6D1029] text-white shadow-md shadow-red-900/20' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
                             {{ $label }}
                         </a>
                     @endforeach

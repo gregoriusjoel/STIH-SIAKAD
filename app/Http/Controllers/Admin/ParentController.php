@@ -75,7 +75,7 @@ class ParentController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $parent->user_id,
             'password' => 'nullable|min:6',
-            'mahasiswa_id' => 'required|exists:mahasiswas,id',
+            'mahasiswa_id' => 'nullable|exists:mahasiswas,id',
             'hubungan' => 'required|in:ayah,ibu,wali',
             'pekerjaan' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',

@@ -1,0 +1,63 @@
+/* ================================
+   RESPONSIVE UTILITIES - MINIMAL
+   ================================
+   
+   HANYA UNTUK TABEL SCROLLING
+   Tidak ada forced layout responsive
+   
+   ================================ */
+
+/* Ensure body never overflow horizontally */
+body {
+    @apply overflow-x-hidden;
+    max-width: 100vw;
+}
+
+/* Responsive Table Container - HANYA INI YANG AKTIF */
+.table-responsive {
+    @apply w-full overflow-x-auto;
+}
+
+.table-responsive table {
+    @apply min-w-full;
+}
+
+/* Table with minimum width for better mobile scroll */
+.table-scroll {
+    @apply w-full overflow-x-auto;
+}
+
+.table-scroll table {
+    min-width: 800px;
+}
+
+.table-scroll-lg table {
+    min-width: 1000px;
+}
+
+.table-scroll-xl table {
+    min-width: 1200px;
+}
+
+/* Scrollbar thin */
+.scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #8B1538 #f1f1f1;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-maroon dark:bg-red-700 rounded-full;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-red-900;
+}

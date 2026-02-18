@@ -41,7 +41,8 @@
 
                 <div x-show="open">
                     <div class="overflow-x-auto">
-                        <table class="w-full">
+                    <div class="overflow-x-auto">
+                        <table class="w-full" style="min-width: 700px;">
                             <thead class="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase font-semibold">
                                 <tr>
                                     <th class="px-6 py-3 text-left">Kode MK</th>
