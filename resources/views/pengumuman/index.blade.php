@@ -25,9 +25,9 @@
             }
         }
     }">
-        <div class="mb-10 text-center">
-            <h1 class="text-4xl font-black text-[#111218] dark:text-white tracking-tight uppercase">Pusat Informasi</h1>
-            <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Informasi terbaru dan pengumuman resmi STIH Adhyaksa</p>
+        <div class="mb-6 md:mb-10 text-center">
+            <h1 class="text-2xl md:text-4xl font-black text-[#111218] dark:text-white tracking-tight uppercase">Pusat Informasi</h1>
+            <p class="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-2 font-medium">Informasi terbaru dan pengumuman resmi STIH Adhyaksa</p>
         </div>
 
         <div class="grid gap-6">
@@ -35,17 +35,17 @@
                 @php
                     $showRoute = auth()->user()->role == 'dosen' ? route('dosen.pengumuman.show', $p) : route('mahasiswa.pengumuman.show', $p);
                 @endphp
-                <div class="group relative bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                <div class="group relative bg-white dark:bg-slate-800 rounded-3xl p-4 md:p-6 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                      :class="!readIds.includes({{ $p->id }}) ? 'border-l-4 border-l-amber-500' : ''">
                     
                     {{-- Glass Decorative Element --}}
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                    <div class="flex flex-col md:flex-row md:items-start gap-6 relative z-10">
+                    <div class="flex flex-row items-start gap-4 md:gap-6 relative z-10">
                         <div class="flex-shrink-0">
-                            <div class="size-14 rounded-2xl bg-primary/5 flex flex-col items-center justify-center text-primary border border-primary/10 shadow-sm">
-                                <span class="text-lg font-black leading-none">{{ \Carbon\Carbon::parse($p->published_at)->format('d') }}</span>
-                                <span class="text-[10px] font-bold uppercase tracking-tighter mt-0.5">{{ \Carbon\Carbon::parse($p->published_at)->format('M') }}</span>
+                            <div class="size-12 md:size-14 rounded-2xl bg-primary/5 flex flex-col items-center justify-center text-primary border border-primary/10 shadow-sm">
+                                <span class="text-base md:text-lg font-black leading-none">{{ \Carbon\Carbon::parse($p->published_at)->format('d') }}</span>
+                                <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-tighter mt-0.5">{{ \Carbon\Carbon::parse($p->published_at)->format('M') }}</span>
                             </div>
                         </div>
 
@@ -71,7 +71,7 @@
                                 {{ strip_tags($p->isi) }}
                             </p>
 
-                            <div class="mt-5 flex items-center gap-6">
+                            <div class="mt-4 md:mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 md:gap-6">
                                 <div class="flex items-center gap-2 text-xs font-bold text-slate-400">
                                     <span class="material-symbols-outlined text-sm">schedule</span>
                                     {{ \Carbon\Carbon::parse($p->published_at)->format('H:i') }} WIB
@@ -82,7 +82,7 @@
                                 </div>
                                 <a href="{{ $showRoute }}" 
                                    @click="markAsRead({{ $p->id }})"
-                                   class="ml-auto flex items-center gap-1.5 text-xs font-black text-primary group/link uppercase tracking-wider">
+                                   class="ml-auto flex items-center gap-1.5 text-xs font-black text-primary group/link uppercase tracking-wider whitespace-nowrap">
                                     Baca Selengkapnya
                                     <span class="material-symbols-outlined text-sm group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
                                 </a>

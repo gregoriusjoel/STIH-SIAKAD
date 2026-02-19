@@ -79,7 +79,7 @@
                 <div class="text-xs text-text-muted">Menampilkan {{ $pengajuans->count() }} data terakhir</div>
             </header>
             <div class="overflow-x-auto">
-                <table class="table-auto w-full" style="min-width: 900px;">
+                <table class="w-full min-w-[900px]">
                     <thead class="bg-gray-50/50 dark:bg-bg-hover/30 border-b border-border-color">
                         <tr>
                             <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-text-secondary text-left w-1/6">Jenis Pengajuan</th>

@@ -378,7 +378,7 @@
                                 @change="onMetodeChange()"
                                 class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-[#8B1538]">
                                 <option value="offline">Offline (Tatap Muka)</option>
-                                <option value="online">Online (Sesi Live)</option>
+                                <option value="online">Online (Via Google Meet / Zoom)</option>
                                 <option value="asynchronous">Asynchronous (Tugas / Materi Mandiri)</option>
                             </select>
                         </div>

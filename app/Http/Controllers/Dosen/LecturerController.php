@@ -518,7 +518,7 @@ class LecturerController extends Controller
         return back()->with(['success' => 'QR dibuat dan diaktifkan.', 'debug_info' => $debug]);
     }
 
-    public function meetingDetail($id, $pertemuan)
+    public function meetingDetail(Request $request, $id, $pertemuan)
     {
         $kelas = Kelas::with([
             'mataKuliah',
@@ -648,7 +648,19 @@ class LecturerController extends Controller
             ->latest()
             ->get();
 
-        return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students', 'tasks', 'materis', 'token', 'qrEnabled', 'qrExpires', 'id'));
+        if ($request->has('reload_attendance') && $request->ajax()) {
+            $html = view('page.dosen.kelas.partials.student_attendance_table', compact('students'))->render();
+            $attendedCount = collect($students)->where('attendance_status', 'hadir')->count();
+            $totalStudents = count($students);
+            
+            return response()->json([
+                'html' => $html,
+                'attended' => $attendedCount,
+                'total' => $totalStudents
+            ]);
+        }
+
+        return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students', 'tasks', 'materis', 'token', 'qrEnabled', 'qrExpires', 'id', 'pertemuanRecord', 'kelasMataKuliah'));
     }
 
     public function updateAttendance(Request $request, $id, $pertemuan)

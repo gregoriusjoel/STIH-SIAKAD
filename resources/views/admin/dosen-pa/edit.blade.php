@@ -29,7 +29,12 @@
                     <div class="text-sm text-gray-500">
                         <span class="font-mono text-maroon">{{ $dosen->nidn }}</span> • 
                         {{ $dosen->user->email }} •
-                        <span class="font-semibold">{{ $dosen->mahasiswaPa->count() }}/6 Mahasiswa</span>
+                        @php
+                            $currentQuota = $dosen->kuota ?: 6;
+                            // Handle legacy data where count > kuota
+                            $displayQuota = $dosen->mahasiswaPa->count() > $currentQuota ? $dosen->mahasiswaPa->count() + 1 : $currentQuota;
+                        @endphp
+                        <span class="font-semibold">{{ $dosen->mahasiswaPa->count() }}/{{ $displayQuota }} Mahasiswa</span>
                     </div>
                 </div>
             </div>
@@ -127,20 +132,23 @@
                             @foreach($allDosens as $targetDosen)
                                 @php
                                     $count = $targetDosen->mahasiswa_pa_count;
-                                    $isFull = $count >= 6;
+                                    $tQuota = $targetDosen->kuota ?: 6;
+                                    // Handle legacy data
+                                    $tDisplayQuota = $count > $tQuota ? $count + 1 : $tQuota;
+                                    $isFull = $count >= $tDisplayQuota;
                                 @endphp
                                 <option value="{{ $targetDosen->id }}" 
                                     {{ $isFull ? 'disabled' : '' }}
                                     {{ old('new_dosen_id') == $targetDosen->id ? 'selected' : '' }}
                                     class="{{ $isFull ? 'text-gray-400' : '' }}">
-                                    {{ $targetDosen->user->name }} ({{ $count }}/6){{ $isFull ? ' - PENUH' : '' }}
+                                    {{ $targetDosen->user->name }} ({{ $count }}/{{ $tDisplayQuota }}){{ $isFull ? ' - PENUH' : '' }}
                                 </option>
                             @endforeach
                         </select>
                         @error('new_dosen_id')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
-                        <p class="text-xs text-gray-500 mt-1">Dosen dengan status "PENUH" sudah mencapai batas 6 mahasiswa.</p>
+                        <p class="text-xs text-gray-500 mt-1">Dosen dengan status "PENUH" sudah mencapai batas kuota mahasiswa.</p>
                     </div>
                 </div>
 
@@ -300,8 +308,12 @@
                         Batal
                     </a>
                     <button type="submit" 
+                        @php
+                             $btnQuota = $dosen->kuota ?: 6;
+                             $btnDisplayQuota = $dosen->mahasiswaPa->count() > $btnQuota ? $dosen->mahasiswaPa->count() + 1 : $btnQuota;
+                        @endphp
                         class="bg-maroon text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition flex items-center shadow-md transform hover:scale-105"
-                        {{ $availableMahasiswas->isEmpty() || $dosen->mahasiswaPa->count() >= 6 ? 'disabled' : '' }}>
+                        {{ $availableMahasiswas->isEmpty() || $dosen->mahasiswaPa->count() >= $btnDisplayQuota ? 'disabled' : '' }}>
                         <i class="fas fa-user-plus mr-2"></i>
                         Tambah Mahasiswa
                     </button>

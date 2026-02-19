@@ -79,52 +79,64 @@
             let touchStartX = 0;
             let touchStartY = 0;
             
-            console.log('Swipe gesture initialized');
+            // console.log('Swipe gesture initialized (Global)');
             
             document.addEventListener('touchstart', function(e) {
                 touchStartX = e.changedTouches[0].clientX;
                 touchStartY = e.changedTouches[0].clientY;
-                console.log('Touch start:', touchStartX, touchStartY);
             }, false);
             
             document.addEventListener('touchend', function(e) {
                 const touchEndX = e.changedTouches[0].clientX;
                 const touchEndY = e.changedTouches[0].clientY;
                 
-                console.log('Touch end:', touchEndX, touchEndY);
-                console.log('Window width:', window.innerWidth);
-                
-                // Only on mobile devices
+                // Only on mobile devices (md breakpoint is usually 768px)
                 if (window.innerWidth >= 768) {
-                    console.log('Not mobile, skipping');
                     return;
                 }
                 
                 const deltaX = touchEndX - touchStartX;
                 const deltaY = touchEndY - touchStartY;
                 
-                console.log('Delta X:', deltaX, 'Delta Y:', deltaY);
-                console.log('Touch start X:', touchStartX);
-                
-                // Check if swipe starts from left edge (0-80px for easier triggering)
-                if (touchStartX > 80) {
-                    console.log('Not from left edge');
-                    return;
-                }
-                
                 // Check if movement is primarily horizontal
-                if (Math.abs(deltaX) < Math.abs(deltaY)) {
-                    console.log('Movement is vertical, not horizontal');
+                if (Math.abs(deltaX) <= Math.abs(deltaY)) {
+                    return; // Vertical movement
+                }
+                
+                // Check if swipe is Left -> Right
+                if (deltaX <= 70) { // Increased threshold slightly for global swipe
+                    return;
+                }
+
+                // Check for conflict with scrollable elements
+                // If the user swipes on an element that can scroll left, ignore the sidebar toggle
+                let target = e.target;
+                let isScrollable = false;
+
+                while (target && target !== document.body) {
+                    // Check if element has horizontal scroll
+                    if (target.scrollWidth > target.clientWidth) {
+                        const style = window.getComputedStyle(target);
+                        if (style.overflowX === 'auto' || style.overflowX === 'scroll') {
+                            // If it's scrollable and NOT at the start, user is scrolling the element
+                            if (target.scrollLeft > 0) {
+                                isScrollable = true;
+                                break;
+                            }
+                        }
+                    }
+                    target = target.parentElement;
+                }
+
+                if (isScrollable) {
+                    console.log('Swipe ignored due to scrollable container');
                     return;
                 }
                 
-                // Check if swipe is to the right and meets minimum threshold
-                if (deltaX > 50) {
-                    console.log('Valid swipe detected! Opening sidebar...');
-                    window.dispatchEvent(new CustomEvent('open-sidebar'));
-                } else {
-                    console.log('Swipe distance too short:', deltaX);
-                }
+                // Valid swipe detected
+                // console.log('Global swipe detected! Opening sidebar...');
+                window.dispatchEvent(new CustomEvent('open-sidebar'));
+                
             }, false);
         });
     </script>
@@ -148,7 +160,7 @@
         @include('layouts.partials.sidebar-mahasiswa')
 
         <!-- Content Wrapper -->
-        <div class="relative flex flex-col flex-1">
+        <div class="relative flex flex-col flex-1 min-w-0">
 
             <!-- Topbar -->
             @include('layouts.partials.navbar-mahasiswa')
@@ -156,7 +168,7 @@
 
 
             <!-- Main Content -->
-            <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-bg-body transition-colors duration-200">
+            <main class="flex-1 w-full min-w-0 p-4 sm:p-6 lg:p-8 bg-bg-body transition-colors duration-200">
 
                 @if(session('success'))
                 <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6">

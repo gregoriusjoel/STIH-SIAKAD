@@ -102,82 +102,82 @@
         </div>
 
         {{-- Academic Stats Grid --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             {{-- SKS Card --}}
-            <div class="stat-card-hover bg-white dark:bg-[#1a1c23] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+            <div class="stat-card-hover bg-white dark:bg-[#1a1c23] p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <i class="fas fa-book text-6xl text-blue-600"></i>
+                    <i class="fas fa-book text-4xl md:text-6xl text-blue-600"></i>
                 </div>
-                <div class="flex items-center gap-4 mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center">
-                        <i class="fas fa-book-open"></i>
+                <div class="flex items-center gap-3 md:gap-4 mb-2">
+                    <div class="size-10 md:size-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center">
+                        <i class="fas fa-book-open text-lg md:text-xl"></i>
                     </div>
-                    <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total SKS</span>
+                    <span class="text-[10px] md:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total SKS</span>
                 </div>
                 <div class="mt-2">
-                    <span class="text-3xl font-bold text-gray-900 dark:text-white">{{ $totalSks }}</span>
-                    <span class="text-sm text-gray-500 dark:text-gray-400 ml-1">SKS Diambil</span>
+                    <span class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{{ $totalSks }}</span>
+                    <span class="text-[10px] md:text-sm text-gray-500 dark:text-gray-400 ml-1">SKS Diambil</span>
                 </div>
             </div>
 
             {{-- IPK Card --}}
-             <div class="stat-card-hover bg-white dark:bg-[#1a1c23] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+             <div class="stat-card-hover bg-white dark:bg-[#1a1c23] p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <i class="fas fa-graduation-cap text-6xl text-purple-600"></i>
+                    <i class="fas fa-graduation-cap text-4xl md:text-6xl text-purple-600"></i>
                 </div>
-                <div class="flex items-center gap-4 mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 flex items-center justify-center">
-                        <i class="fas fa-award"></i>
+                <div class="flex items-center gap-3 md:gap-4 mb-2">
+                    <div class="size-10 md:size-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 flex items-center justify-center">
+                        <i class="fas fa-award text-lg md:text-xl"></i>
                     </div>
-                    <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">IPK Saat Ini</span>
+                    <span class="text-[10px] md:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">IPK Saat Ini</span>
                 </div>
                 <div class="mt-2">
-                    <span class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($ipk, 2) }}</span>
-                    <span class="text-sm text-gray-500 dark:text-gray-400 ml-1">Indeks Prestasi</span>
+                    <span class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($ipk, 2) }}</span>
+                    <span class="text-[10px] md:text-sm text-gray-500 dark:text-gray-400 ml-1">Indeks Prestasi</span>
                 </div>
             </div>
 
             {{-- Semester Card --}}
-            <div class="stat-card-hover bg-white dark:bg-[#1a1c23] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+            <div class="stat-card-hover bg-white dark:bg-[#1a1c23] p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <i class="fas fa-layer-group text-6xl text-orange-600"></i>
+                    <i class="fas fa-layer-group text-4xl md:text-6xl text-orange-600"></i>
                 </div>
-                <div class="flex items-center gap-4 mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 flex items-center justify-center">
-                        <i class="fas fa-layer-group"></i>
+                <div class="flex items-center gap-3 md:gap-4 mb-2">
+                    <div class="size-10 md:size-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 flex items-center justify-center">
+                        <i class="fas fa-layer-group text-lg md:text-xl"></i>
                     </div>
-                    <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Semester</span>
+                    <span class="text-[10px] md:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Semester</span>
                 </div>
                 <div class="mt-2">
-                    <span class="text-3xl font-bold text-gray-900 dark:text-white">{{ $studentSemester }}</span>
-                    <span class="text-sm text-gray-500 dark:text-gray-400 ml-1">Semester Aktif</span>
+                    <span class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{{ $studentSemester }}</span>
+                    <span class="text-[10px] md:text-sm text-gray-500 dark:text-gray-400 ml-1">Semester Aktif</span>
                 </div>
             </div>
 
             {{-- KRS Status Card --}}
-            <div class="stat-card-hover bg-white dark:bg-[#1a1c23] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+            <div class="stat-card-hover bg-white dark:bg-[#1a1c23] p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
                <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <i class="fas fa-file-signature text-6xl text-teal-600"></i>
+                    <i class="fas fa-file-signature text-4xl md:text-6xl text-teal-600"></i>
                 </div>
-                <div class="flex items-center gap-4 mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/20 text-teal-600 flex items-center justify-center">
-                        <i class="fas fa-file-contract"></i>
+                <div class="flex items-center gap-3 md:gap-4 mb-2">
+                    <div class="size-10 md:size-12 rounded-xl bg-teal-50 dark:bg-teal-900/20 text-teal-600 flex items-center justify-center">
+                        <i class="fas fa-file-contract text-lg md:text-xl"></i>
                     </div>
-                    <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status KRS</span>
+                    <span class="text-[10px] md:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status KRS</span>
                 </div>
                 <div class="mt-2">
                     <div class="flex items-center gap-2">
                         @if($krsStatus == 'Disetujui')
-                             <span class="text-xl font-bold text-green-600 dark:text-green-400">Disetujui</span>
-                             <i class="fas fa-check-circle text-green-500"></i>
+                             <span class="text-lg md:text-xl font-bold text-green-600 dark:text-green-400">Disetujui</span>
+                             <i class="fas fa-check-circle text-green-500 text-sm md:text-base"></i>
                         @elseif($krsStatus == 'Belum Di Isi')
-                             <span class="text-xl font-bold text-red-600 dark:text-red-400">Belum Diisi</span>
-                             <i class="fas fa-times-circle text-red-500"></i>
+                             <span class="text-lg md:text-xl font-bold text-red-600 dark:text-red-400">Belum Diisi</span>
+                             <i class="fas fa-times-circle text-red-500 text-sm md:text-base"></i>
                         @else
-                             <span class="text-xl font-bold text-yellow-600 dark:text-yellow-400">{{ $krsStatus }}</span>
+                             <span class="text-lg md:text-xl font-bold text-yellow-600 dark:text-yellow-400">{{ $krsStatus }}</span>
                         @endif
                     </div>
-                    <span class="text-sm text-gray-500 dark:text-gray-400">KRS Semester Ini</span>
+                    <span class="text-[10px] md:text-sm text-gray-500 dark:text-gray-400">KRS Semester Ini</span>
                 </div>
             </div>
         </div>

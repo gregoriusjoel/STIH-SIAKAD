@@ -6,17 +6,8 @@ use App\Http\Controllers\Finance\PaymentProofController;
 use App\Http\Controllers\Mahasiswa\MahasiswaPaymentController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes - Payment System
-|--------------------------------------------------------------------------
-*/
-
 // Mahasiswa Routes
 Route::middleware(['auth', 'verified'])->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
-    // Invoices
-    // Note: invoices.index handled by mahasiswa.pembayaran.index in web.php
-    // Route::get('/invoices', [MahasiswaPaymentController::class, 'index'])->name('invoices.index');
     Route::get('/invoices/{invoice}', [MahasiswaPaymentController::class, 'show'])->name('invoices.show');
 
     // Installment Requests

@@ -16,11 +16,13 @@ class Pertemuan extends Model
         'tanggal',
         'topik',
         'deskripsi',
+        'metode_pengajaran',
         'qr_token',
         'qr_enabled',
         'qr_expires_at',
         'qr_generated_at',
         'status',
+        'online_meeting_link',
     ];
 
     protected $casts = [
@@ -28,7 +30,16 @@ class Pertemuan extends Model
         'qr_enabled' => 'boolean',
         'qr_expires_at' => 'datetime',
         'qr_generated_at' => 'datetime',
+        'metode_pengajaran' => 'string',
     ];
+
+    /**
+     * Dosen attendance record for this pertemuan.
+     */
+    public function dosenAttendance(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(DosenAttendance::class);
+    }
 
     /**
      * Relasi ke kelas mata kuliah

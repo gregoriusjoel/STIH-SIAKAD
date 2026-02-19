@@ -63,7 +63,7 @@
             {{-- Akademik Dropdown --}}
             <div>
                 <button @click="openAkademik=!openAkademik"
-                    class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.nilai*','mahasiswa.kelas*','mahasiswa.jadwal*','mahasiswa.perpustakaan*','mahasiswa.prestasi*') ? 'bg-red-50 dark:bg-red-900/10 text-[#8B1538] dark:text-red-400 font-bold' : $inactiveClass }}">
+                    class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.nilai*','mahasiswa.kelas*','mahasiswa.jadwal*','mahasiswa.perpustakaan*','mahasiswa.prestasi*') ? $activeClass : $inactiveClass }}">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-graduation-cap w-5 text-center"></i>
                         <span class="tracking-wide">Akademik</span>
@@ -93,7 +93,7 @@
              {{-- Pengajuan Dropdown --}}
              <div>
                 <button @click="openPengajuan=!openPengajuan"
-                    class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.pengajuan*') ? 'bg-red-50 dark:bg-red-900/10 text-[#8B1538] dark:text-red-400 font-bold' : $inactiveClass }}">
+                    class="w-full flex items-center justify-between {{ $navItemClass }} {{ Request::routeIs('mahasiswa.pengajuan*') ? $activeClass : $inactiveClass }}">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-file-signature w-5 text-center"></i>
                         <span class="tracking-wide">Pengajuan</span>

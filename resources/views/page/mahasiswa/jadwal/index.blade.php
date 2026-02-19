@@ -140,9 +140,9 @@
                             {{ count(array_filter($jadwalPerHari, function ($j) {
                 return count($j) > 0; })) }}</p>
                     </div>
-                    <div class="text-center p-4 bg-orange-50 rounded-lg">
-                        <p class="text-sm text-gray-600 mb-1">Semester</p>
-                        <p class="text-2xl font-bold text-orange-600">{{ $semesterAktif->nama_semester ?? '-' }}</p>
+                    <div class="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Semester</p>
+                        <p class="text-2xl font-bold text-orange-600">{{ Auth::user()->mahasiswa->semester ?? '-' }}</p>
                     </div>
                 </div>
             </div>

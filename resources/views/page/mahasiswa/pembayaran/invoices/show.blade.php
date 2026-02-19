@@ -1,8 +1,8 @@
 @extends('layouts.mahasiswa')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 max-w-none">
-    <div class="space-y-8">
+<div class="container mx-auto px-4 py-4 max-w-none">
+    <div class="space-y-6">
         {{-- Header & Back Button --}}
         <div class="flex items-center justify-between">
             <a href="{{ route('mahasiswa.pembayaran.index') }}" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-[#8B1538] transition-colors group">

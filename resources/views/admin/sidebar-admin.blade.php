@@ -165,6 +165,14 @@
                 @endif
             </li>
             <li>
+                @if(Route::has('admin.absensi_dosen.index'))
+                    <a href="{{ route('admin.absensi_dosen.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.absensi_dosen.*') ? 'active' : '' }}">
+                        <i class="fas fa-clipboard-check w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Absensi Dosen</span>
+                    </a>
+                @endif
+            </li>
+            <li>
                 @if(Route::has('admin.parents.index'))
                     <a href="{{ route('admin.parents.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.parents.*') ? 'active' : '' }}">
                         <i class="fas fa-user-friends w-5 mr-3"></i>

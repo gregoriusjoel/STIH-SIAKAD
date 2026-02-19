@@ -89,6 +89,10 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::post('/kelas/{id}/generate-qr', [LecturerController::class, 'generateQr'])->name('kelas.generate_qr');
     Route::post('/kelas/{id}/activate-qr', [LecturerController::class, 'activateQr'])->name('kelas.activate_qr');
     Route::post('/kelas/{id}/deactivate-qr', [LecturerController::class, 'deactivateQr'])->name('kelas.deactivate_qr');
+
+    // Dosen Attendance (metode pengajaran + password QR activation)
+    Route::patch('/kelas/{id}/pertemuan/{pertemuan}/metode', [App\Http\Controllers\Dosen\DosenAttendanceController::class, 'updateMetode'])->name('kelas.pertemuan.metode.update');
+    Route::post('/kelas/{id}/pertemuan/{pertemuan}/activate-qr-password', [App\Http\Controllers\Dosen\DosenAttendanceController::class, 'activateQrWithPassword'])->name('kelas.pertemuan.activate_qr_password');
     Route::get('/kelas/{id}/attendance-data', [LecturerController::class, 'getAttendanceData'])->name('kelas.attendance_data');
     Route::get('/krs', [LecturerController::class, 'krs'])->name('krs');
     Route::get('/input-nilai', [LecturerController::class, 'inputNilai'])->name('input-nilai');
@@ -369,6 +373,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     });
 
     // QR management (optional admin toggles could be added later)
+
+    // Absensi Dosen
+    Route::prefix('absensi-dosen')->name('absensi_dosen.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AbsensiDosenController::class, 'index'])->name('index');
+        Route::get('/{dosen}/{kelasMataKuliah}', [App\Http\Controllers\Admin\AbsensiDosenController::class, 'show'])->name('show');
+    });
 });
 
 // Payment System Routes (Finance & Mahasiswa)

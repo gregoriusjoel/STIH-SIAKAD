@@ -92,12 +92,41 @@
                     @endphp
                     <div class="flex items-center gap-2">
                         <span class="px-3 py-1 rounded-full bg-green-100 text-xs font-bold text-green-700">
-                            Hadir: {{ $attendedCount }}
+                            Hadir: <span id="attendance-present-count">{{ $attendedCount }}</span>
                         </span>
                         <span class="px-3 py-1 rounded-full bg-gray-100 text-xs font-bold text-gray-600">
-                            Total: {{ $totalStudents }}
+                            Total: <span id="attendance-total-count">{{ $totalStudents }}</span>
                         </span>
                     </div>
+                </div>
+
+                {{-- Metode Pengajaran Bar --}}
+                @php
+                    $metodePT = $pertemuanRecord?->metode_pengajaran ?? 'offline';
+                    $metodeLabels = ['offline' => 'Offline / Tatap Muka', 'online' => 'Online / Daring', 'asynchronous' => 'Asynchronous'];
+                    $metodeColorMap = ['offline' => 'bg-blue-50 text-blue-700 border-blue-200', 'online' => 'bg-green-50 text-green-700 border-green-200', 'asynchronous' => 'bg-orange-50 text-orange-700 border-orange-200'];
+                    $metodeIconMap = ['offline' => 'location_on', 'online' => 'video_call', 'asynchronous' => 'schedule'];
+                @endphp
+                <div class="px-6 py-3 border-b border-gray-100 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Metode:</span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border {{ $metodeColorMap[$metodePT] ?? 'bg-gray-50 text-gray-700 border-gray-200' }}">
+                            <span class="material-symbols-outlined text-[14px]">{{ $metodeIconMap[$metodePT] ?? 'school' }}</span>
+                            {{ $metodeLabels[$metodePT] ?? ucfirst($metodePT) }}
+                        </span>
+                        @if($metodePT === 'online' && !empty($pertemuanRecord?->online_meeting_link))
+                            <a href="{{ $pertemuanRecord->online_meeting_link }}" target="_blank" 
+                               class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 transition-colors">
+                                <span class="material-symbols-outlined text-[14px]">videocam</span>
+                                Join Meeting
+                            </a>
+                        @endif
+                    </div>
+                    <button type="button" x-data @click="$dispatch('open-reschedule-metode')"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-bold hover:bg-gray-50 transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-[16px]">edit_calendar</span>
+                        Reschedule Metode
+                    </button>
                 </div>
 
                 {{-- QR Section (Moved from Absensi) --}}
@@ -202,32 +231,26 @@
                                 </div>
                             @else
                                 <div class="flex flex-col items-center">
-                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-3">
-                                        <span class="material-symbols-outlined text-3xl">qr_code_2</span>
-                                    </div>
-                                    <h4 class="text-sm font-bold text-gray-700 mb-1">QR Absensi Belum Aktif</h4>
-                                    <p class="text-xs text-gray-500 mb-4 max-w-[250px]">Aktifkan QR Code agar mahasiswa dapat melakukan absensi mandiri via aplikasi.</p>
-                                    
-                                    @if(isset($token) && $token)
-                                        <form id="activateQrForm" action="{{ route('dosen.kelas.activate_qr', ['id' => $id]) }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="pertemuan" value="{{ $meeting['no'] }}">
-                                            <button type="button" @click="showQr('activateQrForm')" 
-                                                class="px-5 py-2.5 bg-maroon text-white rounded-xl text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
-                                                <span class="material-symbols-outlined text-[18px]">bolt</span>
-                                                Tampilkan QR Sekarang
-                                            </button>
-                                        </form>
+                                    @if(isset($metodePT) && $metodePT === 'asynchronous')
+                                        <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 mb-3">
+                                            <span class="material-symbols-outlined text-4xl">schedule</span>
+                                        </div>
+                                        <h4 class="text-sm font-bold text-orange-700 mb-1">Pertemuan Asynchronous</h4>
+                                        <p class="text-xs text-orange-600/80 font-medium text-center max-w-[240px]">
+                                            QR Code tidak tersedia. Mahasiswa melakukan absensi melalui penyelesaian tugas atau materi.
+                                        </p>
                                     @else
-                                        <form id="generateQrForm" action="{{ route('dosen.kelas.generate_qr', ['id' => $id]) }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="pertemuan" value="{{ $meeting['no'] }}">
-                                            <button type="button" @click="showQr('generateQrForm')" 
-                                                class="px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
-                                                <span class="material-symbols-outlined text-[18px]">add_box</span>
-                                                Buat QR Absensi
-                                            </button>
-                                        </form>
+                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-3">
+                                            <span class="material-symbols-outlined text-3xl">qr_code_2</span>
+                                        </div>
+                                        <h4 class="text-sm font-bold text-gray-700 mb-1">QR Absensi Belum Aktif</h4>
+                                        <p class="text-xs text-gray-500 mb-4 max-w-[250px]">Aktifkan QR Code agar mahasiswa dapat melakukan absensi mandiri via aplikasi.</p>
+                                        
+                                        <button type="button" x-data @click="$dispatch('open-qr-password-modal')"
+                                            class="px-5 py-2.5 bg-maroon text-white rounded-xl text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-[18px]">lock_open</span>
+                                            Aktifkan QR Absensi
+                                        </button>
                                     @endif
                                 </div>
                             @endif
@@ -285,39 +308,8 @@
                                 <th class="px-6 py-4 text-center">Waktu Scan</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @forelse($students as $index => $student)
-                                <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-6 py-4 text-gray-500 font-medium">{{ $index + 1 }}</td>
-                                    <td class="px-6 py-4">
-                                        <div class="font-bold text-gray-800">{{ $student['name'] }}</div>
-                                        <div class="text-xs text-gray-500">{{ $student['prodi'] }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 font-mono text-sm text-gray-600">{{ $student['nim'] }}</td>
-                                    <td class="px-6 py-4 text-center">
-                                        @if(isset($student['attendance_status']) && $student['attendance_status'] === 'hadir')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                                                <span class="material-symbols-outlined text-[16px] mr-1">check_circle</span>
-                                                Hadir
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
-                                                <span class="material-symbols-outlined text-[16px] mr-1">cancel</span>
-                                                Belum Absen
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 text-center text-gray-600 text-sm font-mono">
-                                        {{ $student['attendance_time'] ?? '-' }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                                        Tidak ada mahasiswa terdaftar di kelas ini.
-                                    </td>
-                                </tr>
-                            @endforelse
+                        <tbody class="divide-y divide-gray-100" id="attendance-table-body">
+                            @include('page.dosen.kelas.partials.student_attendance_table', ['students' => $students])
                         </tbody>
                     </table>
                 </div>
@@ -694,6 +686,303 @@
             </div>
         </div>
     </div>
+
+    {{-- MODAL RESCHEDULE METODE PENGAJARAN --}}
+    <div x-data="{ open: false, selectedMetode: '{{ $pertemuanRecord?->metode_pengajaran ?? 'offline' }}' }"
+         @open-reschedule-metode.window="open = true"
+         @keydown.escape.window="open = false"
+         x-show="open"
+         style="display: none;"
+         class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 transition-opacity bg-gray-900/50 backdrop-blur-sm" @click="open = false"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div x-show="open" x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="inline-block w-full max-w-md my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl relative z-10"
+                 @click.stop>
+                <div class="bg-maroon px-6 py-6 rounded-t-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="size-12 rounded-xl bg-white/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-2xl">edit_calendar</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Reschedule Metode</h3>
+                            <p class="text-xs text-white/80">Ubah metode pertemuan {{ $meeting['label'] }}</p>
+                        </div>
+                    </div>
+                    <button @click="open = false" class="text-white/80 hover:text-white p-1">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+
+                <form action="{{ route('dosen.kelas.pertemuan.metode.update', ['id' => $id, 'pertemuan' => $meeting['no']]) }}" method="POST" class="p-6">
+                    @csrf @method('PATCH')
+
+                    <fieldset class="space-y-3 mb-6">
+                        <legend class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pilih Metode Pengajaran</legend>
+
+                        @foreach(['offline' => ['label' => 'Offline / Tatap Muka', 'icon' => 'location_on', 'desc' => 'Perkuliahan dilakukan secara langsung di ruangan'], 'online' => ['label' => 'Online / Daring', 'icon' => 'video_call', 'desc' => 'Perkuliahan via video conference (Zoom, Meet, dll)'], 'asynchronous' => ['label' => 'Asynchronous', 'icon' => 'schedule', 'desc' => 'Mahasiswa belajar mandiri (QR absensi tidak aktif)']] as $val => $info)
+                            <label class="flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all"
+                                   :class="'{{ $val }}' === selectedMetode ? 'border-maroon bg-red-50' : 'border-gray-100 hover:border-gray-300'"
+                                   @click="selectedMetode = '{{ $val }}'">
+                                <input type="radio" name="metode_pengajaran" value="{{ $val }}"
+                                       x-model="selectedMetode"
+                                       class="mt-1 accent-maroon">
+                                <div class="flex items-start gap-3">
+                                    <span class="material-symbols-outlined text-gray-500 text-xl mt-0.5">{{ $info['icon'] }}</span>
+                                    <div>
+                                        <p class="font-bold text-gray-800 text-sm">{{ $info['label'] }}</p>
+                                        <p class="text-xs text-gray-500">{{ $info['desc'] }}</p>
+                                    </div>
+                                </div>
+                            </label>
+                        @endforeach
+                    </fieldset>
+
+                    <div x-show="selectedMetode === 'online'" x-transition class="mb-6">
+                        <label for="online_meeting_link" class="block text-sm font-bold text-gray-700 mb-2">Link Meeting (Zoom/Meet/dll)</label>
+                        <input type="url" name="online_meeting_link" id="online_meeting_link"
+                               value="{{ $pertemuanRecord?->online_meeting_link }}"
+                               class="w-full px-4 py-3 rounded-xl border-gray-300 focus:border-maroon focus:ring-maroon transition-colors"
+                               placeholder="https://zoom.us/j/1234567890">
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="button" @click="open = false"
+                                class="flex-1 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all">
+                            Batal
+                        </button>
+                        <button type="submit"
+                                class="flex-1 py-2.5 bg-maroon text-white rounded-xl text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/30 transition-all">
+                            Simpan Metode
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL PASSWORD AKTIVASI QR --}}
+    <div x-data="{
+             open: false,
+             loading: false,
+             lat: null,
+             lng: null,
+             gpsStatus: 'prompt',
+             gpsError: '',
+             gpsErrCode: 0,
+             getLocation() {
+                 if (!navigator.geolocation) {
+                     this.gpsStatus = 'unsupported';
+                     return;
+                 }
+                 this.gpsStatus = 'getting';
+                 this.gpsError = '';
+                 navigator.geolocation.getCurrentPosition(
+                     (pos) => {
+                         this.lat = pos.coords.latitude.toFixed(7);
+                         this.lng = pos.coords.longitude.toFixed(7);
+                         this.gpsStatus = 'got';
+                     },
+                     (err) => {
+                         this.gpsErrCode = err.code;
+                         this.gpsStatus = err.code === 1 ? 'blocked' : 'failed';
+                         this.gpsError = err.code === 2
+                             ? 'Posisi tidak dapat ditentukan. Pastikan GPS perangkat aktif.'
+                             : (err.code === 3 ? 'Waktu habis. Periksa sinyal GPS dan coba lagi.' : err.message);
+                     },
+                     { enableHighAccuracy: true, timeout: 12000 }
+                 );
+             }
+         }"
+         @open-qr-password-modal.window="open = true; gpsStatus = 'prompt'; lat = null; lng = null;"
+         @keydown.escape.window="open = false"
+         x-show="open"
+         style="display: none;"
+         class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 transition-opacity bg-gray-900/50 backdrop-blur-sm" @click="open = false"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div x-show="open" x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="inline-block w-full max-w-sm my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl relative z-10"
+                 @click.stop>
+                <div class="bg-maroon px-6 py-6 rounded-t-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="size-12 rounded-xl bg-white/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-2xl">qr_code_2</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Verifikasi Identitas</h3>
+                            <p class="text-xs text-white/80">Masukkan password untuk mengaktifkan QR</p>
+                        </div>
+                    </div>
+                    <button @click="open = false" class="text-white/80 hover:text-white p-1">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+
+                <form action="{{ route('dosen.kelas.pertemuan.activate_qr_password', ['id' => $id, 'pertemuan' => $meeting['no']]) }}"
+                      method="POST" class="p-6"
+                      @submit.prevent="if (gpsStatus !== 'got') { getLocation(); } else { loading = true; $el.submit(); }">
+                    @csrf
+                    <input type="hidden" name="latitude"  :value="lat">
+                    <input type="hidden" name="longitude" :value="lng">
+
+                    {{-- GPS Status --}}
+                    <div class="mb-5">
+                        <p class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">location_on</span>
+                            Lokasi GPS
+                        </p>
+
+                        {{-- PROMPT: belum minta izin --}}
+                        <div x-show="gpsStatus === 'prompt'" class="space-y-2">
+                            <p class="text-xs text-gray-500 leading-relaxed">
+                                Lokasi diperlukan untuk memverifikasi kehadiran Anda. Klik tombol di bawah lalu <strong>izinkan</strong> akses lokasi ketika browser meminta.
+                            </p>
+                            <button type="button" @click="getLocation()"
+                                    class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md shadow-blue-200">
+                                <span class="material-symbols-outlined text-[18px]">my_location</span>
+                                Izinkan Akses Lokasi
+                            </button>
+                        </div>
+
+                        {{-- GETTING: sedang mengambil --}}
+                        <div x-show="gpsStatus === 'getting'"
+                             class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-700 text-sm font-medium">
+                            <svg class="animate-spin h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            Mendapatkan lokasi GPS&hellip; Mohon tunggu.
+                        </div>
+
+                        {{-- GOT: berhasil --}}
+                        <div x-show="gpsStatus === 'got'"
+                             class="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm font-medium">
+                            <span class="material-symbols-outlined text-[20px] shrink-0">check_circle</span>
+                            <div>
+                                <p class="font-bold">Lokasi berhasil didapat</p>
+                                <p class="font-mono text-xs text-green-600" x-text="lat + ', ' + lng"></p>
+                            </div>
+                        </div>
+
+                        {{-- BLOCKED: izin ditolak oleh user --}}
+                        <div x-show="gpsStatus === 'blocked'" class="space-y-3">
+                            <div class="flex items-start gap-3 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium">
+                                <span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5">location_off</span>
+                                <div>
+                                    <p class="font-bold">Izin Lokasi Ditolak</p>
+                                    <p class="text-xs font-normal mt-0.5">Browser memblokir akses lokasi. Ikuti langkah berikut untuk mengaktifkannya:</p>
+                                </div>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-2">
+                                <p class="font-bold text-amber-900 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">help</span>
+                                    Cara mengaktifkan izin lokasi:
+                                </p>
+                                <p><strong>Chrome:</strong> Klik ikon 🔒 / ⓘ di address bar → <em>Izin situs</em> → <em>Lokasi</em> → Izinkan → Muat ulang halaman.</p>
+                                <p><strong>Firefox:</strong> Klik ikon 🔒 di address bar → <em>Informasi Halaman</em> → tab <em>Izin</em> → <em>Akses Lokasi</em> → Izinkan.</p>
+                                <p><strong>Safari:</strong> Pengaturan → Safari → Lokasi → Izinkan.</p>
+                                <p><strong>Android:</strong> Pengaturan → Aplikasi → Browser → Izin → Lokasi → Izinkan.</p>
+                            </div>
+                            <button type="button" @click="getLocation()"
+                                    class="w-full py-2 bg-white border border-red-300 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 flex items-center justify-center gap-2 transition-all">
+                                <span class="material-symbols-outlined text-[14px]">refresh</span>
+                                Coba Lagi (setelah mengizinkan)
+                            </button>
+                        </div>
+
+                        {{-- FAILED: error teknis / timeout --}}
+                        <div x-show="gpsStatus === 'failed'" class="space-y-2">
+                            <div class="flex items-start gap-3 p-3 bg-orange-50 border border-orange-200 rounded-xl text-orange-700 text-sm font-medium">
+                                <span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5">gps_off</span>
+                                <div>
+                                    <p class="font-bold">Gagal Mendapatkan Lokasi</p>
+                                    <p class="text-xs font-normal mt-0.5" x-text="gpsError"></p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 px-1">Pastikan GPS perangkat aktif dan Anda berada di area dengan sinyal yang baik.</p>
+                            <button type="button" @click="getLocation()"
+                                    class="w-full py-2 bg-white border border-orange-300 rounded-xl text-xs font-bold text-orange-600 hover:bg-orange-50 flex items-center justify-center gap-2 transition-all">
+                                <span class="material-symbols-outlined text-[14px]">refresh</span>
+                                Coba Lagi
+                            </button>
+                        </div>
+
+                        {{-- UNSUPPORTED --}}
+                        <div x-show="gpsStatus === 'unsupported'"
+                             class="flex items-start gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-600 text-sm">
+                            <span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5">location_disabled</span>
+                            <p>Browser Anda tidak mendukung GPS. Gunakan browser modern seperti Chrome atau Firefox.</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">
+                            Password Absensi
+                        </label>
+                        <div class="relative" x-data="{ showPw: false }">
+                            <input :type="showPw ? 'text' : 'password'" name="password" required autofocus
+                                   placeholder="Masukkan password Anda..."
+                                   class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:border-maroon focus:ring-2 focus:ring-maroon/20 text-sm font-medium bg-white transition-all">
+                            <button type="button" @click="showPw = !showPw"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors">
+                                <span class="material-symbols-outlined text-[20px]" x-text="showPw ? 'visibility_off' : 'visibility'"></span>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">
+                            <span class="material-symbols-outlined text-[12px] align-middle">info</span>
+                            Gunakan password login Anda.
+                        </p>
+                    </div>
+
+                    @if(session('error') && str_contains(session('error'), 'Password'))
+                        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs font-medium flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[16px]">error</span>
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    <div class="flex gap-3">
+                        <button type="button" @click="open = false"
+                                class="flex-1 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all">
+                            Batal
+                        </button>
+                        <button type="submit" :disabled="loading || gpsStatus !== 'got'"
+                                class="flex-1 py-2.5 bg-maroon text-white rounded-xl text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                :title="gpsStatus !== 'got' ? 'Aktifkan GPS terlebih dahulu' : ''">
+                            <span class="material-symbols-outlined text-[18px]" x-show="!loading">qr_code_2</span>
+                            <svg x-show="loading" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            <span x-text="loading ? 'Memverifikasi...' : 'Aktifkan QR'"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -868,6 +1157,35 @@
                     }
                 });
             });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setInterval(() => {
+                const url = new URL(window.location.href);
+                url.searchParams.set('reload_attendance', '1');
+                
+                fetch(url.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                     if (!response.ok) throw new Error('Network response was not ok');
+                     return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.getElementById('attendance-table-body');
+                    const presentCount = document.getElementById('attendance-present-count');
+                    const totalCount = document.getElementById('attendance-total-count');
+                    
+                    if(tableBody) tableBody.innerHTML = data.html;
+                    if(presentCount) presentCount.innerText = data.attended;
+                    if(totalCount) totalCount.innerText = data.total;
+                })
+                .catch(error => console.error('Error fetching attendance:', error));
+            }, 3000); // Poll every 3 seconds
         });
     </script>
 @endpush

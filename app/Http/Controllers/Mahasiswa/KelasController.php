@@ -195,6 +195,23 @@ class KelasController extends Controller
                 ];
             })->toArray();
 
+            // Fetch Pertemuan record for method and link
+            $pertemuanRecord = \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $krs->kelas_mata_kuliah_id)
+                ->where('nomor_pertemuan', $i)
+                ->first();
+
+            // Fallback if class_mata_kuliah_id in KRS might be null, try to find via Kelas
+            if (!$pertemuanRecord && $kelas) {
+                 $kmk = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+                    ->where('kode_kelas', $kelas->section)
+                    ->first();
+                 if ($kmk) {
+                    $pertemuanRecord = \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $kmk->id)
+                        ->where('nomor_pertemuan', $i)
+                        ->first();
+                 }
+            }
+
             $meetings[] = [
                 'no' => $i,
                 'label' => 'Pertemuan ' . $i,
@@ -206,6 +223,8 @@ class KelasController extends Controller
                 'description' => 'Pada pertemuan ini akan dibahas mengenai pengantar mata kuliah, kontrak perkuliahan, dan pemaparan silabus selama satu semester.',
                 'materials' => $materials,
                 'assignments' => $assignments,
+                'method' => $pertemuanRecord->metode_pengajaran ?? 'offline',
+                'online_link' => $pertemuanRecord->online_meeting_link ?? null,
             ];
         }
 

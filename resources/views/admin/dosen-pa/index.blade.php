@@ -111,13 +111,14 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     @php
                                         $count = $dosen->mahasiswa_pa_count;
-                                        $badgeClass = $count >= 6 ? 'bg-red-100 text-red-800' : ($count >= 4 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
+                                        $limit = $dosen->kuota ?: 6;
+                                        $badgeClass = $count >= $limit ? 'bg-red-100 text-red-800' : ($count >= ($limit - 2) ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
                                     @endphp
                                     <span
                                         class="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full {{ $badgeClass }}">
                                         <i class="fas fa-users mr-1"></i>
-                                        {{ $count }}/6
-                                        @if($count >= 6)
+                                        {{ $count }}/{{ $limit }}
+                                        @if($count >= $limit)
                                             <span class="ml-1 font-bold">PENUH</span>
                                         @endif
                                     </span>
@@ -252,6 +253,28 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/nim/sweetalert2@11"></script>
         <script>
+            // SweetAlert for Success Message
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    confirmButtonColor: '#7a1621',
+                    confirmButtonText: 'OK'
+                });
+            @endif
+
+            // SweetAlert for Error Message
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: '#7a1621',
+                    confirmButtonText: 'OK'
+                });
+            @endif
+
             // SweetAlert Delete Confirmation
             document.querySelectorAll('.delete-form').forEach(form => {
                 form.addEventListener('submit', function(e) {

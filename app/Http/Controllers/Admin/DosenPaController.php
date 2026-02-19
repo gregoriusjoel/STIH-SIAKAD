@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Dosen;
 use App\Models\Mahasiswa;
+use App\Models\Prodi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -22,6 +23,15 @@ class DosenPaController extends Controller
             ->orderBy('mahasiswa_pa_count', 'desc')
             ->paginate(10);
 
+        // Auto-fix kuota for dosens whose student count exceeds stored kuota
+        foreach ($dosens as $dosen) {
+            $currentKuota = $dosen->kuota ?: 6;
+            if ($dosen->mahasiswa_pa_count > $currentKuota) {
+                $dosen->kuota = $dosen->mahasiswa_pa_count;
+                $dosen->save();
+            }
+        }
+
         return view('admin.dosen-pa.index', compact('dosens'));
     }
 
@@ -36,13 +46,25 @@ class DosenPaController extends Controller
             ->orderBy('mahasiswa_pa_count', 'asc')
             ->get();
 
+        // Auto-fix kuota for dosens whose student count exceeds stored kuota
+        foreach ($dosens as $dosen) {
+            $currentKuota = $dosen->kuota ?: 6;
+            if ($dosen->mahasiswa_pa_count > $currentKuota) {
+                $dosen->kuota = $dosen->mahasiswa_pa_count;
+                $dosen->save();
+            }
+        }
+
         // Get Mahasiswa who don't have a Dosen PA yet
         $mahasiswas = Mahasiswa::with('user')
             ->whereDoesntHave('dosenPa')
             ->orderBy('id', 'asc')
             ->get();
 
-        return view('admin.dosen-pa.create', compact('dosens', 'mahasiswas'));
+        // Build prodi code-to-name mapping so JS can resolve dosen prodi codes to mahasiswa prodi names
+        $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
+
+        return view('admin.dosen-pa.create', compact('dosens', 'mahasiswas', 'prodiMap'));
     }
 
     /**
@@ -59,22 +81,29 @@ class DosenPaController extends Controller
         $dosen = Dosen::findOrFail($request->dosen_id);
         $mahasiswaIds = $request->input('mahasiswa_ids', []);
 
+        // Save custom quota to database
+        $quota = (int) $request->input('custom_quota', 6);
+        if ($dosen->kuota != $quota) {
+            $dosen->kuota = $quota;
+            $dosen->save();
+        }
+
         $currentCount = $dosen->mahasiswaPa()->count();
         $toAdd = count($mahasiswaIds);
 
-        // Enforce 6-student limit per dosen
-        if ($currentCount + $toAdd > 6) {
-            return back()->with('error', 'Dosen ini tidak dapat menampung ' . $toAdd . ' mahasiswa. Slot tersedia: ' . (6 - $currentCount));
+        // Enforce quota limit per dosen
+        if ($currentCount + $toAdd > $quota) {
+            return back()->with('error', 'Dosen ini tidak dapat menampung ' . $toAdd . ' mahasiswa. Slot tersedia: ' . ($quota - $currentCount));
         }
 
         // Verify none of the selected mahasiswa already have a Dosen PA
         // and ensure they belong to the same prodi as the selected dosen
-        $dosenProdi = $dosen->prodi ?? [];
-        if (!is_array($dosenProdi)) $dosenProdi = json_decode($dosenProdi, true) ?: [];
+        $dosenProdiCodes = $dosen->prodi ?? [];
+        if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
 
-        if (empty($dosenProdi)) {
-            return back()->with('error', 'Dosen belum memiliki Program Studi. Tambahkan prodi pada data dosen terlebih dahulu.');
-        }
+        // Resolve prodi codes to names for comparison with mahasiswa prodi
+        $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
+        $dosenProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $dosenProdiCodes));
 
         foreach ($mahasiswaIds as $mid) {
             $m = Mahasiswa::find($mid);
@@ -82,9 +111,9 @@ class DosenPaController extends Controller
             if ($m->dosenPa()->count() > 0) {
                 return back()->with('error', 'Mahasiswa ' . $m->user->name . ' sudah memiliki Dosen PA. Pilih mahasiswa lain.');
             }
-            // check program studi
+            // check program studi (compare mahasiswa prodi name with resolved dosen prodi names)
             $mProdi = $m->prodi ?? null;
-            if ($mProdi && !in_array($mProdi, $dosenProdi)) {
+            if ($mProdi && !empty($dosenProdiNames) && !in_array($mProdi, $dosenProdiNames)) {
                 return back()->with('error', 'Mahasiswa ' . $m->user->name . ' tidak berada di Program Studi yang sama dengan dosen.');
             }
         }
@@ -104,20 +133,40 @@ class DosenPaController extends Controller
         $dosen = Dosen::with(['user', 'mahasiswaPa.user'])->findOrFail($id);
 
         // Get all Dosens with their mahasiswa count (for reassignment)
+        // Filter by same prodi as current dosen
+        $currentProdi = $dosen->prodi ?? [];
+        if (!is_array($currentProdi)) $currentProdi = json_decode($currentProdi, true) ?: [];
+
         $allDosens = Dosen::with('user')
             ->withCount('mahasiswaPa')
             ->where('id', '!=', $id) // Exclude current dosen
             ->orderBy('mahasiswa_pa_count', 'asc')
-            ->get();
+            ->get()
+            ->filter(function($d) use ($currentProdi) {
+                // If current dosen has no prodi, allow all? Or strictly none?
+                // Assuming strict: only show dosens that share at least one prodi
+                if (empty($currentProdi)) return true; // Fallback: if source has no prodi, show all (or maybe none?) - safest is show all or let validation handle it.
+                
+                $dProdi = $d->prodi ?? [];
+                if (!is_array($dProdi)) $dProdi = json_decode($dProdi, true) ?: [];
+                
+                return !empty(array_intersect($currentProdi, $dProdi));
+            });
 
         // Get Mahasiswa who don't have a Dosen PA yet (for swap/add feature)
         $query = Mahasiswa::with('user')->whereDoesntHave('dosenPa');
 
         // Restrict available mahasiswa to the same prodi as this dosen
-        $dosenProdi = $dosen->prodi ?? [];
-        if (!is_array($dosenProdi)) $dosenProdi = json_decode($dosenProdi, true) ?: [];
-        if (!empty($dosenProdi)) {
-            $query->whereIn('prodi', $dosenProdi);
+        // Restrict available mahasiswa to the same prodi as this dosen
+        $dosenProdiCodes = $dosen->prodi ?? [];
+        if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
+
+        // Resolve prodi codes to names
+        $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
+        $dosenProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $dosenProdiCodes));
+
+        if (!empty($dosenProdiNames)) {
+            $query->whereIn('prodi', $dosenProdiNames);
         } else {
             // if dosen has no prodi set, return empty set
             $query->whereRaw('0 = 1');
@@ -169,10 +218,15 @@ class DosenPaController extends Controller
             }
 
             // ensure prodi matches current dosen
-            $dosenProdi = $currentDosen->prodi ?? [];
-            if (!is_array($dosenProdi)) $dosenProdi = json_decode($dosenProdi, true) ?: [];
+            $dosenProdiCodes = $currentDosen->prodi ?? [];
+            if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
+            
+            // Resolve prodi codes to names
+            $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
+            $dosenProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $dosenProdiCodes));
+
             $mProdi = $addMahasiswa->prodi ?? null;
-            if ($mProdi && !empty($dosenProdi) && !in_array($mProdi, $dosenProdi)) {
+            if ($mProdi && !empty($dosenProdiNames) && !in_array($mProdi, $dosenProdiNames)) {
                 return back()->with('error', 'Mahasiswa ' . $addMahasiswa->user->name . ' tidak berada di Program Studi yang sama dengan dosen ini.');
             }
 
@@ -199,8 +253,9 @@ class DosenPaController extends Controller
             $currentCount = $currentDosen->mahasiswaPa()->count();
             $toAdd = count($toAddIds);
 
-            if ($currentCount + $toAdd > 6) {
-                return back()->with('error', 'Dosen ini tidak dapat menampung ' . $toAdd . ' mahasiswa. Slot tersedia: ' . (6 - $currentCount));
+            $limit = $currentDosen->kuota ?: 6;
+            if ($currentCount + $toAdd > $limit) {
+                return back()->with('error', 'Dosen ini tidak dapat menampung ' . $toAdd . ' mahasiswa. Slot tersedia: ' . ($limit - $currentCount));
             }
 
             // Ensure none of the selected mahasiswa already have a Dosen PA
@@ -211,10 +266,16 @@ class DosenPaController extends Controller
             }
 
             // ensure all selected mahasiswa are from same prodi as current dosen
-            $dosenProdi = $currentDosen->prodi ?? [];
-            if (!is_array($dosenProdi)) $dosenProdi = json_decode($dosenProdi, true) ?: [];
-            if (!empty($dosenProdi)) {
-                $bad = Mahasiswa::whereIn('id', $toAddIds)->whereNotIn('prodi', $dosenProdi)->pluck('id')->first();
+            $dosenProdiCodes = $currentDosen->prodi ?? [];
+            if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
+
+            // Resolve prodi codes to names
+            $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
+            $dosenProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $dosenProdiCodes));
+
+            if (!empty($dosenProdiNames)) {
+                // Check if any selected mahasiswa has a prodi NOT in the dosen's prodi names
+                $bad = Mahasiswa::whereIn('id', $toAddIds)->whereNotIn('prodi', $dosenProdiNames)->pluck('id')->first();
                 if ($bad) {
                     $m = Mahasiswa::find($bad);
                     return back()->with('error', 'Mahasiswa ' . ($m?->user->name ?? $bad) . ' tidak berada di Program Studi yang sama dengan dosen ini.');
@@ -242,18 +303,24 @@ class DosenPaController extends Controller
         $currentCount = $newDosen->mahasiswaPa()->count();
         $toTransfer = count($request->mahasiswa_ids);
         
-        if ($currentCount + $toTransfer > 6) {
-            return back()->with('error', 'Dosen tujuan tidak dapat menampung ' . $toTransfer . ' mahasiswa. Slot tersedia: ' . (6 - $currentCount));
+        $limit = $newDosen->kuota ?: 6;
+        if ($currentCount + $toTransfer > $limit) {
+            return back()->with('error', 'Dosen tujuan tidak dapat menampung ' . $toTransfer . ' mahasiswa. Slot tersedia: ' . ($limit - $currentCount));
         }
 
         // ensure all mahasiswa to transfer are in same prodi as new dosen
-        $newProdi = $newDosen->prodi ?? [];
-        if (!is_array($newProdi)) $newProdi = json_decode($newProdi, true) ?: [];
-        if (!empty($newProdi)) {
-            $bad = Mahasiswa::whereIn('id', $request->mahasiswa_ids)->whereNotIn('prodi', $newProdi)->pluck('id')->first();
+        $newProdiCodes = $newDosen->prodi ?? [];
+        if (!is_array($newProdiCodes)) $newProdiCodes = json_decode($newProdiCodes, true) ?: [];
+
+        // Resolve prodi codes to names
+        $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
+        $newProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $newProdiCodes));
+
+        if (!empty($newProdiNames)) {
+            $bad = Mahasiswa::whereIn('id', $request->mahasiswa_ids)->whereNotIn('prodi', $newProdiNames)->pluck('id')->first();
             if ($bad) {
                 $m = Mahasiswa::find($bad);
-                return back()->with('error', 'Mahasiswa ' . ($m?->user->name ?? $bad) . ' tidak berada di Program Studi yang sama dengan dosen tujuan.');
+                return back()->with('error', 'Mahasiswa ' . ($m?->user->name ?? $bad) . ' tidak berada di Program Studi yang sama dengan dosen tujuan. (Dosen: ' . implode(', ', $newProdiNames) . ')');
             }
         } else {
             return back()->with('error', 'Dosen tujuan belum memiliki Program Studi.');
@@ -306,6 +373,10 @@ class DosenPaController extends Controller
 
         // Detach all mahasiswa from this dosen
         $dosen->mahasiswaPa()->detach();
+
+        // Reset kuota back to default
+        $dosen->kuota = 6;
+        $dosen->save();
 
         return redirect()->route('admin.dosen-pa.index')
             ->with('success', $count . ' mahasiswa berhasil dihapus dari Dosen PA ' . $dosen->user->name);

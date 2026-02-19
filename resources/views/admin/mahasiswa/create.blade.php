@@ -130,6 +130,20 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-venus-mars text-gray-400 mr-1"></i>
+                                    Jenis Kelamin *
+                                </label>
+                                <select name="jenis_kelamin"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
+                                    required>
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="Laki-Laki" {{ old('jenis_kelamin') == 'Laki-Laki' ? 'selected' : '' }}>Laki-Laki</option>
+                                    <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class="fas fa-phone text-gray-400 mr-1"></i>
                                     No. Telepon
                                 </label>

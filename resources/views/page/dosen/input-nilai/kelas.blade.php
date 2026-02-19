@@ -22,20 +22,20 @@
         </nav>
     @endsection
 
-    <div class="pt-6 px-6 md:px-8 pb-8 w-full flex flex-col gap-6" 
+    <div class="pt-4 px-4 md:pt-6 md:px-8 pb-8 w-full flex flex-col gap-6" 
          x-data="nilaiApp(@js($students), @js($bobot), @js($class_info))">
 
         <!-- Header -->
         <div class="flex flex-col gap-4">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-3xl font-black text-[#111218] dark:text-white tracking-tight">Input Nilai Mahasiswa</h2>
-                    <p class="text-base text-[#616889] dark:text-slate-400 mt-1">
+                    <h2 class="text-2xl md:text-3xl font-black text-[#111218] dark:text-white tracking-tight">Input Nilai Mahasiswa</h2>
+                    <p class="text-sm md:text-base text-[#616889] dark:text-slate-400 mt-1">
                         <span x-text="classInfo.name"></span> (<span x-text="classInfo.code"></span>) - Kelas <span x-text="classInfo.section"></span>
                     </p>
                 </div>
                 <a href="{{ route('dosen.kelas.detail', $class_info['id']) }}"
-                    class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all">
+                    class="flex items-center justify-center w-full md:w-auto gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all">
                     <span class="material-symbols-outlined text-[20px]">arrow_back</span>
                     Kembali
                 </a>
@@ -43,14 +43,14 @@
         </div>
 
         <!-- Bobot Penilaian Card -->
-        <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-6"
+        <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-4 md:p-6"
              x-show="!bobotLocked">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-2xl text-primary">tune</span>
                     <h3 class="text-lg font-bold text-[#111218] dark:text-white">Pengaturan Bobot Penilaian</h3>
                 </div>
-                <span class="text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-3 py-1 rounded-full">
+                <span class="self-start md:self-auto text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-3 py-1 rounded-full">
                     Belum Dikunci
                 </span>
             </div>
@@ -68,7 +68,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
                         Partisipatif (%)</label>
@@ -108,7 +108,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4 border-t border-gray-200 dark:border-slate-700">
                 <div>
                     <p class="text-sm font-medium text-gray-600 dark:text-slate-400">Total Bobot:</p>
                     <p class="text-2xl font-bold"
@@ -118,7 +118,7 @@
                 <button @click="saveBobot" 
                         :disabled="totalBobot !== 100 || isSaving"
                         :class="totalBobot === 100 && !isSaving ? 'bg-primary hover:bg-primary-hover' : 'bg-gray-400 cursor-not-allowed'"
-                        class="flex items-center gap-2 px-6 py-3 text-white rounded-xl font-bold text-sm shadow-lg transition-all">
+                        class="flex items-center justify-center w-full md:w-auto gap-2 px-6 py-3 text-white rounded-xl font-bold text-sm shadow-lg transition-all">
                     <span class="material-symbols-outlined text-[20px]" x-show="!isSaving">lock</span>
                     <span x-show="!isSaving">Simpan & Kunci Bobot</span>
                     <span x-show="isSaving">Menyimpan...</span>
@@ -155,14 +155,14 @@
         </div>
 
         <!-- Edit Bobot Mode -->
-        <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-6"
+        <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-4 md:p-6"
              x-show="bobotLocked && editMode" x-cloak>
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-2xl text-amber-600 dark:text-amber-400">edit_note</span>
                     <h3 class="text-lg font-bold text-[#111218] dark:text-white">Edit Bobot Penilaian</h3>
                 </div>
-                <span class="text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-3 py-1 rounded-full">
+                <span class="self-start md:self-auto text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-3 py-1 rounded-full">
                     Mode Edit
                 </span>
             </div>
@@ -179,7 +179,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
                         Partisipatif (%)</label>
@@ -219,23 +219,23 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4 border-t border-gray-200 dark:border-slate-700">
                 <div>
                     <p class="text-sm font-medium text-gray-600 dark:text-slate-400">Total Bobot:</p>
                     <p class="text-2xl font-bold"
                        :class="totalBobot === 100 ? 'text-green-600' : 'text-red-600'"
                        x-text="totalBobot.toFixed(2) + '%'"></p>
                 </div>
-                <div class="flex gap-3">
+                <div class="flex items-center gap-3 w-full md:w-auto">
                     <button @click="editMode = false" 
-                            class="flex items-center gap-2 px-5 py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-semibold text-sm transition-all">
+                            class="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-semibold text-sm transition-all shadow-lg">
                         <span class="material-symbols-outlined text-[20px]">close</span>
                         Batal
                     </button>
                     <button @click="saveBobot" 
                             :disabled="totalBobot !== 100 || isSaving"
                             :class="totalBobot === 100 && !isSaving ? 'bg-primary hover:bg-primary-hover' : 'bg-gray-400 cursor-not-allowed'"
-                            class="flex items-center gap-2 px-6 py-3 text-white rounded-xl font-bold text-sm shadow-lg transition-all">
+                            class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 text-white rounded-xl font-bold text-sm shadow-lg transition-all">
                         <span class="material-symbols-outlined text-[20px]" x-show="!isSaving">save</span>
                         <span x-show="!isSaving">Update Bobot</span>
                         <span x-show="isSaving">Menyimpan...</span>
@@ -247,14 +247,14 @@
         <!-- Nilai Table -->
         <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden"
              x-show="bobotLocked" x-cloak>
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
+            <div class="px-4 py-4 md:px-6 nav-header border-b border-gray-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-2xl text-primary">edit_note</span>
                     <h3 class="text-lg font-bold text-[#111218] dark:text-white">Input Nilai Mahasiswa</h3>
                 </div>
                 <button @click="saveAllNilai"
                         :disabled="isSaving"
-                        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
+                        class="flex items-center justify-center w-full md:w-auto gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
                     <span class="material-symbols-outlined text-[20px]" x-show="!isSaving">save</span>
                     <span x-show="!isSaving">Simpan Semua Nilai</span>
                     <span x-show="isSaving">Menyimpan...</span>
@@ -262,14 +262,14 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700" style="min-width: 1200px;">
+                <table class="w-full divide-y divide-gray-200 dark:divide-slate-700">
                     <thead class="bg-gray-50 dark:bg-slate-800">
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap">
                                 No</th>
                             <th class="px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap">
                                 NIM</th>
-                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap min-w-[200px]">
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap w-full min-w-[200px]">
                                 Nama Mahasiswa</th>
                             <th class="px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap">
                                 Partisipatif</th>

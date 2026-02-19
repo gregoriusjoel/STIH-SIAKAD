@@ -1,7 +1,7 @@
 @extends('layouts.mahasiswa')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="w-full">
     <div class="max-w-6xl mx-auto">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Riwayat Pembayaran</h1>
 

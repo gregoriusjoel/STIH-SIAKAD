@@ -155,11 +155,39 @@
                         {{-- Accordion Body --}}
                         <div x-show="open">
                             <div class="p-6 pt-0 border-t border-gray-50">
+                                {{-- Method & Link Section --}}
+                                <div class="mt-4 mb-2 p-4 bg-gray-50 rounded-xl border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div class="flex items-center gap-3">
+                                         <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-500">
+                                            @if(($meeting['method'] ?? 'offline') == 'online')
+                                                <span class="material-symbols-outlined">videocam</span>
+                                            @elseif(($meeting['method'] ?? 'offline') == 'asynchronous')
+                                                <span class="material-symbols-outlined">schedule</span>
+                                            @else
+                                                <span class="material-symbols-outlined">school</span>
+                                            @endif
+                                         </div>
+                                         <div>
+                                            <h5 class="text-sm font-bold text-gray-800">Metode Pembelajaran</h5>
+                                            <p class="text-xs text-gray-500 capitalize">
+                                                {{ ($meeting['method'] ?? 'offline') == 'offline' ? 'Tatap Muka (Offline)' : (($meeting['method'] ?? 'offline') == 'online' ? 'Daring (Online)' : 'Asynchronous') }}
+                                            </p>
+                                         </div>
+                                    </div>
+                                    
+                                    @if(($meeting['method'] ?? 'offline') == 'online' && !empty($meeting['online_link']))
+                                        <a href="{{ $meeting['online_link'] }}" target="_blank" class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm shadow-blue-200">
+                                            <span class="material-symbols-outlined text-[18px]">videocam</span>
+                                            Join Meeting
+                                        </a>
+                                    @endif
+                                </div>
+
                                 <div class="mt-4 space-y-6">
                                     {{-- Judul Materi dari Database --}}
                                     @if(count($meeting['materials']) > 0)
                                         @foreach($meeting['materials'] as $material)
-                                            <div class="bg-gradientµ">
+                                            <div class="mb-4 bg-gray-50 p-3 rounded-lg border-l-4 border-maroon">
                                                 <h5 class="text-base font-bold text-gray-900 flex items-center gap-2">
                                                     <span class="material-symbols-outlined text-maroon text-[22px]">school</span>
                                                     {{ $material['judul'] }}

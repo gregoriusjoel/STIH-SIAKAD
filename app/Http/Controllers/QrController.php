@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Dosen;
 use App\Models\KelasMataKuliah;
 use App\Models\Pertemuan;
 use Carbon\Carbon;
@@ -28,10 +29,17 @@ class QrController extends Controller
         $user = auth()->user();
         $canBypass = false;
         if ($user) {
-            $isDosen = method_exists($user, 'isDosen') ? $user->isDosen() : ($user->role === 'dosen');
             $isAdmin = method_exists($user, 'isAdmin') ? $user->isAdmin() : ($user->role === 'admin');
-            if ($isAdmin) $canBypass = true;
-            if ($isDosen && $kelas->dosen_id && $user->id == $kelas->dosen_id) $canBypass = true;
+            $isDosen = method_exists($user, 'isDosen') ? $user->isDosen() : ($user->role === 'dosen');
+            if ($isAdmin) {
+                $canBypass = true;
+            } elseif ($isDosen) {
+                // Compare via Dosen record: user_id → dosens.id → kelas_mata_kuliahs.dosen_id
+                $dosenRecord = Dosen::where('user_id', $user->id)->first();
+                if ($dosenRecord && $kelas->dosen_id == $dosenRecord->id) {
+                    $canBypass = true;
+                }
+            }
         }
 
         // ✅ Validate QR from Pertemuan record

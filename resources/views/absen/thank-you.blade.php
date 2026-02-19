@@ -118,12 +118,6 @@
                 </div>
              </div>
         </div>
-
-        <div class="mt-8">
-            <a href="/" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-maroon/20 text-sm font-bold text-white bg-[#8B1538] hover:bg-[#7A1230] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B1538] transition-all transform hover:scale-[1.02] active:scale-[0.98]">
-                Kembali ke Beranda
-            </a>
-        </div>
     </div>
 </div>
 

@@ -21,6 +21,7 @@
 
         <form action="{{ route('admin.dosen-pa.store') }}" method="POST" class="p-6">
             @csrf
+            <input type="hidden" name="custom_quota" id="custom_quota" value="6">
             
             <div class="space-y-6">
                 <!-- Info Validasi -->
@@ -58,16 +59,18 @@
                                 @foreach($dosens as $dosen)
                                     @php
                                         $count = $dosen->mahasiswa_pa_count;
-                                        $isFull = $count >= 6;
+                                        $quota = $dosen->kuota ?: 6;
+                                        $isFull = $count >= $quota;
                                     @endphp
                                     <option value="{{ $dosen->id }}"
                                         data-count="{{ $count }}"
+                                        data-quota="{{ $quota }}"
                                         data-name="{{ $dosen->user->name }}"
                                         data-prodi='@json($dosen->prodi)'
                                         {{ $isFull ? 'disabled' : '' }}
                                         {{ old('dosen_id') == $dosen->id ? 'selected' : '' }}
                                         class="{{ $isFull ? 'text-gray-400' : '' }}">
-                                        {{ $dosen->user->name }} ({{ $count }}/6){{ $isFull ? ' - PENUH' : '' }}
+                                        {{ $dosen->user->name }} ({{ $count }}/{{ $quota }}){{ $isFull ? ' - PENUH' : '' }}
                                     </option>
                                 @endforeach
                             </select>
@@ -86,12 +89,7 @@
                             <div id="mahasiswaContainer">
                                 <div class="mb-2 mahasiswa-row flex items-center gap-2">
                                     <select name="mahasiswa_ids[]" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition mahasiswa-select" required>
-                                        <option value="">-- Pilih Mahasiswa --</option>
-                                        @foreach($mahasiswas as $mahasiswa)
-                                            <option value="{{ $mahasiswa->id }}" data-prodi="{{ $mahasiswa->prodi }}" {{ (collect(old('mahasiswa_ids'))->contains($mahasiswa->id)) ? 'selected' : '' }}>
-                                                {{ $mahasiswa->user->name }} ({{ $mahasiswa->nim }})
-                                            </option>
-                                        @endforeach
+                                        <option value="">-- Pilih Dosen PA terlebih dahulu --</option>
                                     </select>
                                     <button type="button" class="remove-mahasiswa-btn inline-flex items-center gap-2 px-3 py-2 border border-maroon text-maroon rounded-md hover:bg-maroon hover:text-white transition text-sm">
                                         <i class="fas fa-trash"></i>
@@ -161,6 +159,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         let MAX_PER_DOSEN = 6; // Changed to let to allow customization
+        const prodiMap = @json($prodiMap ?? []);
         const dosenSelect = document.querySelector('select[name="dosen_id"]');
         const container = document.getElementById('mahasiswaContainer');
         const addBtn = document.getElementById('addMahasiswaBtn');
@@ -172,6 +171,16 @@
 
         // Custom Slot Button Logic
         customSlotBtn.addEventListener('click', function() {
+            // Check if a Dosen PA is selected first
+            if (!dosenSelect.value) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Pilih Dosen PA Terlebih Dahulu',
+                    text: 'Silakan pilih Dosen PA sebelum mengatur Custom Slot.',
+                    confirmButtonColor: '#8B1538',
+                });
+                return;
+            }
             Swal.fire({
                 title: 'Atur Batas Slot',
                 text: `Masukkan batas maksimal mahasiswa per Dosen PA (Saat ini: ${MAX_PER_DOSEN})`,
@@ -204,7 +213,22 @@
                             if (!value) return 'Password tidak boleh kosong!';
                         },
                         preConfirm: (password) => {
-                            return fetch('{{ route("admin.verify-password") }}', {
+                            return password;
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    }).then((pwResult) => {
+                        if (pwResult.isConfirmed) {
+                            const password = pwResult.value;
+                            
+                            // Show loading
+                            let loadingAlert = Swal.fire({
+                                title: 'Memeriksa Password...',
+                                didOpen: () => { Swal.showLoading() },
+                                allowOutsideClick: false,
+                                showConfirmButton: false
+                            });
+
+                            fetch('{{ route("admin.verify-password") }}', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -221,31 +245,36 @@
                                 }
                                 return response.json();
                             })
+                            .then(() => {
+                                // Close loading manually if needed, but the next Swal will replace it
+                                MAX_PER_DOSEN = newSlot;
+                                document.getElementById('custom_quota').value = newSlot;
+
+                                // Trim excess mahasiswa rows if current count exceeds new slot limit
+                                const occupied = getDosenCount();
+                                const maxAllowed = Math.max(0, MAX_PER_DOSEN - occupied);
+                                const rows = Array.from(container.querySelectorAll('.mahasiswa-row'));
+                                while (rows.length > maxAllowed) {
+                                    rows.pop().remove();
+                                }
+
+                                updateSlots();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: `Batas slot berhasil diubah menjadi ${MAX_PER_DOSEN}`,
+                                    confirmButtonColor: '#8B1538',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            })
                             .catch(error => {
-                                Swal.showValidationMessage(error.message);
-                            });
-                        },
-                        allowOutsideClick: () => !Swal.isLoading()
-                    }).then((pwResult) => {
-                        if (pwResult.isConfirmed) {
-                            MAX_PER_DOSEN = newSlot;
-
-                            // Trim excess mahasiswa rows if current count exceeds new slot limit
-                            const occupied = getDosenCount();
-                            const maxAllowed = Math.max(0, MAX_PER_DOSEN - occupied);
-                            const rows = Array.from(container.querySelectorAll('.mahasiswa-row'));
-                            while (rows.length > maxAllowed) {
-                                rows.pop().remove();
-                            }
-
-                            updateSlots();
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: `Batas slot berhasil diubah menjadi ${MAX_PER_DOSEN}`,
-                                confirmButtonColor: '#8B1538',
-                                timer: 1500,
-                                showConfirmButton: false
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: error.message || 'Password salah!',
+                                    confirmButtonColor: '#8B1538'
+                                });
                             });
                         }
                     });
@@ -311,9 +340,35 @@
             return (list || []).map(i => String(i || '').trim().toLowerCase());
         }
 
-        function filterMahasiswaByProdi(prodiList) {
-            const normalized = normalizeList(prodiList);
-            currentProdiList = normalized;
+        function showAllMahasiswa() {
+            currentProdiList = [];
+            const selects = Array.from(container.querySelectorAll('select.mahasiswa-select'));
+            const templateOptions = Array.from(template.querySelectorAll('option'));
+            selects.forEach(sel => {
+                const currentVal = sel.value;
+                sel.innerHTML = '';
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = '';
+                defaultOpt.textContent = '-- Pilih Mahasiswa --';
+                sel.appendChild(defaultOpt);
+                templateOptions.forEach(opt => {
+                    if (!opt.value) return;
+                    const clone = opt.cloneNode(true);
+                    sel.appendChild(clone);
+                });
+                sel.value = currentVal && Array.from(sel.options).some(o => o.value === currentVal) ? currentVal : '';
+            });
+            syncOptions();
+        }
+
+        function filterMahasiswaByProdi(prodiCodes) {
+            // Resolve prodi codes to names using prodiMap
+            const resolvedNames = (prodiCodes || []).map(code => {
+                const c = String(code || '').trim();
+                // Check if it's a code that exists in prodiMap, otherwise use as-is (might already be a name)
+                return (prodiMap[c] || c).trim().toLowerCase();
+            }).filter(n => n);
+            currentProdiList = resolvedNames;
             const selects = Array.from(container.querySelectorAll('select.mahasiswa-select'));
             const templateOptions = Array.from(template.querySelectorAll('option'));
             selects.forEach(sel => {
@@ -326,7 +381,7 @@
                 templateOptions.forEach(opt => {
                     if (!opt.value) return;
                     const optProdi = String(opt.dataset.prodi || '').trim().toLowerCase();
-                    if (normalized.length > 0 && normalized.includes(optProdi)) {
+                    if (resolvedNames.length > 0 && resolvedNames.includes(optProdi)) {
                         const clone = opt.cloneNode(true);
                         sel.appendChild(clone);
                     }
@@ -375,6 +430,15 @@
         }
 
         addBtn.addEventListener('click', function () {
+            if (!dosenSelect.value) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Pilih Dosen PA Terlebih Dahulu',
+                    text: 'Silakan pilih Dosen PA sebelum menambah mahasiswa.',
+                    confirmButtonColor: '#8B1538',
+                });
+                return;
+            }
             const occupied = getDosenCount();
             const slotsLeft = Math.max(0, MAX_PER_DOSEN - occupied);
             if (currentSelectedCount() >= slotsLeft) {
@@ -406,15 +470,30 @@
         dosenSelect.addEventListener('change', function () {
             updateSlots();
             const opt = dosenSelect.options[dosenSelect.selectedIndex];
-            let prodiData = [];
-            try { prodiData = opt && opt.dataset && opt.dataset.prodi ? JSON.parse(opt.dataset.prodi) : []; } catch(e) { prodiData = []; }
 
-            if (!prodiData || prodiData.length === 0) {
-                // disable mahasiswa selection and adding
-                container.querySelectorAll('select.mahasiswa-select').forEach(s => { s.innerHTML = '<option value="">-- Pilih Mahasiswa --</option>'; });
+            // If no dosen selected, clear mahasiswa dropdown
+            if (!opt || !opt.value) {
+                container.querySelectorAll('select.mahasiswa-select').forEach(s => { s.innerHTML = '<option value="">-- Pilih Dosen PA terlebih dahulu --</option>'; });
                 addBtn.disabled = true;
                 submitBtn.disabled = true;
-                slotsInfo.textContent = 'Dosen belum memiliki Program Studi. Tambahkan prodi pada data dosen terlebih dahulu.';
+                slotsInfo.textContent = 'Pilih Dosen PA terlebih dahulu.';
+                return;
+            }
+
+            let prodiData = [];
+            try { prodiData = opt.dataset && opt.dataset.prodi ? JSON.parse(opt.dataset.prodi) : []; } catch(e) { prodiData = []; }
+
+            // Load the selected dosen's stored quota
+            const storedQuota = parseInt(opt.dataset.quota || '6', 10);
+            MAX_PER_DOSEN = storedQuota;
+            document.getElementById('custom_quota').value = storedQuota;
+            updateSlots();
+
+            if (!prodiData || prodiData.length === 0) {
+                // No prodi data - show all mahasiswa
+                showAllMahasiswa();
+                addBtn.disabled = false;
+                submitBtn.disabled = false;
             } else {
                 addBtn.disabled = false;
                 submitBtn.disabled = false;
@@ -436,6 +515,8 @@
             // after adding, if currentProdiList set, apply filter to the newest select
             if (currentProdiList && currentProdiList.length > 0) {
                 filterMahasiswaByProdi(currentProdiList);
+            } else {
+                showAllMahasiswa();
             }
         }
 

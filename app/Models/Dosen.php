@@ -22,6 +22,7 @@ class Dosen extends Model
         'mata_kuliah_ids',
         'dosen_tetap',
         'jabatan_fungsional',
+        'kuota',
     ];
 
     protected $casts = [
@@ -31,6 +32,7 @@ class Dosen extends Model
         'universitas' => 'array',
         'jabatan_fungsional' => 'array',
         'dosen_tetap' => 'boolean',
+        'kuota' => 'integer',
     ];
 
     public function user(): BelongsTo
@@ -66,5 +68,10 @@ class Dosen extends Model
     public function availabilities(): HasMany
     {
         return $this->hasMany(DosenAvailability::class);
+    }
+
+    public function dosenAttendances(): HasMany
+    {
+        return $this->hasMany(DosenAttendance::class);
     }
 }

@@ -55,7 +55,7 @@
     $displayCols = max(1, $maxPayments);
 @endphp
 
-<div class="container mx-auto px-4 py-8 max-w-none">
+<div class="w-full">
     <div class="w-full">
         {{-- Header Section --}}
         <div class="mb-8">
@@ -100,16 +100,16 @@
         {{-- Main Table Container --}}
         <div class="bg-white rounded-xl shadow-lg shadow-slate-200/50 overflow-hidden border border-slate-200">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full min-w-max text-left border-collapse">
                     <thead>
                         <tr class="bg-[#8B1538] text-white">
-                            <th rowspan="2" class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-center border-r border-white/50 sticky left-0 z-20 bg-[#8B1538] align-middle">Sem</th>
-                            <th rowspan="2" class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-center border-r border-white/50 sticky left-[45px] z-20 bg-[#8B1538] min-w-[120px] align-middle whitespace-nowrap">Total Tagihan</th>
-                            <th rowspan="2" class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-center border-r border-slate-200 sticky left-[165px] z-20 bg-[#8B1538] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] min-w-[120px] align-middle whitespace-nowrap">Total Pembayaran</th>
+                            <th rowspan="2" class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-center border-r border-white/50 relative md:sticky md:left-0 z-20 bg-[#8B1538] align-middle">Sem</th>
+                            <th rowspan="2" class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-center border-r border-white/50 relative md:sticky md:left-[45px] z-20 bg-[#8B1538] min-w-[120px] align-middle whitespace-nowrap">Total Tagihan</th>
+                            <th rowspan="2" class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-center border-r border-slate-200 relative md:sticky md:left-[165px] z-20 bg-[#8B1538] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] min-w-[120px] align-middle whitespace-nowrap">Total Pembayaran</th>
                             <th colspan="{{ $displayCols * 2 }}" class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-center border-b border-white/50 border-r border-white/50 align-middle">Pembayaran</th>
-                            <th rowspan="2" class="px-3 py-4 text-xs font-bold uppercase tracking-wider text-center border-l border-slate-200 sticky right-[200px] z-20 bg-[#8B1538] shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.1)] leading-tight align-middle whitespace-nowrap">Cicilan Ke</th>
-                            <th rowspan="2" class="px-3 py-4 text-xs font-bold uppercase tracking-wider text-center border-r border-white/50 sticky right-[100px] z-20 bg-[#8B1538] leading-tight align-middle whitespace-nowrap">Total Cicilan</th>
-                            <th rowspan="2" class="px-3 py-4 text-xs font-bold uppercase tracking-wider text-center sticky right-0 z-20 bg-[#8B1538] align-middle">Ket</th>
+                            <th rowspan="2" class="px-3 py-4 text-xs font-bold uppercase tracking-wider text-center border-l border-slate-200 relative md:sticky md:right-[200px] z-20 bg-[#8B1538] shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.1)] leading-tight align-middle whitespace-nowrap">Cicilan Ke</th>
+                            <th rowspan="2" class="px-3 py-4 text-xs font-bold uppercase tracking-wider text-center border-r border-white/50 relative md:sticky md:right-[100px] z-20 bg-[#8B1538] leading-tight align-middle whitespace-nowrap">Total Cicilan</th>
+                            <th rowspan="2" class="px-3 py-4 text-xs font-bold uppercase tracking-wider text-center relative md:sticky md:right-0 z-20 bg-[#8B1538] align-middle">Ket</th>
                         </tr>
                         <tr class="bg-[#8B1538] text-white">
                             {{-- Payment sub-headers --}}
@@ -123,13 +123,13 @@
                         @forelse($unifiedData as $item)
                         <tr class="hover:bg-slate-50 transition-colors group cursor-pointer border-b border-slate-100"
                             onclick="window.location='{{ $item['type'] === 'new' ? route('mahasiswa.invoices.show', $item['id']) : '#' }}'">
-                            <td class="px-4 py-4 text-center font-bold text-slate-700 border-r border-slate-100 sticky left-0 z-10 bg-white group-hover:bg-slate-50">
+                            <td class="px-4 py-4 text-center font-bold text-slate-700 border-r border-slate-100 relative md:sticky md:left-0 z-10 bg-white group-hover:bg-slate-50">
                                 {{ $item['semester'] }}
                             </td>
-                            <td class="px-4 py-4 text-right font-medium text-slate-700 border-r border-slate-100 sticky left-[45px] z-10 bg-white group-hover:bg-slate-50 min-w-[120px]">
+                            <td class="px-4 py-4 text-right font-medium text-slate-700 border-r border-slate-100 relative md:sticky md:left-[45px] z-10 bg-white group-hover:bg-slate-50 min-w-[120px]">
                                 {{ number_format($item['total_tagihan'], 0, ',', '.') }}
                             </td>
-                            <td class="px-4 py-4 text-right font-medium text-slate-700 border-r border-slate-200 sticky left-[165px] z-10 bg-white group-hover:bg-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] min-w-[120px]">
+                            <td class="px-4 py-4 text-right font-medium text-slate-700 border-r border-slate-200 relative md:sticky md:left-[165px] z-10 bg-white group-hover:bg-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] min-w-[120px]">
                                 {{ number_format($item['total_bayar'], 0, ',', '.') }}
                             </td>
                             
@@ -154,7 +154,7 @@
                                 <td class="px-3 py-4 text-right text-slate-600 border-r border-slate-100 min-w-[110px]">{{ $p_amount !== '0' ? $p_amount : '-' }}</td>
                             @endfor
 
-                            <td class="px-3 py-4 text-center font-bold text-slate-700 border-l border-slate-200 sticky right-[200px] z-10 bg-white group-hover:bg-slate-50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] w-[100px]">
+                            <td class="px-3 py-4 text-center font-bold text-slate-700 border-l border-slate-200 relative md:sticky md:right-[200px] z-10 bg-white group-hover:bg-slate-50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] w-[100px]">
                                 {{-- Cicilan Ke (Count of payments made) --}}
                                 @if($item['type'] === 'new')
                                     {{ $item['payments']->count() }}
@@ -162,7 +162,7 @@
                                     {{ $item['total_bayar'] > 0 ? 1 : 0 }}
                                 @endif
                             </td>
-                            <td class="px-3 py-4 text-center font-bold text-slate-700 border-r border-slate-100 sticky right-[100px] z-10 bg-white group-hover:bg-slate-50 w-[100px]">
+                            <td class="px-3 py-4 text-center font-bold text-slate-700 border-r border-slate-100 relative md:sticky md:right-[100px] z-10 bg-white group-hover:bg-slate-50 w-[100px]">
                                 {{-- Total Cicilan (Plan) --}}
                                 @if($item['type'] === 'new')
                                     {{ $item['raw']->installmentRequest->approved_terms ?? ($item['status'] === 'LUNAS' ? 1 : '-') }}
@@ -170,7 +170,7 @@
                                     {{ $item['status'] === 'LUNAS' ? 1 : '-' }}
                                 @endif
                             </td>
-                            <td class="px-3 py-4 text-center sticky right-0 z-10 bg-white group-hover:bg-slate-50 w-[100px]">
+                            <td class="px-3 py-4 text-center relative md:sticky md:right-0 z-10 bg-white group-hover:bg-slate-50 w-[100px]">
                                 <span class="px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider
                                     {{ $item['status'] === 'LUNAS' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700' }}">
                                     {{ $item['status'] === 'LUNAS' ? 'Lunas' : ($item['status'] === 'PUBLISHED' ? 'Tagihan' : 'Cicilan') }}
