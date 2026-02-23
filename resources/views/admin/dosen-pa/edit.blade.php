@@ -66,7 +66,7 @@
 
         <!-- Tab: Transfer to Another Dosen -->
         <div x-show="activeTab === 'transfer'" x-cloak>
-            <form action="{{ route('admin.dosen-pa.update', $dosen->id) }}" method="POST" class="p-6">
+            <form id="transferForm" action="{{ route('admin.dosen-pa.update', $dosen->id) }}" method="POST" class="p-6">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="current_dosen_id" value="{{ $dosen->id }}">
@@ -170,7 +170,7 @@
 
         <!-- Tab: Swap Mahasiswa -->
         <div x-show="activeTab === 'swap'" x-cloak>
-            <form action="{{ route('admin.dosen-pa.update', $dosen->id) }}" method="POST" class="p-6">
+            <form id="swapForm" action="{{ route('admin.dosen-pa.update', $dosen->id) }}" method="POST" class="p-6">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="current_dosen_id" value="{{ $dosen->id }}">
@@ -262,7 +262,7 @@
         
         <!-- Tab: Add Mahasiswa -->
         <div x-show="activeTab === 'add'" x-cloak>
-            <form action="{{ route('admin.dosen-pa.update', $dosen->id) }}" method="POST" class="p-6">
+            <form id="addForm" action="{{ route('admin.dosen-pa.update', $dosen->id) }}" method="POST" class="p-6">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="current_dosen_id" value="{{ $dosen->id }}">
@@ -420,6 +420,74 @@ document.addEventListener('DOMContentLoaded', function(){
                 });
             });
         }
+
+        // SweetAlert Confirmations
+        function initConfirm(formId, title, text, confirmText) {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: title,
+                        text: text,
+                        icon: 'question',
+                        iconColor: '#7a1621',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: confirmText,
+                        cancelButtonText: 'Batal',
+                        background: '#ffffff',
+                        customClass: {
+                            confirmButton: 'px-4 py-2 rounded-lg font-bold',
+                            cancelButton: 'px-4 py-2 rounded-lg font-bold',
+                            popup: 'rounded-xl'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            }
+        }
+
+        initConfirm('transferForm', 'Pindahkan Mahasiswa?', 'Mahasiswa yang dipilih akan dipindahkan ke dosen bimbingan lain.', 'Ya, Pindahkan!');
+        initConfirm('swapForm', 'Ganti Mahasiswa?', 'Mahasiswa akan dilepas dan digantikan dengan mahasiswa baru.', 'Ya, Ganti!');
+        initConfirm('addForm', 'Tambah Mahasiswa?', 'Mahasiswa yang dipilih akan ditambahkan ke daftar bimbingan dosen ini.', 'Ya, Tambah!');
+
+        // Success Notification Handler
+        @if(session('success'))
+            Swal.fire({
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonColor: '#7a1621',
+                confirmButtonText: 'OK',
+                background: '#ffffff',
+                customClass: {
+                    confirmButton: 'px-6 py-2 rounded-lg font-bold',
+                    popup: 'rounded-xl'
+                }
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                title: 'Kesalahan!',
+                text: "{{ session('error') }}",
+                icon: 'error',
+                iconColor: '#7a1621',
+                confirmButtonColor: '#7a1621',
+                confirmButtonText: 'Tutup',
+                background: '#ffffff',
+                customClass: {
+                    confirmButton: 'px-6 py-2 rounded-lg font-bold',
+                    popup: 'rounded-xl'
+                }
+            });
+        @endif
     });
 </script>
 @endpush

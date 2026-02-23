@@ -97,7 +97,7 @@ class DosenAttendanceController extends Controller
             return back()->with('error', 'Data kelas mata kuliah tidak ditemukan.');
         }
 
-        // ── Aktivasi QR ──────────────────────────────────────────────────────
+         // Aktivasi QR
         $pertemuan = Pertemuan::firstOrCreate(
             [
                 'kelas_mata_kuliah_id' => $kelasMataKuliah->id,

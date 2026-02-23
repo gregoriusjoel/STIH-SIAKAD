@@ -49,7 +49,7 @@
                 </p>
             </div>
 
-            <form action="{{ route('admin.dosen.store') }}" method="POST" class="p-6">
+            <form id="dosenForm" action="{{ route('admin.dosen.store') }}" method="POST" class="p-6">
                 @csrf
 
                 <div class="space-y-6">
@@ -318,6 +318,7 @@
             width: '100%'
         });
 
+        // Add Mata Kuliah row
         const addBtn = document.getElementById('add-mk');
         const list = document.getElementById('mata-kuliah-list');
         addBtn?.addEventListener('click', function () {
@@ -347,51 +348,25 @@
             });
         });
 
-        // Form submission validation
-        const form = document.querySelector('form');
-        form?.addEventListener('submit', function(e) {
-            const mataKuliahSelects = document.querySelectorAll('select[name="mata_kuliah_ids[]"]');
-            let hasValidSelection = false;
-            
-            mataKuliahSelects.forEach(select => {
-                if (select.value && select.value !== '') {
-                    hasValidSelection = true;
-                }
-            });
-
-            if (mataKuliahSelects.length > 0 && !hasValidSelection) {
-                e.preventDefault();
-                showError('Mata kuliah belum dipilih! Silakan pilih minimal 1 mata kuliah atau hapus field yang kosong.');
-                return false;
-            }
-        });
-    });
-</script>
-@endpush
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+        // Password Toggle
         const pw = document.getElementById('dosen_password');
-        const btn = document.getElementById('toggleDosenPw');
-        if (btn && pw) {
-            btn.addEventListener('click', function () {
-                if (pw.type === 'password') { pw.type = 'text'; btn.innerHTML = '<i class="fas fa-eye-slash"></i>'; btn.setAttribute('aria-pressed', 'true'); }
-                else { pw.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; btn.setAttribute('aria-pressed', 'false'); }
+        const btnPw = document.getElementById('toggleDosenPw');
+        if (btnPw && pw) {
+            btnPw.addEventListener('click', function () {
+                if (pw.type === 'password') { pw.type = 'text'; btnPw.innerHTML = '<i class="fas fa-eye-slash"></i>'; btnPw.setAttribute('aria-pressed', 'true'); }
+                else { pw.type = 'password'; btnPw.innerHTML = '<i class="fas fa-eye"></i>'; btnPw.setAttribute('aria-pressed', 'false'); }
             });
         }
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+
         // Pendidikan Terakhir handler
         const addPendidikanBtn = document.getElementById('add-pendidikan');
         const pendidikanList = document.getElementById('pendidikan-list');
         const pendidikanOptionsHtml = `
-        <option value="">Pilih Pendidikan</option>
-        <option value="S1">S1</option>
-        <option value="S2">S2</option>
-        <option value="S3">S3</option>
-    `;
+            <option value="">Pilih Pendidikan</option>
+            <option value="S1">S1</option>
+            <option value="S2">S2</option>
+            <option value="S3">S3</option>
+        `;
 
         function makePendidikanRow() {
             const row = document.createElement('div');
@@ -416,10 +391,39 @@
             const row = makePendidikanRow();
             pendidikanList.appendChild(row);
         });
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+
+        // Program Studi handler
+        const addProdi = document.getElementById('add-prodi');
+        const prodiList = document.getElementById('prodi-list');
+        const prodiOptionsHtml = `
+            <option value="">Pilih Program Studi</option>
+            @foreach($prodis as $prodi)
+            <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
+            @endforeach
+        `;
+
+        function makeProdiRow() {
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-3';
+            row.innerHTML = `
+            <select name="prodi[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                ${prodiOptionsHtml}
+            </select>
+            <button type="button" class="remove-prodi px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+        `;
+            row.querySelector('.remove-prodi')?.addEventListener('click', function () { row.remove(); });
+            return row;
+        }
+
+        addProdi?.addEventListener('click', function () {
+            const row = makeProdiRow();
+            prodiList.appendChild(row);
+        });
+
+        document.querySelectorAll('.remove-prodi').forEach(btn => btn.addEventListener('click', function () {
+            const row = this.closest('.flex'); if (row) row.remove();
+        }));
+
         // Jabatan Fungsional handler
         const jabatanDropdown = document.getElementById('jabatan-dropdown');
         const jabatanCustomContainer = document.getElementById('jabatan-custom-container');
@@ -435,51 +439,66 @@
             }
         });
 
-        // Form submit handler to merge values
-        const form = document.querySelector('form');
-        form?.addEventListener('submit', function (e) {
+        // Form Submission with SweetAlert
+        const form = document.getElementById('dosenForm');
+        form?.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Merge Jabatan values
             const dropdownVal = jabatanDropdown.value;
             const customVal = jabatanCustomInput.value.trim();
-
-            // If "Lainnya" is selected, use custom value instead
             if (dropdownVal === 'lainnya' && customVal) {
                 jabatanDropdown.value = customVal;
             }
+
+            // Validate mata kuliah selection
+            const mataKuliahSelects = document.querySelectorAll('select[name="mata_kuliah_ids[]"]');
+            let hasValidSelection = false;
+            
+            mataKuliahSelects.forEach(select => {
+                if (select.value && select.value !== '') {
+                    hasValidSelection = true;
+                }
+            });
+
+            if (mataKuliahSelects.length > 0 && !hasValidSelection) {
+                Swal.fire({
+                    title: 'Peringatan!',
+                    text: 'Mata kuliah belum dipilih! Silakan pilih minimal 1 mata kuliah atau hapus field yang kosong.',
+                    icon: 'warning',
+                    iconColor: '#7a1621',
+                    confirmButtonColor: '#7a1621',
+                    confirmButtonText: 'OK',
+                    background: '#ffffff',
+                    customClass: {
+                        popup: 'rounded-xl'
+                    }
+                });
+                return false;
+            }
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data dosen baru akan disimpan ke sistem.",
+                icon: 'question',
+                iconColor: '#7a1621',
+                showCancelButton: true,
+                confirmButtonColor: '#7a1621',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Simpan!',
+                cancelButtonText: 'Batal',
+                background: '#ffffff',
+                customClass: {
+                    confirmButton: 'px-4 py-2 rounded-lg font-bold',
+                    cancelButton: 'px-4 py-2 rounded-lg font-bold',
+                    popup: 'rounded-xl'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     });
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const addProdi = document.getElementById('add-prodi');
-        const prodiList = document.getElementById('prodi-list');
-        const prodiOptionsHtml = `
-        <option value="">Pilih Program Studi</option>
-        @foreach($prodis as $prodi)
-        <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
-        @endforeach
-    `;
-
-        function makeRow() {
-            const row = document.createElement('div');
-            row.className = 'flex items-center gap-3';
-            row.innerHTML = `
-            <select name="prodi[]" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
-                ${prodiOptionsHtml}
-            </select>
-            <button type="button" class="remove-prodi px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
-        `;
-            row.querySelector('.remove-prodi')?.addEventListener('click', function () { row.remove(); });
-            return row;
-        }
-
-        addProdi?.addEventListener('click', function () {
-            const row = makeRow();
-            prodiList.appendChild(row);
-        });
-
-        // wire up existing remove buttons if any
-        document.querySelectorAll('.remove-prodi').forEach(btn => btn.addEventListener('click', function () {
-            const row = this.closest('.flex'); if (row) row.remove();
-        }));
-    });
-</script>
+@endpush

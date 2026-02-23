@@ -284,6 +284,7 @@
                         title: 'Apakah Anda yakin?',
                         text: "Semua assignment mahasiswa dari Dosen PA ini akan dihapus permanen!",
                         icon: 'warning',
+                        iconColor: '#7a1621',
                         showCancelButton: true,
                         confirmButtonColor: '#7a1621',
                         cancelButtonColor: '#6c757d',

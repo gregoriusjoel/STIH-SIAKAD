@@ -7,6 +7,8 @@ use App\Models\KelasMataKuliah;
 use App\Models\Mahasiswa;
 use App\Models\Krs;
 use App\Models\Presensi;
+use App\Models\Pertemuan;
+use App\Services\LocationService;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
@@ -39,8 +41,19 @@ class AttendanceController extends Controller
         // Provide meeting information to the form
         $totalPertemuan = $kelas->meeting_count ?? 16;
         $currentPertemuan = $kelas->qr_current_pertemuan ?? null;
+        
+        // Get metode_pengajaran from Pertemuan if available
+        $metodePengajaran = 'offline'; // default
+        if ($currentPertemuan) {
+            $pertemuanRecord = Pertemuan::where('kelas_mata_kuliah_id', $kelas->id)
+                ->where('nomor_pertemuan', $currentPertemuan)
+                ->first();
+            if ($pertemuanRecord && $pertemuanRecord->metode_pengajaran) {
+                $metodePengajaran = $pertemuanRecord->metode_pengajaran;
+            }
+        }
 
-        return view('absensi.form', compact('kelas', 'token', 'totalPertemuan', 'currentPertemuan'));
+        return view('absensi.form', compact('kelas', 'token', 'totalPertemuan', 'currentPertemuan', 'metodePengajaran'));
     }
 
     public function store(Request $request, $token)
@@ -72,6 +85,10 @@ class AttendanceController extends Controller
             'kontak' => 'nullable|string',
             'keterangan' => 'nullable|string',
             'pertemuan' => 'nullable|integer',
+            'lat' => 'nullable|numeric',
+            'lng' => 'nullable|numeric',
+            'reason_category' => 'nullable|string',
+            'reason_detail' => 'nullable|string',
         ]);
 
         // prefer explicit pertemuan from request, otherwise use kelas current setting
@@ -79,6 +96,41 @@ class AttendanceController extends Controller
 
         // only include pertemuan if column exists in DB
         $canRecordPertemuan = \Illuminate\Support\Facades\Schema::hasColumn('presensis', 'pertemuan');
+
+        // Get metode_pengajaran for this pertemuan
+        $metodePengajaran = 'offline'; // default
+        $pertemuanRecord = null;
+        if ($canRecordPertemuan && $pertemuan) {
+            $pertemuanRecord = Pertemuan::where('kelas_mata_kuliah_id', $kelas->id)
+                ->where('nomor_pertemuan', $pertemuan)
+                ->first();
+            if ($pertemuanRecord && $pertemuanRecord->metode_pengajaran) {
+                $metodePengajaran = $pertemuanRecord->metode_pengajaran;
+            }
+        }
+
+        // Extract GPS coordinates
+        $studentLat = $request->input('lat') ? (float) $request->input('lat') : null;
+        $studentLng = $request->input('lng') ? (float) $request->input('lng') : null;
+
+        // Determine presence mode based on location and meeting method
+        $locationData = LocationService::determinePresenceMode($metodePengajaran, $studentLat, $studentLng);
+        
+        // Validate reason if required (offline meeting but outside radius)
+        if ($locationData['requires_reason']) {
+            if (empty($data['reason_category'])) {
+                return back()->withErrors([
+                    'reason_category' => 'Anda berada di luar radius kampus. Harap pilih alasan kehadiran online.'
+                ])->withInput();
+            }
+            
+            // If reason is "Lainnya", detail is required
+            if ($data['reason_category'] === 'Lainnya' && empty($data['reason_detail'])) {
+                return back()->withErrors([
+                    'reason_detail' => 'Harap isi detail alasan.'
+                ])->withInput();
+            }
+        }
 
         $krs = null;
 
@@ -153,6 +205,16 @@ class AttendanceController extends Controller
             'waktu' => Carbon::now(),
             'status' => 'hadir',
             'keterangan' => $data['keterangan'] ?? null,
+            // Location-based fields
+            'student_lat' => $studentLat,
+            'student_lng' => $studentLng,
+            'distance_meters' => $locationData['distance_meters'],
+            'presence_mode' => $locationData['presence_mode'],
+            'reason_category' => $locationData['requires_reason'] ? ($data['reason_category'] ?? null) : null,
+            'reason_detail' => $locationData['requires_reason'] ? ($data['reason_detail'] ?? null) : null,
+            'campus_lat' => LocationService::CAMPUS_LAT,
+            'campus_lng' => LocationService::CAMPUS_LNG,
+            'radius_meters' => LocationService::CAMPUS_RADIUS_METERS,
         ];
 
         if ($canRecordPertemuan && !is_null($pertemuan)) {

@@ -79,7 +79,7 @@
                 <div class="text-xs text-text-muted">Menampilkan {{ $pengajuans->count() }} data terakhir</div>
             </header>
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[900px]">
+                <table class="table-auto w-full" style="min-width: 900px;">
                     <thead class="bg-gray-50/50 dark:bg-bg-hover/30 border-b border-border-color">
                         <tr>
                             <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-text-secondary text-left w-1/6">Jenis Pengajuan</th>
@@ -270,7 +270,27 @@
                                         <p class="text-xs text-text-muted">PDF, PNG, JPG (Maks. 2MB)</p>
                                         <p x-show="fileName" x-text="fileName" class="text-sm text-primary font-medium bg-primary/5 py-1 px-3 rounded-md mt-2 inline-block border border-primary/20"></p>
                                     </div>
-                                    <input id="file_pendukung" name="file_pendukung" type="file" class="sr-only" x-ref="fileInput" @change="fileName = $refs.fileInput.files[0].name">
+                                    <input id="file_pendukung" name="file_pendukung" type="file" class="sr-only" x-ref="fileInput" accept=".pdf,.png,.jpg,.jpeg" @change="
+                                        const file = $refs.fileInput.files[0];
+                                        if (file) {
+                                            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.pdf'];
+                                            const fn = file.name.toLowerCase();
+                                            const isValid = allowedExtensions.some(ext => fn.endsWith(ext));
+                                            if (!isValid) {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Format File Tidak Valid!',
+                                                    html: 'File yang diizinkan: <strong>JPG, JPEG, PNG, atau PDF</strong>.<br><br>File \'<strong>' + file.name + '</strong>\' tidak dapat diupload.',
+                                                    confirmButtonColor: '#8B1538',
+                                                    confirmButtonText: 'OK'
+                                                });
+                                                $refs.fileInput.value = '';
+                                                fileName = '';
+                                                return;
+                                            }
+                                            fileName = file.name;
+                                        }
+                                    ">
                                 </div>
                             </div>
 

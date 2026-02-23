@@ -298,14 +298,14 @@
                 </div>
 
                 <div class="overflow-x-auto -mx-6 px-6">
-                    <table class="w-full text-left" style="min-width: 800px;">
+                    <table class="w-full text-left">
                         <thead>
-                            <tr class="bg-gray-50/50 text-xs uppercase tracking-wider text-gray-500 font-bold">
-                                <th class="px-6 py-4 w-16">No</th>
-                                <th class="px-6 py-4">Mahasiswa</th>
-                                <th class="px-6 py-4">NIM</th>
-                                <th class="px-6 py-4 text-center">Status Kehadiran</th>
-                                <th class="px-6 py-4 text-center">Waktu Scan</th>
+                            <tr class="bg-gray-50/50 text-[11px] uppercase tracking-wider text-gray-500 font-bold">
+                                <th class="px-4 py-3 w-12">No</th>
+                                <th class="px-4 py-3">Mahasiswa</th>
+                                <th class="px-4 py-3">NIM</th>
+                                <th class="px-4 py-3 text-center">Status Kehadiran</th>
+                                <th class="px-4 py-3 text-center">Waktu Scan</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100" id="attendance-table-body">

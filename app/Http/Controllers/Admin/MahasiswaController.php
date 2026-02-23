@@ -134,4 +134,46 @@ class MahasiswaController extends Controller
     {
         return view('admin.mahasiswa.show', compact('mahasiswa'));
     }
+
+    /**
+     * Remove the specified mahasiswa from storage.
+     */
+    public function destroy(Mahasiswa $mahasiswa)
+    {
+        try {
+            // Delete personal files
+            if ($mahasiswa->foto) {
+                Storage::disk('public')->delete($mahasiswa->foto);
+            }
+
+            // Delete documents
+            $documentTypes = ['file_ijazah', 'file_transkrip', 'file_kk', 'file_ktp'];
+            foreach ($documentTypes as $docType) {
+                $files = $mahasiswa->$docType;
+                if (!empty($files) && is_array($files)) {
+                    foreach ($files as $file) {
+                        Storage::disk('public')->delete($file);
+                    }
+                }
+            }
+
+            // Delete specific directory for student documents if it exists
+            $docDirectory = 'mahasiswa/dokumen/' . $mahasiswa->nim;
+            if (Storage::disk('public')->exists($docDirectory)) {
+                Storage::disk('public')->deleteDirectory($docDirectory);
+            }
+
+            // Delete associated user record (which will cascade delete the mahasiswa and parent records)
+            if ($mahasiswa->user) {
+                $mahasiswa->user->delete();
+            } else {
+                // Fallback if user doesn't exist for some reason
+                $mahasiswa->delete();
+            }
+
+            return redirect()->route('admin.mahasiswa.index')->with('success', 'Data mahasiswa berhasil dihapus permanen.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
 }

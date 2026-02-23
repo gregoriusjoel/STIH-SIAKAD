@@ -51,11 +51,78 @@
         </div>
     </a>
     @endforeach
+
+    <!-- Instructions Moved Here -->
+    <!-- Instructions Moved Here -->
+    <div x-data="{ open: false }" class="relative h-fit">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+             :class="{'absolute top-0 w-full z-10': open, 'relative w-full': !open}">
+            <button @click="open = !open" class="w-full px-6 py-4 bg-maroon dark:bg-red-900 border-b border-maroon dark:border-red-800 flex items-center justify-between transition-colors focus:outline-none hover:bg-maroon/90 dark:hover:bg-red-800">
+                <h4 class="text-lg font-bold text-white flex items-center">
+                    <i class="fas fa-book mr-3 text-white/80"></i>
+                    Panduan Import Data
+                </h4>
+                <i class="fas text-white transition-transform duration-300" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+            </button>
+            <div x-show="open" 
+                 x-collapse.duration.300ms 
+                 x-cloak>
+                <div class="p-5">
+                    <div class="space-y-5">
+                        <div>
+                            <h5 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                                <span class="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mr-3 text-xs">
+                                    <i class="fas fa-file-alt"></i>
+                                </span>
+                                <span class="text-[15px]">Format File</span>
+                            </h5>
+                            <ul class="space-y-2 ml-1">
+                                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                                    <span>Tipe file: <strong>.CSV</strong> (Comma Separated) atau <strong>.XLSX</strong> (Excel)</span>
+                                </li>
+                                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                                    <span>Pastikan header kolom sesuai template</span>
+                                </li>
+                                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                                    <span>Maksimal ukuran file: 10MB</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                                <span class="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mr-3 text-xs">
+                                    <i class="fas fa-list-ol"></i>
+                                </span>
+                                <span class="text-[15px]">Langkah Import</span>
+                            </h5>
+                            <ol class="space-y-2 ml-1">
+                                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
+                                    <span class="font-bold text-gray-400 mr-3">1.</span>
+                                    <span>Pilih jenis data yang akan diimport</span>
+                                </li>
+                                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
+                                    <span class="font-bold text-gray-400 mr-3">2.</span>
+                                    <span>Download template & isi data</span>
+                                </li>
+                                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
+                                    <span class="font-bold text-gray-400 mr-3">3.</span>
+                                    <span>Upload file & konfirmasi hasil preview</span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Recent Import Logs -->
 @if($recentLogs->count() > 0)
-<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
     <div class="px-6 py-4 bg-maroon dark:bg-red-900 border-b border-maroon dark:border-red-800 flex items-center justify-between">
         <h3 class="text-lg font-bold text-white flex items-center">
             <i class="fas fa-clock text-white/80 mr-2"></i>
@@ -114,63 +181,5 @@
 </div>
 @endif
 
-<!-- Instructions -->
-<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-    <div class="px-6 py-4 bg-maroon dark:bg-red-900 border-b border-maroon dark:border-red-800 flex items-center">
-        <h4 class="text-lg font-bold text-white flex items-center">
-            <i class="fas fa-book mr-3 text-white/80"></i>
-            Panduan Import Data
-        </h4>
-    </div>
-    <div class="p-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-        <div>
-            <h5 class="font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center">
-                <span class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mr-3 text-xs">
-                    <i class="fas fa-file-alt"></i>
-                </span>
-                Format File
-            </h5>
-            <ul class="space-y-3">
-                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
-                    <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                    <span>Tipe file: <strong>.CSV</strong> (Comma Separated) atau <strong>.XLSX</strong> (Excel)</span>
-                </li>
-                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
-                    <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                    <span>Pastikan header kolom sesuai template</span>
-                </li>
-                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
-                    <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                    <span>Maksimal ukuran file: 10MB</span>
-                </li>
-            </ul>
-        </div>
-        <div>
-            <h5 class="font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center">
-                <span class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mr-3 text-xs">
-                    <i class="fas fa-list-ol"></i>
-                </span>
-                Langkah Import
-            </h5>
-            <ol class="space-y-3">
-                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
-                    <span class="font-bold text-gray-400 mr-3">1.</span>
-                    <span>Pilih jenis data yang akan diimport</span>
-                </li>
-                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
-                    <span class="font-bold text-gray-400 mr-3">2.</span>
-                    <span>Download template & isi data</span>
-                </li>
-                <li class="flex items-start text-sm text-gray-600 dark:text-gray-400">
-                    <span class="font-bold text-gray-400 mr-3">3.</span>
-                    <span>Upload file & konfirmasi hasil preview</span>
-                </li>
-            </ol>
-        </div>
-    </div>
-</div>
-    </div>
-    </div>
 </div>
 @endsection

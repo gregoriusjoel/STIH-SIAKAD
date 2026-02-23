@@ -478,4 +478,80 @@ class JadwalAdminApprovalController extends Controller
             // don't block activation on KMK upsert failure
         }
     }
+
+    // ----------------------------------------------------------------
+    // ASSIGN DOSEN PENGGANTI (Fitur baru: setelah penolakan dosen)
+    // ----------------------------------------------------------------
+
+    /**
+     * Admin assign dosen pengganti ke proposal yang sudah ditolak dosen.
+     *
+     * Audit trail terjaga: record lama di jadwal_approvals TIDAK dihapus.
+     * Proposal di-reset ke pending_dosen agar dosen baru dapat approve/reject.
+     *
+     * Route: POST /admin/jadwal-approval/{id}/assign-dosen-pengganti
+     */
+    public function assignDosenPengganti(Request $request, $id)
+    {
+        $request->validate([
+            'dosen_pengganti_id' => 'required|exists:dosens,id',
+            'catatan_admin'      => 'nullable|string|max:500',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $proposal = JadwalProposal::with('kelas', 'mataKuliah')->findOrFail($id);
+
+            if (! in_array($proposal->status, ['rejected_dosen', 'rejected_admin'])) {
+                $msg = 'Assign dosen pengganti hanya bisa dilakukan pada proposal yang ditolak.';
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => $msg], 422);
+                }
+                return back()->with('error', $msg);
+            }
+
+            $validasiService = app(\App\Services\JadwalValidasiService::class);
+            $hasil = $validasiService->assignDosenPengganti($proposal, (int) $request->dosen_pengganti_id);
+
+            if (! $hasil['success']) {
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => $hasil['message']], 422);
+                }
+                return back()->with('error', $hasil['message']);
+            }
+
+            JadwalApproval::create([
+                'jadwal_proposal_id' => $proposal->id,
+                'approved_by'        => Auth::id(),
+                'role'               => 'admin',
+                'action'             => 'approve',
+                'alasan_penolakan'   => $request->catatan_admin
+                    ?? 'Admin assign dosen pengganti setelah penolakan.',
+                'approved_at'        => now(),
+            ]);
+
+            DB::commit();
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Dosen pengganti berhasil di-assign. Proposal dikirim ke dosen baru.',
+                ]);
+            }
+
+            return redirect()
+                ->route('admin.jadwal_admin_approval.index')
+                ->with('success', 'Dosen pengganti berhasil di-assign. Menunggu konfirmasi dosen baru.');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $errMsg = 'Gagal assign dosen pengganti: ' . $e->getMessage();
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => $errMsg], 500);
+            }
+            return back()->with('error', $errMsg);
+        }
+    }
+
 }

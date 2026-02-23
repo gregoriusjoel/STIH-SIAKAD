@@ -48,7 +48,7 @@
                 <p class="text-sm mt-1 text-white text-opacity-90">Perbarui data dosen {{ $dosen->user->name }}</p>
             </div>
 
-            <form action="{{ route('admin.dosen.update', $dosen) }}" method="POST" class="p-6">
+            <form id="dosenForm" action="{{ route('admin.dosen.update', $dosen) }}" method="POST" class="p-6">
                 @csrf
                 @method('PUT')
 
@@ -598,8 +598,10 @@
         }
 
         // Form submit handler
-        const form = document.querySelector('form');
+        const form = document.getElementById('dosenForm');
         form?.addEventListener('submit', function (e) {
+            e.preventDefault();
+
             // Merge Jabatan
             if (jabatanDropdown.value === 'lainnya' && jabatanCustomInput.value.trim()) {
                 jabatanDropdown.value = jabatanCustomInput.value.trim();
@@ -616,10 +618,42 @@
             });
 
             if (mataKuliahSelects.length > 0 && !hasValidSelection) {
-                e.preventDefault();
-                showError('Mata kuliah belum dipilih! Silakan pilih minimal 1 mata kuliah atau hapus field yang kosong.');
+                Swal.fire({
+                    title: 'Peringatan!',
+                    text: 'Mata kuliah belum dipilih! Silakan pilih minimal 1 mata kuliah atau hapus field yang kosong.',
+                    icon: 'warning',
+                    iconColor: '#7a1621',
+                    confirmButtonColor: '#7a1621',
+                    confirmButtonText: 'OK',
+                    background: '#ffffff',
+                    customClass: {
+                        popup: 'rounded-xl'
+                    }
+                });
                 return false;
             }
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Perubahan data dosen akan disimpan ke sistem.",
+                icon: 'question',
+                iconColor: '#7a1621',
+                showCancelButton: true,
+                confirmButtonColor: '#7a1621',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Perbarui!',
+                cancelButtonText: 'Batal',
+                background: '#ffffff',
+                customClass: {
+                    confirmButton: 'px-4 py-2 rounded-lg font-bold',
+                    cancelButton: 'px-4 py-2 rounded-lg font-bold',
+                    popup: 'rounded-xl'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
 
         // Initial MK setup

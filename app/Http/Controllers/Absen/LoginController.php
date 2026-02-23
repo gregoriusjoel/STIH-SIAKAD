@@ -10,6 +10,7 @@ use App\Models\Krs;
 use App\Models\Presensi;
 use App\Models\Pertemuan;
 use App\Models\User;
+use App\Services\LocationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -22,6 +23,7 @@ class LoginController extends Controller
         $token = $request->query('token');
         $kelas = null;
         $pertemuanRecord = null;
+        $metodePengajaran = 'offline'; // default
         
         if ($token) {
             // ✅ Query from pertemuans table
@@ -34,14 +36,15 @@ class LoginController extends Controller
             }
             
             $kelas = $pertemuanRecord->kelasMataKuliah;
+            $metodePengajaran = $pertemuanRecord->metode_pengajaran ?? 'offline';
             
             // Validate QR is enabled and not expired
             if (!$pertemuanRecord->isQrValid()) {
-                return view('absen.login', compact('kelas', 'token'))->withErrors(['token' => 'QR code sudah kadaluarsa atau tidak aktif.']);
+                return view('absen.login', compact('kelas', 'token', 'metodePengajaran'))->withErrors(['token' => 'QR code sudah kadaluarsa atau tidak aktif.']);
             }
         }
 
-        return view('absen.login', compact('kelas', 'token'));
+        return view('absen.login', compact('kelas', 'token', 'metodePengajaran'));
     }
 
     public function login(Request $request)
@@ -50,6 +53,10 @@ class LoginController extends Controller
             'identifier' => 'required|string',
             'password' => 'required|string',
             'token' => 'required|string',
+            'lat' => 'nullable|numeric',
+            'lng' => 'nullable|numeric',
+            'reason_category' => 'nullable|string',
+            'reason_detail' => 'nullable|string',
         ]);
 
         $token = $data['token'];
@@ -68,6 +75,7 @@ class LoginController extends Controller
         
         $kelas = $pertemuanRecord->kelasMataKuliah;
         $pertemuan = $pertemuanRecord->nomor_pertemuan;
+        $metodePengajaran = $pertemuanRecord->metode_pengajaran ?? 'offline';
 
         $identifier = $data['identifier'];
         $user = User::where('email', $identifier)->first();
@@ -95,6 +103,29 @@ class LoginController extends Controller
 
         if (! $krs) {
             return back()->withErrors(['identifier' => 'Anda tidak terdaftar di kelas ini.']);
+        }
+
+        // Extract GPS coordinates
+        $studentLat = $request->input('lat') ? (float) $request->input('lat') : null;
+        $studentLng = $request->input('lng') ? (float) $request->input('lng') : null;
+
+        // Determine presence mode based on location and meeting method
+        $locationData = LocationService::determinePresenceMode($metodePengajaran, $studentLat, $studentLng);
+        
+        // Validate reason if required (offline meeting but outside radius)
+        if ($locationData['requires_reason']) {
+            if (empty($data['reason_category'])) {
+                return back()->withErrors([
+                    'reason_category' => 'Anda berada di luar radius kampus. Harap pilih alasan kehadiran online.'
+                ])->withInput();
+            }
+            
+            // If reason is "Lainnya", detail is required
+            if ($data['reason_category'] === 'Lainnya' && empty($data['reason_detail'])) {
+                return back()->withErrors([
+                    'reason_detail' => 'Harap isi detail alasan.'
+                ])->withInput();
+            }
         }
 
         // Prevent duplicate attendance: only use pertemuan column if it exists
@@ -133,6 +164,16 @@ class LoginController extends Controller
             'waktu' => Carbon::now(),
             'status' => 'hadir',
             'keterangan' => null,
+            // Location-based fields
+            'student_lat' => $studentLat,
+            'student_lng' => $studentLng,
+            'distance_meters' => $locationData['distance_meters'],
+            'presence_mode' => $locationData['presence_mode'],
+            'reason_category' => $locationData['requires_reason'] ? ($data['reason_category'] ?? null) : null,
+            'reason_detail' => $locationData['requires_reason'] ? ($data['reason_detail'] ?? null) : null,
+            'campus_lat' => LocationService::CAMPUS_LAT,
+            'campus_lng' => LocationService::CAMPUS_LNG,
+            'radius_meters' => LocationService::CAMPUS_RADIUS_METERS,
         ];
 
         if ($canRecordPertemuan && ! is_null($pertemuan)) {

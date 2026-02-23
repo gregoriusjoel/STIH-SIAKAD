@@ -82,9 +82,11 @@
                                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 font-bold">
                                     Rp
                                 </span>
-                                <input type="number" name="amount_submitted" id="amount_submitted" 
+                                <input type="hidden" name="amount_submitted" id="amount_submitted_raw" value="{{ old('amount_submitted', $installment->amount) }}">
+                                <input type="text" id="amount_submitted_display" 
                                        class="block w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-medium placeholder-slate-400 focus:outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] transition-colors @error('amount_submitted') border-red-500 @enderror"
-                                       value="{{ old('amount_submitted', $installment->amount) }}" 
+                                       value="{{ number_format(old('amount_submitted', $installment->amount), 0, ',', '.') }}" 
+                                       inputmode="numeric"
                                        required>
                             </div>
                             @error('amount_submitted')
@@ -193,11 +195,49 @@
     function updateFileName(input) {
         const fileNameElement = document.getElementById('file-name');
         if (input.files && input.files.length > 0) {
-            fileNameElement.textContent = input.files[0].name;
+            const file = input.files[0];
+            // Validate file format
+            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.pdf'];
+            const fileName = file.name.toLowerCase();
+            const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+
+            if (!isValidExtension) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format File Tidak Valid!',
+                    html: 'File yang diizinkan: <strong>JPG, JPEG, PNG, atau PDF</strong>.<br><br>File "<strong>' + file.name + '</strong>" tidak dapat diupload.',
+                    confirmButtonColor: '#8B1538',
+                    confirmButtonText: 'OK'
+                });
+                input.value = '';
+                fileNameElement.classList.add('hidden');
+                return;
+            }
+
+            fileNameElement.textContent = file.name;
             fileNameElement.classList.remove('hidden');
         } else {
             fileNameElement.classList.add('hidden');
         }
     }
+
+    // Amount formatting with thousand separator dots
+    document.addEventListener('DOMContentLoaded', function() {
+        const display = document.getElementById('amount_submitted_display');
+        const hidden = document.getElementById('amount_submitted_raw');
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        display.addEventListener('input', function() {
+            // Strip non-digits
+            let raw = this.value.replace(/\D/g, '');
+            // Update hidden input with raw value
+            hidden.value = raw;
+            // Format display with dots
+            this.value = raw ? formatNumber(raw) : '';
+        });
+    });
 </script>
 @endsection

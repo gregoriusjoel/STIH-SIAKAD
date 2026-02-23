@@ -147,6 +147,43 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
+                                {{-- Status Kehadiran --}}
+                                @if(!empty($meeting['attendance_status']))
+                                    @if($meeting['attendance_status'] === 'hadir')
+                                        @php
+                                            $attendance = $meeting['attendance_data'] ?? null;
+                                            $presenceMode = $attendance['presence_mode'] ?? null;
+                                        @endphp
+                                        
+                                        @if($presenceMode === 'offline')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 shadow-sm">
+                                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                                Hadir Offline
+                                            </span>
+                                        @elseif($presenceMode === 'online')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 shadow-sm">
+                                                <i class="fas fa-wifi mr-1"></i>
+                                                Hadir Online
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 shadow-sm">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                Hadir
+                                            </span>
+                                        @endif
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 shadow-sm">
+                                            <i class="fas fa-times-circle mr-1"></i>
+                                            {{ ucfirst($meeting['attendance_status']) }}
+                                        </span>
+                                    @endif
+                                @elseif($meeting['is_past'])
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 shadow-sm">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        Belum Absen
+                                    </span>
+                                @endif
+                                
                                 <span class="material-symbols-outlined text-gray-400 transition-transform duration-300"
                                     :class="open ? 'rotate-180' : ''">expand_more</span>
                             </div>
@@ -155,6 +192,53 @@
                         {{-- Accordion Body --}}
                         <div x-show="open">
                             <div class="p-6 pt-0 border-t border-gray-50">
+                                {{-- Attendance Info (if exists) --}}
+                                @if(!empty($meeting['attendance_status']) && $meeting['attendance_status'] === 'hadir')
+                                    @php
+                                        $attendance = $meeting['attendance_data'] ?? null;
+                                        $presenceMode = $attendance['presence_mode'] ?? null;
+                                        $distance = $attendance['distance_meters'] ?? null;
+                                        $reasonCategory = $attendance['reason_category'] ?? null;
+                                        $reasonDetail = $attendance['reason_detail'] ?? null;
+                                    @endphp
+                                    
+                                    @if($presenceMode)
+                                    <div class="mb-4 p-4 bg-gradient-to-r {{ $presenceMode === 'offline' ? 'from-green-50 to-green-100' : 'from-blue-50 to-blue-100' }} rounded-xl border {{ $presenceMode === 'offline' ? 'border-green-200' : 'border-blue-200' }}">
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-10 h-10 rounded-full {{ $presenceMode === 'offline' ? 'bg-green-500' : 'bg-blue-500' }} flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                                                <i class="fas {{ $presenceMode === 'offline' ? 'fa-map-marker-alt' : 'fa-wifi' }}"></i>
+                                            </div>
+                                            <div class="flex-1">
+                                                <h5 class="text-sm font-bold {{ $presenceMode === 'offline' ? 'text-green-900' : 'text-blue-900' }} mb-1">
+                                                    Status Kehadiran: {{ $presenceMode === 'offline' ? 'Hadir Offline (On-site)' : 'Hadir Online (Remote)' }}
+                                                </h5>
+                                                @if($distance !== null)
+                                                    <p class="text-xs {{ $presenceMode === 'offline' ? 'text-green-700' : 'text-blue-700' }}">
+                                                        <i class="fas fa-location-arrow mr-1"></i>
+                                                        Jarak dari kampus: <strong>{{ round($distance) }} meter</strong>
+                                                    </p>
+                                                @endif
+                                                @if($presenceMode === 'online' && $reasonCategory)
+                                                    <div class="mt-2 p-2 bg-white/70 rounded-lg border border-blue-200">
+                                                        <p class="text-xs text-blue-800 font-medium">
+                                                            <i class="fas fa-info-circle mr-1"></i>
+                                                            Alasan: {{ $reasonCategory }}
+                                                        </p>
+                                                        @if($reasonDetail && $reasonCategory === 'Lainnya')
+                                                            <p class="text-xs text-blue-700 mt-1 italic">{{ $reasonDetail }}</p>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                                <p class="text-[10px] {{ $presenceMode === 'offline' ? 'text-green-600' : 'text-blue-600' }} mt-2">
+                                                    <i class="far fa-clock mr-1"></i>
+                                                    Waktu absen: {{ $attendance['waktu'] ?? '-' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+                                @endif
+                                
                                 {{-- Method & Link Section --}}
                                 <div class="mt-4 mb-2 p-4 bg-gray-50 rounded-xl border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div class="flex items-center gap-3">

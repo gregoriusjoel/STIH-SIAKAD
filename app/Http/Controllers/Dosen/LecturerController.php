@@ -585,7 +585,7 @@ class LecturerController extends Controller
                 ->pluck('total', 'mahasiswa_id');
         }
 
-        $students = $krsCollection->map(function ($krs) use ($attendanceRecords, $totalAttendanceCounts, $kelas) {
+        $students = $krsCollection->map(function ($krs) use ($attendanceRecords, $totalAttendanceCounts, $kelas, $kelasMataKuliah) {
             $m = $krs->mahasiswa;
             $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
             
@@ -610,6 +610,12 @@ class LecturerController extends Controller
                 'attendance_time' => $attendanceTime,
                 'total_attendance' => $totalAttendanceCounts->get($m->id, 0),
                 'krs_id' => $krs->id,
+                'kelas_mata_kuliah_id' => $kelasMataKuliah->id ?? null,
+                // Location-based attendance data
+                'presence_mode' => $attendanceRecord->presence_mode ?? null,
+                'distance_meters' => $attendanceRecord->distance_meters ?? null,
+                'reason_category' => $attendanceRecord->reason_category ?? null,
+                'reason_detail' => $attendanceRecord->reason_detail ?? null,
             ];
         })->toArray();
 

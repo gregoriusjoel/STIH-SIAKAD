@@ -158,29 +158,33 @@
 
 <!-- Kalender Akademik - Full Width -->
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
-    <div class="p-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-maroon/5 to-red-600/5 dark:from-maroon/10 dark:to-red-600/10">
+    <div class="p-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-maroon/5 to-red-600/5 dark:from-maroon/10 dark:to-red-600/10 flex items-center justify-between">
         <div class="flex items-center">
             <div class="bg-gradient-to-br from-maroon to-red-700 rounded-lg p-1.5 mr-2 shadow-sm">
                 <i class="fas fa-calendar-alt text-white text-xs"></i>
             </div>
             <h3 class="text-base font-bold text-gray-700 dark:text-gray-200">Kalender Akademik</h3>
         </div>
+        <a href="#" class="inline-flex items-center px-3 py-1 bg-white dark:bg-gray-800 border border-maroon text-maroon dark:text-red-500 rounded-lg text-xs font-semibold hover:bg-maroon hover:text-white dark:hover:bg-red-900 transition-all shadow-sm">
+            Lihat Semua
+            <i class="fas fa-arrow-right ml-1.5 text-xs"></i>
+        </a>
     </div>
     <div class="p-3">
         @if($academic_events->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 @foreach($academic_events as $event)
-                    <div class="group bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700/50 dark:to-gray-700/30 rounded-lg p-2.5 border-l-4 border-blue-500 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
-                        <div class="flex items-start gap-2">
-                            <div class="flex-shrink-0">
-                                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-md p-1.5 shadow-sm">
-                                    <i class="fas fa-calendar-check text-white text-xs"></i>
+                    <div class="group bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-100 dark:border-gray-600 border-l-4 border-l-blue-500 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 mt-0.5">
+                                <div class="bg-blue-100 dark:bg-blue-900/40 rounded-md p-2">
+                                    <i class="fas fa-calendar-check text-blue-600 dark:text-blue-400 text-sm"></i>
                                 </div>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="font-bold text-xs text-gray-800 dark:text-gray-100 mb-1 truncate">{{ $event->title ?? $event->name }}</h4>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 flex items-center mb-1">
-                                    <i class="fas fa-clock mr-1 text-blue-500 text-xs"></i>
+                                <h4 class="font-bold text-sm text-gray-800 dark:text-gray-100 mb-1 truncate">{{ $event->title ?? $event->name }}</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 flex items-center mb-2">
+                                    <i class="fas fa-clock mr-1.5 text-blue-500/70"></i>
                                     <span class="truncate">
                                         @if($event->start_date && $event->end_date)
                                             {{ \Carbon\Carbon::parse($event->start_date)->format('d M') }}
@@ -189,19 +193,13 @@
                                         @endif
                                     </span>
                                 </p>
-                                <span class="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-500 text-white">
+                                <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold tracking-wide uppercase rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-100 dark:border-blue-800">
                                     {{ $event->category ?? 'Akademik' }}
                                 </span>
                             </div>
                         </div>
                     </div>
                 @endforeach
-            </div>
-            <div class="mt-3 text-center">
-                <a href="#" class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-maroon to-red-700 text-white rounded-lg text-xs font-semibold hover:from-red-800 hover:to-red-900 transition-all shadow-sm hover:shadow">
-                    Lihat Semua
-                    <i class="fas fa-arrow-right ml-1.5 text-xs"></i>
-                </a>
             </div>
         @else
             <div class="text-center py-6">

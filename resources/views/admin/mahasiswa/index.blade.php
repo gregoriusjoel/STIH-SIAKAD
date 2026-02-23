@@ -156,6 +156,7 @@
                         title: 'Apakah Anda yakin?',
                         text: "Data mahasiswa ini akan dihapus permanen!",
                         icon: 'warning',
+                        iconColor: '#7a1621',
                         showCancelButton: true,
                         confirmButtonColor: '#7a1621',
                         cancelButtonColor: '#6c757d',
@@ -176,5 +177,21 @@
                 });
             });
         </script>
+
+        @if(session('success'))
+            <script>
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false,
+                    background: '#ffffff',
+                    customClass: {
+                        popup: 'rounded-xl'
+                    }
+                });
+            </script>
+        @endif
     @endpush
 @endsection

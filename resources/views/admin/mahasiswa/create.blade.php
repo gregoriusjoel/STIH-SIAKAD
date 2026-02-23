@@ -15,7 +15,7 @@
                     mahasiswa</p>
             </div>
 
-            <form action="{{ route('admin.mahasiswa.store') }}" method="POST" class="p-6">
+            <form id="mahasiswaForm" action="{{ route('admin.mahasiswa.store') }}" method="POST" class="p-6">
                 @csrf
 
                 <div class="space-y-6">
@@ -183,15 +183,46 @@
     </div>
 @endsection
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const pw = document.getElementById('mahasiswa_password');
-        const btn = document.getElementById('toggleMahasiswaPw');
-        if (btn && pw) {
-            btn.addEventListener('click', function () {
-                if (pw.type === 'password') { pw.type = 'text'; btn.innerHTML = '<i class="fas fa-eye-slash"></i>'; btn.setAttribute('aria-pressed', 'true'); }
-                else { pw.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; btn.setAttribute('aria-pressed', 'false'); }
-            });
-        }
-    });
-</script>
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const pw = document.getElementById('mahasiswa_password');
+            const btn = document.getElementById('toggleMahasiswaPw');
+            if (btn && pw) {
+                btn.addEventListener('click', function () {
+                    if (pw.type === 'password') { pw.type = 'text'; btn.innerHTML = '<i class="fas fa-eye-slash"></i>'; btn.setAttribute('aria-pressed', 'true'); }
+                    else { pw.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; btn.setAttribute('aria-pressed', 'false'); }
+                });
+            }
+
+            // SweetAlert Save Confirmation
+            const form = document.getElementById('mahasiswaForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data mahasiswa baru akan disimpan ke sistem.",
+                        icon: 'question',
+                        iconColor: '#7a1621',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Simpan!',
+                        cancelButtonText: 'Batal',
+                        background: '#ffffff',
+                        customClass: {
+                            confirmButton: 'px-4 py-2 rounded-lg font-bold',
+                            cancelButton: 'px-4 py-2 rounded-lg font-bold'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+@endpush

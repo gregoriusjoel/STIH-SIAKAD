@@ -212,6 +212,23 @@ class KelasController extends Controller
                  }
             }
 
+            // Prepare attendance data for display
+            $attendanceStatus = null;
+            $attendanceData = null;
+            
+            if ($attendance) {
+                $attendanceStatus = strtolower($attendance->status); // hadir, izin, sakit, alpa
+                $attendanceData = [
+                    'presence_mode' => $attendance->presence_mode,
+                    'distance_meters' => $attendance->distance_meters,
+                    'reason_category' => $attendance->reason_category,
+                    'reason_detail' => $attendance->reason_detail,
+                    'waktu' => $attendance->created_at ? $attendance->created_at->format('d M Y H:i') : null,
+                ];
+            } elseif ($meetingDate->isPast()) {
+                $attendanceStatus = 'belum_absen';
+            }
+
             $meetings[] = [
                 'no' => $i,
                 'label' => 'Pertemuan ' . $i,
@@ -225,6 +242,8 @@ class KelasController extends Controller
                 'assignments' => $assignments,
                 'method' => $pertemuanRecord->metode_pengajaran ?? 'offline',
                 'online_link' => $pertemuanRecord->online_meeting_link ?? null,
+                'attendance_status' => $attendanceStatus,
+                'attendance_data' => $attendanceData,
             ];
         }
 

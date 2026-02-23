@@ -18,6 +18,15 @@ class Presensi extends Model
         'waktu',
         'status',
         'keterangan',
+        'student_lat',
+        'student_lng',
+        'distance_meters',
+        'presence_mode',
+        'reason_category',
+        'reason_detail',
+        'campus_lat',
+        'campus_lng',
+        'radius_meters',
     ];
 
     protected $casts = [

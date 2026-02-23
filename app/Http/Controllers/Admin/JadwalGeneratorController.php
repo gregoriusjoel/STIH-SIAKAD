@@ -136,9 +136,15 @@ class JadwalGeneratorController extends Controller
         try {
             DB::beginTransaction();
 
-            // Hapus proposal lama jika overwrite
+            // Hapus jadwal & proposal lama untuk periode ini jika overwrite
             if ($request->overwrite_existing) {
-                JadwalProposal::where('status', 'pending_dosen')->delete();
+                $kelasIdsForPeriod = \App\Models\Kelas::where('semester_type', $request->semester)
+                    ->where('tahun_ajaran', $request->tahun_ajaran)
+                    ->pluck('id');
+
+                // Delete both approved schedules and proposals for this period
+                \App\Models\Jadwal::whereIn('kelas_id', $kelasIdsForPeriod)->delete();
+                \App\Models\JadwalProposal::whereIn('kelas_id', $kelasIdsForPeriod)->delete();
             }
 
             $generated = 0;

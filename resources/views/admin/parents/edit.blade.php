@@ -14,7 +14,7 @@
                 <p class="text-sm mt-1 text-white text-opacity-90">Perbarui informasi orang tua/wali</p>
             </div>
 
-            <form action="{{ route('admin.parents.update', $parent) }}" method="POST" class="p-6">
+            <form id="parentForm" action="{{ route('admin.parents.update', $parent) }}" method="POST" class="p-6">
                 @csrf
                 @method('PUT')
 
@@ -147,4 +147,36 @@
             </form>
         </div>
     </div>
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // SweetAlert Update Confirmation
+            const form = document.getElementById('parentForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Perubahan data orang tua/wali akan disimpan.",
+                    icon: 'question',
+                    iconColor: '#7a1621',
+                    showCancelButton: true,
+                    confirmButtonColor: '#7a1621',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Perbarui!',
+                    cancelButtonText: 'Batal',
+                    background: '#ffffff',
+                    customClass: {
+                        confirmButton: 'px-4 py-2 rounded-lg font-bold',
+                        cancelButton: 'px-4 py-2 rounded-lg font-bold'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
 @endsection

@@ -34,6 +34,7 @@
                             <th class="px-6 py-3 text-left">Mata Kuliah</th>
                             <th class="px-6 py-3 text-center">Pertemuan Ke</th>
                             <th class="px-6 py-3 text-center">Status</th>
+                            <th class="px-6 py-3 text-center">Jenis Kehadiran</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -72,6 +73,39 @@
                                         <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
                                             ALFA
                                         </span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    @if($presensi->presence_mode === 'offline')
+                                        <div class="flex flex-col items-center gap-1">
+                                            <5pan class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                                Offline (On-site)
+                                            </span>
+                                            @if($presensi->distance_meters !== null)
+                                                <span class="text-[10px] text-gray-500">({{ round($presensi->distance_meters) }}m dari kampus)</span>
+                                            @endif
+                                        </div>
+                                    @elseif($presensi->presence_mode === 'online')
+                                        <div class="flex flex-col items-center gap-1">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                                                <i class="fas fa-wifi mr-1"></i>
+                                                Online (Remote)
+                                            </span>
+                                            @if($presensi->distance_meters !== null)
+                                                <span class="text-[10px] text-gray-500">({{ round($presensi->distance_meters) }}m dari kampus)</span>
+                                            @endif
+                                            @if($presensi->reason_category)
+                                                <span class="text-[10px] text-blue-600 font-medium">
+                                                    Alasan: {{ $presensi->reason_category }}
+                                                    @if($presensi->reason_detail && $presensi->reason_category === 'Lainnya')
+                                                        <br><span class="text-gray-600 italic">{{ Str::limit($presensi->reason_detail, 40) }}</span>
+                                                    @endif
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span class="text-xs text-gray-400">-</span>
                                     @endif
                                 </td>
                             </tr>
