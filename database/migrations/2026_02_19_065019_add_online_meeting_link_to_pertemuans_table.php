@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('pertemuans', function (Blueprint $table) {
-            $table->string('online_meeting_link')->nullable()->after('metode_pengajaran');
-        });
+        if (Schema::hasTable('pertemuans')) {
+            Schema::table('pertemuans', function (Blueprint $table) {
+                $table->string('online_meeting_link')->nullable()->after('metode_pengajaran');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('pertemuans', function (Blueprint $table) {
-            $table->dropColumn('online_meeting_link');
-        });
+        if (Schema::hasTable('pertemuans')) {
+            Schema::table('pertemuans', function (Blueprint $table) {
+                $table->dropColumn('online_meeting_link');
+            });
+        }
     }
 };

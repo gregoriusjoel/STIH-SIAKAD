@@ -8,21 +8,25 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('pertemuans', function (Blueprint $table) {
-            if (!Schema::hasColumn('pertemuans', 'metode_pengajaran')) {
-                $table->enum('metode_pengajaran', ['offline', 'online', 'asynchronous'])
-                      ->default('offline')
-                      ->after('topik');
-            }
-        });
+        if (Schema::hasTable('pertemuans')) {
+            Schema::table('pertemuans', function (Blueprint $table) {
+                if (!Schema::hasColumn('pertemuans', 'metode_pengajaran')) {
+                    $table->enum('metode_pengajaran', ['offline', 'online', 'asynchronous'])
+                          ->default('offline')
+                          ->after('topik');
+                }
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('pertemuans', function (Blueprint $table) {
-            if (Schema::hasColumn('pertemuans', 'metode_pengajaran')) {
-                $table->dropColumn('metode_pengajaran');
-            }
-        });
+        if (Schema::hasTable('pertemuans')) {
+            Schema::table('pertemuans', function (Blueprint $table) {
+                if (Schema::hasColumn('pertemuans', 'metode_pengajaran')) {
+                    $table->dropColumn('metode_pengajaran');
+                }
+            });
+        }
     }
 };

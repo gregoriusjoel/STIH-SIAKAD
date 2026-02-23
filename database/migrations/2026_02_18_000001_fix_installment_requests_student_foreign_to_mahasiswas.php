@@ -13,18 +13,20 @@ class FixInstallmentRequestsStudentForeignToMahasiswas extends Migration
      */
     public function up()
     {
-        Schema::table('installment_requests', function (Blueprint $table) {
-            try {
-                $table->dropForeign(['student_id']);
-            } catch (\Throwable $e) {
-                // ignore if foreign key doesn't exist
-            }
+        if (Schema::hasTable('installment_requests')) {
+            Schema::table('installment_requests', function (Blueprint $table) {
+                try {
+                    $table->dropForeign(['student_id']);
+                } catch (\Throwable $e) {
+                    // ignore if foreign key doesn't exist
+                }
 
-            $table->foreign('student_id')
-                ->references('id')
-                ->on('mahasiswas')
-                ->onDelete('cascade');
-        });
+                $table->foreign('student_id')
+                    ->references('id')
+                    ->on('mahasiswas')
+                    ->onDelete('cascade');
+            });
+        }
     }
 
     /**
@@ -34,17 +36,19 @@ class FixInstallmentRequestsStudentForeignToMahasiswas extends Migration
      */
     public function down()
     {
-        Schema::table('installment_requests', function (Blueprint $table) {
-            try {
-                $table->dropForeign(['student_id']);
-            } catch (\Throwable $e) {
-                // ignore
-            }
+        if (Schema::hasTable('installment_requests')) {
+            Schema::table('installment_requests', function (Blueprint $table) {
+                try {
+                    $table->dropForeign(['student_id']);
+                } catch (\Throwable $e) {
+                    // ignore
+                }
 
-            $table->foreign('student_id')
-                ->references('id')
-                ->on('students')
-                ->onDelete('cascade');
-        });
+                $table->foreign('student_id')
+                    ->references('id')
+                    ->on('students')
+                    ->onDelete('cascade');
+            });
+        }
     }
 }

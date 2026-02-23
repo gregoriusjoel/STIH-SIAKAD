@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('presensis', function (Blueprint $table) {
-            $table->integer('pertemuan')->nullable()->after('kelas_mata_kuliah_id');
-            $table->index('pertemuan');
-        });
+        if (!Schema::hasColumn('presensis', 'pertemuan')) {
+            Schema::table('presensis', function (Blueprint $table) {
+                $table->integer('pertemuan')->nullable()->after('kelas_mata_kuliah_id');
+                $table->index('pertemuan');
+            });
+        }
     }
 
     /**
@@ -22,9 +24,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('presensis', function (Blueprint $table) {
-            $table->dropIndex(['pertemuan']);
-            $table->dropColumn('pertemuan');
-        });
+        if (Schema::hasColumn('presensis', 'pertemuan')) {
+            Schema::table('presensis', function (Blueprint $table) {
+                // Attempt to drop index and column only if they exist
+                $table->dropIndex(['pertemuan']);
+                $table->dropColumn('pertemuan');
+            });
+        }
     }
 };

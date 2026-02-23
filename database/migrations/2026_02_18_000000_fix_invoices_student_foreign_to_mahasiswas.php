@@ -13,20 +13,22 @@ class FixInvoicesStudentForeignToMahasiswas extends Migration
      */
     public function up()
     {
-        Schema::table('invoices', function (Blueprint $table) {
-            // remove existing foreign key if present
-            try {
-                $table->dropForeign(['student_id']);
-            } catch (\Throwable $e) {
-                // ignore if not exists
-            }
+        if (Schema::hasTable('invoices')) {
+            Schema::table('invoices', function (Blueprint $table) {
+                // remove existing foreign key if present
+                try {
+                    $table->dropForeign(['student_id']);
+                } catch (\Throwable $e) {
+                    // ignore if not exists
+                }
 
-            // add foreign key to mahasiswas table
-            $table->foreign('student_id')
-                ->references('id')
-                ->on('mahasiswas')
-                ->onDelete('cascade');
-        });
+                // add foreign key to mahasiswas table
+                $table->foreign('student_id')
+                    ->references('id')
+                    ->on('mahasiswas')
+                    ->onDelete('cascade');
+            });
+        }
     }
 
     /**
@@ -36,18 +38,20 @@ class FixInvoicesStudentForeignToMahasiswas extends Migration
      */
     public function down()
     {
-        Schema::table('invoices', function (Blueprint $table) {
-            try {
-                $table->dropForeign(['student_id']);
-            } catch (\Throwable $e) {
-                // ignore
-            }
+        if (Schema::hasTable('invoices')) {
+            Schema::table('invoices', function (Blueprint $table) {
+                try {
+                    $table->dropForeign(['student_id']);
+                } catch (\Throwable $e) {
+                    // ignore
+                }
 
-            // restore original foreign key to students table (if present)
-            $table->foreign('student_id')
-                ->references('id')
-                ->on('students')
-                ->onDelete('cascade');
-        });
+                // restore original foreign key to students table (if present)
+                $table->foreign('student_id')
+                    ->references('id')
+                    ->on('students')
+                    ->onDelete('cascade');
+            });
+        }
     }
 }
