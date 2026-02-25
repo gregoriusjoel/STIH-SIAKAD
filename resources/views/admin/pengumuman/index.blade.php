@@ -46,7 +46,7 @@
                 </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                @foreach($pengumumans as $p)
+                @forelse($pengumumans as $p)
                 <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">{{ $loop->iteration }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-maroon dark:text-red-400">{{ $p->judul }}</td>
@@ -77,7 +77,19 @@
                         </div>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="5" class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
+                        <div class="flex flex-col items-center justify-center">
+                            <div class="w-16 h-16 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-4">
+                                <span class="material-symbols-outlined text-4xl text-gray-400 opacity-50">campaign</span>
+                            </div>
+                            <p class="text-lg font-bold text-gray-600 dark:text-gray-300">Pengumuman belum dibuat</p>
+                            <p class="text-sm mt-1 text-gray-400 dark:text-gray-500 mt-2 max-w-sm">Belum ada informasi yang dipublikasikan. Klik "Buat Pengumuman" untuk mulai menambahkan informasi.</p>
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

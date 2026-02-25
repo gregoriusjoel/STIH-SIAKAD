@@ -47,8 +47,8 @@ class KelasController extends Controller
 
             return [
                 'id' => $kelas ? $kelas->id : null,
-                'mata_kuliah' => $krs->mataKuliah->nama,
-                'kode_mk' => $krs->mataKuliah->kode,
+                'mata_kuliah' => $krs->mataKuliah->nama_mk,
+                'kode_mk' => $krs->mataKuliah->kode_mk,
                 'sks' => $krs->mataKuliah->sks,
                 'semester' => $krs->mataKuliah->semester,
                 'section' => $kelas ? $kelas->section : '-',
@@ -249,8 +249,8 @@ class KelasController extends Controller
 
         $classInfo = [
             'id' => $kelas->id,
-            'name' => $kelas->mataKuliah->nama,
-            'code' => $kelas->mataKuliah->kode,
+            'name' => $kelas->mataKuliah->nama_mk,
+            'code' => $kelas->mataKuliah->kode_mk,
             'sks' => $kelas->mataKuliah->sks,
             'semester' => $kelas->mataKuliah->semester,
             'section' => $kelas->section,

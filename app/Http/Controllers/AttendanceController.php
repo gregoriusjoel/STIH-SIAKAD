@@ -241,7 +241,7 @@ class AttendanceController extends Controller
         return redirect()->route('absensi.thanks')->with([
             'kelas_id' => $kelas->id,
             'pertemuan' => $pertemuan ?? 1, // Default to 1 if null
-            'mata_kuliah' => $kelas->mataKuliah->nama
+            'mata_kuliah' => $kelas->mataKuliah->nama_mk
         ]);
     }
 

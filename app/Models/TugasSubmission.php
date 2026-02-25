@@ -12,7 +12,7 @@ class TugasSubmission extends Model
     protected $table = 'tugas_submissions';
 
     protected $fillable = [
-        'tugas_id', 'mahasiswa_id', 'file_path', 'comments', 'score', 'graded_by', 'graded_at'
+        'tugas_id', 'mahasiswa_id', 'file_path', 'text_submission', 'comments', 'score', 'graded_by', 'graded_at'
     ];
 
     public function tugas()

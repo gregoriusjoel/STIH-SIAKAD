@@ -32,26 +32,64 @@ class TugasController extends Controller
 
     public function submit(Request $request, $kelasId, $pertemuan, $tugasId)
     {
-        $request->validate([
-            'file' => 'required|file|max:10240',
-            'comments' => 'nullable|string'
-        ]);
-
         $mahasiswa = Auth::user()->mahasiswa ?? null;
         if (!$mahasiswa) {
             abort(403, 'Unauthorized');
         }
 
         $tugas = Tugas::findOrFail($tugasId);
+        
+        // Get submission type rules based on tugas settings
+        $submissionType = $tugas->submission_type ?? 'any';
+        
+        // Define validation rules based on submission type
+        $rules = ['comments' => 'nullable|string'];
+        
+        if ($submissionType === 'text') {
+            $rules['text_submission'] = 'required|string|max:50000'; // 50KB text limit
+        } else {
+            // File validation based on submission type
+            $fileRules = 'required|file|max:10240'; // 10MB max
+            
+            switch ($submissionType) {
+                case 'pdf':
+                    $fileRules .= '|mimes:pdf';
+                    break;
+                case 'word':
+                    $fileRules .= '|mimes:doc,docx';
+                    break;
+                case 'excel':
+                    $fileRules .= '|mimes:xls,xlsx';
+                    break;
+                case 'any':
+                default:
+                    // Allow any file type
+                    break;
+            }
+            
+            $rules['file'] = $fileRules;
+        }
+        
+        $validated = $request->validate($rules);
 
-        $filePath = $request->file('file')->store('tugas_submissions', 'public');
+        // Handle file upload
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('tugas_submissions', 'public');
+        }
 
-        $submission = TugasSubmission::create([
-            'tugas_id' => $tugas->id,
-            'mahasiswa_id' => $mahasiswa->id,
-            'file_path' => $filePath,
-            'comments' => $request->input('comments')
-        ]);
+        // Create or update submission
+        $submission = TugasSubmission::updateOrCreate(
+            [
+                'tugas_id' => $tugas->id,
+                'mahasiswa_id' => $mahasiswa->id,
+            ],
+            [
+                'file_path' => $filePath,
+                'text_submission' => $request->input('text_submission'),
+                'comments' => $request->input('comments')
+            ]
+        );
 
         return back()->with('success', 'Tugas berhasil dikumpulkan.');
     }

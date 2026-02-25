@@ -17,7 +17,8 @@ class TugasController extends Controller
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
             'file' => 'nullable|file|max:51200', // 50MB max
-            'max_score' => 'nullable|integer|min:0'
+            'max_score' => 'nullable|integer|min:0',
+            'submission_type' => 'required|in:pdf,word,excel,text,any'
         ]);
 
         // Get kelas to extract mata_kuliah_id
@@ -39,7 +40,8 @@ class TugasController extends Controller
             'due_date' => $request->input('due_date'),
             'dosen_id' => $dosen?->id ?? null,
             'file_path' => $filePath,
-            'max_score' => $request->input('max_score')
+            'max_score' => $request->input('max_score'),
+            'submission_type' => $request->input('submission_type', 'any')
         ]);
 
         return back()->with('success', 'Tugas berhasil dibuat dan akan ditampilkan di semua kelas untuk mata kuliah ini.');

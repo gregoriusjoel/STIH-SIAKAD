@@ -636,6 +636,68 @@
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium text-gray-700 bg-white">
                             </div>
 
+                            {{-- Max Score --}}
+                            <div>
+                                <label for="max_score" class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <span class="material-symbols-outlined text-primary text-sm">grade</span>
+                                    Nilai Maksimal
+                                </label>
+                                <input type="number" name="max_score" id="max_score" min="0" value="100"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium text-gray-700 bg-white"
+                                    placeholder="Contoh: 100">
+                            </div>
+
+                            {{-- Submission Type --}}
+                            <div>
+                                <label for="submission_type" class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <span class="material-symbols-outlined text-primary text-sm">assignment_turned_in</span>
+                                    Tipe Pengumpulan
+                                </label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <label class="relative flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-all group">
+                                        <input type="radio" name="submission_type" value="pdf" class="sr-only peer" checked>
+                                        <div class="flex flex-col items-center gap-1 text-center peer-checked:text-primary">
+                                            <i class="fas fa-file-pdf text-xl group-hover:scale-110 transition-transform"></i>
+                                            <span class="text-xs font-bold">PDF</span>
+                                        </div>
+                                        <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                    </label>
+                                    <label class="relative flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-all group">
+                                        <input type="radio" name="submission_type" value="word" class="sr-only peer">
+                                        <div class="flex flex-col items-center gap-1 text-center peer-checked:text-primary">
+                                            <i class="fas fa-file-word text-xl group-hover:scale-110 transition-transform"></i>
+                                            <span class="text-xs font-bold">Word</span>
+                                        </div>
+                                        <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                    </label>
+                                    <label class="relative flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-all group">
+                                        <input type="radio" name="submission_type" value="excel" class="sr-only peer">
+                                        <div class="flex flex-col items-center gap-1 text-center peer-checked:text-primary">
+                                            <i class="fas fa-file-excel text-xl group-hover:scale-110 transition-transform"></i>
+                                            <span class="text-xs font-bold">Excel</span>
+                                        </div>
+                                        <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                    </label>
+                                    <label class="relative flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-all group">
+                                        <input type="radio" name="submission_type" value="text" class="sr-only peer">
+                                        <div class="flex flex-col items-center gap-1 text-center peer-checked:text-primary">
+                                            <i class="fas fa-keyboard text-xl group-hover:scale-110 transition-transform"></i>
+                                            <span class="text-xs font-bold">Teks</span>
+                                        </div>
+                                        <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                    </label>
+                                    <label class="relative flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-all group col-span-2">
+                                        <input type="radio" name="submission_type" value="any" class="sr-only peer">
+                                        <div class="flex flex-col items-center gap-1 text-center peer-checked:text-primary">
+                                            <i class="fas fa-file text-xl group-hover:scale-110 transition-transform"></i>
+                                            <span class="text-xs font-bold">Semua Format</span>
+                                        </div>
+                                        <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">Pilih format file yang harus diupload mahasiswa</p>
+                            </div>
+
                             {{-- File Upload --}}
                             <div>
                                 <label class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">

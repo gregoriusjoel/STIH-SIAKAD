@@ -123,7 +123,7 @@ class KRSController extends Controller
             ->get();
 
         // Build available classes (kelas) for the active KRS semester to drive calendar and optional class-level info
-        $kelasQuery = \App\Models\Kelas::with(['mataKuliah', 'dosen', 'jadwals']);
+        $kelasQuery = \App\Models\Kelas::with(['mataKuliah', 'dosen.user', 'jadwals']);
 
         // Try to filter by tahun_ajaran and semester_type if available
         // But if no results, fall back to getting all kelas for the allowed mata kuliah

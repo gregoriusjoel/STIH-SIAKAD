@@ -379,7 +379,8 @@
                                                                 <span class="material-symbols-outlined text-[16px]">download</span> Download Soal
                                                             </a>
                                                         @endif
-                                                        <button class="flex-1 py-2 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-600 hover:text-maroon hover:border-maroon transition-all flex items-center justify-center gap-2">
+                                                        <button @click="$dispatch('open-submit-tugas', { tugasId: {{ $tugas['id'] }}, title: '{{ addslashes($tugas['title']) }}', submissionType: '{{ $tugas['submission_type'] ?? 'any' }}' })" 
+                                                            class="flex-1 py-2 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-600 hover:text-maroon hover:border-maroon transition-all flex items-center justify-center gap-2">
                                                             <span class="material-symbols-outlined text-[16px]">upload_file</span> Upload Jawaban
                                                         </button>
                                                     </div>
@@ -418,5 +419,166 @@
             </div>
         </div>
     </div>
+    </div>
+
+    {{-- MODAL SUBMIT TUGAS --}}
+    <div x-data="{ 
+        open: false, 
+        tugasId: null, 
+        tugasTitle: '', 
+        submissionType: 'any',
+        fileName: ''
+    }" @open-submit-tugas.window="
+        open = true;
+        tugasId = $event.detail.tugasId;
+        tugasTitle = $event.detail.title;
+        submissionType = $event.detail.submissionType || 'any';
+        fileName = '';
+    ">
+        <div x-show="open" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
+            {{-- Backdrop --}}
+            <div x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" @click="open = false"></div>
+
+            {{-- Modal Panel --}}
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div x-show="open" x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl">
+
+                    <form :action="'/mahasiswa/kelas/{{ $classInfo['id'] }}/pertemuan/' + tugasId.toString().split('-')[0] + '/tugas/' + tugasId + '/submit'" 
+                          method="POST" enctype="multipart/form-data">
+                        @csrf
+
+                        {{-- Header --}}
+                        <div class="bg-maroon px-8 py-8 rounded-t-2xl">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="size-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                                        <span class="material-symbols-outlined text-white text-4xl">assignment_turned_in</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-white mb-1">Kumpulkan Tugas</h3>
+                                        <p class="text-sm text-white/90" x-text="tugasTitle"></p>
+                                    </div>
+                                </div>
+                                <button type="button" @click="open = false" class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
+                                    <span class="material-symbols-outlined text-3xl">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="px-8 py-6 space-y-5">
+                            {{-- Submission Type Info --}}
+                            <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white flex-shrink-0">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-sm font-bold text-blue-900 mb-1">Format Pengumpulan</h5>
+                                        <p class="text-xs text-blue-700" x-show="submissionType === 'pdf'">
+                                            <i class="fas fa-file-pdf mr-1"></i> Upload file dalam format <strong>PDF</strong>
+                                        </p>
+                                        <p class="text-xs text-blue-700" x-show="submissionType === 'word'">
+                                            <i class="fas fa-file-word mr-1"></i> Upload file dalam format <strong>Word (DOC/DOCX)</strong>
+                                        </p>
+                                        <p class="text-xs text-blue-700" x-show="submissionType === 'excel'">
+                                            <i class="fas fa-file-excel mr-1"></i> Upload file dalam format <strong>Excel (XLS/XLSX)</strong>
+                                        </p>
+                                        <p class="text-xs text-blue-700" x-show="submissionType === 'text'">
+                                            <i class="fas fa-keyboard mr-1"></i> Tulis jawaban Anda langsung di form <strong>(Teks)</strong>
+                                        </p>
+                                        <p class="text-xs text-blue-700" x-show="submissionType === 'any'">
+                                            <i class="fas fa-file mr-1"></i> Upload file dalam <strong>format apapun</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- File Upload (for file-based submissions) --}}
+                            <div x-show="submissionType !== 'text'">
+                                <label class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <span class="material-symbols-outlined text-primary text-sm">attach_file</span>
+                                    Upload File Tugas
+                                </label>
+                                <label class="relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-2xl cursor-pointer overflow-hidden group border-blue-300/40 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 hover:from-blue-100/50 hover:to-indigo-100/50 transition-all duration-300" @click="$refs.fileInput.click()">
+                                    <div class="relative flex flex-col items-center justify-center z-10">
+                                        <div class="size-14 rounded-full bg-white shadow-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                                            <span class="material-symbols-outlined text-blue-600 text-3xl">cloud_upload</span>
+                                        </div>
+                                        <p class="text-sm text-gray-700 font-semibold mb-1">
+                                            <span class="text-blue-600">Klik untuk upload</span> atau drag & drop
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-2 font-medium" x-show="submissionType === 'pdf'">
+                                            PDF (Maksimal 10MB)
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-2 font-medium" x-show="submissionType === 'word'">
+                                            DOC/DOCX (Maksimal 10MB)
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-2 font-medium" x-show="submissionType === 'excel'">
+                                            XLS/XLSX (Maksimal 10MB)
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-2 font-medium" x-show="submissionType === 'any'">
+                                            Semua format (Maksimal 10MB)
+                                        </p>
+                                        <p x-show="fileName" x-text="fileName" class="text-xs text-primary font-bold mt-3 bg-primary/10 px-3 py-1 rounded-lg"></p>
+                                    </div>
+                                    <input name="file" type="file" class="hidden" x-ref="fileInput" 
+                                           :accept="submissionType === 'pdf' ? '.pdf' : (submissionType === 'word' ? '.doc,.docx' : (submissionType === 'excel' ? '.xls,.xlsx' : ''))"
+                                           @change="fileName = $refs.fileInput.files[0]?.name || ''" />
+                                </label>
+                            </div>
+
+                            {{-- Text Submission (for text-based submissions) --}}
+                            <div x-show="submissionType === 'text'">
+                                <label for="text_submission" class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <span class="material-symbols-outlined text-primary text-sm">edit_note</span>
+                                    Jawaban Tugas
+                                </label>
+                                <textarea name="text_submission" id="text_submission" rows="10"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium bg-white resize-none"
+                                    placeholder="Tulis jawaban tugas Anda di sini..."></textarea>
+                            </div>
+
+                            {{-- Komentar/Catatan --}}
+                            <div>
+                                <label for="comments" class="flex items-center gap-2 text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <span class="material-symbols-outlined text-primary text-sm">comment</span>
+                                    Catatan (Opsional)
+                                </label>
+                                <textarea name="comments" id="comments" rows="3"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 font-medium bg-white resize-none"
+                                    placeholder="Tambahkan catatan jika diperlukan..."></textarea>
+                            </div>
+                        </div>
+
+                        {{-- Footer --}}
+                        <div class="flex flex-col sm:flex-row justify-end gap-3 px-8 pb-8 pt-6 border-t border-gray-100">
+                            <button type="button" @click="open = false"
+                                class="w-full sm:w-auto px-5 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all">
+                                <span class="flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                    Batal
+                                </span>
+                            </button>
+                            <button type="submit"
+                                class="w-full sm:w-auto px-5 py-2.5 bg-maroon text-white rounded-xl text-sm font-bold hover:bg-red-800 shadow-lg shadow-maroon/30 hover:shadow-xl hover:shadow-maroon/40 transition-all">
+                                <span class="flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-lg">send</span>
+                                    Kumpulkan Tugas
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection

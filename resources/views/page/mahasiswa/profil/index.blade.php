@@ -10,9 +10,9 @@
         {{-- Left Column: Photo & Basic Identity --}}
         <div class="space-y-6">
             <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-6 text-center h-full" x-data="photoCropper()">
-                <div class="relative w-40 h-40 mx-auto mb-6 group cursor-pointer"
-                    @click="openPreview('{{ $mahasiswa->foto ? asset('storage/' . $mahasiswa->foto) : '' }}')">
-                    <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-gray-100 dark:border-slate-700 shadow-sm relative flex items-center justify-center bg-gray-100 dark:bg-slate-700 group-hover:border-maroon transition-colors duration-300">
+                <div class="relative w-40 h-40 mx-auto mb-6 {{ $mahasiswa->foto ? 'group cursor-pointer' : '' }}"
+                    @click="{{ $mahasiswa->foto ? "openPreview('" . asset('storage/' . $mahasiswa->foto) . "')" : '' }}">
+                    <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-gray-100 dark:border-slate-700 shadow-sm relative flex items-center justify-center bg-gray-100 dark:bg-slate-700 {{ $mahasiswa->foto ? 'group-hover:border-maroon' : '' }} transition-colors duration-300">
                         <img id="profile-preview" src="{{ $mahasiswa->foto ? asset('storage/' . $mahasiswa->foto) : '' }}"
                             alt="Foto Profil" class="w-full h-full object-cover {{ $mahasiswa->foto ? '' : 'hidden' }}">
                         <div id="profile-icon" class="{{ $mahasiswa->foto ? 'hidden' : '' }}">
@@ -20,10 +20,12 @@
                         </div>
 
                         {{-- Hover Overlay --}}
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center rounded-full backdrop-blur-[1px] gap-1">
-                            <i class="fas fa-search-plus text-white text-2xl mb-1"></i>
-                            <span class="text-white text-[10px] font-bold uppercase tracking-wider">Detail Foto</span>
-                        </div>
+                        @if($mahasiswa->foto)
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center rounded-full backdrop-blur-[1px] gap-1">
+                                <i class="fas fa-search-plus text-white text-2xl mb-1"></i>
+                                <span class="text-white text-[10px] font-bold uppercase tracking-wider">Detail Foto</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
 

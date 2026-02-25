@@ -22,7 +22,7 @@ class JadwalApiController extends Controller
                 return [
                     'id' => $jadwal->id,
                     'kelas_id' => $jadwal->kelas_id,
-                    'mata_kuliah' => $jadwal->kelas->mataKuliah->nama,
+                    'mata_kuliah' => $jadwal->kelas->mataKuliah->nama_mk,
                     'kode' => $jadwal->kelas->mataKuliah->kode,
                     'sks' => $jadwal->kelas->mataKuliah->sks,
                     'section' => $jadwal->kelas->section,
@@ -55,7 +55,7 @@ class JadwalApiController extends Controller
             ->map(function ($jadwal) {
                 return [
                     'id' => $jadwal->id,
-                    'mata_kuliah' => $jadwal->kelas->mataKuliah->nama,
+                    'mata_kuliah' => $jadwal->kelas->mataKuliah->nama_mk,
                     'kode' => $jadwal->kelas->mataKuliah->kode,
                     'section' => $jadwal->kelas->section,
                     'dosen' => $jadwal->kelas->dosen->name,
@@ -184,7 +184,7 @@ class JadwalApiController extends Controller
             ->map(function ($jadwal) {
                 return [
                     'id' => $jadwal->id,
-                    'mata_kuliah' => $jadwal->kelas->mataKuliah->nama,
+                    'mata_kuliah' => $jadwal->kelas->mataKuliah->nama_mk,
                     'kode' => $jadwal->kelas->mataKuliah->kode,
                     'sks' => $jadwal->kelas->mataKuliah->sks,
                     'jenis' => $jadwal->kelas->mataKuliah->jenis,

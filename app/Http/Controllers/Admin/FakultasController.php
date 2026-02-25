@@ -107,6 +107,12 @@ class FakultasController extends Controller
      */
     public function destroy(Fakultas $fakultas)
     {
+        // Check if there are any related prodis
+        if ($fakultas->prodis()->count() > 0) {
+            return redirect()->route('admin.fakultas.index')
+                ->with('error', 'Gagal! Hapus data prodi yang bersangkutan dulu.');
+        }
+
         $fakultas->delete();
 
         return redirect()->route('admin.fakultas.index')

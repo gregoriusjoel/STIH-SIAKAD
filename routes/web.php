@@ -121,6 +121,16 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     // Availability Management for Dosen
     Route::resource('availability', App\Http\Controllers\Dosen\DosenAvailabilityController::class)->only(['index', 'create', 'store', 'destroy']);
 
+    // ── Nilai Tugas (Assignment Grades) ──────────────────────────────────
+    Route::prefix('kelas/{kelasId}/nilai-tugas')->name('nilai-tugas.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Dosen\NilaiTugasController::class, 'index'])->name('index');
+        Route::get('/tugas/{tugasId}/input', [App\Http\Controllers\Dosen\NilaiTugasController::class, 'inputNilai'])->name('input');
+        Route::post('/tugas/{tugasId}/simpan', [App\Http\Controllers\Dosen\NilaiTugasController::class, 'simpanNilai'])->name('simpan');
+        Route::delete('/tugas/{tugasId}/reset', [App\Http\Controllers\Dosen\NilaiTugasController::class, 'resetNilai'])->name('reset');
+        Route::get('/rekap', [App\Http\Controllers\Dosen\NilaiTugasController::class, 'rekap'])->name('rekap');
+        Route::get('/export', [App\Http\Controllers\Dosen\NilaiTugasController::class, 'export'])->name('export');
+    });
+
     // Pengumuman untuk dosen
     Route::get('/pengumuman', [App\Http\Controllers\Page\PengumumanController::class, 'index'])->name('pengumuman.index');
     Route::get('/pengumuman/{pengumuman}', [App\Http\Controllers\Page\PengumumanController::class, 'show'])->name('pengumuman.show');

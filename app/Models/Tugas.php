@@ -12,7 +12,7 @@ class Tugas extends Model
     protected $table = 'tugas';
 
     protected $fillable = [
-        'kelas_id', 'mata_kuliah_id', 'pertemuan', 'title', 'description', 'due_date', 'dosen_id', 'file_path', 'max_score'
+        'kelas_id', 'mata_kuliah_id', 'pertemuan', 'title', 'description', 'due_date', 'dosen_id', 'file_path', 'max_score', 'submission_type'
     ];
 
     public function kelas()

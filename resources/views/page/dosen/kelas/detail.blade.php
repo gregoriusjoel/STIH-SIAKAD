@@ -129,6 +129,12 @@
                         Input Nilai
                     </a>
 
+                    <a href="{{ route('dosen.nilai-tugas.index', $id) }}"
+                        class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-xl font-bold text-sm hover:bg-red-50 dark:hover:bg-red-900/30 transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-[20px]">assignment_turned_in</span>
+                        Nilai Tugas
+                    </a>
+
                     {{-- Button Silabus --}}
                     @if($kelas->silabus)
                         <button @click="openPreviewModal('{{ route('dosen.kelas.dokumen.download', ['id' => $id, 'tipe' => 'silabus']) }}?view=1&t={{ time() }}', 'Silabus', 'silabus')"

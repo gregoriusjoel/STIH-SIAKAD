@@ -400,7 +400,7 @@
                                                             <td class="px-4 py-3">
                                                                 <div class="font-medium text-gray-900 line-clamp-2">{{ $kelas->mataKuliah->nama_mk ?? '-' }}</div>
                                                                 <div class="text-xs text-gray-500 mt-0.5 font-mono">{{ $kelas->mataKuliah->kode_mk ?? '-' }}</div>
-                                                                <div class="text-[10px] text-gray-400 mt-0.5">{{ $kelas->dosen->name ?? '-' }}</div>
+                                                                <div class="text-[10px] text-gray-400 mt-0.5">{{ $kelas->dosen?->nama ?? '-' }}</div>
                                                             </td>
                                                             <td class="px-4 py-3 text-center font-bold">{{ $kelas->mataKuliah->sks ?? 0 }}</td>
                                                             <td class="px-4 py-3 text-gray-600 text-center">{{ $jadwal->ruangan ?? '-' }}</td>
@@ -478,7 +478,7 @@
                                 <th class="px-4 py-3 text-center text-sm font-bold text-gray-700">SKS</th>
                                 <th class="px-4 py-3 text-center text-sm font-bold text-gray-700">Semester</th>
                                 <th class="px-4 py-3 text-center text-sm font-bold text-gray-700">Jenis</th>
-                                <th class="px-4 py-3 text-left text-sm font-bold text-gray-700">Dosen</th>
+                                <th class="px-4 py-3 text-center text-sm font-bold text-gray-700">Dosen</th>
                                 <th class="px-4 py-3 text-center text-sm font-bold text-gray-700">Jadwal</th>
                                 <th class="px-4 py-3 text-center text-sm font-bold text-gray-700">Aksi</th>
                             </tr>
@@ -527,11 +527,7 @@
 
                                     {{-- DOSEN --}}
                                     <td class="px-4 py-4 text-sm text-gray-700 text-center">
-                                        @if($kelas && $kelas->dosen)
-                                            {{ $kelas->dosen->name }}
-                                        @else
-                                            - {{ $kelas ? '(Kelas ada, dosen null)' : '(Kelas tidak ditemukan)' }}
-                                        @endif
+                                        {{ $kelas?->dosen?->nama ?? '-' }}
                                     </td>
 
                                     {{-- JADWAL --}}
@@ -601,11 +597,7 @@
 
                                         {{-- DOSEN --}}
                                         <td class="px-4 py-4 text-sm text-gray-700 text-center">
-                                            @if($kelas && $kelas->dosen)
-                                                {{ $kelas->dosen->name }}
-                                            @else
-                                                -
-                                            @endif
+                                            {{ $kelas?->dosen?->nama ?? '-' }}
                                         </td>
 
                                         {{-- JADWAL --}}
