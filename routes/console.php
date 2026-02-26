@@ -8,9 +8,16 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Semester Transition Scheduler
+// Semester Status Update (runs daily to check grace period and activate/deactivate semesters)
+Schedule::command('semester:update-status')
+    ->dailyAt('00:00') // Runs at midnight to update semester status
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/semester-status-update.log'));
+
+// Semester Transition (triggers when semester ends and increments mahasiswa semester)
 Schedule::command('semester:process-transition')
-    ->dailyAt('00:01') // PRODUCTION MODE: Runs daily at 00:01 AM
+    ->dailyAt('00:01') // Runs after status update
     // ->everyMinute() // TEST MODE: Uncomment for testing
     ->withoutOverlapping()
     ->runInBackground()

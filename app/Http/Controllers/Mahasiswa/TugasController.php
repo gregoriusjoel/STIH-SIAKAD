@@ -72,10 +72,25 @@ class TugasController extends Controller
         
         $validated = $request->validate($rules);
 
+        $submission = TugasSubmission::where('tugas_id', $tugas->id)
+                                     ->where('mahasiswa_id', $mahasiswa->id)
+                                     ->first();
+
         // Handle file upload
-        $filePath = null;
+        $filePath = $submission ? $submission->file_path : null;
         if ($request->hasFile('file')) {
+            // Delete old file if exists
+            if ($submission && $submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
+                Storage::disk('public')->delete($submission->file_path);
+            }
             $filePath = $request->file('file')->store('tugas_submissions', 'public');
+        } elseif ($request->has('text_submission') && $submissionType === 'text') {
+             // If they submit text and there was a file before, we could delete it, 
+             // but here we just leave logic as is since validation enforces file/text correctly.
+             if ($submission && $submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
+                 Storage::disk('public')->delete($submission->file_path);
+             }
+             $filePath = null;
         }
 
         // Create or update submission
@@ -91,6 +106,7 @@ class TugasController extends Controller
             ]
         );
 
-        return back()->with('success', 'Tugas berhasil dikumpulkan.');
+        $message = $submission->wasRecentlyCreated ? 'Tugas berhasil dikumpulkan.' : 'Tugas berhasil diunggah ulang.';
+        return back()->with('success', $message);
     }
 }

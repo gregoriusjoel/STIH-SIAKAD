@@ -44,6 +44,7 @@ class JadwalController extends Controller
         
         if ($dosen) {
             $kelasMataKuliahs = \App\Models\KelasMataKuliah::where('dosen_id', $dosen->id)
+                ->activeClasses() // Filter by active semester + grace period
                 ->with(['mataKuliah', 'semester'])
                 ->whereNotNull('hari')
                 ->get();
@@ -119,6 +120,7 @@ class JadwalController extends Controller
         // Get all schedules for room availability checking
         // Start with base schedules from KelasMataKuliah
         $allSchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'ruangan'])
+            ->activeClasses() // Filter by active semester + grace period
             ->where(function($q) {
                 $q->whereNotNull('ruang')->orWhereNotNull('ruangan_id');
             })

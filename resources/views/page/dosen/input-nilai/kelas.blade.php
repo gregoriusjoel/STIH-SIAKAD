@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Input Nilai - ' . $class_info['name'])
+@section('title', 'Input Nilai Akhir - ' . $class_info['name'])
 
 @push('styles')
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -16,20 +16,20 @@
             <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
             <a href="{{ route('dosen.kelas') }}" class="hover:text-white transition-all duration-300">Kelas</a>
             <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
-            <a href="{{ route('dosen.kelas.detail', $class_info['id']) }}" class="hover:text-white transition-all duration-300">Detail Kelas</a>
+            <a href="{{ route('dosen.kelas.detail', $class_info['id']) }}" class="hover:text-white transition-all duration-300">{{ $class_info['name'] }}</a>
             <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
-            <span class="text-white font-black text-[13px] uppercase tracking-wider">Input Nilai</span>
+            <span class="text-white font-black text-[13px] uppercase tracking-wider">Input Nilai Akhir</span>
         </nav>
     @endsection
 
     <div class="pt-4 px-4 md:pt-6 md:px-8 pb-8 w-full flex flex-col gap-6" 
-         x-data="nilaiApp(@js($students), @js($bobot), @js($class_info))">
+         x-data="nilaiApp()">
 
         <!-- Header -->
         <div class="flex flex-col gap-4">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl md:text-3xl font-black text-[#111218] dark:text-white tracking-tight">Input Nilai Mahasiswa</h2>
+                    <h2 class="text-2xl md:text-3xl font-black text-[#111218] dark:text-white tracking-tight">Nilai Akhir Mahasiswa</h2>
                     <p class="text-sm md:text-base text-[#616889] dark:text-slate-400 mt-1">
                         <span x-text="classInfo.name"></span> (<span x-text="classInfo.code"></span>) - Kelas <span x-text="classInfo.section"></span>
                     </p>
@@ -252,13 +252,36 @@
                     <span class="material-symbols-outlined text-2xl text-primary">edit_note</span>
                     <h3 class="text-lg font-bold text-[#111218] dark:text-white">Input Nilai Mahasiswa</h3>
                 </div>
-                <button @click="saveAllNilai"
-                        :disabled="isSaving"
-                        class="flex items-center justify-center w-full md:w-auto gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
-                    <span class="material-symbols-outlined text-[20px]" x-show="!isSaving">save</span>
-                    <span x-show="!isSaving">Simpan Semua Nilai</span>
-                    <span x-show="isSaving">Menyimpan...</span>
-                </button>
+                <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                    <button @click="tarikSemuaNilai"
+                            :disabled="isSaving || !hasPublishedGrades"
+                            x-show="hasPublishedGrades"
+                            x-transition
+                            class="flex items-center justify-center w-full md:w-auto gap-2 px-5 py-2.5 bg-red-50 text-red-600 border border-red-200 rounded-xl font-bold text-sm hover:bg-red-100 transition-all">
+                        <span class="material-symbols-outlined text-[20px]" x-show="!isSaving">undo</span>
+                        <span x-show="!isSaving">Tarik Semua Nilai</span>
+                        <span x-show="isSaving">Memproses...</span>
+                    </button>
+                    
+                    <!-- Auto-save spinner indicator (outside button) -->
+                    <div x-show="isAutoSaving" 
+                         x-transition
+                         class="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary/10 text-primary border border-primary/20 rounded-xl font-semibold text-sm">
+                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Menyimpan otomatis...</span>
+                    </div>
+
+                    <button @click="saveAllNilai"
+                            :disabled="isSaving"
+                            class="flex items-center justify-center w-full md:w-auto gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
+                        <span class="material-symbols-outlined text-[20px]" x-show="!isSaving">save</span>
+                        <span x-show="!isSaving">Simpan Semua Nilai</span>
+                        <span x-show="isSaving">Menyimpan...</span>
+                    </button>
+                </div>
             </div>
 
             <div class="overflow-x-auto">
@@ -373,15 +396,18 @@
 
     @push('scripts')
     <script>
-        function nilaiApp(studentsData, bobotData, classInfoData) {
+        function nilaiApp() {
             return {
-                students: studentsData,
-                bobot: bobotData,
-                classInfo: classInfoData,
-                bobotLocked: bobotData.is_locked,
+                students: @json($students),
+                bobot: @json($bobot),
+                classInfo: @json($class_info),
+                bobotLocked: {{ $bobot->is_locked ? 'true' : 'false' }},
+                hasPublishedGrades: {{ $has_published_grades ? 'true' : 'false' }},
                 editMode: false,
                 totalBobot: 0,
                 isSaving: false,
+                isAutoSaving: false,
+                saveTimeout: null,
 
                 init() {
                     this.updateTotal();
@@ -509,6 +535,67 @@
 
                     // Calculate final grade immediately
                     this.calculateFinal(student);
+                    
+                    // Trigger auto-save debounce
+                    this.autoSave();
+                },
+
+                autoSave() {
+                    if (this.saveTimeout) {
+                        clearTimeout(this.saveTimeout);
+                    }
+                    this.isAutoSaving = true;
+                    this.saveTimeout = setTimeout(() => {
+                        this.executeAutoSave();
+                    }, 1000); // 1-second debounce
+                },
+
+                async executeAutoSave() {
+                    const nilaiData = this.students.map(student => ({
+                        krs_id: student.krs_id,
+                        nilai_partisipatif: parseFloat(student.nilai_partisipatif) || 0,
+                        nilai_proyek: parseFloat(student.nilai_proyek) || 0,
+                        nilai_quiz: parseFloat(student.nilai_quiz) || 0,
+                        nilai_tugas: parseFloat(student.nilai_tugas) || 0,
+                        nilai_uts: parseFloat(student.nilai_uts) || 0,
+                        nilai_uas: parseFloat(student.nilai_uas) || 0,
+                    }));
+
+                    try {
+                        await axios.post(
+                            `{{ route('dosen.kelas.simpan-nilai', $class_info['id']) }}`,
+                            { nilai: nilaiData, is_auto_save: true }
+                        );
+                        // Silently succeed
+                    } catch (error) {
+                        console.error('Error auto-saving:', error);
+                    } finally {
+                        this.isAutoSaving = false;
+                    }
+                },
+
+                async tarikSemuaNilai() {
+                    if (!confirm('Apakah Anda yakin ingin menarik/membatalkan publikasi nilai untuk kelas ini? Nilai akan disembunyikan dari mahasiswa.')) {
+                        return;
+                    }
+
+                    this.isSaving = true;
+
+                    try {
+                        const response = await axios.post(
+                            `{{ route('dosen.kelas.tarik-nilai', $class_info['id']) }}`
+                        );
+
+                        if (response.data.success) {
+                            showSuccess(response.data.message);
+                            this.hasPublishedGrades = false;
+                        }
+                    } catch (error) {
+                        console.error('Error unpublishing nilai:', error);
+                        showError(error.response?.data?.message || 'Gagal menarik nilai.');
+                    } finally {
+                        this.isSaving = false;
+                    }
                 },
 
                 async saveAllNilai() {
@@ -532,6 +619,7 @@
 
                         if (response.data.success) {
                             showSuccess(response.data.message);
+                            this.hasPublishedGrades = true;
                         }
                     } catch (error) {
                         console.error('Error saving nilai:', error);

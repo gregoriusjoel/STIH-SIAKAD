@@ -84,9 +84,10 @@
 
     {{-- Action Buttons --}}
     <div class="flex gap-3 pt-2">
-        <button class="flex-1 py-2.5 rounded-lg bg-[#8B1538] text-white text-sm font-medium hover:bg-[#701230] transition-colors">
-            Input Nilai
-        </button>
+        <a href="{{ route('dosen.kelas.input-nilai', $kelas->id) }}" class="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary-hover transition-colors shadow-sm whitespace-nowrap">
+            <span class="material-symbols-outlined text-[20px]">edit_note</span>
+            Input Nilai Akhir
+        </a>
         <button class="flex-1 py-2.5 rounded-lg border border-gray-200 text-[#616889] text-sm font-medium hover:bg-gray-50 transition-colors">
             Lihat Absensi
         </button>

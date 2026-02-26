@@ -34,8 +34,8 @@
             <!-- Header -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 class="text-2xl font-black text-[#111218] dark:text-white">Jadwal Mengajar</h1>
-                    <p class="text-[#616889] dark:text-slate-400 text-sm">Jadwal perkuliahan Semester Ganjil 2023/2024.</p>
+                    <h1 class="text-3xl font-black text-[#111218] dark:text-white tracking-tight">Jadwal Mengajar</h1>
+                    <p class="text-[#616889] dark:text-slate-400 mt-1 text-sm">Jadwal perkuliahan Semester Ganjil 2023/2024.</p>
                 </div>
 
                 <div class="flex items-center gap-3">
@@ -271,7 +271,7 @@
                     <div class="mb-5">
                         <h3 class="text-lg font-black text-[#111218] dark:text-white">
                             Reschedule Jadwal
-                        </h3>
+                        </h3>                               
                         <p class="text-sm text-[#616889] dark:text-slate-400 mt-1">
                             Ajukan perubahan hari atau jam mengajar
                         </p>
@@ -405,30 +405,32 @@
                         <div x-show="rescheduleData.metode_pengajaran === 'asynchronous'" x-cloak class="mt-2">
                             <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">Lampirkan PDF
                                 (opsional)</label>
-                            <div class="flex items-center gap-2">
-                                <input type="file" name="asynchronous_file" accept="application/pdf" x-ref="asyncFile"
-                                    @change="(e) => { 
-                                        const f = e.target.files[0]; 
-                                        if (f && !f.name.toLowerCase().endsWith('.pdf')) {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Format File Tidak Didukung',
-                                                text: 'Hanya file dengan format PDF yang diperbolehkan.',
-                                                confirmButtonColor: '#8B1538'
-                                            });
-                                            e.target.value = '';
-                                            rescheduleData.asynchronous_file_name = '';
-                                            return;
-                                        }
-                                        rescheduleData.asynchronous_file_name = f ? f.name : ''; 
-                                    }"
-                                    class="block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-full file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-red-50 file:text-[#8B1538]
-                                    hover:file:bg-red-100
-                                    cursor-pointer">
+                            <div class="relative mt-2">
+                                <div class="flex items-center w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden hover:border-[#8B1538] transition-colors group">
+                                    <div class="px-4 py-2.5 bg-red-50 dark:bg-red-900/40 text-[#8B1538] dark:text-red-400 text-xs font-bold border-r border-gray-200 dark:border-slate-700 shrink-0 group-hover:bg-red-100 transition-colors">
+                                        Pilih File PDF
+                                    </div>
+                                    <div class="px-4 py-2.5 text-xs text-[#616889] dark:text-gray-400 truncate flex-1 font-medium"
+                                         x-text="rescheduleData.asynchronous_file_name || 'Belum ada file dipilih...'">
+                                    </div>
+                                    <input type="file" name="asynchronous_file" accept="application/pdf" x-ref="asyncFile"
+                                        @change="(e) => { 
+                                            const f = e.target.files[0]; 
+                                            if (f && !f.name.toLowerCase().endsWith('.pdf')) {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Format File Tidak Didukung',
+                                                    text: 'Hanya file dengan format PDF yang diperbolehkan.',
+                                                    confirmButtonColor: '#8B1538'
+                                                });
+                                                e.target.value = '';
+                                                rescheduleData.asynchronous_file_name = '';
+                                                return;
+                                            }
+                                            rescheduleData.asynchronous_file_name = f ? f.name : ''; 
+                                        }"
+                                        class="absolute inset-0 opacity-0 cursor-pointer">
+                                </div>
                             </div>
                         </div>
 

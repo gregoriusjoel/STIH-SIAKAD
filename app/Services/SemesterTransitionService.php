@@ -14,6 +14,10 @@ class SemesterTransitionService
     /**
      * Process semester transition automatically
      * 
+     * NOTE: This now respects grace period - old semester is NOT deactivated immediately
+     * It stays active for 14 days grace period before being deactivated
+     * Use SemesterService::processAutomaticStatusUpdates() for daily status checks
+     * 
      * @return array
      */
     public function processTransition(): array
@@ -57,8 +61,9 @@ class SemesterTransitionService
                 ];
             }
 
-            // 4. Deactivate old semester
-            $this->deactivateSemester($activeSemester);
+            // 4. DO NOT deactivate old semester immediately - respect grace period
+            // Old semester will be deactivated automatically after grace period by UpdateSemesterStatus command
+            Log::info("Old semester {$activeSemester->nama_semester} will remain visible for 14 days grace period");
 
             // 5. Activate new semester
             $this->activateSemester($nextSemester);
@@ -73,12 +78,14 @@ class SemesterTransitionService
 
             return [
                 'success' => true,
-                'message' => 'Transisi semester berhasil dilakukan',
+                'message' => 'Transisi semester berhasil dilakukan. Semester lama masih aktif untuk grace period 14 hari.',
                 'data' => [
                     'old_semester' => "{$activeSemester->nama_semester} {$activeSemester->tahun_ajaran}",
                     'new_semester' => "{$nextSemester->nama_semester} {$nextSemester->tahun_ajaran}",
                     'mahasiswa_updated' => $updatedCount,
-                    'transition_date' => Carbon::now()->format('Y-m-d H:i:s')
+                    'transition_date' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'grace_period_info' => "Kelas semester lama tetap tampil hingga " . 
+                        Carbon::parse($activeSemester->tanggal_selesai)->addDays(14)->format('Y-m-d')
                 ]
             ];
 

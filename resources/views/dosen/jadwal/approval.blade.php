@@ -12,12 +12,13 @@
     jamSelesaiPengganti: '',
     alasanPenolakan: '',
     availableSlots: [],
+    proposalSks: 1,
     
-    openRejectModal(id) {
+    openRejectModal(id, sks) {
         this.rejectProposalId = id;
+        this.proposalSks = sks || 1;
         this.showRejectModal = true;
     },
-    
     closeRejectModal() {
         this.showRejectModal = false;
         this.rejectProposalId = null;
@@ -30,9 +31,10 @@
     fetchSlots() {
         if (!this.hariPengganti) {
             this.availableSlots = [];
+            this.availableSlots = [];
             return;
         }
-        fetch('{{ route("dosen.jadwal_approval.available_slots", ":hari") }}'.replace(':hari', this.hariPengganti))
+        fetch('{{ route("dosen.jadwal_approval.available_slots", ":hari") }}'.replace(':hari', this.hariPengganti) + '?sks=' + this.proposalSks)
             .then(res => res.json())
             .then(data => {
                 this.availableSlots = data;
@@ -182,87 +184,100 @@
     }
 }">
     <!-- Header Section -->
-    <div class="flex flex-col gap-1 mb-2">
-        <h1 class="text-2xl font-bold text-[#111218] dark:text-white">
+    <div class="flex flex-col gap-1 mb-6 mt-2">
+        <h1 class="text-3xl font-black text-[#111218] dark:text-white tracking-tight flex items-center gap-3">
+            <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[24px]">fact_check</span>
+            </div>
             Persetujuan Jadwal Kuliah
         </h1>
-        <div class="flex items-center gap-2 text-xs font-medium text-gray-500">
-            <a href="{{ route('dosen.dashboard') }}" class="hover:text-primary transition-colors">Dashboard</a>
-            <span class="material-symbols-outlined text-sm">chevron_right</span>
-            <span class="text-gray-900 dark:text-white">Persetujuan Jadwal</span>
-        </div>
-        </div>
+    </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Row 1 -->
-        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-lg border border-gray-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
-            <div class="flex flex-col h-full justify-between">
-                <div class="mb-4">
-                     <!-- No icon for this one based on screenshot preference or clean look, but can add if needed -->
+    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+        <!-- Menunggu Review -->
+        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] hover:shadow-md transition-all flex flex-col justify-between h-full min-h-[110px] relative overflow-hidden group">
+            <div class="absolute right-0 top-0 w-32 h-32 bg-amber-50/60 dark:bg-amber-900/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-amber-100/60 transition-colors"></div>
+            <div class="flex items-start justify-between relative z-10 mb-4">
+                <div class="w-10 h-10 bg-amber-50 dark:bg-amber-900/20 text-amber-500 rounded-xl flex items-center justify-center border border-amber-100 dark:border-amber-800/30">
+                    <span class="material-symbols-outlined text-[20px]">assignment_turned_in</span>
                 </div>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">MENUNGGU REVIEW</p>
+                <span class="text-3xl font-black text-[#111218] dark:text-white leading-none">{{ $pendingProposals->count() }}</span>
             </div>
-            <span class="text-2xl font-bold text-[#111218] dark:text-white self-start mt-1 mr-2">{{ $pendingProposals->count() }}</span>
+            <p class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider relative z-10 truncate">MENUNGGU REVIEW</p>
         </div>
 
-        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-lg border border-gray-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
-            <div class="flex flex-col h-full justify-between">
-                <div class="mb-4 text-blue-500">
-                     <span class="material-symbols-outlined text-xl">thumb_up</span>
+        <!-- Disetujui Dosen -->
+        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] hover:shadow-md transition-all flex flex-col justify-between h-full min-h-[110px] relative overflow-hidden group">
+            <div class="absolute right-0 top-0 w-32 h-32 bg-blue-50/60 dark:bg-blue-900/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-blue-100/60 transition-colors"></div>
+            <div class="flex items-start justify-between relative z-10 mb-4">
+                <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-xl flex items-center justify-center border border-blue-100 dark:border-blue-800/30">
+                    <span class="material-symbols-outlined text-[20px]">thumb_up</span>
                 </div>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">DISETUJUI DOSEN</p>
+                <span class="text-3xl font-black text-[#111218] dark:text-white leading-none">{{ $approvedProposals->count() }}</span>
             </div>
-            <span class="text-2xl font-bold text-[#111218] dark:text-white self-start mt-1 mr-2">{{ $approvedProposals->count() }}</span>
+            <p class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider relative z-10 truncate">DISETUJUI DOSEN</p>
         </div>
 
-        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-lg border border-gray-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
-            <div class="flex flex-col h-full justify-between">
-                <div class="mb-4 text-gray-400">
-                     <span class="material-symbols-outlined text-xl">close</span>
+        <!-- Ditolak Dosen -->
+        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] hover:shadow-md transition-all flex flex-col justify-between h-full min-h-[110px] relative overflow-hidden group">
+            <div class="absolute right-0 top-0 w-32 h-32 bg-red-50/60 dark:bg-red-900/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-red-100/60 transition-colors"></div>
+            <div class="flex items-start justify-between relative z-10 mb-4">
+                <div class="w-10 h-10 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-xl flex items-center justify-center border border-red-100 dark:border-red-800/30">
+                    <span class="material-symbols-outlined text-[20px]">thumb_down</span>
                 </div>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">DITOLAK DOSEN</p>
+                <span class="text-3xl font-black text-[#111218] dark:text-white leading-none">{{ $rejectedProposals->count() }}</span>
             </div>
-            <span class="text-2xl font-bold text-[#111218] dark:text-white self-start mt-1 mr-2">{{ $rejectedProposals->count() }}</span>
+            <p class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider relative z-10 truncate">DITOLAK DOSEN</p>
         </div>
 
-        <!-- Row 2 -->
-        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-lg border border-gray-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
-            <div class="flex flex-col h-full justify-between">
-                <div class="mb-4 text-red-100"> <!-- Using slightly different look to match screenshot vibe if needed, but sticking to clean -->
-                     <span class="material-symbols-outlined text-xl text-red-300">pending_actions</span>
+        <!-- Review Admin -->
+        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] hover:shadow-md transition-all flex flex-col justify-between h-full min-h-[110px] relative overflow-hidden group">
+            <div class="absolute right-0 top-0 w-32 h-32 bg-purple-50/60 dark:bg-purple-900/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-purple-100/60 transition-colors"></div>
+            <div class="flex items-start justify-between relative z-10 mb-4">
+                <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-xl flex items-center justify-center border border-purple-100 dark:border-purple-800/30">
+                    <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
                 </div>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">REVIEW ADMIN</p>
+                <span class="text-3xl font-black text-[#111218] dark:text-white leading-none">{{ $inAdminReview->count() }}</span>
             </div>
-            <span class="text-2xl font-bold text-[#111218] dark:text-white self-start mt-1 mr-2">{{ $inAdminReview->count() }}</span>
+            <p class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider relative z-10 truncate">REVIEW ADMIN</p>
         </div>
 
-        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-lg border border-gray-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
-            <div class="flex flex-col h-full justify-between">
-                <div class="mb-4 text-green-500">
-                     <span class="material-symbols-outlined text-xl">check_circle</span>
+        <!-- Jadwal Aktif -->
+        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] hover:shadow-md transition-all flex flex-col justify-between h-full min-h-[110px] relative overflow-hidden group">
+            <div class="absolute right-0 top-0 w-32 h-32 bg-emerald-50/60 dark:bg-emerald-900/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-emerald-100/60 transition-colors"></div>
+            <div class="flex items-start justify-between relative z-10 mb-4">
+                <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 rounded-xl flex items-center justify-center border border-emerald-100 dark:border-emerald-800/30">
+                    <span class="material-symbols-outlined text-[20px]">check_circle</span>
                 </div>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">JADWAL AKTIF</p>
+                <span class="text-3xl font-black text-[#111218] dark:text-white leading-none">{{ $finalApproved->count() }}</span>
             </div>
-            <span class="text-2xl font-bold text-[#111218] dark:text-white self-start mt-1 mr-2">{{ $finalApproved->count() }}</span>
+            <p class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider relative z-10 truncate">JADWAL AKTIF</p>
         </div>
 
-        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-lg border border-gray-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
-            <div class="flex flex-col h-full justify-between">
-                <div class="mb-4 text-red-500">
-                     <span class="material-symbols-outlined text-xl">block</span>
+        <!-- Ditolak Admin -->
+        <div class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] hover:shadow-md transition-all flex flex-col justify-between h-full min-h-[110px] relative overflow-hidden group">
+            <div class="absolute right-0 top-0 w-32 h-32 bg-rose-50/60 dark:bg-rose-900/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-rose-100/60 transition-colors"></div>
+            <div class="flex items-start justify-between relative z-10 mb-4">
+                <div class="w-10 h-10 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-xl flex items-center justify-center border border-rose-100 dark:border-rose-800/30">
+                    <span class="material-symbols-outlined text-[20px]">cancel</span>
                 </div>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">DITOLAK ADMIN</p>
+                <span class="text-3xl font-black text-[#111218] dark:text-white leading-none">{{ $finalRejected->count() }}</span>
             </div>
-            <span class="text-2xl font-bold text-[#111218] dark:text-white self-start mt-1 mr-2">{{ $finalRejected->count() }}</span>
+            <p class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider relative z-10 truncate">DITOLAK ADMIN</p>
         </div>
     </div>
 
-    <!-- Pending Proposals Table (Main Focus) -->
-    <div class="bg-white dark:bg-[#1a1d2e] rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full border-t-4 border-t-black dark:border-t-white">
-        <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center bg-white dark:bg-[#1a1d2e]">
+    <!-- Tables Grid Layout 50:50 -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8 items-stretch">
+        <!-- Pending Proposals Table (Main Focus) -->
+        <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-md overflow-hidden flex flex-col w-full relative h-full min-w-0">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-primary to-pink-500"></div>
+        <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center bg-gray-50/50 dark:bg-[#1a1d2e]">
             <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-xl font-bold">assignment</span>
+                <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-gray-100 dark:border-slate-700 text-primary">
+                    <span class="material-symbols-outlined text-[18px]">assignment_add</span>
+                </div>
                 <h3 class="text-sm font-bold uppercase tracking-wider text-[#111218] dark:text-white">PROPOSAL MENUNGGU PERSETUJUAN ANDA ({{ $pendingProposals->count() }})</h3>
             </div>
         </div>
@@ -271,56 +286,56 @@
             <table class="min-w-full divide-y divide-gray-100 dark:divide-slate-800">
                 <thead class="bg-white dark:bg-[#1a1d2e]">
                     <tr>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">MATA KULIAH</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">KELAS</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">JADWAL USULAN</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">RUANGAN</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">DIBUAT OLEH</th>
-                        <th class="px-6 py-4 text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider">AKSI</th>
+                        <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wide">MATA KULIAH</th>
+                        <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wide">KELAS</th>
+                        <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wide">JADWAL USULAN</th>
+                        <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wide">RUANGAN</th>
+                        <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wide">DIBUAT OLEH</th>
+                        <th class="px-4 py-3 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wide">AKSI</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
                     @forelse($pendingProposals as $proposal)
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-6">
-                            <div class="text-sm font-bold text-[#111218] dark:text-white">{{ $proposal->mataKuliah->nama_mk }}</div>
-                            <div class="text-[10px] text-gray-400 uppercase tracking-wide mt-1">{{ $proposal->mataKuliah->kode_mk }} • {{ $proposal->mataKuliah->sks }} SKS</div>
+                        <td class="px-4 py-4">
+                            <div class="text-xs font-bold text-[#111218] dark:text-white leading-tight min-w-[120px]">{{ $proposal->mataKuliah->nama_mk }}</div>
+                            <div class="text-[9px] text-gray-400 uppercase tracking-wide mt-1">{{ $proposal->mataKuliah->kode_mk }} • {{ $proposal->mataKuliah->sks }} SKS</div>
                         </td>
-                        <td class="px-6 py-6 text-sm font-medium text-gray-600 dark:text-slate-300">
+                        <td class="px-4 py-4 text-xs font-medium text-gray-600 dark:text-slate-300">
                             {{ $proposal->kelas->section }}
                         </td>
-                        <td class="px-6 py-6" style="vertical-align: middle;">
-                            <div class="text-sm font-bold text-[#8B1538]">{{ $proposal->hari }}</div>
-                            <div class="text-xs text-gray-500 mt-0.5">
+                        <td class="px-4 py-4" style="vertical-align: middle;">
+                            <div class="text-xs font-bold text-[#8B1538]">{{ $proposal->hari }}</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5 whitespace-nowrap">
                                 {{ \Carbon\Carbon::parse($proposal->jam_mulai)->format('H:i') }} - 
                                 {{ \Carbon\Carbon::parse($proposal->jam_selesai)->format('H:i') }}
                             </div>
                         </td>
-                        <td class="px-6 py-6">
-                            <span class="bg-gray-100/80 text-gray-700 dark:bg-slate-800 dark:text-gray-300 px-3 py-1.5 rounded-md text-xs font-bold border border-gray-200 dark:border-slate-700">
+                        <td class="px-4 py-4">
+                            <span class="bg-gray-100/80 text-gray-700 dark:bg-slate-800 dark:text-gray-300 px-2 py-1 rounded-md text-[10px] font-bold border border-gray-200 dark:border-slate-700 whitespace-nowrap">
                                 {{ $proposal->ruangan ?: 'TBA' }}
                             </span>
                         </td>
-                        <td class="px-6 py-6 text-xs text-gray-500 font-medium">
+                        <td class="px-4 py-4 text-[10px] text-gray-500 font-medium leading-tight">
                             {{ $proposal->generatedBy->name ?? 'System' }} 
-                            <span class="text-gray-400 block text-[10px]">Staf Akademik</span>
+                            <span class="text-gray-400 block text-[9px] mt-0.5">Staf Akademik</span>
                         </td>
-                        <td class="px-6 py-6">
+                        <td class="px-4 py-4">
                             <div class="flex items-center justify-center gap-2">
                                 <button @click="approveProposal('{{ $proposal->id }}')" 
-                                        class="flex items-center gap-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-bold transition-all shadow-sm">
-                                    <span class="material-symbols-outlined text-sm">check</span> Setujui
+                                        class="group flex items-center justify-center gap-1 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 dark:text-emerald-400 hover:text-white rounded-lg text-[10px] font-bold transition-all duration-300 shadow-sm border border-emerald-200 dark:border-emerald-500/20 hover:border-emerald-500 hover:shadow-emerald-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">check_circle</span> Setujui
                                 </button>
-                                <button @click="openRejectModal('{{ $proposal->id }}')" 
-                                        class="flex items-center gap-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-bold transition-all shadow-sm">
-                                    <span class="material-symbols-outlined text-sm">close</span> Tolak
+                                <button @click="openRejectModal('{{ $proposal->id }}', {{ $proposal->mataKuliah->sks ?? 1 }})" 
+                                        class="group flex items-center justify-center gap-1 px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-500 text-rose-600 dark:text-rose-400 hover:text-white rounded-lg text-[10px] font-bold transition-all duration-300 shadow-sm border border-rose-200 dark:border-rose-500/20 hover:border-rose-500 hover:shadow-rose-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">cancel</span> Tolak
                                 </button>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">
+                        <td colspan="6" class="px-4 py-10 text-center text-gray-400 text-xs">
                             Tidak ada proposal yang menunggu persetujuan Anda saat ini.
                         </td>
                     </tr>
@@ -331,75 +346,104 @@
     </div>
 
     <!-- History Section -->
-    <div class="flex flex-col gap-0 bg-white dark:bg-[#1a1d2e] rounded-xl border border-gray-200 dark:border-slate-800 overflow-hidden">
+        <div class="flex flex-col gap-0 bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-md overflow-hidden relative h-full min-w-0">
         <!-- Banner Header -->
-        <div class="bg-red-600 px-6 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-2 text-white">
-                <span class="material-symbols-outlined text-xl">history</span>
-                <span class="text-xs font-bold uppercase tracking-widest">HISTORY PENOLAKAN ({{ $rejectedProposals->count() + $finalRejected->count() }})</span>
+        <div class="bg-[#8B1538] px-6 py-4 flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-4">
+            <div class="flex items-center justify-between w-full 2xl:w-auto">
+                <div class="flex items-center gap-2 text-white">
+                    <span class="material-symbols-outlined text-xl">history</span>
+                    <span class="text-xs font-bold uppercase tracking-widest leading-tight">HISTORY PENGAJUAN PENJADWALAN ({{ $historyApprovals->total() }})</span>
+                </div>
             </div>
-            <button @click="activeTab = activeTab === 'rejected' ? '' : 'rejected'" class="text-white hover:bg-white/10 rounded-full p-1 transition-colors">
-                 <span class="material-symbols-outlined" :class="activeTab === 'rejected' ? 'rotate-180' : ''">keyboard_arrow_down</span>
-            </button>
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full 2xl:w-auto">
+                <form action="" method="GET" class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                        <select name="status" onchange="this.form.submit()" class="bg-white border border-gray-200 text-gray-800 text-sm rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all cursor-pointer w-full sm:w-auto min-w-[150px] shadow-sm">
+                            <option value="">Semua Status</option>
+                            <option value="approve" {{ request('status') === 'approve' ? 'selected' : '' }}>Disetujui</option>
+                            <option value="reject" {{ request('status') === 'reject' ? 'selected' : '' }}>Ditolak</option>
+                        </select>
+                        <div class="relative w-full sm:w-[240px]">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari mata kuliah..." class="bg-white border border-gray-200 text-gray-800 placeholder-gray-400 text-sm rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-red-200 w-full transition-all shadow-sm">
+                            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">search</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
         
         <!-- Table -->
-        <div x-show="true" class="overflow-x-auto">
+        <div class="w-full overflow-x-auto overflow-y-hidden">
              <table class="min-w-full divide-y divide-gray-100 dark:divide-slate-800">
                 <thead class="bg-gray-50/50 dark:bg-slate-800/30">
                     <tr>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">MATA KULIAH</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">KELAS</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">JADWAL</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">RUANGAN</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">STATUS</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">ALASAN/USULAN</th>
-                        <th class="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">TANGGAL</th>
+                        <th class="px-4 py-3 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wide">MATA KULIAH</th>
+                        <th class="px-4 py-3 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wide">KELAS</th>
+                        <th class="px-4 py-3 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wide">JADWAL</th>
+                        <th class="px-4 py-3 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wide">RUANGAN</th>
+                        <th class="px-4 py-3 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wide">STATUS</th>
+                        <th class="px-4 py-3 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wide">ALASAN/USULAN</th>
+                        <th class="px-4 py-3 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wide">TANGGAL</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-slate-800 bg-white dark:bg-[#1a1d2e]">
-                    @php
-                        $allRejected = $rejectedProposals->merge($finalRejected);
-                    @endphp
-                    @forelse($allRejected as $proposal)
+                    @forelse($historyApprovals as $approval)
+                    @php $proposal = $approval->jadwalProposal; @endphp
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-bold text-[#111218] dark:text-white">{{ $proposal->mataKuliah->nama_mk }}</div>
+                        <td class="px-4 py-3 text-center">
+                            <div class="text-xs font-bold text-[#111218] dark:text-white leading-tight mx-auto min-w-[120px]">{{ $proposal->mataKuliah->nama_mk }}</div>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">{{ $proposal->kelas->section }}</td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-medium">{{ $proposal->hari }}, {{ \Carbon\Carbon::parse($proposal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($proposal->jam_selesai)->format('H:i') }}</div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">{{ $proposal->ruangan ?: '-' }}</td>
-                        <td class="px-6 py-4">
-                            @if($proposal->status == 'rejected_dosen')
-                                <span class="px-2 py-1 bg-red-100 text-red-600 rounded text-[10px] font-bold uppercase">Ditolak Dosen</span>
-                            @else
-                                <span class="px-2 py-1 bg-red-100 text-red-600 rounded text-[10px] font-bold uppercase">Ditolak Admin</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4">
-                            @php
-                                $lastApproval = $proposal->getLatestApproval();
-                            @endphp
-                            <div class="text-xs text-gray-600 max-w-[200px] truncate" title="{{ $lastApproval->alasan_penolakan ?? '-' }}">
-                                {{ $lastApproval->alasan_penolakan ?? '-' }}
+                        <td class="px-4 py-3 text-center text-xs font-medium text-gray-600">{{ $proposal->kelas->section }}</td>
+                        <td class="px-4 py-3 text-center">
+                            <div class="text-xs font-bold text-[#8B1538] leading-none mb-1">{{ $proposal->hari }}</div>
+                            <div class="text-[10px] text-gray-500 font-medium whitespace-nowrap">
+                                {{ \Carbon\Carbon::parse($proposal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($proposal->jam_selesai)->format('H:i') }}
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-xs text-gray-500">
-                            {{ $proposal->updated_at->format('d/m/Y') }}
+                        <td class="px-4 py-3 text-center text-xs font-medium text-gray-600 whitespace-nowrap">{{ $proposal->ruangan ?: '-' }}</td>
+                        <td class="px-4 py-3 text-center">
+                            @if($approval->action == 'reject')
+                                <span class="px-2 py-1 bg-red-100 text-red-600 rounded text-[9px] font-bold uppercase whitespace-nowrap">Ditolak Dosen</span>
+                            @else
+                                @if($proposal->status == 'approved_admin')
+                                    <span class="px-2 py-1 bg-green-100 text-green-600 rounded text-[9px] font-bold uppercase whitespace-nowrap">Jadwal Aktif</span>
+                                @elseif($proposal->status == 'rejected_admin')
+                                    <span class="px-2 py-1 bg-red-100 text-red-600 rounded text-[9px] font-bold uppercase whitespace-nowrap">Ditolak Admin</span>
+                                @elseif($proposal->status == 'pending_admin')
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-600 rounded text-[9px] font-bold uppercase whitespace-nowrap">Review Admin</span>
+                                @else
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-[9px] font-bold uppercase whitespace-nowrap">Disetujui Dosen</span>
+                                @endif
+                            @endif
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <div class="text-[10px] text-gray-600 max-w-[140px] mx-auto truncate" title="{{ $approval->alasan_penolakan ?? '-' }}">
+                                {{ $approval->alasan_penolakan ?? '-' }}
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-center text-[10px] text-gray-500 whitespace-nowrap">
+                            {{ $approval->created_at->format('d/m/Y') }}
                         </td>
                     </tr>
                     @empty
                     <tr>
-                         <td colspan="7" class="px-6 py-8 text-center text-gray-400 text-sm">
+                         <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-xs">
                             Tidak ada data ditemukan.
                         </td>
                     </tr>
                     @endforelse
                 </tbody>
              </table>
+             
+             @if($historyApprovals->hasPages())
+                 <div class="px-6 py-4 border-t border-gray-100 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-800/30">
+                     {{ $historyApprovals->links() }}
+                 </div>
+             @endif
         </div>
+    </div>
     </div>
 
     <!-- Modals (Reused from logic) -->
@@ -449,14 +493,20 @@
                             <option value="Sabtu">Sabtu</option>
                         </select>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
-                         <select x-model="jamMulaiPengganti" @change="updateSelesai" :disabled="!hariPengganti" required class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 disabled:bg-gray-100">
-                            <option value="">Jam Mulai</option>
-                            <template x-for="slot in availableSlots" :key="slot.jam_mulai">
-                                <option :value="slot.jam_mulai" x-text="slot.label"></option>
-                            </template>
-                        </select>
-                        <input x-model="jamSelesaiPengganti" type="text" readonly placeholder="Jam Selesai" required class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-500 cursor-not-allowed">
+                    <div class="grid grid-cols-1 gap-3">
+                         <div>
+                             <label class="flex items-center gap-2 text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                 <span class="material-symbols-outlined text-gray-400 text-sm">schedule</span>
+                                 Jam Perkuliahan <span class="text-red-500">*</span>
+                             </label>
+                             <select x-model="jamMulaiPengganti" @change="updateSelesai" :disabled="!hariPengganti" required class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all disabled:bg-gray-100 font-medium">
+                                <option value="">Pilih Jam Perkuliahan</option>
+                                <template x-for="slot in availableSlots" :key="slot.jam_mulai">
+                                    <option :value="slot.jam_mulai" x-text="slot.label"></option>
+                                </template>
+                            </select>
+                            <input x-model="jamSelesaiPengganti" type="hidden" required>
+                         </div>
                     </div>
                 </div>
 

@@ -17,7 +17,48 @@ class KelasMataKuliahController extends Controller
 {
     public function index()
     {
-        $kelasMatKul = KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])->paginate(10);
+        // Get active schedules from Jadwal -> Kelas
+        $activeJadwals = \App\Models\Jadwal::where('status', 'active')
+            ->whereNotNull('kelas_id')
+            ->with('kelas')
+            ->get();
+            
+        $activeKelas = $activeJadwals->pluck('kelas')->filter();
+
+        // Get unique combinations of mata_kuliah_id and section
+        $activeCombinations = $activeKelas->map(function ($k) {
+            return $k->mata_kuliah_id . '-' . $k->section;
+        })->unique()->toArray();
+
+        // Show classes from active semester and semesters within grace period
+        $kelasMatKul = KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])
+            ->activeClasses() // Filter by active semester + grace period
+            ->get()
+            ->filter(function ($kmk) use ($activeCombinations) {
+                return in_array($kmk->mata_kuliah_id . '-' . $kmk->kode_kelas, $activeCombinations);
+            })
+            ->map(function ($kmk) use ($activeJadwals) {
+                // Find matching Jadwal for this MK and Class code mapping back via Kelas
+                $matchingJadwal = $activeJadwals->first(function ($jadwal) use ($kmk) {
+                    return $jadwal->kelas && 
+                           $jadwal->kelas->mata_kuliah_id == $kmk->mata_kuliah_id && 
+                           $jadwal->kelas->section == $kmk->kode_kelas;
+                });
+                
+                $kmk->jadwal = $matchingJadwal;
+                return $kmk;
+            });
+            
+        // Manually paginate the collection
+        $page = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
+        $perPage = 10;
+        $kelasMatKul = new \Illuminate\Pagination\LengthAwarePaginator(
+            $kelasMatKul->forPage($page, $perPage),
+            $kelasMatKul->count(),
+            $perPage,
+            $page,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+        );
         return view('admin.kelas-mata-kuliah.index', compact('kelasMatKul'));
     }
 

@@ -185,13 +185,23 @@ class KelasController extends Controller
                 ->latest()
                 ->get();
 
-            $assignments = $tugas->map(function ($t) use ($meetingDate) {
+            $assignments = $tugas->map(function ($t) use ($meetingDate, $mahasiswa) {
+                // Check if mahasiswa already submitted
+                $submission = \App\Models\TugasSubmission::where('tugas_id', $t->id)
+                    ->where('mahasiswa_id', $mahasiswa->id)
+                    ->first();
+                
                 return [
                     'id' => $t->id,
-                    'title' => $t->judul,
-                    'description' => $t->deskripsi,
-                    'deadline' => $t->deadline ? \Carbon\Carbon::parse($t->deadline)->format('d M Y') : $meetingDate->copy()->addDays(7)->format('d M Y'),
+                    'title' => $t->title,
+                    'description' => $t->description, // Don't strip HTML tags, let the view render them properly
+                    'deadline' => $t->due_date ? \Carbon\Carbon::parse($t->due_date)->format('d M Y') : $meetingDate->copy()->addDays(7)->format('d M Y'),
                     'file_url' => $t->file_path ? route('mahasiswa.tugas.download', $t->id) : null,
+                    'submission_type' => $t->submission_type ?? 'any',
+                    'submitted' => $submission ? true : false,
+                    'submitted_at' => $submission ? $submission->created_at->format('d M Y H:i') : null,
+                    'score' => $submission ? $submission->score : null,
+                    'comments' => $submission ? $submission->comments : null,
                 ];
             })->toArray();
 
@@ -225,9 +235,8 @@ class KelasController extends Controller
                     'reason_detail' => $attendance->reason_detail,
                     'waktu' => $attendance->created_at ? $attendance->created_at->format('d M Y H:i') : null,
                 ];
-            } elseif ($meetingDate->isPast()) {
-                $attendanceStatus = 'belum_absen';
             }
+            // Don't set status for past meetings - let view handle "Belum Absen" display
 
             $meetings[] = [
                 'no' => $i,

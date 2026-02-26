@@ -119,77 +119,95 @@
         </div>
 
         <!-- Class Grid -->
-        <div id="classGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($classes as $class)
+        <div id="classGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 {{ count($classes) === 0 ? '!grid-cols-1 md:!grid-cols-1 lg:!grid-cols-1' : '' }}">
+            @forelse($classes as $class)
                 @php
                     $searchableText = strtolower($class['name'] . ' ' . $class['code'] . ' ' . $class['section'] . ' ' . $class['day'] . ' ' . ($class['time'] ?? ''));
                 @endphp
-                <div class="kelas-card bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-200 dark:border-slate-800 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-300 group"
+                <div class="kelas-card bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-100 dark:border-slate-800 p-6 xl:p-8 flex flex-col h-full shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-[#8B1538]/20 transition-all duration-300 group relative"
                     data-search="{{ $searchableText }}"
                     data-day="{{ $class['day'] }}"
                     data-section="{{ $class['section'] }}">
-                    <div class="flex justify-between items-start">
-                        <span
-                            class="px-3 py-1 rounded-full text-[10px] font-bold bg-pink-50 text-[#8B1538] border border-pink-100 uppercase tracking-wider">{{ $class['section'] }}</span>
-                        <button class="text-gray-300 hover:text-gray-500 transition-colors">
-                            <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                        </button>
+                    
+                    <!-- Section Badge -->
+                    <div class="w-7 h-7 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-[#8B1538] dark:text-rose-400 font-bold text-[10px] mb-5 shadow-sm border border-rose-100 dark:border-rose-500/20">
+                        {{ $class['section'] }}
                     </div>
 
-                    <div>
-                        <h3
-                            class="text-xl font-bold text-[#111218] dark:text-white mb-1 tracking-tight group-hover:text-primary transition-colors">
+                    <!-- Course Info -->
+                    <div class="mb-6 flex-grow">
+                        <h3 class="text-[17px] font-bold text-[#111218] dark:text-white mb-2 leading-tight group-hover:text-[#8B1538] transition-colors">
                             {{ $class['name'] }}
                         </h3>
-                        <p class="text-sm text-[#616889] dark:text-slate-400 font-medium">{{ $class['code'] }} •
-                            {{ $class['sks'] }} SKS
-                        </p>
+                        <p class="text-xs text-[#616889] dark:text-gray-400 font-medium tracking-wide uppercase">{{ $class['code'] }} • {{ $class['sks'] }} SKS</p>
                     </div>
 
-                    <div class="space-y-3">
+                    <!-- Details -->
+                    <div class="space-y-3.5 mb-7">
                         <div class="flex items-center text-[#616889] dark:text-slate-400 text-sm gap-3">
-                            <div class="size-8 rounded-full bg-gray-50 dark:bg-slate-800 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-[16px]">group</span>
-                            </div>
-                            <span>{{ $class['students'] }} Mahasiswa</span>
+                            <span class="material-symbols-outlined text-[18px] text-[#8B1538]/70">group</span>
+                            <span class="font-medium text-[13px]">{{ $class['students'] }} Mahasiswa</span>
                         </div>
                         <div class="flex items-center text-[#616889] dark:text-slate-400 text-sm gap-3">
-                            <div class="size-8 rounded-full bg-gray-50 dark:bg-slate-800 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-[16px]">schedule</span>
-                            </div>
+                            <span class="material-symbols-outlined text-[18px] text-[#8B1538]/70">schedule</span>
                             @php
                                 $time = $class['time'] ?? '-';
                                 $parts = explode(' - ', $time);
                                 $start = $parts[0] ?? '-';
                                 $end = $parts[1] ?? '-';
                             @endphp
-                            <span>{{ $class['day'] }}, {{ $start }} - {{ $end }}</span>
+                            <span class="font-medium text-[13px]">{{ $class['day'] }}, {{ $start }} - {{ $end }}</span>
                         </div>
                     </div>
 
-                    <div class="mt-2 pt-4 border-t border-gray-100 dark:border-slate-800">
-                        <div class="flex justify-between text-xs mb-2">
+                    <!-- Capacity & Action -->
+                    <div class="mt-auto pt-5 border-t border-gray-100 dark:border-slate-800">
+                        <div class="flex justify-between items-center text-[11px] mb-2.5">
                             <span class="text-[#616889] dark:text-slate-400 font-medium">Kapasitas Kelas</span>
-                            <span class="text-primary font-bold">{{ min($class['students'] ?? 0, 40) }} / 40</span>
+                            <span class="text-[#8B1538] font-bold">{{ min($class['students'] ?? 0, 40) }} <span class="text-gray-400 dark:text-slate-500">/ 40</span></span>
                         </div>
-                        <div class="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                        <div class="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden mb-6">
                             @php
                                 $count = min($class['students'] ?? 0, 40);
                                 $percent = $count * 100 / 40;
                             @endphp
-                            <div class="h-full rounded-full bg-gradient-to-r from-primary to-pink-400"
+                            <div class="h-full rounded-full bg-[#8B1538] transition-all duration-500"
                                 style="width: {{ $percent }}%"></div>
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 gap-3 mt-2">
                         <a href="{{ route('dosen.kelas.detail', $class['id']) }}"
-                            class="flex items-center justify-center py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
+                            class="flex items-center justify-center py-2.5 w-full rounded-xl bg-[#8B1538] text-white text-[13px] font-bold hover:bg-[#6b102b] shadow-md shadow-[#8B1538]/20 transition-all">
                             Detail Kelas
                         </a>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="col-span-full flex flex-col items-center justify-center text-center py-24 px-6 relative overflow-hidden bg-white dark:bg-[#1a1d2e] rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-sm min-h-[400px]">
+                    <!-- Decorative Background Elements -->
+                    <div class="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-primary/5 to-transparent"></div>
+                    <div class="absolute -right-20 -top-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl opacity-70"></div>
+                    <div class="absolute -left-20 -bottom-20 w-72 h-72 bg-pink-500/10 rounded-full blur-3xl opacity-70"></div>
+                    
+                    <!-- Icon Container -->
+                    <div class="relative z-10 w-28 h-28 bg-gradient-to-tr from-primary/10 to-pink-500/10 rounded-full flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(139,21,56,0.1)] border border-primary/10">
+                        <div class="w-20 h-20 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-md border border-gray-50 dark:border-slate-700">
+                            <span class="material-symbols-outlined text-[42px] text-primary" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Text Content -->
+                    <h3 class="relative z-10 text-2xl md:text-3xl font-black text-[#111218] dark:text-white mb-4 tracking-tight">Belum Ada Kelas Ajar</h3>
+                    <p class="relative z-10 text-[#616889] dark:text-slate-400 max-w-lg mx-auto leading-relaxed text-sm md:text-base">
+                        Saat ini Anda belum memiliki jadwal mengajar yang aktif. Kelas akan muncul di sini secara otomatis setelah bagian akademik mengatur jadwal perkuliahan Anda.
+                    </p>
+                    
+                    <!-- Action Button -->
+                    <button onclick="window.location.reload()" class="relative z-10 mt-10 flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-primary rounded-xl font-bold text-sm shadow-sm transition-all group">
+                        <span class="material-symbols-outlined text-[20px] group-hover:rotate-180 transition-transform duration-500">refresh</span>
+                        Cek Pembaruan
+                    </button>
+                </div>
+            @endforelse
         </div>
     </div>
 

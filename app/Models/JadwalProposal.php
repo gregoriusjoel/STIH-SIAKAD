@@ -23,7 +23,9 @@ class JadwalProposal extends Model
         'status',
         'catatan_generate',
         'generated_by',
-        'generated_at'
+        'generated_at',
+        'is_outside_availability',
+        'outside_reason',
     ];
 
     protected $casts = [

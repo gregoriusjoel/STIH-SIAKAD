@@ -72,6 +72,8 @@ class LecturerController extends Controller
                 'subject' => $jadwal->kelas->mataKuliah->nama_mk,
                 'sks' => $jadwal->kelas->mataKuliah->sks ?? 0,
                 'raw_time' => $jadwal->jam_mulai,
+                'is_rescheduled' => false,
+                'url' => route('dosen.kelas.detail', $jadwal->kelas_id),
             ];
         });
 
@@ -86,18 +88,50 @@ class LecturerController extends Controller
                 ->get();
         }
 
-        $mappedKmk = $kelasMataKuliahSchedules->map(function ($kmk) {
+        $mappedKmk = $kelasMataKuliahSchedules->map(function ($kmk) use ($dosen) {
+            $hari = $kmk->hari;
+            $jam_mulai = $kmk->jam_mulai;
+            $jam_selesai = $kmk->jam_selesai;
+            $ruang = $kmk->ruang ?? '-';
+            $section = $kmk->kode_kelas ?? $kmk->section ?? '-';
+
+            // Find matching kelas ID for routing
+            $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
+                ->where('section', $section)
+                ->first();
+            if (!$kelas) {
+                $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)->first();
+            }
+            $targetId = $kelas?->id ?? $kmk->id;
+
+            // Check if there is an approved reschedule for this week
+            $weekStart = \Carbon\Carbon::today()->startOfWeek(\Carbon\Carbon::MONDAY);
+            $reschedule = \App\Models\KelasReschedule::where('kelas_mata_kuliah_id', $kmk->id)
+                ->where('week_start', $weekStart->toDateString())
+                ->whereIn('status', ['approved', 'room_assigned'])
+                ->first();
+
+            if ($reschedule) {
+                $hari = $reschedule->new_hari;
+                $jam_mulai = $reschedule->new_jam_mulai;
+                $jam_selesai = $reschedule->new_jam_selesai;
+                $ruang = $reschedule->new_ruang ?: $ruang;
+                $section = $reschedule->new_kelas ?: $section;
+            }
+
             return [
                 'title' => $kmk->mataKuliah->nama_mk,
                 'code' => $kmk->mataKuliah->kode_mk,
-                'section' => $kmk->kode_kelas ?? $kmk->section ?? '-',
-                'day' => $kmk->hari,
-                'time' => substr($kmk->jam_mulai, 0, 5) . ' - ' . substr($kmk->jam_selesai, 0, 5),
-                'class' => $kmk->kode_kelas ?? '-',
-                'room' => $kmk->ruang ?? '-',
+                'section' => $section,
+                'day' => $hari,
+                'time' => substr($jam_mulai, 0, 5) . ' - ' . substr($jam_selesai, 0, 5),
+                'class' => $section,
+                'room' => $ruang,
                 'subject' => $kmk->mataKuliah->nama_mk,
                 'sks' => $kmk->mataKuliah->sks ?? 0,
-                'raw_time' => $kmk->jam_mulai,
+                'raw_time' => $jam_mulai,
+                'is_rescheduled' => $reschedule ? true : false,
+                'url' => route('dosen.kelas.detail', $targetId),
             ];
         });
 
@@ -116,6 +150,8 @@ class LecturerController extends Controller
                 'time' => $s['time'],
                 'room' => $s['room'] ?? '-',
                 'status' => 'Menunggu',
+                'is_rescheduled' => $s['is_rescheduled'] ?? false,
+                'url' => $s['url'] ?? '#',
             ];
         })->values()->toArray();
 
@@ -147,6 +183,8 @@ class LecturerController extends Controller
                 'sks' => $s['sks'] ?? 0,
                 'diff' => $diff,
                 'raw_time' => $s['raw_time'] ?? null,
+                'is_rescheduled' => $s['is_rescheduled'] ?? false,
+                'url' => $s['url'] ?? '#',
             ];
         })->sortBy([['diff', 'asc'], ['raw_time', 'asc']])->take(5)->values()->toArray();
 
@@ -173,20 +211,31 @@ class LecturerController extends Controller
                 'room' => $jadwal->ruangan,
                 'subject' => $jadwal->kelas->mataKuliah->nama_mk,
                 'color' => 'bg-blue-100 text-blue-700',
+                'url' => route('dosen.kelas.detail', $jadwal->kelas_id),
             ];
         });
 
         $mappedKmk = $kelasMataKuliahSchedules->map(function ($kmk) {
+            $section = $kmk->kode_kelas ?? $kmk->section ?? '-';
+            $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
+                ->where('section', $section)
+                ->first();
+            if (!$kelas) {
+                $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)->first();
+            }
+            $targetId = $kelas?->id ?? $kmk->id;
+
             return [
                 'title' => $kmk->mataKuliah->nama_mk,
                 'code' => $kmk->mataKuliah->kode_mk,
-                'section' => $kmk->kode_kelas ?? $kmk->section ?? '-',
+                'section' => $section,
                 'day' => $kmk->hari,
                 'time' => substr($kmk->jam_mulai, 0, 5) . ' - ' . substr($kmk->jam_selesai, 0, 5),
                 'class' => $kmk->kode_kelas ?? '-',
                 'room' => $kmk->ruang ?? '-',
                 'subject' => $kmk->mataKuliah->nama_mk,
                 'color' => 'bg-purple-100 text-purple-700',
+                'url' => route('dosen.kelas.detail', $targetId ?? $kmk->id),
             ];
         });
 
@@ -963,7 +1012,11 @@ class LecturerController extends Controller
             'sks' => $kelas->mataKuliah->sks,
         ];
         
-        return view('page.dosen.input-nilai.kelas', compact('class_info', 'students', 'bobot'));
+        $has_published_grades = \App\Models\Nilai::where('kelas_id', $id)
+            ->where('is_published', true)
+            ->exists();
+        
+        return view('page.dosen.input-nilai.kelas', compact('class_info', 'students', 'bobot', 'has_published_grades'));
     }
 
     /**
@@ -1105,6 +1158,8 @@ class LecturerController extends Controller
             ], 422);
         }
         
+        $isAutoSave = $request->boolean('is_auto_save', false);
+        
         \DB::beginTransaction();
         try {
             $savedCount = 0;
@@ -1129,10 +1184,15 @@ class LecturerController extends Controller
                 // Auto calculate final grade and bobot
                 $nilai->autoCalculateGrade($bobot);
                 
-                // Auto-publish: set as published immediately
-                $nilai->is_published = true;
-                $nilai->published_at = now();
-                $nilai->published_by = Auth::id();
+                if (!$isAutoSave) {
+                    // Final publish: set as published immediately
+                    $nilai->is_published = true;
+                    $nilai->published_at = now();
+                    $nilai->published_by = Auth::id();
+                } else if ($nilai->is_published === null) {
+                    // For initial auto-saves, explicitly set to false
+                    $nilai->is_published = false;
+                }
                 
                 $nilai->save();
                 $savedCount++;
@@ -1142,7 +1202,7 @@ class LecturerController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => "Berhasil menyimpan {$savedCount} nilai mahasiswa.",
+                'message' => $isAutoSave ? "Autosave berhasil." : "Berhasil menyimpan {$savedCount} nilai mahasiswa.",
             ]);
             
         } catch (\Exception $e) {
@@ -1152,6 +1212,49 @@ class LecturerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat menyimpan nilai: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Menarik nilai mahasiswa sehingga tidak bisa dilihat mahasiswa
+     */
+    public function tarikNilai($id)
+    {
+        $kelas = Kelas::with('dosen')->findOrFail($id);
+        
+        // Check ownership
+        if (!$kelas->dosen || $kelas->dosen->user_id != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses ke kelas ini.'
+            ], 403);
+        }
+        
+        \DB::beginTransaction();
+        try {
+            $updatedCount = \App\Models\Nilai::where('kelas_id', $id)
+                ->where('is_published', true)
+                ->update([
+                    'is_published' => false,
+                    'published_at' => null,
+                    'published_by' => null,
+                ]);
+            
+            \DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil menarik nilai ({$updatedCount} data). Nilai disembunyikan dari mahasiswa.",
+            ]);
+            
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Error unpublishing nilai: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menarik nilai: ' . $e->getMessage()
             ], 500);
         }
     }

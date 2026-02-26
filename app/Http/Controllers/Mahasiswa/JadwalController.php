@@ -59,8 +59,8 @@ class JadwalController extends Controller
                     'mata_kuliah' => $kelas->mataKuliah->nama_mk ?? '-',
                     'kode_mk' => $kelas->mataKuliah->kode_mk ?? '-',
                     'sks' => $kelas->mataKuliah->sks ?? 0,
-                    'dosen' => $kelas->dosen->name ?? '-',
-                    'kelas' => $kelas->kode_kelas ?? $kelas->nama_kelas ?? '-',
+                    'dosen' => $kelas->dosen->user->name ?? ($kelas->dosen->nama ?? '-'),
+                    'kelas' => $kelas->section ?? '-',
                     'jam_mulai' => $jadwal->jam_mulai,
                     'jam_selesai' => $jadwal->jam_selesai,
                     'ruangan' => $jadwal->ruangan ?? 'Online'

@@ -1,5 +1,5 @@
 <!-- Admin Sidebar (collapsible sections) -->
-<aside class="sidebar w-64 flex-shrink-0 hidden md:block overflow-y-auto">
+<aside class="sidebar w-64 flex-shrink-0 hidden md:flex flex-col h-full">
     <style>
         .sidebar { background-color: #ffffff; }
         .dark .sidebar { background-color: #1f1616; border-right-color: #1e293b; }
@@ -20,9 +20,19 @@
         .sidebar .section-toggle { color: #6b1620; font-size: 0.95rem; }
         .dark .sidebar .section-toggle { color: #f87171; opacity: 0.9; }
         .rotate-180 { transform: rotate(180deg); }
+
+        /* Hide scrollbar for sidebar navigation */
+        .sidebar-scroll {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        }
+        .sidebar-scroll::-webkit-scrollbar { 
+            display: none; /* WebKit */
+        }
     </style>
 
-    <div class="title flex items-center gap-4">
+    <!-- Fixed Header Area -->
+    <div class="title flex items-center gap-4 shrink-0">
         <div class="w-10 h-10 rounded-md overflow-hidden bg-white p-1 shadow-sm flex-shrink-0 logo">
             <img src="{{ asset('images/logo_stih_white.png') }}" alt="STIH" class="w-full h-full object-contain">
         </div>
@@ -32,7 +42,9 @@
         </div>
     </div>
 
-    <nav class="px-4 pb-4 mt-4">
+    <!-- Scrollable Navigation Area -->
+    <div class="flex-1 overflow-y-auto flex flex-col pt-4 sidebar-scroll">
+    <nav class="px-4 pb-4">
     <a href="@if(Route::has('admin.dashboard')){{ route('admin.dashboard') }}@else{{ url('/admin') }}@endif" class="sidebar-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg mb-2 {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
         <i class="fas fa-home w-5 mr-3"></i>
         <span class="text-sm font-medium">Dashboard</span>
@@ -165,14 +177,6 @@
                 @endif
             </li>
             <li>
-                @if(Route::has('admin.absensi_dosen.index'))
-                    <a href="{{ route('admin.absensi_dosen.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.absensi_dosen.*') ? 'active' : '' }}">
-                        <i class="fas fa-clipboard-check w-5 mr-3"></i>
-                        <span class="text-sm font-medium">Absensi Dosen</span>
-                    </a>
-                @endif
-            </li>
-            <li>
                 @if(Route::has('admin.parents.index'))
                     <a href="{{ route('admin.parents.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.parents.*') ? 'active' : '' }}">
                         <i class="fas fa-user-friends w-5 mr-3"></i>
@@ -182,6 +186,14 @@
                     <a href="{{ url('/admin/parent') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
                         <i class="fas fa-user-friends w-5 mr-3"></i>
                         <span class="text-sm font-medium">Data Orang Tua</span>
+                    </a>
+                @endif
+            </li>
+            <li>
+                @if(Route::has('admin.absensi_dosen.index'))
+                    <a href="{{ route('admin.absensi_dosen.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.absensi_dosen.*') ? 'active' : '' }}">
+                        <i class="fas fa-clipboard-check w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Absensi Dosen</span>
                     </a>
                 @endif
             </li>
@@ -209,15 +221,32 @@
                 @endif
             </li>
             <li>
+                @php
+                    $hasNewFeedback = \App\Models\JadwalProposal::whereIn('status', ['rejected_dosen', 'pending_admin'])->exists();
+                    $hasNewAvailability = \App\Models\DosenAvailability::where('status', 'pending')->exists();
+                    
+                    // Hide the dot if we are already viewing the jadwal page
+                    $showJadwalDot = ($hasNewFeedback || $hasNewAvailability) && !request()->routeIs('admin.jadwal.*');
+                @endphp
                 @if(Route::has('admin.jadwal.index'))
-                    <a href="{{ route('admin.jadwal.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.jadwal.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.jadwal.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 relative {{ request()->routeIs('admin.jadwal.*') ? 'active' : '' }}">
                         <i class="fas fa-calendar-alt w-5 mr-3"></i>
                         <span class="text-sm font-medium">Jadwal Perkuliahan</span>
+                        @if($showJadwalDot)
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 flex h-3 w-3">
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.2)]"></span>
+                            </span>
+                        @endif
                     </a>
                 @else
-                    <a href="{{ url('/admin/jadwal') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40">
+                    <a href="{{ url('/admin/jadwal') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 relative">
                         <i class="fas fa-calendar-alt w-5 mr-3"></i>
                         <span class="text-sm font-medium">Jadwal Perkuliahan</span>
+                        @if($showJadwalDot)
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 flex h-3 w-3">
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.2)]"></span>
+                            </span>
+                        @endif
                     </a>
                 @endif
             </li>
@@ -318,6 +347,7 @@
                 <span class="text-sm font-medium">Logout</span>
             </button>
         </form>
+    </div>
     </div>
 
     <script>

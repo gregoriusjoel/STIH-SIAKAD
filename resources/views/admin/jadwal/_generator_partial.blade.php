@@ -53,11 +53,25 @@
                 <div class="flex-1 overflow-y-auto px-4 py-2">
                     @foreach($jadwalProposals as $proposal)
                         <div class="py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 flex items-center justify-between">
-                            <div>
-                                <div class="font-medium text-sm text-gray-900 dark:text-gray-100">{{ $proposal->mataKuliah->nama_mk ?? ($proposal->mataKuliah->nama ?? '') }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $proposal->hari }} {{ substr($proposal->jam_mulai,0,5) }} - {{ substr($proposal->jam_selesai,0,5) }} • {{ $proposal->ruangan }}</div>
+                            <div class="flex-1">
+                                <div class="font-medium text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                    {{ $proposal->mataKuliah->nama_mk ?? ($proposal->mataKuliah->nama ?? '') }}
+                                    @if($proposal->is_outside_availability)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" 
+                                              title="Fallback: {{ $proposal->outside_reason }}">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                            Fallback
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $proposal->hari }} {{ substr($proposal->jam_mulai,0,5) }} - {{ substr($proposal->jam_selesai,0,5) }} • {{ $proposal->ruangan }}
+                                    @if($proposal->is_outside_availability && $proposal->outside_reason)
+                                        <span class="text-orange-600 dark:text-orange-400 italic">• {{ $proposal->outside_reason }}</span>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                            <div class="text-xs text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">
                                 @if(in_array($proposal->status, ['pending_dosen']))
                                     <span class="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 rounded-full">Menunggu Dosen</span>
                                 @elseif(in_array($proposal->status, ['approved_dosen','pending_admin']))

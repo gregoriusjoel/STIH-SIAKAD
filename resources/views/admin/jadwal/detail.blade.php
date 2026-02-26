@@ -124,23 +124,21 @@
                                                 @php
                                                     $statusLabel = [
                                                         'pending' => 'Pending',
-                                                        'approved' => 'Disetujui',
-                                                        'rejected' => 'Ditolak',
-                                                        'approved_with_changes' => 'Disetujui dgn Perubahan'
+                                                        'approve' => 'Disetujui',
+                                                        'reject' => 'Ditolak',
                                                     ];
                                                     $statusColor = [
                                                         'pending' => 'bg-yellow-100 text-yellow-800',
-                                                        'approved' => 'bg-green-100 text-green-800',
-                                                        'rejected' => 'bg-red-100 text-red-800',
-                                                        'approved_with_changes' => 'bg-blue-100 text-blue-800'
+                                                        'approve' => 'bg-green-100 text-green-800',
+                                                        'reject' => 'bg-red-100 text-red-800',
                                                     ];
                                                 @endphp
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full font-medium {{ $statusColor[$approval->status] ?? 'bg-gray-100' }}">
-                                                    {{ $statusLabel[$approval->status] ?? $approval->status }}
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full font-medium {{ $statusColor[$approval->action] ?? 'bg-gray-100' }}">
+                                                    {{ $statusLabel[$approval->action] ?? $approval->action }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-gray-500">{{ $approval->created_at->format('d/m/Y H:i') }}</td>
-                                            <td class="px-6 py-4 text-gray-600">{{ $approval->comments ?? '-' }}</td>
+                                            <td class="px-6 py-4 text-gray-600">{{ $approval->alasan_penolakan ?? '-' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -191,19 +189,83 @@
                                     @endforeach
                                 </select>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Jam Mulai</label>
-                                <input type="time" name="jam_mulai" id="admin_jam_mulai" value="{{ substr($proposal->jam_mulai, 0, 5) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Jam Selesai</label>
-                                <input type="time" name="jam_selesai" id="admin_jam_selesai" value="{{ substr($proposal->jam_selesai, 0, 5) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="relative">
+                                @php
+                                    $jamSlots = \App\Models\JamPerkuliahan::orderBy('jam_mulai')->get(['jam_ke', 'jam_mulai', 'jam_selesai']);
+                                    $sks = $proposal->mataKuliah->sks ?? 1;
+                                @endphp
+                                <div x-data="{
+                                    sks: {{ $sks }},
+                                    slots: {{ Js::from($jamSlots) }},
+                                    jamMulai: '{{ substr($proposal->jam_mulai, 0, 5) }}',
+                                    jamSelesai: '{{ substr($proposal->jam_selesai, 0, 5) }}',
+                                    validMulaiSlots: [],
+                                    
+                                    init() {
+                                        this.calculateValidMulai();
+                                        this.$watch('jamMulai', value => this.updateSelesai(value));
+                                    },
+                                    
+                                    calculateValidMulai() {
+                                        let valid = [];
+                                        for (let i = 0; i <= this.slots.length - this.sks; i++) {
+                                            let sMulai = this.slots[i];
+                                            let sSelesai = this.slots[i + this.sks - 1];
+                                            let label = this.sks === 1 
+                                                ? `Jam ke-${sMulai.jam_ke} (${sMulai.jam_mulai.substring(0, 5)} - ${sMulai.jam_selesai.substring(0, 5)})`
+                                                : `Jam ke-${sMulai.jam_ke} sd ${sSelesai.jam_ke} (${sMulai.jam_mulai.substring(0, 5)} - ${sSelesai.jam_selesai.substring(0, 5)})`;
+                                            
+                                            valid.push({
+                                                jam_mulai: sMulai.jam_mulai,
+                                                label: label
+                                            });
+                                        }
+                                        this.validMulaiSlots = valid;
+                                        
+                                        // Ensure current jamMulai is in the list, otherwise add it so it renders correctly
+                                        if (this.jamMulai && !valid.some(s => s.jam_mulai.substring(0, 5) === this.jamMulai)) {
+                                            valid.push({jam_mulai: this.jamMulai + ':00', label: 'Jam Kustom (' + this.jamMulai + ' - ' + this.jamSelesai + ')'});
+                                            // re-sort based on time just in case
+                                            valid.sort((a,b) => a.jam_mulai.localeCompare(b.jam_mulai));
+                                        }
+                                    },
+                                    
+                                    updateSelesai(mulaiVal) {
+                                        if (!mulaiVal) {
+                                            this.jamSelesai = '';
+                                            return;
+                                        }
+                                        let sIndex = this.slots.findIndex(s => s.jam_mulai.substring(0, 5) === mulaiVal);
+                                        if (sIndex !== -1 && sIndex + this.sks - 1 < this.slots.length) {
+                                            this.jamSelesai = this.slots[sIndex + this.sks - 1].jam_selesai.substring(0, 5);
+                                        }
+                                    }
+                                }">
+                                    <label class="flex items-center gap-2 text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                        <span class="material-symbols-outlined text-gray-400 text-sm">schedule</span>
+                                        Jam Perkuliahan <span class="text-maroon">*</span>
+                                    </label>
+                                    <select name="jam_mulai" id="admin_jam_mulai" x-model="jamMulai" required class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all font-medium">
+                                        <option value="">Pilih Jam Perkuliahan</option>
+                                        <template x-for="slot in validMulaiSlots" :key="slot.jam_mulai">
+                                            <option :value="slot.jam_mulai.substring(0, 5)" x-text="slot.label"></option>
+                                        </template>
+                                    </select>
+                                    <input type="hidden" name="jam_selesai" id="admin_jam_selesai" x-model="jamSelesai" required>
+                                </div>
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-500 mb-1">Ruangan</label>
-                            <input type="text" name="ruangan" id="admin_ruangan" value="{{ $proposal->ruangan }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Contoh: R.401">
+                            <select name="ruangan" id="admin_ruangan" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all">
+                                <option value="">-- Pilih Ruangan --</option>
+                                @foreach(\App\Models\Ruangan::where('status', 'aktif')->orderBy('nama_ruangan')->get() as $ruang)
+                                    <option value="{{ $ruang->kode_ruangan }}" {{ $proposal->ruangan == $ruang->kode_ruangan ? 'selected' : '' }}>
+                                        {{ $ruang->nama_ruangan }} ({{ $ruang->kode_ruangan }})
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 

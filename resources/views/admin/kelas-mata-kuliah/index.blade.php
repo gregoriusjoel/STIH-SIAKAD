@@ -42,7 +42,7 @@
     <div class="mb-6 flex items-start justify-between">
         <div>
             <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-chalkboard-teacher text-maroon mr-2"></i>Daftar Kelas Mata Kuliah</h3>
-            <p class="text-sm text-gray-600 mt-1">Kelola pengelompokan kelas per mata kuliah</p>
+            <p class="text-sm text-gray-600 mt-1">Kelola pengelompokan kelas per mata kuliah (Hanya menampilkan kelas dengan jadwal aktif)</p>
         </div>
     </div>
 
@@ -50,7 +50,7 @@
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-maroon text-white">
-                    <tr><th class="px-6 py-4 text-left text-sm font-semibold">Mata Kuliah</th><th class="px-6 py-4 text-left text-sm font-semibold">Nama Kelas</th><th class="px-6 py-4 text-left text-sm font-semibold">Dosen</th><th class="px-6 py-4 text-left text-sm font-semibold">Semester</th><th class="px-6 py-4 text-left text-sm font-semibold">Kuota</th><th class="px-6 py-4 text-left text-sm font-semibold">Ruangan</th></tr>
+                    <tr><th class="px-6 py-4 text-left text-sm font-semibold">Mata Kuliah</th><th class="px-6 py-4 text-left text-sm font-semibold">Nama Kelas</th><th class="px-6 py-4 text-left text-sm font-semibold">Dosen</th><th class="px-6 py-4 text-left text-sm font-semibold">Semester</th><th class="px-6 py-4 text-left text-sm font-semibold">Jadwal</th><th class="px-6 py-4 text-left text-sm font-semibold">Kuota</th><th class="px-6 py-4 text-left text-sm font-semibold">Ruangan</th></tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse($kelasMatKul as $k)
@@ -61,11 +61,21 @@
                         <td class="px-6 py-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"><i class="fas fa-users mr-1"></i>{{ $k->nama_kelas }}</span></td>
                         <td class="px-6 py-4">{{ $k->dosen->user->name }}</td>
                         <td class="px-6 py-4">{{ $k->semester->nama_semester }}</td>
+                        <td class="px-6 py-4">
+                            @if($k->jadwal)
+                            <div class="text-sm">
+                                <div class="font-semibold text-gray-900">{{ $k->jadwal->hari }}</div>
+                                <div class="text-xs text-gray-500">{{ substr($k->jadwal->jam_mulai, 0, 5) }} - {{ substr($k->jadwal->jam_selesai, 0, 5) }}</div>
+                            </div>
+                            @else
+                            <span class="text-gray-400 text-sm">-</span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">{{ $k->kapasitas }}</span></td>
                         <td class="px-6 py-4">{{ $k->ruang ?: '-' }}</td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" class="px-6 py-12 text-center text-gray-500"><i class="fas fa-inbox text-4xl mb-3"></i><p class="text-lg font-semibold">Belum ada kelas mata kuliah</p></td></tr>
+                    <tr><td colspan="7" class="px-6 py-12 text-center text-gray-500"><i class="fas fa-inbox text-4xl mb-3"></i><p class="text-lg font-semibold">Belum ada kelas mata kuliah dengan jadwal aktif</p><p class="text-sm mt-2">Kelas akan ditampilkan setelah memiliki jadwal aktif</p></td></tr>
                     @endforelse
                 </tbody>
             </table>

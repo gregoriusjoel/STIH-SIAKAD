@@ -42,7 +42,7 @@ class MateriController extends Controller
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'file' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:51200', // 50MB max
+            'file' => 'required|file|mimes:pdf,docx,pptx,xls,xlsx,zip,rar|max:51200', // 50MB max
         ]);
 
         $file = $request->file('file');

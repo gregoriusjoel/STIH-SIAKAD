@@ -6,7 +6,7 @@
 <style>
     .slot-cell {
         position: relative;
-        height: 50px;
+        height: 38px;
         cursor: pointer;
         border-radius: 0.5rem;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -175,13 +175,13 @@
                 <div class="p-6 overflow-x-auto">
                     <table class="w-full border-collapse" id="availabilityTable">
                         <thead>
-                            <tr class="bg-maroon text-white">
-                                <th class="px-4 py-4 text-left font-semibold border border-gray-300 dark:border-gray-600 sticky left-0 bg-maroon z-20 rounded-tl-lg">
+                            <tr class="bg-maroon text-white text-xs">
+                                <th class="px-3 py-2 text-left font-semibold border border-gray-300 dark:border-gray-600 sticky left-0 bg-maroon z-20 rounded-tl-lg">
                                     <div class="text-sm">Jam</div>
                                 </th>
                                 @foreach($days as $day)
-                                    <th class="px-4 py-4 text-center font-semibold border border-gray-300 dark:border-gray-600 min-w-[120px] {{ $loop->last ? 'rounded-tr-lg' : '' }}">
-                                        <div class="mb-2">{{ $day }}</div>
+                                    <th class="px-2 py-2 text-center font-semibold border border-gray-300 dark:border-gray-600 min-w-[100px] {{ $loop->last ? 'rounded-tr-lg' : '' }}">
+                                        <div class="mb-1 text-sm">{{ $day }}</div>
                                         <div class="flex gap-1 justify-center">
                                             <button type="button" 
                                                     class="quick-select-btn px-2 py-1 bg-white/20 hover:bg-white/30 rounded text-xs transition"
@@ -200,10 +200,10 @@
                         </thead>
                         <tbody>
                             @foreach($jamPerkuliahan as $jam)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition">
-                                    <td class="px-4 py-3 border border-gray-300 dark:border-gray-600 font-medium text-gray-700 dark:text-gray-300 sticky left-0 bg-white dark:bg-gray-800 z-10">
-                                        <div class="text-sm font-bold">Jam {{ $jam->jam_ke }}</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ substr($jam->jam_mulai, 0, 5) }} - {{ substr($jam->jam_selesai, 0, 5) }}</div>
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition text-xs">
+                                    <td class="px-3 py-2 border border-gray-300 dark:border-gray-600 font-medium text-gray-700 dark:text-gray-300 sticky left-0 bg-white dark:bg-gray-800 z-10 w-28">
+                                        <div class="font-bold text-sm">Jam {{ $jam->jam_ke }}</div>
+                                        <div class="text-[11px] text-gray-500 dark:text-gray-400 leading-tight">{{ substr($jam->jam_mulai, 0, 5) }} - {{ substr($jam->jam_selesai, 0, 5) }}</div>
                                     </td>
                                     @foreach($days as $day)
                                         @php
@@ -212,8 +212,8 @@
                                             $isBooked = $existing && $existing->status === 'booked';
                                             $isChecked = $existing !== null;
                                         @endphp
-                                        <td class="px-3 py-3 border border-gray-300 dark:border-gray-600">
-                                            <label class="block relative">
+                                        <td class="px-1.5 py-1.5 border border-gray-300 dark:border-gray-600">
+                                            <label class="block relative w-full h-full m-0">
                                                 <input 
                                                     type="checkbox" 
                                                     name="slots[]" 
@@ -342,6 +342,10 @@
             // Mouse enter - continue drag
             cell.addEventListener('mouseenter', (e) => {
                 if (isDragging) {
+                    if (startCell !== cell) {
+                        // Mark that dragging has moved past the initial cell
+                        startCell = null; 
+                    }
                     cell.classList.add('dragging-over');
                     toggleSlot(cell, dragMode === 'select');
                 }
@@ -352,11 +356,10 @@
                 cell.classList.remove('dragging-over');
             });
 
-            // Click - toggle single
+            // Need to stop click from firing if we did a mousedown toggle
             cell.addEventListener('click', (e) => {
-                if (!isDragging) {
-                    toggleSlot(cell);
-                }
+                e.preventDefault();
+                // We handle toggle on mousedown, so click does nothing but prevent default behavior (like double firing)
             });
         });
 

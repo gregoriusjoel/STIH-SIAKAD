@@ -14,10 +14,10 @@ class TugasController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'file' => 'nullable|file|max:51200', // 50MB max
-            'max_score' => 'nullable|integer|min:0',
+            'description' => 'required|string',
+            'due_date' => 'required|date',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,zip|max:51200', // 50MB max, hanya PDF, DOCX, ZIP
+            'max_score' => 'required|integer|min:0',
             'submission_type' => 'required|in:pdf,word,excel,text,any'
         ]);
 

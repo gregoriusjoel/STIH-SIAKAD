@@ -46,7 +46,10 @@ class NilaiTugasController extends Controller
         $kelas = $this->kelasDosen($kelasId);
 
         // Ambil semua tugas untuk kelas ini, diurutkan per pertemuan
-        $tugasList = Tugas::where('kelas_id', $kelasId)
+        $tugasList = Tugas::where(function($q) use ($kelasId, $kelas) {
+                $q->where('kelas_id', $kelasId)
+                  ->orWhere('mata_kuliah_id', $kelas->mata_kuliah_id);
+            })
             ->orderBy('pertemuan')
             ->orderBy('created_at')
             ->get();
@@ -61,7 +64,15 @@ class NilaiTugasController extends Controller
     public function inputNilai(int $kelasId, int $tugasId)
     {
         $kelas = $this->kelasDosen($kelasId);
-        $tugas = Tugas::where('kelas_id', $kelasId)->findOrFail($tugasId);
+        $tugas = Tugas::where(function($q) use ($kelasId, $kelas) {
+                $q->where('kelas_id', $kelasId)
+                  ->orWhere('mata_kuliah_id', $kelas->mata_kuliah_id);
+            })->findOrFail($tugasId);
+        
+        // Set default max_score if null
+        if (!$tugas->max_score) {
+            $tugas->max_score = 100;
+        }
 
         $mahasiswas = $this->mahasiswaKelas($kelasId);
 
@@ -71,7 +82,10 @@ class NilaiTugasController extends Controller
             ->keyBy('mahasiswa_id');
 
         // Daftar semua tugas (untuk dropdown "ganti tugas")
-        $tugasList = Tugas::where('kelas_id', $kelasId)
+        $tugasList = Tugas::where(function($q) use ($kelasId, $kelas) {
+                $q->where('kelas_id', $kelasId)
+                  ->orWhere('mata_kuliah_id', $kelas->mata_kuliah_id);
+            })
             ->orderBy('pertemuan')
             ->orderBy('created_at')
             ->get();
@@ -85,13 +99,19 @@ class NilaiTugasController extends Controller
     public function simpanNilai(Request $request, int $kelasId, int $tugasId)
     {
         $kelas = $this->kelasDosen($kelasId);
-        $tugas = Tugas::where('kelas_id', $kelasId)->findOrFail($tugasId);
+        $tugas = Tugas::where(function($q) use ($kelasId, $kelas) {
+                $q->where('kelas_id', $kelasId)
+                  ->orWhere('mata_kuliah_id', $kelas->mata_kuliah_id);
+            })->findOrFail($tugasId);
         $dosen = Auth::user()->dosen;
+        
+        // Set default max_score if null
+        $maxScore = $tugas->max_score ?? 100;
 
         $request->validate([
             'scores'                => 'required|array',
             'scores.*.mahasiswa_id' => 'required|exists:mahasiswas,id',
-            'scores.*.score'        => ['nullable', 'numeric', 'min:0', "max:{$tugas->max_score}"],
+            'scores.*.score'        => ['nullable', 'numeric', 'min:0', "max:{$maxScore}"],
             'scores.*.comments'     => 'nullable|string|max:500',
         ]);
 
@@ -135,7 +155,10 @@ class NilaiTugasController extends Controller
     public function resetNilai(int $kelasId, int $tugasId)
     {
         $kelas = $this->kelasDosen($kelasId);
-        $tugas = Tugas::where('kelas_id', $kelasId)->findOrFail($tugasId);
+        $tugas = Tugas::where(function($q) use ($kelasId, $kelas) {
+                $q->where('kelas_id', $kelasId)
+                  ->orWhere('mata_kuliah_id', $kelas->mata_kuliah_id);
+            })->findOrFail($tugasId);
 
         // Hapus semua submissions (atau hanya reset score kolom)
         TugasSubmission::where('tugas_id', $tugasId)

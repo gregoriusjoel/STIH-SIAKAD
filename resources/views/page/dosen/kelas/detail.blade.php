@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Kelas')
+@section('title', $class_info['name'])
 
 @push('styles')
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -126,7 +126,7 @@
                     <a href="{{ route('dosen.kelas.input-nilai', $id) }}"
                         class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                         <span class="material-symbols-outlined text-[20px]">edit_note</span>
-                        Input Nilai
+                        Input Nilai Akhir
                     </a>
 
                     <a href="{{ route('dosen.nilai-tugas.index', $id) }}"

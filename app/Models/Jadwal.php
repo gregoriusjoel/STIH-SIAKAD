@@ -19,6 +19,8 @@ class Jadwal extends Model
         'catatan_admin',
         'approved_by',
         'approved_at',
+        'is_outside_availability',
+        'outside_reason',
     ];
 
     protected $casts = [

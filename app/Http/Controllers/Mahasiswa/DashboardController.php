@@ -31,8 +31,12 @@ class DashboardController extends Controller
         
         // Get nilai count (for IPK calculation)
         $nilaiData = Krs::where('mahasiswa_id', $mahasiswa->id)
-            ->whereHas('nilai')
-            ->with(['nilai', 'kelasMataKuliah.mataKuliah'])
+            ->whereHas('nilai', function($q) {
+                $q->where('is_published', true);
+            })
+            ->with(['nilai' => function($q) {
+                $q->where('is_published', true);
+            }, 'kelasMataKuliah.mataKuliah'])
             ->get();
         $totalSksNilai = 0;
         $totalBobot = 0;

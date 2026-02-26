@@ -14,12 +14,23 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Models\Ruangan;
 use App\Models\JamPerkuliahan;
+use App\Services\ScheduleAutoGeneratorService;
 
 class JadwalGeneratorController extends Controller
 {
     private $availableHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     
     private $ruangList = []; // populated from `ruangans` table at runtime
+    
+    private ScheduleAutoGeneratorService $scheduleService;
+
+    /**
+     * Inject service
+     */
+    public function __construct(ScheduleAutoGeneratorService $scheduleService)
+    {
+        $this->scheduleService = $scheduleService;
+    }
 
     /**
      * Get active time slots from jam_perkuliahan table
@@ -136,6 +147,30 @@ class JadwalGeneratorController extends Controller
         try {
             DB::beginTransaction();
 
+            // Find existing semester (don't create new one)
+            $semester = \App\Models\Semester::where('nama_semester', $request->semester)
+                ->where('tahun_ajaran', $request->tahun_ajaran)
+                ->first();
+
+            // If not found, try to find active semester
+            if (!$semester) {
+                $semester = \App\Models\Semester::where('status', 'aktif')
+                    ->orWhere('is_active', true)
+                    ->first();
+            }
+
+            // Still not found? Return error
+            if (!$semester) {
+                return redirect()->back()->with('error', 
+                    'Semester ' . $request->semester . ' ' . $request->tahun_ajaran . 
+                    ' tidak ditemukan. Silakan buat semester terlebih dahulu di menu Master Semester.');
+            }
+
+            Log::info("Auto-generating jadwal for semester_id: {$semester->id} ({$semester->nama_semester} {$semester->tahun_ajaran})");
+
+            // Initialize schedule service with semester context
+            $this->scheduleService->initialize($semester->id);
+
             // Hapus jadwal & proposal lama untuk periode ini jika overwrite
             if ($request->overwrite_existing) {
                 $kelasIdsForPeriod = \App\Models\Kelas::where('semester_type', $request->semester)
@@ -145,6 +180,11 @@ class JadwalGeneratorController extends Controller
                 // Delete both approved schedules and proposals for this period
                 \App\Models\Jadwal::whereIn('kelas_id', $kelasIdsForPeriod)->delete();
                 \App\Models\JadwalProposal::whereIn('kelas_id', $kelasIdsForPeriod)->delete();
+                
+                // Delete kelas_mata_kuliahs for this semester
+                \App\Models\KelasMataKuliah::where('semester_id', $semester->id)->delete();
+                
+                Log::info("Deleted old schedules, proposals, and kelas_mata_kuliahs for semester_id: {$semester->id}");
             }
 
             $generated = 0;
@@ -211,10 +251,13 @@ class JadwalGeneratorController extends Controller
                 }
             }
             
+            // Sort classes by priority (limited availability first, high SKS first)
+            $sortedClasses = $this->scheduleService->sortClassesByPriority($kelasMataKuliahs->toArray());
+            
             // Tracking untuk prevent duplicate dalam satu batch
             $processedCombinations = [];
 
-            foreach ($kelasMataKuliahs as $kmk) {
+            foreach ($sortedClasses as $kmk) {
                 // Check if this combination already processed in this batch
                 $combinationKey = "{$kmk->mata_kuliah_id}_{$kmk->dosen_id}_{$kmk->kode_kelas}";
                 if (isset($processedCombinations[$combinationKey])) {
@@ -242,12 +285,39 @@ class JadwalGeneratorController extends Controller
 
             DB::commit();
 
+            // Get statistics from service
+            $stats = $this->scheduleService->getStatistics();
+
+            // Get dosen names for fallback list
+            if (!empty($stats['dosen_fallbacks'])) {
+                $dosenIds = array_keys($stats['dosen_fallbacks']);
+                $dosens = \App\Models\Dosen::with('user')
+                    ->whereIn('id', $dosenIds)
+                    ->get()
+                    ->keyBy('id');
+                
+                $dosenFallbackList = [];
+                foreach ($stats['dosen_fallbacks'] as $dosenId => $count) {
+                    $dosen = $dosens->get($dosenId);
+                    if ($dosen) {
+                        $dosenFallbackList[] = [
+                            'name' => $dosen->user->name ?? "Dosen ID {$dosenId}",
+                            'count' => $count
+                        ];
+                    }
+                }
+                $stats['dosen_fallback_list'] = $dosenFallbackList;
+            }
+
+            // Store stats in session for display
+            session()->flash('stats', $stats);
+
             // If everything succeeded, keep notification minimal as requested
             if ($failed === 0) {
-                $message = 'Generate Jadwal berhasil';
+                $message = "Generate Jadwal berhasil - {$stats['within_availability']} sesuai ketersediaan, {$stats['outside_availability']} fallback";
                 $status = 'completed';
             } else {
-                $message = "Auto generate jadwal selesai. Berhasil: {$generated}, Gagal: {$failed}";
+                $message = "Auto generate jadwal selesai. Berhasil: {$generated} (sesuai availability: {$stats['within_availability']}, fallback: {$stats['outside_availability']}), Gagal: {$failed}";
                 $status = 'partial';
                 if (!empty($failedItems)) {
                     // Store failed items in session array instead of concatenating to message
@@ -372,74 +442,58 @@ class JadwalGeneratorController extends Controller
             return $proposal;
         }
 
-        // Otherwise try available slots with randomization
+        // Otherwise try available slots with availability-aware scheduling
         // Fetch mata kuliah to get SKS
         $mataKuliah = \App\Models\MataKuliah::find($kmk->mata_kuliah_id);
         $requiredSks = $mataKuliah ? $mataKuliah->sks : 1;
         
-        $jadwalSlots = $this->getJadwalSlots($requiredSks);
+        // Get candidate slots from service (prioritizes availability)
+        $slotData = $this->scheduleService->getCandidateSlots($kmk->dosen_id, $requiredSks);
         
-        if (empty($jadwalSlots)) {
-            Log::warning("No consecutive time slots available for {$requiredSks} SKS - {$kmk->mata_kuliah_nama}");
+        if (empty($slotData['slots'])) {
+            Log::warning("No slots available for {$requiredSks} SKS - {$kmk->mata_kuliah_nama}");
+            $this->scheduleService->recordFailure();
             return null;
         }
         
-        // Randomize hari and time slots untuk variasi jadwal
-        $randomHari = $this->availableHari;
-        shuffle($randomHari);
+        // Try to assign class to a slot
+        $assignment = $this->scheduleService->tryAssignClass($kmk, $slotData, $slotData['source']);
         
-        // Buat kombinasi hari + jam slot yang tersedia
-        $availableCombinations = [];
-        foreach ($randomHari as $hari) {
-            foreach ($jadwalSlots as $slot) {
-                $availableCombinations[] = [
-                    'hari' => $hari,
-                    'slot' => $slot
-                ];
-            }
-        }
-        
-        // Randomize kombinasi
-        shuffle($availableCombinations);
-        
-        foreach ($availableCombinations as $combination) {
-            $hari = $combination['hari'];
-            $slot = $combination['slot'];
-            
-            // Cek apakah dosen sudah ada jadwal di hari dan jam ini
-            if ($this->hasDosenConflictByKelas($kmk->dosen_id, $hari, $slot['jam_mulai'], $slot['jam_selesai'])) {
-                continue;
-            }
-
-            // Prefer ruang from kmk if provided, else find available room (random)
-            $ruangPrefer = $kmk->ruang ?? null;
-            $ruangan = $ruangPrefer ?: $this->findAvailableRoom($hari, $slot['jam_mulai'], $slot['jam_selesai'], true);
-
-            if (!$ruangan) {
-                continue; // Tidak ada ruang tersedia di slot ini
-            }
-
-            // Buat proposal jadwal
-            $proposal = JadwalProposal::create([
-                'mata_kuliah_id' => $kmk->mata_kuliah_id,
-                'kelas_id' => $kelasModel->id,
-                'dosen_id' => $kmk->dosen_id,
-                'hari' => $hari,
-                'jam_mulai' => $slot['jam_mulai'],
-                'jam_selesai' => $slot['jam_selesai'],
-                'ruangan' => $ruangan,
-                'status' => 'pending_dosen',
-                'catatan_generate' => 'Auto generated oleh sistem (random)',
-                'generated_by' => auth()->id(),
-                'generated_at' => now()
-            ]);
-
-            Log::info("Generated jadwal proposal for {$kmk->mata_kuliah_nama} - {$kmk->kode_kelas}");
-            return $proposal;
+        if (!$assignment) {
+            Log::warning("Failed to assign slot (all slots have conflicts or no room) for {$kmk->mata_kuliah_nama} - {$kmk->kode_kelas}");
+            $this->scheduleService->recordFailure();
+            return null;
         }
 
-        Log::warning("Failed to generate jadwal for {$kmk->mata_kuliah_nama} - {$kmk->kode_kelas}");
-        return null;
+        // Create proposal with availability tracking
+        $proposal = JadwalProposal::create([
+            'mata_kuliah_id' => $kmk->mata_kuliah_id,
+            'kelas_id' => $kelasModel->id,
+            'dosen_id' => $kmk->dosen_id,
+            'hari' => $assignment['hari'],
+            'jam_mulai' => $assignment['jam_mulai'],
+            'jam_selesai' => $assignment['jam_selesai'],
+            'ruangan' => $assignment['ruangan'],
+            'status' => 'pending_dosen',
+            'catatan_generate' => $assignment['is_outside_availability'] 
+                ? "Auto generated (fallback: {$assignment['outside_reason']})" 
+                : 'Auto generated (sesuai ketersediaan dosen)',
+            'is_outside_availability' => $assignment['is_outside_availability'],
+            'outside_reason' => $assignment['outside_reason'],
+            'generated_by' => auth()->id(),
+            'generated_at' => now()
+        ]);
+
+        // Record statistics
+        $this->scheduleService->recordSuccess(
+            $assignment['is_outside_availability'], 
+            $assignment['outside_reason'],
+            $kmk->dosen_id
+        );
+
+        $availabilityStatus = $assignment['is_outside_availability'] ? '(fallback)' : '(sesuai availability)';
+        Log::info("Generated jadwal proposal {$availabilityStatus} for {$kmk->mata_kuliah_nama} - {$kmk->kode_kelas}");
+        return $proposal;
     }
 
     private function hasDosenConflict($dosenId, $hari, $jamMulai, $jamSelesai)
@@ -475,7 +529,7 @@ class JadwalGeneratorController extends Controller
                             ->where('jam_selesai', '>=', $jamSelesai);
                       });
             })
-            ->whereIn('status', ['approved_dosen', 'pending_admin', 'approved_admin'])
+            ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
             ->exists();
 
         return $existingJadwal || $existingProposal;
@@ -504,7 +558,7 @@ class JadwalGeneratorController extends Controller
                 })
                 ->exists();
 
-            // Cek apakah ruang sudah terpakai di proposal yang approved
+            // Cek apakah ruang sudah terpakai di proposal (include pending_dosen)
             $ruangTerpakaiProposal = JadwalProposal::where('hari', $hari)
                 ->where('ruangan', $ruang)
                 ->where(function ($query) use ($jamMulai, $jamSelesai) {
@@ -515,7 +569,7 @@ class JadwalGeneratorController extends Controller
                                 ->where('jam_selesai', '>=', $jamSelesai);
                           });
                 })
-                ->whereIn('status', ['approved_dosen', 'pending_admin', 'approved_admin'])
+                ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
                 ->exists();
 
             if (!$ruangTerpakai && !$ruangTerpakaiProposal) {

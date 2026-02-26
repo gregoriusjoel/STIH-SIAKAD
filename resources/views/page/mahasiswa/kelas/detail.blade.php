@@ -174,7 +174,7 @@
                                     @else
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 shadow-sm">
                                             <i class="fas fa-times-circle mr-1"></i>
-                                            {{ ucfirst($meeting['attendance_status']) }}
+                                            {{ ucfirst(str_replace('_', ' ', $meeting['attendance_status'])) }}
                                         </span>
                                     @endif
                                 @elseif($meeting['is_past'])
@@ -359,31 +359,69 @@
                                         <div class="pl-7 space-y-3">
                                             @forelse($meeting['assignments'] as $tugas)
                                                 <div class="p-4 rounded-xl border border-orange-100 bg-orange-50/50">
-                                                    <div class="flex items-start justify-between mb-3">
-                                                        <div class="flex-1">
+                                                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
+                                                        <div class="flex-1 order-2 sm:order-1">
                                                             <p class="text-sm font-bold text-gray-800 mb-1">{{ $tugas['title'] }}</p>
                                                             
                                                             {{-- Deskripsi Tugas --}}
                                                             @if(!empty($tugas['description']))
-                                                                <p class="text-xs text-gray-600 mb-2 leading-relaxed">{{ $tugas['description'] }}</p>
+                                                                <div class="text-sm text-gray-700 mb-2 leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-strong:text-gray-900">
+                                                                    {!! $tugas['description'] !!}
+                                                                </div>
                                                             @endif
                                                             
                                                             <p class="text-xs text-gray-600">Deadline: <span class="font-bold text-orange-700">{{ $tugas['deadline'] }}</span></p>
                                                         </div>
-                                                        <span class="px-2 py-1 rounded text-[10px] font-bold bg-white border border-gray-200 text-gray-500">Belum Dikumpulkan</span>
+                                                        <div class="order-1 sm:order-2 self-start flex-shrink-0">
+                                                            @if($tugas['submitted'] ?? false)
+                                                                <div class="flex flex-col items-start sm:items-end gap-1">
+                                                                    <div class="flex items-center gap-2 flex-wrap">
+                                                                        <span class="px-2 py-1 rounded text-[10px] font-bold bg-green-100 border border-green-200 text-green-700 whitespace-nowrap">Sudah Dikumpulkan</span>
+                                                                        @if(isset($tugas['score']) && $tugas['score'] !== null)
+                                                                            <span class="px-2 py-1 rounded text-[10px] font-bold bg-blue-100 border border-blue-200 text-blue-700 whitespace-nowrap">Nilai: {{ $tugas['score'] }}</span>
+                                                                        @endif
+                                                                    </div>
+                                                                    <span class="text-[9px] text-gray-400">{{ $tugas['submitted_at'] }}</span>
+                                                                </div>
+                                                            @else
+                                                                <span class="inline-block px-2 py-1 rounded text-[10px] font-bold bg-white border border-gray-200 text-gray-500 whitespace-nowrap">Belum Dikumpulkan</span>
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                     
-                                                    <div class="flex gap-2">
+                                                    <div class="flex flex-col sm:flex-row gap-2 mt-2">
                                                         @if(isset($tugas['file_url']) && $tugas['file_url'])
-                                                            <a href="{{ $tugas['file_url'] }}" target="_blank" class="flex-1 py-2 rounded-lg bg-orange-100/50 text-orange-700 border border-orange-200 text-xs font-bold text-center hover:bg-orange-100 transition-all flex items-center justify-center gap-2">
+                                                            <a href="{{ $tugas['file_url'] }}" target="_blank" class="flex-1 py-2 px-3 rounded-lg bg-orange-100/50 text-orange-700 border border-orange-200 text-xs font-bold text-center hover:bg-orange-100 transition-all flex items-center justify-center gap-2">
                                                                 <span class="material-symbols-outlined text-[16px]">download</span> Download Soal
                                                             </a>
                                                         @endif
-                                                        <button @click="$dispatch('open-submit-tugas', { tugasId: {{ $tugas['id'] }}, title: '{{ addslashes($tugas['title']) }}', submissionType: '{{ $tugas['submission_type'] ?? 'any' }}' })" 
-                                                            class="flex-1 py-2 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-600 hover:text-maroon hover:border-maroon transition-all flex items-center justify-center gap-2">
-                                                            <span class="material-symbols-outlined text-[16px]">upload_file</span> Upload Jawaban
-                                                        </button>
+                                                        
+                                                        {{-- Hanya bisa upload ulang jika belum dinilai --}}
+                                                        @if(!isset($tugas['score']) || $tugas['score'] === null)
+                                                            <button @click="$dispatch('open-submit-tugas', { tugasId: {{ $tugas['id'] }}, title: '{{ addslashes($tugas['title']) }}', submissionType: '{{ $tugas['submission_type'] ?? 'any' }}' })" 
+                                                                class="flex-1 py-2 px-3 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-600 hover:text-maroon hover:border-maroon transition-all flex items-center justify-center gap-2">
+                                                                @if($tugas['submitted'] ?? false)
+                                                                    <span class="material-symbols-outlined text-[16px]">update</span> Upload Ulang
+                                                                @else
+                                                                    <span class="material-symbols-outlined text-[16px]">upload_file</span> Upload Jawaban
+                                                                @endif
+                                                            </button>
+                                                        @else
+                                                            <button disabled class="flex-1 py-2 px-3 rounded-lg bg-gray-50 border border-gray-200 text-xs font-bold text-gray-400 cursor-not-allowed flex items-center justify-center gap-2">
+                                                                <span class="material-symbols-outlined text-[16px]">lock</span> Sudah Dinilai
+                                                            </button>
+                                                        @endif
                                                     </div>
+                                                    
+                                                    {{-- Feedback Dosen --}}
+                                                    @if(isset($tugas['comments']) && $tugas['comments'] !== null)
+                                                        <div class="mt-3 p-3 bg-blue-50/50 rounded-lg border border-blue-100">
+                                                            <p class="text-xs font-bold text-blue-800 mb-1 flex items-center gap-1">
+                                                                <span class="material-symbols-outlined text-[14px]">chat</span> Catatan Dosen:
+                                                            </p>
+                                                            <p class="text-xs text-blue-700 italic">"{{ $tugas['comments'] }}"</p>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                             @empty
                                                 <div class="p-4 rounded-xl border border-orange-100 bg-orange-50/50 text-center">
@@ -452,7 +490,7 @@
                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                     class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl">
 
-                    <form :action="'/mahasiswa/kelas/{{ $classInfo['id'] }}/pertemuan/' + tugasId.toString().split('-')[0] + '/tugas/' + tugasId + '/submit'" 
+                    <form :action="tugasId ? '/mahasiswa/kelas/{{ $classInfo['id'] }}/pertemuan/' + tugasId.toString().split('-')[0] + '/tugas/' + tugasId + '/submit' : '#'" 
                           method="POST" enctype="multipart/form-data">
                         @csrf
 

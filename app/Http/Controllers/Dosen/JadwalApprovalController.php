@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class JadwalApprovalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $dosen = $user->dosen;
@@ -36,13 +36,34 @@ class JadwalApprovalController extends Controller
         $finalApproved = $proposals->where('status', 'approved_admin');
         $finalRejected = $proposals->where('status', 'rejected_admin');
 
+        $query = JadwalApproval::with(['jadwalProposal.mataKuliah', 'jadwalProposal.kelas'])
+            ->where('approved_by', $user->id)
+            ->where('role', 'dosen');
+            
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('jadwalProposal.mataKuliah', function($q) use ($search) {
+                $q->where('nama_mk', 'like', "%{$search}%")
+                  ->orWhere('kode_mk', 'like', "%{$search}%");
+            });
+        }
+        
+        if ($request->filled('status')) {
+            $query->where('action', $request->status);
+        }
+        
+        $historyApprovals = $query->orderBy('created_at', 'desc')
+            ->paginate(4)
+            ->withQueryString();
+
         return view('dosen.jadwal.approval', compact(
             'pendingProposals',
             'approvedProposals', 
             'rejectedProposals',
             'inAdminReview',
             'finalApproved',
-            'finalRejected'
+            'finalRejected',
+            'historyApprovals'
         ));
     }
 
@@ -252,42 +273,66 @@ class JadwalApprovalController extends Controller
     public function getAvailableSlots(Request $request)
     {
         $hari = $request->get('hari');
+        $sks = (int) $request->get('sks', 1);
         $user = Auth::user();
         $dosen = $user->dosen;
         
         if (!$dosen) {
             return response()->json(['error' => 'User tidak terhubung dengan data dosen'], 400);
         }
+
+        $jamSlots = \App\Models\JamPerkuliahan::where('is_active', true)
+            ->orderBy('jam_ke')
+            ->get();
+            
+        $availableStartSlots = [];
         
-        $availableSlots = [
-            ['jam_mulai' => '07:30', 'jam_selesai' => '09:10', 'label' => '07:30 - 09:10'],
-            ['jam_mulai' => '09:20', 'jam_selesai' => '11:00', 'label' => '09:20 - 11:00'],
-            ['jam_mulai' => '11:10', 'jam_selesai' => '12:50', 'label' => '11:10 - 12:50'],
-            ['jam_mulai' => '13:00', 'jam_selesai' => '14:40', 'label' => '13:00 - 14:40'],
-            ['jam_mulai' => '14:50', 'jam_selesai' => '16:30', 'label' => '14:50 - 16:30'],
-            ['jam_mulai' => '16:40', 'jam_selesai' => '18:20', 'label' => '16:40 - 18:20'],
-            ['jam_mulai' => '18:30', 'jam_selesai' => '20:10', 'label' => '18:30 - 20:10'],
-        ];
-        
-        // Filter slot yang tidak bentrok dengan jadwal dosen
-        $availableSlots = array_filter($availableSlots, function($slot) use ($hari, $dosen) {
-            // Cek bentrok dengan jadwal yang sudah approved
+        for ($i = 0; $i <= $jamSlots->count() - $sks; $i++) {
+            $consecutiveValid = true;
+            $startSlot = $jamSlots[$i];
+            
+            for ($j = 0; $j < $sks; $j++) {
+                if ($jamSlots[$i + $j]->jam_ke !== $startSlot->jam_ke + $j) {
+                    $consecutiveValid = false;
+                    break;
+                }
+            }
+            
+            if (!$consecutiveValid) {
+                continue;
+            }
+            
+            $jamMulai = $startSlot->jam_mulai;
+            $jamSelesai = $jamSlots[$i + $sks - 1]->jam_selesai;
+            
             $hasConflict = JadwalProposal::where('dosen_id', $dosen->id)
                 ->where('hari', $hari)
-                ->where(function ($query) use ($slot) {
-                    $query->whereBetween('jam_mulai', [$slot['jam_mulai'], $slot['jam_selesai']])
-                          ->orWhereBetween('jam_selesai', [$slot['jam_mulai'], $slot['jam_selesai']])
-                          ->orWhere(function ($q) use ($slot) {
-                              $q->where('jam_mulai', '<=', $slot['jam_mulai'])
-                                ->where('jam_selesai', '>=', $slot['jam_selesai']);
-                          });
+                ->where(function ($query) use ($jamMulai, $jamSelesai) {
+                    // Check strict overlap: start or end overlaps, or completely engulfs
+                    $query->where(function ($q) use ($jamMulai, $jamSelesai) {
+                        $q->where('jam_mulai', '<', $jamSelesai)
+                          ->where('jam_selesai', '>', $jamMulai);
+                    });
                 })
-                ->whereIn('status', ['approved_dosen', 'pending_admin', 'approved_admin'])
+                ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
                 ->exists();
                 
-            return !$hasConflict;
-        });
+            if (!$hasConflict) {
+                $jamMulaiFormatted = substr($jamMulai, 0, 5);
+                $jamSelesaiFormatted = substr($jamSelesai, 0, 5);
+                
+                $label = $sks > 1 
+                    ? "Jam ke-{$startSlot->jam_ke} sd " . ($startSlot->jam_ke + $sks - 1) . " ({$jamMulaiFormatted} - {$jamSelesaiFormatted})"
+                    : "Jam ke-{$startSlot->jam_ke} ({$jamMulaiFormatted} - {$jamSelesaiFormatted})";
+                    
+                $availableStartSlots[] = [
+                    'jam_mulai' => $jamMulaiFormatted,
+                    'jam_selesai' => $jamSelesaiFormatted,
+                    'label' => $label
+                ];
+            }
+        }
         
-        return response()->json(array_values($availableSlots));
+        return response()->json(array_values($availableStartSlots));
     }
 }

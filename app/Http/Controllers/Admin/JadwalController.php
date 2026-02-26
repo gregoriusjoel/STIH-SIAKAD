@@ -125,10 +125,57 @@ class JadwalController extends Controller
             ->paginate(4, ['*'], 'proposal_page')
             ->withQueryString();
 
-        // Fetch Dosen Availability Checks
-        $availabilityChecks = \App\Models\DosenAvailabilityCheck::with(['dosen.user', 'mataKuliah'])
+        // Fetch Dosen Availability Updates (Logs of availability setting)
+        $availabilityLogsRaw = \App\Models\DosenAvailability::with(['dosen.user', 'jamPerkuliahan'])
             ->orderBy('created_at', 'desc')
             ->get();
+            
+        // Group by minute and dosen to show as a single log entry per submission
+        $availabilityChecks = $availabilityLogsRaw->groupBy(function($item) {
+            return $item->dosen_id . '_' . $item->created_at->format('Y-m-d H:i');
+        })->map(function($group) {
+            $first = $group->first();
+            
+            // Group the slots by day
+            $hariDetails = $group->groupBy('hari')->map(function($slots, $hari) {
+                return $hari . ' (' . $slots->count() . ' slot)';
+            })->implode(', ');
+            
+            // Sort order for days
+            $hariOrder = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 7];
+            
+            // Collect and sort slots for modal viewing
+            $slotsData = $group->map(function($slot) {
+                return [
+                    'hari' => $slot->hari,
+                    'jam' => $slot->jamPerkuliahan ? substr($slot->jamPerkuliahan->jam_mulai, 0, 5) . ' - ' . substr($slot->jamPerkuliahan->jam_selesai, 0, 5) : 'Unknown',
+                    'jam_ke' => $slot->jamPerkuliahan ? $slot->jamPerkuliahan->jam_ke : 999
+                ];
+            })->sort(function ($a, $b) use ($hariOrder) {
+                // First sort by day
+                $dayA = $hariOrder[$a['hari']] ?? 99;
+                $dayB = $hariOrder[$b['hari']] ?? 99;
+                
+                if ($dayA != $dayB) {
+                    return $dayA <=> $dayB;
+                }
+                
+                // Then sort by jam_ke
+                return $a['jam_ke'] <=> $b['jam_ke'];
+            })->map(function($slot) {
+                // format back jam_ke to '-' if it was missing 
+                if ($slot['jam_ke'] === 999) $slot['jam_ke'] = '-';
+                return $slot;
+            })->values()->all();
+
+            return (object)[
+                'created_at' => $first->created_at,
+                'dosen' => $first->dosen,
+                'detail' => $hariDetails,
+                'total_slots' => $group->count(),
+                'slots_data' => $slotsData
+            ];
+        })->values()->take(30);
 
         return view('admin.jadwal.index', compact('kelasMataKuliahs', 'allSchedules', 'mataKuliahs', 'dosens', 'rooms', 'daftarRuangan', 'jamPerkuliahanList', 'statistics', 'jadwalProposals', 'availabilityChecks'));
     }

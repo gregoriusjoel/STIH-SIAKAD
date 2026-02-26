@@ -102,6 +102,7 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::get('/kelas/{id}/input-nilai', [LecturerController::class, 'inputNilaiKelas'])->name('kelas.input-nilai');
     Route::post('/kelas/{id}/bobot-penilaian', [LecturerController::class, 'saveBobotPenilaian'])->name('kelas.bobot-penilaian.save');
     Route::post('/kelas/{id}/simpan-nilai', [LecturerController::class, 'simpanNilai'])->name('kelas.simpan-nilai');
+    Route::post('/kelas/{id}/tarik-nilai', [LecturerController::class, 'tarikNilai'])->name('kelas.tarik-nilai');
     Route::get('/kelas/{id}/get-bobot', [LecturerController::class, 'getBobotPenilaian'])->name('kelas.get-bobot');
 
     // Dokumen (Silabus & RPS)

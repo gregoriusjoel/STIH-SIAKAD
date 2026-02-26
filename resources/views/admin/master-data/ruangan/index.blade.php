@@ -25,31 +25,28 @@
 
     <!-- Data Table -->
     <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h3 class="text-lg font-semibold text-gray-800">Daftar Ruangan</h3>
-        </div>
 
         @if($ruangans->count() > 0)
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-maroon text-white">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                                 Kode Ruangan
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                                 Nama Ruangan
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                                 Gedung/Lantai
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                                 Kapasitas
                             </th>
-                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
                                 Status
                             </th>
-                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
                                 Aksi
                             </th>
                         </tr>

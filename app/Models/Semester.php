@@ -59,11 +59,57 @@ class Semester extends Model
     }
 
     /**
+     * Scope to get semesters that should show active classes
+     * (active semester + semesters within grace period)
+     */
+    public function scopeShowingActiveClasses($query)
+    {
+        $semesterService = app(\App\Services\SemesterService::class);
+        $activeSemesterIds = $semesterService->getActiveSemesterIds();
+        
+        return $query->whereIn('id', $activeSemesterIds);
+    }
+
+    /**
      * Check if semester has ended
      */
     public function hasEnded(): bool
     {
         return $this->tanggal_selesai < now();
+    }
+
+    /**
+     * Check if semester is within grace period
+     */
+    public function isInGracePeriod(): bool
+    {
+        $semesterService = app(\App\Services\SemesterService::class);
+        return $semesterService->isInGracePeriod($this);
+    }
+
+    /**
+     * Check if classes from this semester should be visible
+     */
+    public function shouldShowClasses(): bool
+    {
+        $semesterService = app(\App\Services\SemesterService::class);
+        return in_array($this->id, $semesterService->getActiveSemesterIds());
+    }
+
+    /**
+     * Get days remaining until grace period ends
+     * Returns negative if grace period has ended
+     */
+    public function getDaysUntilGracePeriodEnds(): int
+    {
+        if (!$this->tanggal_selesai) {
+            return 0;
+        }
+
+        $gracePeriodEnd = \Carbon\Carbon::parse($this->tanggal_selesai)
+            ->addDays(\App\Services\SemesterService::GRACE_PERIOD_DAYS);
+        
+        return now()->diffInDays($gracePeriodEnd, false);
     }
 
     /**

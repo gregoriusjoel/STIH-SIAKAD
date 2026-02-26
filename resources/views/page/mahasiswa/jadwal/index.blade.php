@@ -110,7 +110,7 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="p-8 text-center text-gray-400 flex flex-col items-center justify-center h-[200px] bg-gray-50">
+                            <div class="p-8 text-center text-gray-400 flex flex-col items-center justify-center flex-grow min-h-[200px] bg-gray-50 dark:bg-slate-900">
                                 <i class="fas fa-mug-hot text-3xl mb-2 opacity-50"></i>
                                 <p class="text-sm">Libur</p>
                             </div>

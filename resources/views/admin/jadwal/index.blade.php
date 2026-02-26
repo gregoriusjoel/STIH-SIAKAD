@@ -129,43 +129,98 @@
         </div>
 
         {{-- Card: Checks Ketersediaan Waktu Dosen --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden"
+             x-data="{ modalOpen: false, modalDosen: '', modalDate: '', modalSlots: [] }">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
-                <div class="font-semibold text-white text-lg"><i class="fas fa-history mr-2"></i>Log Cek Ketersediaan Waktu Dosen</div>
+                <div class="font-semibold text-white text-lg"><i class="fas fa-history mr-2"></i>Log Update Ketersediaan Waktu Dosen</div>
             </div>
             <div class="p-6">
                 <div class="overflow-x-auto">
                     <table class="w-full text-base">
                         <thead class="bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold">Waktu Cek</th>
+                                <th class="px-4 py-3 text-left font-semibold">Waktu Update</th>
                                 <th class="px-4 py-3 text-left font-semibold">Dosen</th>
-                                <th class="px-4 py-3 text-left font-semibold">Mata Kuliah</th>
-                                <th class="px-4 py-3 text-left font-semibold">Hari/Jam Diminta</th>
+                                <th class="px-4 py-3 text-left font-semibold">Total Slot</th>
+                                <th class="px-4 py-3 text-left font-semibold">Detail Ketersediaan</th>
+                                <th class="px-4 py-3 text-center font-semibold text-gray-500"><i class="fas fa-cog"></i></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                             @forelse($availabilityChecks as $check)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                     <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ $check->created_at->format('d M Y H:i') }}</td>
-                                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{{ $check->dosen->user->name ?? '-' }}</td>
-                                    <td class="px-4 py-3">
-                                        <div class="font-semibold text-gray-900 dark:text-gray-100">{{ $check->mataKuliah->nama_mk ?? '-' }}</div>
-                                        <div class="text-xs text-gray-500">{{ $check->mataKuliah->kode_mk ?? '-' }}</div>
+                                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{{ $check->dosen->user->name ?? $check->dosen->nama ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">{{ $check->total_slots }} Slot</span>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <span class="px-2 py-1 rounded bg-blue-100 text-blue-800 text-xs font-bold">
-                                            {{ $check->hari }}, {{ substr($check->jam_mulai, 0, 5) }} - {{ substr($check->jam_selesai, 0, 5) }}
-                                        </span>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $check->detail }}</div>
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <button type="button" 
+                                            @click="modalDosen = '{{ addslashes($check->dosen->user->name ?? $check->dosen->nama ?? '-') }}'; modalDate = '{{ $check->created_at->format('d M Y H:i') }}'; modalSlots = {{ json_encode($check->slots_data) }}; modalOpen = true"
+                                            class="bg-blue-500 text-white p-1.5 rounded hover:bg-blue-600 transition"
+                                            title="Lihat Detail">
+                                            <i class="fas fa-eye text-xs"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">Belum ada data cek ketersediaan</td>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada data ketersediaan</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Modal Detail Ketersediaan -->
+            <div x-show="modalOpen" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4" x-cloak style="display: none;">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col" @click.away="modalOpen = false">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white rounded-t-xl flex items-center justify-between">
+                        <div class="font-semibold text-lg flex items-center text-white">
+                            <i class="fas fa-calendar-check mr-2"></i>Detail Ketersediaan
+                        </div>
+                        <button type="button" @click="modalOpen = false" class="p-1.5 hover:bg-white/10 rounded-lg transition">
+                            <i class="fas fa-times text-lg"></i>
+                        </button>
+                    </div>
+                    <div class="p-6 overflow-y-auto w-full">
+                        <div class="mb-5 p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-maroon/10 flex items-center justify-center text-maroon dark:text-red-400">
+                                    <i class="fas fa-user-tie text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 dark:text-white text-base" x-text="modalDosen"></h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5"><i class="far fa-clock mr-1"></i>Update: <span x-text="modalDate"></span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-y-auto max-h-96">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0">
+                                    <tr>
+                                        <th class="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300 w-1/4">Hari</th>
+                                        <th class="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300 w-1/4 text-center">Jam Ke-</th>
+                                        <th class="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300 w-1/2">Waktu</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <template x-for="(slot, idx) in modalSlots" :key="idx">
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                            <td class="px-4 py-2.5 font-medium text-gray-900 dark:text-gray-100" x-text="slot.hari"></td>
+                                            <td class="px-4 py-2.5 text-center font-bold text-maroon dark:text-red-400" x-text="slot.jam_ke"></td>
+                                            <td class="px-4 py-2.5 text-gray-700 dark:text-gray-300" x-text="slot.jam"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -136,6 +136,7 @@
                                     <p class="font-bold text-gray-900" x-text="row.nama"></p>
                                     <p class="text-xs text-gray-400 font-mono" x-text="row.nim"></p>
                                 </td>
+                                <td class="px-4 py-3">
                                     <div class="flex flex-col items-center gap-2">
                                         <template x-if="row.submitted">
                                             <div class="flex flex-col items-center gap-1.5 w-full">
@@ -144,10 +145,10 @@
                                                 </span>
                                                 <span class="text-[10px] text-gray-400" x-text="row.submission_date"></span>
                                                 <template x-if="row.file_path">
-                                                    <a :href="'/storage/' + row.file_path" target="_blank" download
+                                                    <button type="button" @click="$dispatch('open-file-submission', { url: '/storage/' + row.file_path, nama: row.nama })"
                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition w-full justify-center">
-                                                        <i class="fas fa-download"></i> Download File
-                                                    </a>
+                                                        <i class="fas fa-eye"></i> Lihat File
+                                                    </button>
                                                 </template>
                                                 <template x-if="row.text_submission && !row.file_path">
                                                     <button @click="$dispatch('open-text-submission', { text: row.text_submission, nama: row.nama })"
@@ -164,7 +165,6 @@
                                         </template>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3">
                                 <td class="px-4 py-3">
                                     <input type="number"
                                            :value="getRow(row.id).score"
@@ -324,6 +324,115 @@
                             class="px-5 py-2.5 bg-gray-600 text-white rounded-xl text-sm font-bold hover:bg-gray-700 transition">
                         <i class="fas fa-times mr-2"></i> Tutup
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL VIEW FILE SUBMISSION --}}
+    <div x-data="{ 
+            open: false, 
+            fileUrl: '', 
+            mahasiswaNama: '',
+            get fileExtension() {
+                if (!this.fileUrl) return '';
+                return this.fileUrl.split('.').pop().toLowerCase();
+            },
+            get isPreviewable() {
+                if (!this.fileUrl) return false;
+                // Add formats that browsers can natively display
+                const viewableFormats = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'txt', 'mp4', 'webm'];
+                return viewableFormats.includes(this.fileExtension);
+            },
+            getViewerUrl() {
+                // If PDF, hide toolbar
+                if (this.fileExtension === 'pdf') {
+                    return this.fileUrl + '#toolbar=0';
+                }
+                return this.fileUrl;
+            }
+         }" 
+         @open-file-submission.window="
+            open = true;
+            fileUrl = $event.detail.url;
+            mahasiswaNama = $event.detail.nama;
+         "
+         x-show="open" 
+         style="display: none;" 
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         role="dialog" 
+         aria-modal="true">
+        
+        {{-- Backdrop --}}
+        <div x-show="open" 
+             x-transition:enter="ease-out duration-300" 
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100" 
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100" 
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" 
+             @click="open = false"></div>
+
+        {{-- Modal Panel --}}
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div x-show="open" 
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-4xl h-[85vh] flex flex-col">
+
+                {{-- Header --}}
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex-shrink-0">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="size-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                                <i class="fas fa-file text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">File Tugas</h3>
+                                <p class="text-xs text-white/90 mt-0.5" x-text="mahasiswaNama"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a :href="fileUrl" target="_blank" class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg text-sm" title="Buka di Tab Baru">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                            <button type="button" @click="open = false" class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Content --}}
+                <div class="flex-1 bg-gray-50 relative flex items-center justify-center">
+                    {{-- Native Preview --}}
+                    <template x-if="open && fileUrl && isPreviewable">
+                        <iframe :src="getViewerUrl()" class="absolute inset-0 w-full h-full border-0 bg-white"></iframe>
+                    </template>
+                    
+                    {{-- Fallback Non-Previewable (Excel, Word, etc) --}}
+                    <template x-if="open && fileUrl && !isPreviewable">
+                        <div class="text-center p-8 max-w-sm mx-auto">
+                            <div class="size-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400 shadow-inner">
+                                <i class="fas fa-file-excel text-3xl" x-show="['xls', 'xlsx', 'csv'].includes(fileExtension)"></i>
+                                <i class="fas fa-file-word text-3xl" x-show="['doc', 'docx'].includes(fileExtension)"></i>
+                                <i class="fas fa-file-archive text-3xl" x-show="['zip', 'rar', '7z'].includes(fileExtension)"></i>
+                                <i class="fas fa-file-alt text-3xl" x-show="!['xls', 'xlsx', 'csv', 'doc', 'docx', 'zip', 'rar', '7z'].includes(fileExtension)"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-gray-800 mb-2">Tidak Bisa Ditampilkan</h4>
+                            <p class="text-sm text-gray-500 leading-relaxed mb-6">
+                                Browser tidak mendukung pratinjau langsung untuk tipe file <strong x-text="`.${fileExtension}`"></strong>. Silakan unduh file untuk melihat isinya.
+                            </p>
+                            <a :href="fileUrl" target="_blank" download class="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow-sm">
+                                <i class="fas fa-download"></i> Unduh File
+                            </a>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>

@@ -72,6 +72,54 @@ class KelasMataKuliah extends Model
         return $this->hasMany(Pertemuan::class);
     }
     
+    /**
+     * Scope to filter classes by active semester (including grace period)
+     * This ensures only current semester + grace period classes are shown
+     */
+    public function scopeActiveClasses($query)
+    {
+        $semesterService = app(\App\Services\SemesterService::class);
+        $activeSemesterIds = $semesterService->getActiveSemesterIds();
+        
+        return $query->whereIn('semester_id', $activeSemesterIds);
+    }
+
+    /**
+     * Scope to filter by specific semester
+     */
+    public function scopeForSemester($query, $semesterId)
+    {
+        return $query->where('semester_id', $semesterId);
+    }
+
+    /**
+     * Scope to get classes for current active semester only (no grace period)
+     */
+    public function scopeCurrentSemester($query)
+    {
+        $semesterService = app(\App\Services\SemesterService::class);
+        $activeSemester = $semesterService->getActiveSemester();
+        
+        if ($activeSemester) {
+            return $query->where('semester_id', $activeSemester->id);
+        }
+        
+        return $query->whereNull('semester_id'); // Return nothing if no active semester
+    }
+
+    /**
+     * Check if this class is from an active semester
+     */
+    public function isFromActiveSemester(): bool
+    {
+        if (!$this->semester_id) {
+            return false;
+        }
+
+        $semesterService = app(\App\Services\SemesterService::class);
+        return in_array($this->semester_id, $semesterService->getActiveSemesterIds());
+    }
+    
     // Accessor for backward compatibility
     public function getNamaKelasAttribute()
     {

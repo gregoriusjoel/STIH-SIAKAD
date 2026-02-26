@@ -1,6 +1,6 @@
 <!-- Backdrop for Mobile -->
 <div x-show="sidebarOpen" 
-    class="fixed inset-0 z-[55] bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+    class="fixed inset-0 z-[40] bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity duration-300"
     @click="sidebarOpen = false"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="opacity-0"
@@ -12,7 +12,7 @@
 
 <!-- Sidebar -->
 <aside
-    class="fixed inset-y-0 left-0 z-[60] w-64 bg-[#fcfcfc] transition-transform duration-300 transform lg:translate-x-0 lg:static lg:inset-0 flex flex-col h-full shadow-xl lg:shadow-none"
+    class="fixed inset-y-0 left-0 z-[45] w-64 bg-[#fcfcfc] transition-transform duration-300 transform lg:translate-x-0 lg:static lg:inset-0 flex flex-col h-full shadow-xl lg:shadow-none"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
     
     <div class="flex flex-col h-full">

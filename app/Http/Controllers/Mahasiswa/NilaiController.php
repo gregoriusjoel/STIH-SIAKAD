@@ -12,15 +12,20 @@ class NilaiController extends Controller
     {
         $mahasiswa = Auth::user()->mahasiswa;
         
-        // Get semua nilai dengan relasi
+        // Get semua nilai dengan relasi, hanya yang sudah di-publish
         $nilaiData = $mahasiswa->krs()
             ->with([
                 'kelasMataKuliah.mataKuliah', 
                 'kelasMataKuliah.semester', 
+                'nilai' => function($q) {
+                    $q->where('is_published', true);
+                },
                 'nilai.bobotPenilaian',
                 'kelas.bobotPenilaian'
             ])
-            ->whereHas('nilai')
+            ->whereHas('nilai', function($q) {
+                $q->where('is_published', true);
+            })
             ->get();
         
         // Group by semester
@@ -81,10 +86,15 @@ class NilaiController extends Controller
             ->with([
                 'kelasMataKuliah.mataKuliah', 
                 'kelasMataKuliah.semester', 
+                'nilai' => function($q) {
+                    $q->where('is_published', true);
+                },
                 'nilai.bobotPenilaian',
                 'kelas.bobotPenilaian'
             ])
-            ->whereHas('nilai')
+            ->whereHas('nilai', function($q) {
+                $q->where('is_published', true);
+            })
             ->get();
 
         $nilaiPerSemester = $nilaiData->groupBy(function($item) {
@@ -136,10 +146,15 @@ class NilaiController extends Controller
             ->with([
                 'kelasMataKuliah.mataKuliah', 
                 'kelasMataKuliah.semester', 
+                'nilai' => function($q) {
+                    $q->where('is_published', true);
+                },
                 'nilai.bobotPenilaian',
                 'kelas.bobotPenilaian'
             ])
-            ->whereHas('nilai')
+            ->whereHas('nilai', function($q) {
+                $q->where('is_published', true);
+            })
             ->get();
 
         $nilaiPerSemester = $nilaiData->groupBy(function($item) {

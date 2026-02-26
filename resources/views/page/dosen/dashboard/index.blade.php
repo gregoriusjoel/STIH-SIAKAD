@@ -19,11 +19,10 @@
 
 @section('content')
     <div class="pt-6 px-6 md:px-8 pb-8 w-full flex flex-col gap-6" x-data="dashboardApp(@js($all_schedules ?? []), @js($meeting_dates ?? []), @js($schedules ?? []), @js($upcomingSchedules ?? []))">
-        <!-- Force Tailwind JIT: grid grid-cols-7 gap-1 -->
 
         <!-- Welcome Section -->
         <div class="flex flex-col gap-1">
-            <h2 class="text-3xl md:text-4xl font-black text-[#111218] dark:text-white tracking-tight">
+            <h2 class="text-3xl font-black text-[#111218] dark:text-white tracking-tight">
                 Selamat Pagi, {{ Auth::user()->name }}
             </h2>
             <p class="text-base text-[#616889] dark:text-slate-400">
@@ -199,8 +198,8 @@
                             <template x-if="todaySchedules.length > 0">
                                 <div>
                                     <template x-for="(schedule, index) in paginatedTodaySchedules" :key="index">
-                                        <div
-                                            class="p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group"
+                                        <a :href="schedule.url"
+                                            class="block p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group cursor-pointer"
                                             x-transition:enter="transition ease-out duration-200"
                                             x-transition:enter-start="opacity-0 transform translate-y-2"
                                             x-transition:enter-end="opacity-100 transform translate-y-0">
@@ -214,9 +213,14 @@
 
                                             <!-- Content Column -->
                                             <div class="flex-1 min-w-0">
-                                                <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
-                                                    x-text="schedule.subject"
-                                                    :title="schedule.subject"></h4>
+                                                <div class="flex items-center gap-2 mb-0.5">
+                                                    <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
+                                                        x-text="schedule.subject"
+                                                        :title="schedule.subject"></h4>
+                                                    <template x-if="schedule.is_rescheduled">
+                                                        <span class="px-2 py-0.5 text-[10px] font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-md">RESCHEDULE</span>
+                                                    </template>
+                                                </div>
                                                 <p class="text-xs text-gray-500 dark:text-slate-400 truncate mb-1.5">
                                                     <span x-text="schedule.code"></span> • Kelas <span x-text="schedule.class"></span>
                                                 </p>
@@ -228,7 +232,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     </template>
                                 </div>
                             </template>
@@ -285,8 +289,8 @@
                             <template x-if="upcomingSchedulesList.length > 0">
                                 <div>
                                     <template x-for="(schedule, index) in paginatedUpcomingSchedules" :key="index">
-                                        <div
-                                            class="p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group"
+                                        <a :href="schedule.url"
+                                            class="block p-4 border-b border-gray-50 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex items-start gap-3 group cursor-pointer"
                                             x-transition:enter="transition ease-out duration-200"
                                             x-transition:enter-start="opacity-0 transform translate-y-2"
                                             x-transition:enter-end="opacity-100 transform translate-y-0">
@@ -302,9 +306,14 @@
 
                                             <!-- Content Column -->
                                             <div class="flex-1 min-w-0">
-                                                <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
-                                                    x-text="schedule.subject"
-                                                    :title="schedule.subject"></h4>
+                                                <div class="flex items-center gap-2 mb-0.5">
+                                                    <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
+                                                        x-text="schedule.subject"
+                                                        :title="schedule.subject"></h4>
+                                                    <template x-if="schedule.is_rescheduled">
+                                                        <span class="px-2 py-0.5 text-[10px] font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-md">RESCHEDULE</span>
+                                                    </template>
+                                                </div>
                                                 <p class="text-xs text-gray-500 dark:text-slate-400 truncate mb-1.5">
                                                     <span x-text="schedule.code"></span> • Kelas <span x-text="schedule.class"></span>
                                                 </p>
@@ -316,7 +325,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     </template>
                                 </div>
                             </template>
@@ -376,6 +385,12 @@
                             <div><strong>Ruangan:</strong> <span x-text="selectedEvent?.room || '-' "></span>
                             </div>
                             <div><strong>Waktu:</strong> <span x-text="selectedEvent?.time || '-' "></span>
+                            </div>
+                            <div class="pt-3">
+                                <a :href="selectedEvent?.url || '#'" 
+                                   class="inline-block bg-primary text-white font-bold text-xs py-2 px-4 rounded-lg shadow hover:bg-primary/90 transition-colors">
+                                    Detail Kelas
+                                </a>
                             </div>
                         </div>
                     </template>
