@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Models\Semester;
+use App\Models\MataKuliahSemester;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -153,10 +155,36 @@ class SemesterService
     /**
      * Activate a semester (set as current active semester)
      * Ensures only one semester is active at a time
+     * Also transitions MK pivot statuses
      */
     public function activateSemester(Semester $semester): bool
     {
         try {
+            DB::beginTransaction();
+
+            $auditLog = app(AuditLogService::class);
+
+            // Get current active semester before switch
+            $previousActive = Semester::where('is_active', true)->first();
+
+            // Mark all MK pivot entries of old semester as 'history'
+            if ($previousActive && $previousActive->id !== $semester->id) {
+                $deactivated = MataKuliahSemester::where('semester_id', $previousActive->id)
+                    ->where('status', 'active')
+                    ->update([
+                        'status' => 'history',
+                        'deactivated_at' => now(),
+                    ]);
+
+                $auditLog->log(
+                    'deactivate_semester_mk',
+                    'semester',
+                    $previousActive->id,
+                    ['is_active' => true, 'mk_active_count' => $deactivated],
+                    ['is_active' => false, 'mk_status' => 'history']
+                );
+            }
+
             // Deactivate all other semesters
             Semester::where('id', '!=', $semester->id)
                 ->update([
@@ -170,6 +198,16 @@ class SemesterService
                 'status' => 'aktif'
             ]);
 
+            $auditLog->log(
+                'activate_semester',
+                'semester',
+                $semester->id,
+                $previousActive ? ['previous_semester_id' => $previousActive->id] : null,
+                ['semester_id' => $semester->id, 'nama' => $semester->display_label]
+            );
+
+            DB::commit();
+
             // Clear cache
             $this->clearCache();
 
@@ -177,6 +215,7 @@ class SemesterService
 
             return true;
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error("Failed to activate semester {$semester->id}: {$e->getMessage()}");
             return false;
         }
@@ -297,6 +336,60 @@ class SemesterService
     {
         Cache::forget('active_semester');
         Cache::forget('active_semester_ids');
+    }
+
+    /* ═══════════════════════════════════════════
+     *  LOCK / UNLOCK
+     * ═══════════════════════════════════════════ */
+
+    /**
+     * Lock a semester so no MK/jadwal changes can be made
+     */
+    public function lockSemester(Semester $semester): bool
+    {
+        try {
+            $before = $semester->only(['is_locked', 'locked_at', 'locked_by']);
+            $semester->lock();
+
+            app(AuditLogService::class)->log(
+                'lock_semester',
+                'semester',
+                $semester->id,
+                $before,
+                $semester->fresh()->only(['is_locked', 'locked_at', 'locked_by'])
+            );
+
+            Log::info("Semester locked: {$semester->display_label}");
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to lock semester {$semester->id}: {$e->getMessage()}");
+            return false;
+        }
+    }
+
+    /**
+     * Unlock a semester (superadmin only)
+     */
+    public function unlockSemester(Semester $semester): bool
+    {
+        try {
+            $before = $semester->only(['is_locked', 'locked_at', 'locked_by']);
+            $semester->unlock();
+
+            app(AuditLogService::class)->log(
+                'unlock_semester',
+                'semester',
+                $semester->id,
+                $before,
+                ['is_locked' => false]
+            );
+
+            Log::info("Semester unlocked: {$semester->display_label}");
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to unlock semester {$semester->id}: {$e->getMessage()}");
+            return false;
+        }
     }
 
     /**

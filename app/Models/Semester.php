@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Semester extends Model
@@ -14,6 +16,9 @@ class Semester extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'is_active',
+        'is_locked',
+        'locked_at',
+        'locked_by',
         'krs_dapat_diisi',
         'krs_mulai',
         'krs_selesai',
@@ -23,6 +28,8 @@ class Semester extends Model
         'tanggal_mulai' => 'date',
         'tanggal_selesai' => 'date',
         'is_active' => 'boolean',
+        'is_locked' => 'boolean',
+        'locked_at' => 'datetime',
         'krs_dapat_diisi' => 'boolean',
         'krs_mulai' => 'date',
         'krs_selesai' => 'date',
@@ -31,6 +38,68 @@ class Semester extends Model
     public function kelasMataKuliahs(): HasMany
     {
         return $this->hasMany(KelasMataKuliah::class);
+    }
+
+    /* ─── Mata Kuliah Semester Pivot ─── */
+
+    public function mataKuliahs(): BelongsToMany
+    {
+        return $this->belongsToMany(MataKuliah::class, 'mata_kuliah_semesters')
+            ->withPivot(['status', 'source_semester_id', 'activated_at', 'deactivated_at', 'meta'])
+            ->withTimestamps();
+    }
+
+    public function activeMataKuliahs(): BelongsToMany
+    {
+        return $this->mataKuliahs()->wherePivot('status', 'active');
+    }
+
+    public function historyMataKuliahs(): BelongsToMany
+    {
+        return $this->mataKuliahs()->wherePivot('status', 'history');
+    }
+
+    public function mataKuliahSemesters(): HasMany
+    {
+        return $this->hasMany(MataKuliahSemester::class);
+    }
+
+    public function lockedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'locked_by');
+    }
+
+    /* ─── Lock Helpers ─── */
+
+    public function isLocked(): bool
+    {
+        return (bool) $this->is_locked;
+    }
+
+    public function lock(?int $userId = null): void
+    {
+        $this->update([
+            'is_locked' => true,
+            'locked_at' => now(),
+            'locked_by' => $userId ?? auth()->id(),
+        ]);
+    }
+
+    public function unlock(): void
+    {
+        $this->update([
+            'is_locked' => false,
+            'locked_at' => null,
+            'locked_by' => null,
+        ]);
+    }
+
+    /**
+     * Get display label: "Ganjil 2026/2027"
+     */
+    public function getDisplayLabelAttribute(): string
+    {
+        return "{$this->nama_semester} {$this->tahun_ajaran}";
     }
 
     /**

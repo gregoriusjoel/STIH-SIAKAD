@@ -181,12 +181,15 @@
 </head>
 
 <body class="bg-gray-100 overflow-hidden">
-    <div class="flex h-screen overflow-hidden">
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+    
+    <div class="flex h-screen overflow-hidden relative">
         <!-- Sidebar -->
         @include('admin.sidebar-admin')
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 flex flex-col overflow-hidden w-full">
             <!-- Top Navbar -->
             <header class="header-maroon shadow-sm z-10">
                 <div class="flex items-center justify-between px-6 py-3">
@@ -427,11 +430,41 @@
             });
         }, 5000);
         // Sidebar toggle for small screens
-        document.getElementById('sidebar-toggle')?.addEventListener('click', function () {
-            const aside = document.querySelector('aside.sidebar');
-            if (!aside) return;
-            aside.classList.toggle('hidden');
-        });
+        const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const asideSidebar = document.querySelector('aside.sidebar');
+
+        function toggleSidebar() {
+            if (!asideSidebar) return;
+            
+            const isOpen = asideSidebar.classList.contains('mobile-open');
+            
+            if (isOpen) {
+                // Close sidebar
+                asideSidebar.classList.remove('mobile-open');
+                if (sidebarOverlay) {
+                    sidebarOverlay.classList.remove('opacity-100');
+                    sidebarOverlay.classList.add('opacity-0');
+                    setTimeout(() => {
+                        sidebarOverlay.classList.add('hidden');
+                    }, 300); // match transition duration
+                }
+            } else {
+                // Open sidebar
+                asideSidebar.classList.add('mobile-open');
+                asideSidebar.classList.remove('hidden'); // ensure it's not hidden
+                if (sidebarOverlay) {
+                    sidebarOverlay.classList.remove('hidden');
+                    // Force reflow
+                    void sidebarOverlay.offsetWidth;
+                    sidebarOverlay.classList.remove('opacity-0');
+                    sidebarOverlay.classList.add('opacity-100');
+                }
+            }
+        }
+
+        sidebarToggleBtn?.addEventListener('click', toggleSidebar);
+        sidebarOverlay?.addEventListener('click', toggleSidebar);
 
         // Header search typeahead (AJAX)
         (function () {

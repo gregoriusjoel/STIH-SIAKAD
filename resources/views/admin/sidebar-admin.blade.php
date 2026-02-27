@@ -29,6 +29,23 @@
         .sidebar-scroll::-webkit-scrollbar { 
             display: none; /* WebKit */
         }
+
+        /* Ensure sidebar flex layout on mobile when shown so scrolling works */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 40;
+                height: 100vh;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
     </style>
 
     <!-- Fixed Header Area -->

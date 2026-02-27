@@ -4,17 +4,58 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MataKuliah;
+use App\Models\MataKuliahSemester;
+use App\Models\Semester;
 use App\Models\Prodi;
 use App\Models\Fakultas;
+use App\Services\MataKuliahSemesterService;
+use App\Services\SemesterService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class MataKuliahController extends Controller
 {
-    public function index()
+    public function __construct(
+        protected SemesterService $semesterService,
+        protected MataKuliahSemesterService $mkSemesterService,
+    ) {}
+
+    public function index(Request $request)
     {
-        $mataKuliahs = MataKuliah::with(['prodi', 'fakultas'])->paginate(10);
-        return view('admin.mata-kuliah.index', compact('mataKuliahs'));
+        $tab = $request->input('tab', 'master');
+        $semesterId = $request->input('semester_id');
+
+        // Semester data
+        $activeSemester = $this->semesterService->getActiveSemester();
+        $allSemesters   = Semester::orderBy('tahun_ajaran', 'desc')->orderBy('tanggal_mulai', 'desc')->get();
+        $selectedSemester = $semesterId ? Semester::find($semesterId) : $activeSemester;
+
+        // Master MK (paginated)
+        $mataKuliahs = MataKuliah::with(['prodi', 'fakultas'])->paginate(15)->withQueryString();
+
+        // Pivot data for semester tab
+        $activePivots  = $selectedSemester
+            ? $this->mkSemesterService->getActiveMKBySemester($selectedSemester->id)
+            : collect();
+
+        $historyPivots = $selectedSemester
+            ? $this->mkSemesterService->getHistoryMKBySemester($selectedSemester->id)
+            : collect();
+
+        $unattachedMK = $selectedSemester
+            ? $this->mkSemesterService->getUnattachedMK($selectedSemester->id)
+            : collect();
+
+        return view('admin.mata-kuliah.index', compact(
+            'mataKuliahs',
+            'tab',
+            'activeSemester',
+            'allSemesters',
+            'selectedSemester',
+            'activePivots',
+            'historyPivots',
+            'unattachedMK',
+        ));
     }
 
     public function create()

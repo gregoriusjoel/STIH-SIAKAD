@@ -268,6 +268,23 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('mata-kuliah/import', [App\Http\Controllers\Admin\MataKuliahController::class, 'import'])->name('mata-kuliah.import');
     Route::resource('mata-kuliah', App\Http\Controllers\Admin\MataKuliahController::class);
 
+    // ── Mata Kuliah per Semester (Best Practice) ──────────────────────────
+    Route::prefix('mata-kuliah-semester')->name('mata-kuliah-semester.')->middleware('semester.lock')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'index'])->name('index')->withoutMiddleware('semester.lock');
+        Route::get('/histori', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'histori'])->name('histori')->withoutMiddleware('semester.lock');
+        Route::post('/attach', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'attach'])->name('attach');
+        Route::post('/attach-by-codes', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'attachByCodes'])->name('attach-by-codes');
+        Route::post('/detach', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'detach'])->name('detach');
+        Route::get('/carry-forward/preview', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'carryForwardPreview'])->name('carry-forward-preview')->withoutMiddleware('semester.lock');
+        Route::post('/carry-forward', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'carryForward'])->name('carry-forward');
+        Route::post('/restore', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'restore'])->name('restore');
+        Route::patch('/semesters/{semester}/activate', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'activateSemester'])->name('activate-semester')->withoutMiddleware('semester.lock');
+        Route::patch('/semesters/{semester}/lock', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'lockSemester'])->name('lock-semester')->withoutMiddleware('semester.lock');
+        Route::patch('/semesters/{semester}/unlock', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'unlockSemester'])->name('unlock-semester')->withoutMiddleware('semester.lock');
+    });
+    Route::get('audit-logs', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'auditLogs'])->name('mata-kuliah-semester.audit-logs');
+    // ─────────────────────────────────────────────────────────────────────
+
     // Ruangan Management
     Route::resource('ruangan', App\Http\Controllers\Admin\RuanganController::class);
 
