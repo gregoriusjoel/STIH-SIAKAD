@@ -8,6 +8,7 @@ use App\Models\DosenAttendance;
 use App\Models\Kelas;
 use App\Models\KelasMataKuliah;
 use App\Models\Pertemuan;
+use App\Services\ActiveMeetingResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -41,16 +42,18 @@ class DosenAttendanceController extends Controller
             return back()->with('error', 'Data kelas mata kuliah tidak ditemukan.');
         }
 
-        $pertemuan = Pertemuan::firstOrCreate(
-            [
-                'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
-                'nomor_pertemuan'      => $pertemuanNo,
-            ],
-            [
-                'topik'  => 'Pertemuan ' . $pertemuanNo,
-                'status' => 'scheduled',
-            ]
-        );
+        // Resolve tipe_pertemuan from route parameter (supports "kuliah:3", "uts:1", or plain int)
+        $resolver = app(ActiveMeetingResolver::class);
+        if (str_contains((string) $pertemuanNo, ':')) {
+            [$tipe, $nomor] = explode(':', $pertemuanNo, 2);
+            $nomor = (int) $nomor;
+        } else {
+            $mapped = $resolver->slotToTipeNomor((int) $pertemuanNo);
+            $tipe = $mapped['tipe'];
+            $nomor = $mapped['nomor'];
+        }
+
+        $pertemuan = $resolver->findOrCreatePertemuan($kelasMataKuliah, $tipe, $nomor);
 
         $pertemuan->metode_pengajaran = $request->metode_pengajaran;
         if ($request->metode_pengajaran === 'online') {
@@ -97,18 +100,20 @@ class DosenAttendanceController extends Controller
             return back()->with('error', 'Data kelas mata kuliah tidak ditemukan.');
         }
 
-         // Aktivasi QR
-        $pertemuan = Pertemuan::firstOrCreate(
-            [
-                'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
-                'nomor_pertemuan'      => $pertemuanNo,
-            ],
-            [
-                'topik'             => 'Pertemuan ' . $pertemuanNo,
-                'status'            => 'scheduled',
-                'metode_pengajaran' => 'offline',
-            ]
-        );
+         // Aktivasi QR — resolve tipe_pertemuan from route param
+        $resolver = app(ActiveMeetingResolver::class);
+        if (str_contains((string) $pertemuanNo, ':')) {
+            [$tipe, $nomor] = explode(':', $pertemuanNo, 2);
+            $nomor = (int) $nomor;
+        } else {
+            $mapped = $resolver->slotToTipeNomor((int) $pertemuanNo);
+            $tipe = $mapped['tipe'];
+            $nomor = $mapped['nomor'];
+        }
+
+        $pertemuan = $resolver->findOrCreatePertemuan($kelasMataKuliah, $tipe, $nomor, [
+            'metode_pengajaran' => 'offline',
+        ]);
 
         // Do not activate QR for asynchronous meetings
         if ($pertemuan->metode_pengajaran === 'asynchronous') {

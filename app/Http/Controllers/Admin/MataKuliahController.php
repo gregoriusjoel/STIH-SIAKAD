@@ -25,13 +25,37 @@ class MataKuliahController extends Controller
         $tab = $request->input('tab', 'master');
         $semesterId = $request->input('semester_id');
 
+        // Filter & sort params (Master MK tab — server-side)
+        $search = $request->input('search', '');
+        $semesterFilter = $request->input('semester_filter', '');
+        $sort = $request->input('sort', 'kode_mk');
+        $sortDir = $request->input('sort_dir', 'asc');
+
+        // Validate sort params
+        $allowedSorts = ['kode_mk', 'nama_mk', 'sks', 'semester', 'jenis'];
+        if (!in_array($sort, $allowedSorts)) $sort = 'kode_mk';
+        if (!in_array($sortDir, ['asc', 'desc'])) $sortDir = 'asc';
+
         // Semester data
         $activeSemester = $this->semesterService->getActiveSemester();
         $allSemesters   = Semester::orderBy('tahun_ajaran', 'desc')->orderBy('tanggal_mulai', 'desc')->get();
         $selectedSemester = $semesterId ? Semester::find($semesterId) : $activeSemester;
 
-        // Master MK (paginated)
-        $mataKuliahs = MataKuliah::with(['prodi', 'fakultas'])->paginate(15)->withQueryString();
+        // Master MK (paginated with filters & sort)
+        $mkQuery = MataKuliah::with(['prodi', 'fakultas']);
+
+        if ($search) {
+            $mkQuery->where(function ($q) use ($search) {
+                $q->where('kode_mk', 'like', "%{$search}%")
+                  ->orWhere('nama_mk', 'like', "%{$search}%");
+            });
+        }
+
+        if ($semesterFilter !== '') {
+            $mkQuery->where('semester', (int) $semesterFilter);
+        }
+
+        $mataKuliahs = $mkQuery->orderBy($sort, $sortDir)->paginate(15)->withQueryString();
 
         // Pivot data for semester tab
         $activePivots  = $selectedSemester
@@ -55,6 +79,10 @@ class MataKuliahController extends Controller
             'activePivots',
             'historyPivots',
             'unattachedMK',
+            'search',
+            'semesterFilter',
+            'sort',
+            'sortDir',
         ));
     }
 

@@ -63,7 +63,7 @@ Route::post('/absen/login', [App\Http\Controllers\Absen\LoginController::class, 
 Route::get('/absen/thank-you', [App\Http\Controllers\Absen\LoginController::class, 'thankYou'])->middleware('auth:mahasiswa_absen')->name('absen.thankyou');
 
 // Dosen / Lecturer Portal Routes
-Route::prefix('dosen')->name('dosen.')->group(function () {
+Route::prefix('dosen')->name('dosen.')->where(['pertemuan' => '[a-z0-9:]+'])->group(function () {
     Route::get('/dashboard', [LecturerController::class, 'dashboard'])->name('dashboard');
     Route::get('/kelas', [LecturerController::class, 'classes'])->name('kelas');
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal')->middleware('auth');
@@ -72,6 +72,7 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::post('/kelas/reschedule', [JadwalController::class, 'kelasReschedule'])->name('kelas.reschedule')->middleware('auth');
     Route::post('/jadwal/check-availability', [JadwalController::class, 'checkAvailability'])->name('jadwal.check_availability')->middleware('auth');
     Route::get('/kelas/{id}/detail', [LecturerController::class, 'detail'])->name('kelas.detail');
+    Route::get('/kelas/{id}/export-berita-acara', [LecturerController::class, 'exportBeritaAcara'])->name('kelas.export-berita-acara');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}', [LecturerController::class, 'meetingDetail'])->name('kelas.pertemuan.detail');
     Route::get('/kelas/{id}/pertemuan/{pertemuan}/materi', [LecturerController::class, 'meetingMaterials'])->name('kelas.pertemuan.materi');
     Route::post('/kelas/{id}/pertemuan/{pertemuan}/presensi', [LecturerController::class, 'updateAttendance'])->name('kelas.pertemuan.presensi');
@@ -104,6 +105,8 @@ Route::prefix('dosen')->name('dosen.')->group(function () {
     Route::post('/kelas/{id}/simpan-nilai', [LecturerController::class, 'simpanNilai'])->name('kelas.simpan-nilai');
     Route::post('/kelas/{id}/tarik-nilai', [LecturerController::class, 'tarikNilai'])->name('kelas.tarik-nilai');
     Route::get('/kelas/{id}/get-bobot', [LecturerController::class, 'getBobotPenilaian'])->name('kelas.get-bobot');
+    Route::get('/kelas/{id}/nilai-template', [LecturerController::class, 'downloadNilaiTemplate'])->name('kelas.nilai-template');
+    Route::post('/kelas/{id}/import-nilai', [LecturerController::class, 'importNilai'])->name('kelas.import-nilai');
 
     // Dokumen (Silabus & RPS)
     Route::post('/kelas/{id}/dokumen/upload', [LecturerController::class, 'uploadDokumen'])->name('kelas.dokumen.upload')->middleware('auth');
@@ -242,6 +245,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('dosen', App\Http\Controllers\Admin\DosenController::class);
     Route::post('dosen/import', [App\Http\Controllers\Admin\DosenController::class, 'import'])->name('dosen.import');
     Route::post('dosen/{dosen}/toggle-status', [App\Http\Controllers\Admin\DosenController::class, 'toggleStatus'])->name('dosen.toggle-status');
+
+    // Teaching Assignment (Penugasan Mengajar)
+    Route::post('dosen/{dosen}/assignments', [App\Http\Controllers\Admin\DosenController::class, 'storeAssignments'])->name('dosen.assignments.store');
+    Route::delete('dosen/{dosen}/assignments/{mataKuliah}', [App\Http\Controllers\Admin\DosenController::class, 'destroyAssignment'])->name('dosen.assignments.destroy');
+    Route::post('dosen/{dosen}/assignments/copy', [App\Http\Controllers\Admin\DosenController::class, 'copyAssignments'])->name('dosen.assignments.copy');
+    Route::get('dosen/{dosen}/assignments/history/{semester}', [App\Http\Controllers\Admin\DosenController::class, 'getHistoryAssignments'])->name('dosen.assignments.history');
+
     Route::resource('dosen-pa', App\Http\Controllers\Admin\DosenPaController::class);
     Route::get('dosen-pa/{id}/mahasiswa', [App\Http\Controllers\Admin\DosenPaController::class, 'getMahasiswa'])->name('dosen-pa.mahasiswa');
 

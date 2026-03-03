@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dosen;
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Materi;
+use App\Services\ActiveMeetingResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,10 +13,23 @@ use Illuminate\Support\Facades\Storage;
 class MateriController extends Controller
 {
     /**
+     * Resolve slot number from pertemuan route param (supports "kuliah:3", "uts:1", or plain int).
+     */
+    private function resolveSlotNumber($pertemuan): int
+    {
+        if (str_contains((string) $pertemuan, ':')) {
+            [$tipe, $nomor] = explode(':', $pertemuan, 2);
+            return app(ActiveMeetingResolver::class)->tipeNomorToSlot($tipe, (int) $nomor);
+        }
+        return (int) $pertemuan;
+    }
+
+    /**
      * Display materials for a specific meeting
      */
     public function index($id, $pertemuan)
     {
+        $pertemuan = $this->resolveSlotNumber($pertemuan);
         $kelas = Kelas::with('mataKuliah')->findOrFail($id);
         
         // Get all materials for this mata kuliah and pertemuan
@@ -37,6 +51,7 @@ class MateriController extends Controller
      */
     public function store(Request $request, $id, $pertemuan)
     {
+        $pertemuan = $this->resolveSlotNumber($pertemuan);
         $kelas = Kelas::with('mataKuliah')->findOrFail($id);
         
         $validated = $request->validate([

@@ -5,10 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicEvent;
 use App\Models\Semester;
+use App\Services\AcademicPeriodService;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 
 class AcademicCalendarController extends Controller
 {
+    public function __construct(
+        protected AcademicPeriodService $periodService,
+        protected AuditLogService $auditLog,
+    ) {}
+
     public function index()
     {
         $semesters = Semester::orderBy('tahun_ajaran', 'desc')->get();
@@ -181,25 +188,24 @@ class AcademicCalendarController extends Controller
             'event_type' => 'required|in:krs,krs_perubahan,perkuliahan,uts,uas,libur_akademik,lainnya',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            // 'color' validation removed as we enforce it
             'semester_id' => 'nullable|exists:semesters,id',
         ]);
 
         // Enforce Auto Color
         $validated['color'] = $this->getEventColor($validated['event_type']);
+        $validated['created_by'] = auth()->id();
+        $validated['updated_by'] = auth()->id();
 
         $event = AcademicEvent::create($validated);
 
         // Sync KRS dates to Semester if applicable
-        if ($event->event_type === 'krs' && $event->semester_id) {
-            $semester = Semester::find($event->semester_id);
-            if ($semester) {
-                $semester->update([
-                    'krs_mulai' => $event->start_date,
-                    'krs_selesai' => $event->end_date
-                ]);
-            }
-        }
+        $this->syncKrsDatesToSemester($event);
+
+        // Invalidate cache
+        $this->periodService->invalidateCache($event->semester_id);
+
+        // Audit log
+        $this->auditLog->logModelChange('academic_event.created', $event);
 
         return response()->json([
             'success' => true,
@@ -211,6 +217,7 @@ class AcademicCalendarController extends Controller
     public function updateEvent(Request $request, $id)
     {
         $event = AcademicEvent::findOrFail($id);
+        $before = $event->toArray();
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -218,25 +225,29 @@ class AcademicCalendarController extends Controller
             'event_type' => 'required|in:krs,krs_perubahan,perkuliahan,uts,uas,libur_akademik,lainnya',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            // 'color' validation removed
             'semester_id' => 'nullable|exists:semesters,id',
         ]);
 
         // Enforce Auto Color
         $validated['color'] = $this->getEventColor($validated['event_type']);
+        $validated['updated_by'] = auth()->id();
+
+        // Track old semester_id for cache invalidation
+        $oldSemesterId = $event->semester_id;
 
         $event->update($validated);
 
         // Sync KRS dates to Semester if applicable
-        if ($event->event_type === 'krs' && $event->semester_id) {
-            $semester = Semester::find($event->semester_id);
-            if ($semester) {
-                $semester->update([
-                    'krs_mulai' => $event->start_date,
-                    'krs_selesai' => $event->end_date
-                ]);
-            }
+        $this->syncKrsDatesToSemester($event);
+
+        // Invalidate cache for both old and new semester
+        $this->periodService->invalidateCache($event->semester_id);
+        if ($oldSemesterId && $oldSemesterId !== $event->semester_id) {
+            $this->periodService->invalidateCache($oldSemesterId);
         }
+
+        // Audit log
+        $this->auditLog->logModelChange('academic_event.updated', $event, $before);
 
         return response()->json([
             'success' => true,
@@ -248,6 +259,7 @@ class AcademicCalendarController extends Controller
     public function updateDate(Request $request, $id)
     {
         $event = AcademicEvent::findOrFail($id);
+        $before = $event->toArray();
 
         $validated = $request->validate([
             'start' => 'required|date',
@@ -255,22 +267,18 @@ class AcademicCalendarController extends Controller
         ]);
 
         $event->start_date = $validated['start'];
-        // FullCalendar might send end date that is +1 day for inclusive all-day events. 
-        // We generally store regular dates. 
         $event->end_date = $validated['end'] ?? $validated['start'];
-
+        $event->updated_by = auth()->id();
         $event->save();
 
         // Sync KRS dates if applicable
-        if ($event->event_type === 'krs' && $event->semester_id) {
-            $semester = Semester::find($event->semester_id);
-            if ($semester) {
-                $semester->update([
-                    'krs_mulai' => $event->start_date,
-                    'krs_selesai' => $event->end_date
-                ]);
-            }
-        }
+        $this->syncKrsDatesToSemester($event);
+
+        // Invalidate cache
+        $this->periodService->invalidateCache($event->semester_id);
+
+        // Audit log
+        $this->auditLog->logModelChange('academic_event.date_updated', $event, $before);
 
         return response()->json([
             'success' => true,
@@ -281,7 +289,22 @@ class AcademicCalendarController extends Controller
     public function deleteEvent($id)
     {
         $event = AcademicEvent::findOrFail($id);
+        $semesterId = $event->semester_id;
+
+        // Audit log before deletion
+        $this->auditLog->log(
+            'academic_event.deleted',
+            AcademicEvent::class,
+            $event->id,
+            $event->toArray(),
+            null,
+            ['deleted_by' => auth()->id()]
+        );
+
         $event->delete();
+
+        // Invalidate cache
+        $this->periodService->invalidateCache($semesterId);
 
         return response()->json([
             'success' => true,
@@ -374,6 +397,11 @@ class AcademicCalendarController extends Controller
         }
 
         fclose($handle);
+
+        // Invalidate all caches after bulk import
+        if ($count > 0) {
+            $this->periodService->invalidateAllCaches();
+        }
 
         return response()->json([
             'success' => true,
@@ -470,6 +498,11 @@ class AcademicCalendarController extends Controller
                 ]);
             }
 
+            // Invalidate all caches after PDF import
+            if ($count > 0) {
+                $this->periodService->invalidateAllCaches();
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => "Berhasil membaca PDF! {$count} event ditemukan dan diimport.",
@@ -551,8 +584,19 @@ class AcademicCalendarController extends Controller
         return null;
     }
 
-
-
-
-
+    /**
+     * Sync KRS dates from academic_events to semesters table for backward compatibility.
+     */
+    private function syncKrsDatesToSemester(AcademicEvent $event): void
+    {
+        if ($event->event_type === 'krs' && $event->semester_id) {
+            $semester = Semester::find($event->semester_id);
+            if ($semester) {
+                $semester->update([
+                    'krs_mulai' => $event->start_date,
+                    'krs_selesai' => $event->end_date,
+                ]);
+            }
+        }
+    }
 }

@@ -148,7 +148,35 @@
     </div>
 </div>
 
-
+{{-- Periode Akademik Aktif --}}
+@if(!empty($active_periods))
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mt-2 p-4">
+    <div class="flex items-center gap-2 mb-3">
+        <div class="w-6 h-6 rounded bg-green-600 flex items-center justify-center">
+            <i class="fas fa-clock text-white text-xs"></i>
+        </div>
+        <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200">Periode Aktif Saat Ini</h3>
+        @if($active_semester)
+            <span class="text-xs text-gray-500 ml-auto">{{ $active_semester->display_label }}</span>
+        @endif
+    </div>
+    <div class="flex flex-wrap gap-2">
+        @foreach($active_periods as $period)
+            <div class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border {{ $period['colors']['bg'] }} {{ $period['colors']['text'] }} {{ $period['colors']['border'] }}">
+                <i class="{{ $period['icon'] }} text-sm"></i>
+                <div>
+                    <span class="text-xs font-bold">{{ $period['label'] }}</span>
+                    @if($period['days_left'] > 0)
+                        <span class="text-[10px] opacity-75 ml-1">({{ $period['days_left'] }} hari lagi)</span>
+                    @else
+                        <span class="text-[10px] opacity-75 ml-1">(hari terakhir)</span>
+                    @endif
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
+@endif
 
 <!-- Kalender Akademik - Full Width -->
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mt-2">
@@ -188,7 +216,7 @@
                                     </span>
                                 </p>
                                 <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold tracking-wide uppercase rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-100 dark:border-blue-800">
-                                    {{ $event->category ?? 'Akademik' }}
+                                    {{ $event->type_label }}
                                 </span>
                             </div>
                         </div>

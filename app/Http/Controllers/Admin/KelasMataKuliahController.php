@@ -25,19 +25,26 @@ class KelasMataKuliahController extends Controller
             
         $activeKelas = $activeJadwals->pluck('kelas')->filter();
 
-        // Get unique combinations of mata_kuliah_id and section
+        // Get unique combinations of mata_kuliah_id and section from active jadwals
         $activeCombinations = $activeKelas->map(function ($k) {
             return $k->mata_kuliah_id . '-' . $k->section;
         })->unique()->toArray();
 
-        // Show classes from active semester and semesters within grace period
+        // Show classes from active semester (and grace period)
         $kelasMatKul = KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])
-            ->activeClasses() // Filter by active semester + grace period
+            ->activeClasses()
             ->get()
-            ->filter(function ($kmk) use ($activeCombinations) {
-                return in_array($kmk->mata_kuliah_id . '-' . $kmk->kode_kelas, $activeCombinations);
-            })
-            ->map(function ($kmk) use ($activeJadwals) {
+            ->map(function ($kmk) use ($activeJadwals, $activeCombinations) {
+                // Check if there is a matching Jadwal for this MK
+                $hasActiveJadwal = in_array($kmk->mata_kuliah_id . '-' . $kmk->kode_kelas, $activeCombinations);
+                
+                // Also consider KMK that have their own schedule (hari + jam) even without Jadwal
+                $hasOwnSchedule = !empty($kmk->hari) && !empty($kmk->jam_mulai) && !empty($kmk->jam_selesai);
+                
+                if (!$hasActiveJadwal && !$hasOwnSchedule) {
+                    return null; // Skip if no schedule at all
+                }
+
                 // Find matching Jadwal for this MK and Class code mapping back via Kelas
                 $matchingJadwal = $activeJadwals->first(function ($jadwal) use ($kmk) {
                     return $jadwal->kelas && 
@@ -47,7 +54,8 @@ class KelasMataKuliahController extends Controller
                 
                 $kmk->jadwal = $matchingJadwal;
                 return $kmk;
-            });
+            })
+            ->filter(); // Remove nulls
             
         // Manually paginate the collection
         $page = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
@@ -409,37 +417,86 @@ class KelasMataKuliahController extends Controller
     public function getAttendanceData($id)
     {
         $kelasMataKuliah = KelasMataKuliah::with(['mataKuliah', 'ruangan', 'semester'])->findOrFail($id);
-        $pertemuanKe = request('pertemuan', 1);
+        
+        // Support new tipe+nomor format and legacy integer format
+        $tipe = request('tipe', 'kuliah');
+        $nomor = (int) request('nomor', request('pertemuan', 1));
+        
+        // Convert tipe+nomor to a slot number for presensi backward compat
+        $resolver = app(\App\Services\ActiveMeetingResolver::class);
+        $slotNumber = $resolver->tipeNomorToSlot($tipe, $nomor);
 
-        // Get pertemuan detail
+        // Get pertemuan detail (try tipe+nomor first, fallback to slot number)
         $pertemuan = \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $id)
-            ->where('nomor_pertemuan', $pertemuanKe)
+            ->where('tipe_pertemuan', $tipe)
+            ->where('nomor_pertemuan', $nomor)
             ->first();
+        
+        if (!$pertemuan) {
+            // Legacy fallback: try by slot number
+            $pertemuan = \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $id)
+                ->where('nomor_pertemuan', $slotNumber)
+                ->whereNull('tipe_pertemuan')
+                ->orWhere(function ($q) use ($id, $slotNumber) {
+                    $q->where('kelas_mata_kuliah_id', $id)
+                      ->where('nomor_pertemuan', $slotNumber)
+                      ->where('tipe_pertemuan', 'kuliah');
+                })
+                ->first();
+        }
 
-        // Fallback Date Calculation (if no pertemuans record)
+        // Fallback Date Calculation (if no pertemuan record)
+        // Priority: 1. stored pertemuan.tanggal
+        //           2. UTS/UAS → start date from Kalender Akademik (academic_events)
+        //           3. Kuliah → perkuliahan period start + class weekday + week offset
         $tanggal = $pertemuan ? ($pertemuan->tanggal ? $pertemuan->tanggal->format('Y-m-d') : null) : null;
         if (!$tanggal) {
-            $semester = $kelasMataKuliah->semester ?? \App\Models\Semester::where('status', 'aktif')->first() ?? \App\Models\Semester::where('is_active', true)->first();
-            if ($semester && $semester->tanggal_mulai && $kelasMataKuliah->hari) {
+            $periodService = app(\App\Services\AcademicPeriodService::class);
+
+            // UTS/UAS: use date from Kalender Akademik
+            if ($tipe === 'uts') {
+                $range = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_UTS);
+                if ($range) $tanggal = $range['start']->format('Y-m-d');
+            } elseif ($tipe === 'uas') {
+                $range = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_UAS);
+                if ($range) $tanggal = $range['start']->format('Y-m-d');
+            }
+
+            // Kuliah: calculate from perkuliahan period start + class weekday
+            if (!$tanggal && $kelasMataKuliah->hari) {
                 try {
-                    $start = \Carbon\Carbon::parse($semester->tanggal_mulai);
-                    $dayMap = ['Minggu' => 0, 'Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6];
-                    $targetDay = $dayMap[$kelasMataKuliah->hari] ?? null;
-                    
-                    if ($targetDay !== null) {
-                        $firstOccurrence = $start->copy();
-                        while ($firstOccurrence->dayOfWeek !== $targetDay) { $firstOccurrence->addDay(); }
-                        $tanggal = $firstOccurrence->addWeeks($pertemuanKe - 1)->format('Y-m-d');
+                    $perkuliahanRange = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_PERKULIAHAN);
+                    if ($perkuliahanRange) {
+                        $start = $perkuliahanRange['start'];
+                    } else {
+                        $sem = $kelasMataKuliah->semester
+                            ?? \App\Models\Semester::where('status', 'aktif')->first()
+                            ?? \App\Models\Semester::where('is_active', true)->first();
+                        $start = $sem?->tanggal_mulai ? \Carbon\Carbon::parse($sem->tanggal_mulai) : null;
+                    }
+
+                    if ($start) {
+                        $dayMap = ['Minggu' => 0, 'Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6];
+                        $targetDay = $dayMap[$kelasMataKuliah->hari] ?? null;
+                        if ($targetDay !== null) {
+                            $firstOccurrence = $start->copy();
+                            while ($firstOccurrence->dayOfWeek !== $targetDay) { $firstOccurrence->addDay(); }
+                            // slotNumber gives correct week offset including UTS/UAS gaps
+                            $tanggal = $firstOccurrence->addWeeks($slotNumber - 1)->format('Y-m-d');
+                        }
                     }
                 } catch (\Exception $e) { $tanggal = null; }
             }
         }
 
+        // Meeting label
+        $meetingLabel = $resolver->labelFor($tipe, $nomor);
+
         // Fallback Topic (from Materi table)
         $topik = $pertemuan->topik ?? null;
         if (!$topik) {
             $materi = \App\Models\Materi::where('mata_kuliah_id', $kelasMataKuliah->mata_kuliah_id)
-                ->where('pertemuan', $pertemuanKe)
+                ->where('pertemuan', $slotNumber)
                 ->first();
             $topik = $materi->judul ?? '-';
         }
@@ -458,9 +515,9 @@ class KelasMataKuliahController extends Controller
             ->with(['mahasiswa.user'])
             ->get();
 
-        // Get attendance records for this meeting
+        // Get attendance records for this meeting (use slot number for backward compat)
         $presensis = \App\Models\Presensi::where('kelas_mata_kuliah_id', $id)
-            ->where('pertemuan', $pertemuanKe)
+            ->where('pertemuan', $slotNumber)
             ->get()
             ->keyBy('mahasiswa_id');
 
@@ -478,6 +535,9 @@ class KelasMataKuliahController extends Controller
         return response()->json([
             'pertemuan' => [
                 'tanggal' => $tanggal,
+                'tipe' => $tipe,
+                'nomor' => $nomor,
+                'label' => $meetingLabel,
             ],
             'jadwal' => [
                 'jam_mulai' => $kelasMataKuliah->jam_mulai ? substr($kelasMataKuliah->jam_mulai, 0, 5) : '-',

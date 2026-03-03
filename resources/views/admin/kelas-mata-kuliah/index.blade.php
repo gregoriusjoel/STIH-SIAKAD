@@ -5,9 +5,27 @@
 <div x-data="{ 
     showDetail: false,
     selectedKelasId: null,
-    selectedMeeting: 1,
+    selectedMeeting: 'kuliah:1',
     loadingData: false,
     attendanceData: null,
+    meetingSlots: [
+        { value: 'kuliah:1', label: 'Pertemuan 1', tipe: 'kuliah' },
+        { value: 'kuliah:2', label: 'Pertemuan 2', tipe: 'kuliah' },
+        { value: 'kuliah:3', label: 'Pertemuan 3', tipe: 'kuliah' },
+        { value: 'kuliah:4', label: 'Pertemuan 4', tipe: 'kuliah' },
+        { value: 'kuliah:5', label: 'Pertemuan 5', tipe: 'kuliah' },
+        { value: 'kuliah:6', label: 'Pertemuan 6', tipe: 'kuliah' },
+        { value: 'kuliah:7', label: 'Pertemuan 7', tipe: 'kuliah' },
+        { value: 'uts:1', label: '\ud83d\udcdd UTS (Ujian Tengah Semester)', tipe: 'uts' },
+        { value: 'kuliah:8', label: 'Pertemuan 8', tipe: 'kuliah' },
+        { value: 'kuliah:9', label: 'Pertemuan 9', tipe: 'kuliah' },
+        { value: 'kuliah:10', label: 'Pertemuan 10', tipe: 'kuliah' },
+        { value: 'kuliah:11', label: 'Pertemuan 11', tipe: 'kuliah' },
+        { value: 'kuliah:12', label: 'Pertemuan 12', tipe: 'kuliah' },
+        { value: 'kuliah:13', label: 'Pertemuan 13', tipe: 'kuliah' },
+        { value: 'kuliah:14', label: 'Pertemuan 14', tipe: 'kuliah' },
+        { value: 'uas:1', label: '\ud83d\udcdd UAS (Ujian Akhir Semester)', tipe: 'uas' },
+    ],
     toggleDetail(id) {
         if (this.selectedKelasId === id) {
             this.showDetail = !this.showDetail;
@@ -21,8 +39,9 @@
     loadAttendanceData() {
         if (!this.selectedKelasId) return;
         this.loadingData = true;
-        this.attendanceData = null; // Reset data
-        fetch(`/admin/kelas-mata-kuliah/${this.selectedKelasId}/attendance?pertemuan=${this.selectedMeeting}`)
+        this.attendanceData = null;
+        const [tipe, nomor] = this.selectedMeeting.split(':');
+        fetch(`/admin/kelas-mata-kuliah/${this.selectedKelasId}/attendance?tipe=${tipe}&nomor=${nomor}`)
             .then(res => {
                 if (!res.ok) throw new Error('Server error: ' + res.status);
                 return res.json();
@@ -42,7 +61,7 @@
     <div class="mb-6 flex items-start justify-between">
         <div>
             <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-chalkboard-teacher text-maroon mr-2"></i>Daftar Kelas Mata Kuliah</h3>
-            <p class="text-sm text-gray-600 mt-1">Kelola pengelompokan kelas per mata kuliah (Hanya menampilkan kelas dengan jadwal aktif)</p>
+            <p class="text-sm text-gray-600 mt-1">Kelola pengelompokan kelas per mata kuliah (Hanya menampilkan kelas dengan jadwal aktif atau yang memiliki jadwal sendiri)</p>
         </div>
     </div>
 
@@ -67,6 +86,11 @@
                                 <div class="font-semibold text-gray-900">{{ $k->jadwal->hari }}</div>
                                 <div class="text-xs text-gray-500">{{ substr($k->jadwal->jam_mulai, 0, 5) }} - {{ substr($k->jadwal->jam_selesai, 0, 5) }}</div>
                             </div>
+                            @elseif($k->hari && $k->jam_mulai && $k->jam_selesai)
+                            <div class="text-sm">
+                                <div class="font-semibold text-gray-900">{{ $k->hari }}</div>
+                                <div class="text-xs text-gray-500">{{ substr($k->jam_mulai, 0, 5) }} - {{ substr($k->jam_selesai, 0, 5) }}</div>
+                            </div>
                             @else
                             <span class="text-gray-400 text-sm">-</span>
                             @endif
@@ -75,7 +99,7 @@
                         <td class="px-6 py-4">{{ $k->ruang ?: '-' }}</td>
                     </tr>
                     @empty
-                    <tr><td colspan="7" class="px-6 py-12 text-center text-gray-500"><i class="fas fa-inbox text-4xl mb-3"></i><p class="text-lg font-semibold">Belum ada kelas mata kuliah dengan jadwal aktif</p><p class="text-sm mt-2">Kelas akan ditampilkan setelah memiliki jadwal aktif</p></td></tr>
+                    <tr><td colspan="7" class="px-6 py-12 text-center text-gray-500"><i class="fas fa-inbox text-4xl mb-3"></i><p class="text-lg font-semibold">Belum ada kelas mata kuliah dengan jadwal aktif</p><p class="text-sm mt-2">Kelas akan ditampilkan setelah memiliki jadwal aktif atau jam kuliah tersedia</p></td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -91,28 +115,21 @@
             <div>
                 <h3 class="text-xl font-bold text-gray-800 flex items-center">
                     <i class="fas fa-clipboard-list text-maroon mr-2"></i>Detail Kehadiran per Pertemuan
+                    <template x-if="attendanceData?.pertemuan?.tipe === 'uts'">
+                        <span class="ml-2 px-2 py-0.5 text-xs font-bold bg-amber-100 text-amber-800 rounded-full">UTS</span>
+                    </template>
+                    <template x-if="attendanceData?.pertemuan?.tipe === 'uas'">
+                        <span class="ml-2 px-2 py-0.5 text-xs font-bold bg-red-100 text-red-800 rounded-full">UAS</span>
+                    </template>
                 </h3>
             <p class="text-sm text-gray-600 mt-1">Pantau kehadiran mahasiswa di setiap sesi pertemuan</p>
         </div>
         <div class="flex items-center gap-3">
             <label for="meetingSelect" class="text-sm font-semibold text-gray-700">Pilih Pertemuan:</label>
-            <select id="meetingSelect" x-model="selectedMeeting" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent text-sm min-w-[200px]">
-                <option value="1">Pertemuan 1</option>
-                <option value="2">Pertemuan 2</option>
-                <option value="3">Pertemuan 3</option>
-                <option value="4">Pertemuan 4</option>
-                <option value="5">Pertemuan 5</option>
-                <option value="6">Pertemuan 6</option>
-                <option value="7">Pertemuan 7</option>
-                <option value="8">Pertemuan 8</option>
-                <option value="9">Pertemuan 9</option>
-                <option value="10">Pertemuan 10</option>
-                <option value="11">Pertemuan 11</option>
-                <option value="12">Pertemuan 12</option>
-                <option value="13">Pertemuan 13</option>
-                <option value="14">Pertemuan 14</option>
-                <option value="15">Pertemuan 15</option>
-                <option value="16">Pertemuan 16</option>
+            <select id="meetingSelect" x-model="selectedMeeting" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent text-sm min-w-[280px]">
+                <template x-for="slot in meetingSlots" :key="slot.value">
+                    <option :value="slot.value" x-text="slot.label" :class="{ 'font-bold text-amber-700': slot.tipe === 'uts', 'font-bold text-red-700': slot.tipe === 'uas' }"></option>
+                </template>
             </select>
         </div>
     </div>

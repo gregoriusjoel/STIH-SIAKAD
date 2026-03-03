@@ -236,7 +236,7 @@ class MataKuliahSemesterController extends Controller
         $success = $this->semesterService->activateSemester($semester);
 
         if ($success) {
-            return redirect()->route('admin.mata-kuliah-semester.index')
+            return redirect()->route('admin.mata-kuliah-semester.index', ['semester_id' => $semester->id])
                 ->with('success', "Semester \"{$semester->display_label}\" berhasil diaktifkan. Relasi MK lama dipindahkan ke histori.");
         }
 
@@ -248,7 +248,7 @@ class MataKuliahSemesterController extends Controller
         $success = $this->semesterService->lockSemester($semester);
 
         if ($success) {
-            return redirect()->route('admin.mata-kuliah-semester.index')
+            return redirect()->route('admin.mata-kuliah-semester.index', ['semester_id' => $semester->id])
                 ->with('success', "Semester \"{$semester->display_label}\" berhasil dikunci.");
         }
 
@@ -260,7 +260,7 @@ class MataKuliahSemesterController extends Controller
         $success = $this->semesterService->unlockSemester($semester);
 
         if ($success) {
-            return redirect()->route('admin.mata-kuliah-semester.index')
+            return redirect()->route('admin.mata-kuliah-semester.index', ['semester_id' => $semester->id])
                 ->with('success', "Semester \"{$semester->display_label}\" berhasil dibuka kuncinya.");
         }
 

@@ -16,6 +16,11 @@
             <span class="material-symbols-outlined text-[10px] text-white/20 font-normal">play_arrow</span>
             <span class="text-white font-black text-[13px] uppercase tracking-wider">
                 {{ $meeting['label'] }}
+                @if(($meeting['tipe_pertemuan'] ?? 'kuliah') !== 'kuliah')
+                    <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] {{ ($meeting['tipe_pertemuan'] ?? '') === 'uts' ? 'bg-amber-500/20 text-amber-200' : 'bg-red-500/20 text-red-200' }}">
+                        {{ strtoupper($meeting['tipe_pertemuan'] ?? '') }}
+                    </span>
+                @endif
             </span>
         </nav>
     @endsection
@@ -26,17 +31,84 @@
         <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm mb-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-start gap-4">
-                    <div class="size-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-3xl">event_note</span>
+                    @php
+                        $headerIcon = match($meeting['tipe_pertemuan'] ?? 'kuliah') {
+                            'uts' => 'edit_note',
+                            'uas' => 'assignment',
+                            default => 'event_note',
+                        };
+                        $headerBg = match($meeting['tipe_pertemuan'] ?? 'kuliah') {
+                            'uts' => 'bg-amber-50 text-amber-600',
+                            'uas' => 'bg-red-50 text-red-600',
+                            default => 'bg-blue-50 text-blue-600',
+                        };
+                    @endphp
+                    <div class="size-14 rounded-2xl {{ $headerBg }} flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-3xl">{{ $headerIcon }}</span>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">{{ $meeting['label'] }}</h1>
+                        <div class="flex items-center gap-3">
+                            <h1 class="text-2xl font-bold text-gray-900">{{ $meeting['label'] }}</h1>
+                            @if(($meeting['tipe_pertemuan'] ?? 'kuliah') !== 'kuliah')
+                                @php
+                                    $tipeBadge = match($meeting['tipe_pertemuan']) {
+                                        'uts' => 'bg-amber-100 text-amber-700 border-amber-200',
+                                        'uas' => 'bg-red-100 text-red-700 border-red-200',
+                                        default => 'bg-blue-100 text-blue-700 border-blue-200',
+                                    };
+                                @endphp
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border {{ $tipeBadge }}">
+                                    <span class="material-symbols-outlined text-[14px]">{{ $headerIcon }}</span>
+                                    {{ strtoupper($meeting['tipe_pertemuan']) }}
+                                </span>
+                            @endif
+                        </div>
                         <p class="text-gray-500">{{ $kelas->mataKuliah->nama_mk }} - Kelas {{ $kelas->section }}</p>
                     </div>
                 </div>
-                <div class="flex gap-3">
-                    {{-- Buttons moved to card below --}}
+
+                {{-- Meeting Type Dropdown Navigator --}}
+                @if(isset($meetingSlots) && $meetingSlots->count())
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" @click.away="open = false"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+                        Pindah Pertemuan
+                        <span class="material-symbols-outlined text-[16px] transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                         class="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 py-2 max-h-80 overflow-y-auto">
+                        @foreach($meetingSlots as $slot)
+                            @php
+                                $isCurrentSlot = ($slot['tipe'] === ($meeting['tipe_pertemuan'] ?? 'kuliah')) && ($slot['nomor'] === ($meeting['nomor_pertemuan'] ?? 1));
+                                $slotIcon = match($slot['tipe']) {
+                                    'uts' => 'edit_note',
+                                    'uas' => 'assignment',
+                                    default => 'school',
+                                };
+                                $slotColor = match($slot['tipe']) {
+                                    'uts' => 'text-amber-600',
+                                    'uas' => 'text-red-600',
+                                    default => 'text-gray-600',
+                                };
+                                $slotBgActive = match($slot['tipe']) {
+                                    'uts' => 'bg-amber-50 border-l-amber-500',
+                                    'uas' => 'bg-red-50 border-l-red-500',
+                                    default => 'bg-blue-50 border-l-blue-500',
+                                };
+                            @endphp
+                            <a href="{{ route('dosen.kelas.pertemuan.detail', ['id' => $id, 'pertemuan' => $slot['tipe'] . ':' . $slot['nomor']]) }}"
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm transition-all border-l-2 {{ $isCurrentSlot ? $slotBgActive . ' font-bold' : 'border-l-transparent hover:bg-gray-50' }}">
+                                <span class="material-symbols-outlined text-[16px] {{ $slotColor }}">{{ $slotIcon }}</span>
+                                <span class="{{ $isCurrentSlot ? 'text-gray-900' : 'text-gray-700' }}">{{ $slot['label'] }}</span>
+                                @if($isCurrentSlot)
+                                    <span class="material-symbols-outlined text-[14px] text-green-500 ml-auto">check_circle</span>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
+                @endif
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6 pt-6 border-t border-gray-100">
@@ -831,7 +903,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('dosen.kelas.pertemuan.metode.update', ['id' => $id, 'pertemuan' => $meeting['no']]) }}" method="POST" class="p-6">
+                <form action="{{ route('dosen.kelas.pertemuan.metode.update', ['id' => $id, 'pertemuan' => ($meeting['tipe_pertemuan'] ?? 'kuliah') . ':' . ($meeting['nomor_pertemuan'] ?? $meeting['no'])]) }}" method="POST" class="p-6">
                     @csrf @method('PATCH')
 
                     <fieldset class="space-y-3 mb-6">
@@ -946,10 +1018,11 @@
                     </button>
                 </div>
 
-                <form action="{{ route('dosen.kelas.pertemuan.activate_qr_password', ['id' => $id, 'pertemuan' => $meeting['no']]) }}"
+                <form action="{{ route('dosen.kelas.pertemuan.activate_qr_password', ['id' => $id, 'pertemuan' => ($meeting['tipe_pertemuan'] ?? 'kuliah') . ':' . ($meeting['nomor_pertemuan'] ?? $meeting['no'])]) }}"
                       method="POST" class="p-6"
                       @submit.prevent="if (gpsStatus !== 'got') { getLocation(); } else { loading = true; $el.submit(); }">
                     @csrf
+                    <input type="hidden" name="tipe_pertemuan" value="{{ $meeting['tipe_pertemuan'] ?? 'kuliah' }}">
                     <input type="hidden" name="latitude"  :value="lat">
                     <input type="hidden" name="longitude" :value="lng">
 

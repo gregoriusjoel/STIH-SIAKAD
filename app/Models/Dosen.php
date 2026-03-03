@@ -57,7 +57,17 @@ class Dosen extends Model
 
     public function mataKuliahs(): BelongsToMany
     {
-        return $this->belongsToMany(MataKuliah::class, 'dosen_mata_kuliah');
+        return $this->belongsToMany(MataKuliah::class, 'dosen_mata_kuliah')
+            ->withPivot(['semester_id', 'created_by'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Mata kuliah assigned to this dosen for a specific semester.
+     */
+    public function mataKuliahsBySemester(int $semesterId): BelongsToMany
+    {
+        return $this->mataKuliahs()->wherePivot('semester_id', $semesterId);
     }
 
     public function mahasiswaPa()

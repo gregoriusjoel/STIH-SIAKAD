@@ -30,9 +30,11 @@
                 @if($semesterAktif)
                 @php
                     $hasDates = isset($semesterAktif->krs_mulai) && isset($semesterAktif->krs_selesai) && $semesterAktif->krs_mulai && $semesterAktif->krs_selesai;
+                    // Use period status from service if available
+                    $periodInfo = $krsStatus ?? null;
                 @endphp
                 <div class="bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-gray-700/50 p-5 mb-8 text-left">
-                    <div class="flex items-center gap-3 {{ $hasDates ? 'mb-4 pb-4 border-b border-gray-100 dark:border-white/10' : '' }}">
+                    <div class="flex items-center gap-3 {{ ($hasDates || $periodInfo) ? 'mb-4 pb-4 border-b border-gray-100 dark:border-white/10' : '' }}">
                         <div class="w-10 h-10 rounded-lg bg-[#8B1538]/10 text-[#8B1538] flex items-center justify-center">
                             <i class="fas fa-calendar-alt text-lg"></i>
                         </div>
@@ -44,7 +46,28 @@
                         </div>
                     </div>
                     
-                    @if($hasDates)
+                    @if($periodInfo && isset($periodInfo['start_date']))
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500 dark:text-gray-400">Status Periode KRS</span>
+                            <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold {{ $periodInfo['badge'] }}">
+                                {{ $periodInfo['label'] }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500 dark:text-gray-400">Mulai Pengisian</span>
+                            <span class="font-medium text-gray-900 dark:text-white">
+                                {{ \Carbon\Carbon::parse($periodInfo['start_date'])->translatedFormat('d F Y') }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500 dark:text-gray-400">Batas Akhir</span>
+                            <span class="font-medium text-gray-900 dark:text-white">
+                                {{ \Carbon\Carbon::parse($periodInfo['end_date'])->translatedFormat('d F Y') }}
+                            </span>
+                        </div>
+                    </div>
+                    @elseif($hasDates)
                     <div class="space-y-3">
                         <div class="flex justify-between items-center text-sm">
                             <span class="text-gray-500 dark:text-gray-400">Mulai Pengisian</span>

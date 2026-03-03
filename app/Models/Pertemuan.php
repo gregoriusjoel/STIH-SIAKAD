@@ -10,9 +10,35 @@ use Carbon\Carbon;
 
 class Pertemuan extends Model
 {
+    /**
+     * Valid meeting types (extensible for future: praktikum, quiz, etc.)
+     */
+    public const TIPE_KULIAH = 'kuliah';
+    public const TIPE_UTS    = 'uts';
+    public const TIPE_UAS    = 'uas';
+
+    public const TIPE_LABELS = [
+        self::TIPE_KULIAH => 'Kuliah',
+        self::TIPE_UTS    => 'UTS',
+        self::TIPE_UAS    => 'UAS',
+    ];
+
+    public const TIPE_ICONS = [
+        self::TIPE_KULIAH => 'school',
+        self::TIPE_UTS    => 'edit_note',
+        self::TIPE_UAS    => 'assignment',
+    ];
+
+    public const TIPE_COLORS = [
+        self::TIPE_KULIAH => 'bg-blue-50 text-blue-700 border-blue-200',
+        self::TIPE_UTS    => 'bg-amber-50 text-amber-700 border-amber-200',
+        self::TIPE_UAS    => 'bg-red-50 text-red-700 border-red-200',
+    ];
+
     protected $fillable = [
         'kelas_mata_kuliah_id',
         'nomor_pertemuan',
+        'tipe_pertemuan',
         'tanggal',
         'topik',
         'deskripsi',
@@ -32,6 +58,62 @@ class Pertemuan extends Model
         'qr_generated_at' => 'datetime',
         'metode_pengajaran' => 'string',
     ];
+
+    /**
+     * Get human-readable label for this meeting's type.
+     */
+    public function getTipeLabelAttribute(): string
+    {
+        return self::TIPE_LABELS[$this->tipe_pertemuan ?? self::TIPE_KULIAH] ?? ucfirst($this->tipe_pertemuan);
+    }
+
+    /**
+     * Get display label: "Pertemuan 3" for kuliah, "UTS" for uts, "UAS" for uas.
+     */
+    public function getDisplayLabelAttribute(): string
+    {
+        return match ($this->tipe_pertemuan) {
+            self::TIPE_UTS => 'UTS (Ujian Tengah Semester)',
+            self::TIPE_UAS => 'UAS (Ujian Akhir Semester)',
+            default        => 'Pertemuan ' . $this->nomor_pertemuan,
+        };
+    }
+
+    /**
+     * Get short display label for compact views.
+     */
+    public function getShortLabelAttribute(): string
+    {
+        return match ($this->tipe_pertemuan) {
+            self::TIPE_UTS => 'UTS',
+            self::TIPE_UAS => 'UAS',
+            default        => 'P' . $this->nomor_pertemuan,
+        };
+    }
+
+    /**
+     * Check if this is an exam meeting (UTS/UAS).
+     */
+    public function isExam(): bool
+    {
+        return in_array($this->tipe_pertemuan, [self::TIPE_UTS, self::TIPE_UAS]);
+    }
+
+    /**
+     * Scope: only regular kuliah meetings.
+     */
+    public function scopeKuliah($query)
+    {
+        return $query->where('tipe_pertemuan', self::TIPE_KULIAH);
+    }
+
+    /**
+     * Scope: only exam meetings (UTS/UAS).
+     */
+    public function scopeExams($query)
+    {
+        return $query->whereIn('tipe_pertemuan', [self::TIPE_UTS, self::TIPE_UAS]);
+    }
 
     /**
      * Dosen attendance record for this pertemuan.

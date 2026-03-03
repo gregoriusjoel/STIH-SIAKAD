@@ -6,12 +6,26 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tugas;
+use App\Services\ActiveMeetingResolver;
 use Illuminate\Support\Str;
 
 class TugasController extends Controller
 {
+    /**
+     * Resolve slot number from pertemuan route param (supports "kuliah:3", "uts:1", or plain int).
+     */
+    private function resolveSlotNumber($pertemuan): int
+    {
+        if (str_contains((string) $pertemuan, ':')) {
+            [$tipe, $nomor] = explode(':', $pertemuan, 2);
+            return app(ActiveMeetingResolver::class)->tipeNomorToSlot($tipe, (int) $nomor);
+        }
+        return (int) $pertemuan;
+    }
+
     public function store(Request $request, $kelasId, $pertemuan)
     {
+        $pertemuan = $this->resolveSlotNumber($pertemuan);
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -49,6 +63,7 @@ class TugasController extends Controller
 
     public function index(Request $request, $kelasId, $pertemuan)
     {
+        $pertemuan = $this->resolveSlotNumber($pertemuan);
         // Get kelas to extract mata_kuliah_id
         $kelas = \App\Models\Kelas::findOrFail($kelasId);
         

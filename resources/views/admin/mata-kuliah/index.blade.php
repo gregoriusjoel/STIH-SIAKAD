@@ -126,18 +126,18 @@
         </div>
     </div>
 
-    @if($activeSemester)
-        @if($activeSemester->is_locked)
-        <form action="{{ route('admin.mata-kuliah-semester.unlock-semester', $activeSemester) }}" method="POST"
-            onsubmit="return confirm('Buka kunci semester ini?')">
+    @if($selectedSemester)
+        @if($selectedSemester->is_locked)
+        <form action="{{ route('admin.mata-kuliah-semester.unlock-semester', $selectedSemester) }}" method="POST"
+            onsubmit="return confirm('Buka kunci semester {{ $selectedSemester->display_label }}?')">
             @csrf @method('PATCH')
             <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-xs font-semibold transition">
                 <i class="fas fa-lock-open"></i> Buka Kunci
             </button>
         </form>
         @else
-        <form action="{{ route('admin.mata-kuliah-semester.lock-semester', $activeSemester) }}" method="POST"
-            onsubmit="return confirm('Kunci semester {{ $activeSemester->display_label }}?')">
+        <form action="{{ route('admin.mata-kuliah-semester.lock-semester', $selectedSemester) }}" method="POST"
+            onsubmit="return confirm('Kunci semester {{ $selectedSemester->display_label }}?')">
             @csrf @method('PATCH')
             <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-white rounded-lg hover:bg-gray-800 text-xs font-semibold transition">
                 <i class="fas fa-lock"></i> Kunci Semester
@@ -188,15 +188,59 @@
 
 {{-- ─────────── TAB: MASTER MK ─────────── --}}
 @if($tab === 'master')
+{{-- Filter Bar --}}
+<div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 items-center">
+    <form method="GET" action="{{ route('admin.mata-kuliah.index') }}" class="flex flex-wrap gap-3 items-center w-full">
+        <input type="hidden" name="tab" value="master">
+        @if($selectedSemester)<input type="hidden" name="semester_id" value="{{ $selectedSemester->id }}">@endif
+        <div class="relative flex-1 min-w-[200px] max-w-xs">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input type="text" name="search" value="{{ $search }}" placeholder="Cari kode / nama MK..."
+                class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
+        </div>
+        <select name="semester_filter" onchange="this.form.submit()"
+            class="text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-maroon">
+            <option value="">Semua Semester</option>
+            @for($s = 1; $s <= 8; $s++)
+            <option value="{{ $s }}" {{ $semesterFilter == $s ? 'selected' : '' }}>Semester {{ $s }}</option>
+            @endfor
+        </select>
+        <button type="submit" class="px-3 py-2 bg-maroon text-white text-sm rounded-lg hover:bg-red-900 transition">
+            <i class="fas fa-search mr-1"></i> Cari
+        </button>
+        @if($search || $semesterFilter)
+        <a href="{{ route('admin.mata-kuliah.index', ['tab' => 'master', 'semester_id' => $selectedSemester?->id]) }}"
+            class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+            <i class="fas fa-times mr-1"></i> Reset
+        </a>
+        @endif
+        <input type="hidden" name="sort" value="{{ $sort }}">
+        <input type="hidden" name="sort_dir" value="{{ $sortDir }}">
+    </form>
+</div>
 <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-maroon text-white">
             <tr>
                 <th class="px-5 py-4 text-left text-xs font-bold uppercase">No</th>
-                <th class="px-5 py-4 text-left text-xs font-bold uppercase">Kode MK</th>
-                <th class="px-5 py-4 text-left text-xs font-bold uppercase"><i class="fas fa-book-open mr-1"></i>Nama Mata Kuliah</th>
-                <th class="px-5 py-4 text-center text-xs font-bold uppercase"><i class="fas fa-calculator mr-1"></i>SKS</th>
-                <th class="px-5 py-4 text-center text-xs font-bold uppercase"><i class="fas fa-tags mr-1"></i>Jenis</th>
+                @php
+                    $sortUrl = function($col) use ($sort, $sortDir, $selectedSemester, $search, $semesterFilter) {
+                        $newDir = ($sort === $col && $sortDir === 'asc') ? 'desc' : 'asc';
+                        return route('admin.mata-kuliah.index', array_filter([
+                            'tab' => 'master', 'semester_id' => $selectedSemester?->id,
+                            'search' => $search, 'semester_filter' => $semesterFilter,
+                            'sort' => $col, 'sort_dir' => $newDir,
+                        ], fn($v) => $v !== '' && $v !== null));
+                    };
+                    $sortIcon = function($col) use ($sort, $sortDir) {
+                        if ($sort !== $col) return '<i class="fas fa-sort ml-1 opacity-40"></i>';
+                        return $sortDir === 'asc' ? '<i class="fas fa-sort-up ml-1"></i>' : '<i class="fas fa-sort-down ml-1"></i>';
+                    };
+                @endphp
+                <th class="px-5 py-4 text-left text-xs font-bold uppercase"><a href="{{ $sortUrl('kode_mk') }}" class="hover:underline">Kode MK {!! $sortIcon('kode_mk') !!}</a></th>
+                <th class="px-5 py-4 text-left text-xs font-bold uppercase"><a href="{{ $sortUrl('nama_mk') }}" class="hover:underline"><i class="fas fa-book-open mr-1"></i>Nama Mata Kuliah {!! $sortIcon('nama_mk') !!}</a></th>
+                <th class="px-5 py-4 text-center text-xs font-bold uppercase"><a href="{{ $sortUrl('sks') }}" class="hover:underline"><i class="fas fa-calculator mr-1"></i>SKS {!! $sortIcon('sks') !!}</a></th>
+                <th class="px-5 py-4 text-center text-xs font-bold uppercase"><a href="{{ $sortUrl('jenis') }}" class="hover:underline"><i class="fas fa-tags mr-1"></i>Jenis {!! $sortIcon('jenis') !!}</a></th>
                 <th class="px-5 py-4 text-left text-xs font-bold uppercase"><i class="fas fa-graduation-cap mr-1"></i>Prodi</th>
                 <th class="px-5 py-4 text-center text-xs font-bold uppercase"><i class="fas fa-cog mr-1"></i>Aksi</th>
             </tr>
@@ -348,8 +392,29 @@
 {{-- ─────────── TAB: TA AKTIF ─────────── --}}
 @elseif($tab === 'ta-aktif')
 @if($activePivots->count() > 0)
+{{-- Filter Bar TA Aktif --}}
+<div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 items-center">
+    <div class="relative flex-1 min-w-[200px] max-w-xs">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+        <input type="text" id="active-search" placeholder="Cari kode / nama MK..."
+            oninput="filterActiveTable()"
+            class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-emerald-500">
+    </div>
+    <select id="active-semester-filter" onchange="filterActiveTable()"
+        class="text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500">
+        <option value="">Semua Semester</option>
+        @for($s = 1; $s <= 8; $s++)
+        <option value="{{ $s }}">Semester {{ $s }}</option>
+        @endfor
+    </select>
+    <button type="button" onclick="document.getElementById('active-search').value='';document.getElementById('active-semester-filter').value='';filterActiveTable()"
+        class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+        <i class="fas fa-times mr-1"></i> Reset
+    </button>
+    <span id="active-count" class="ml-auto text-xs text-gray-500 dark:text-gray-400"></span>
+</div>
 <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="active-table">
         <thead class="bg-emerald-700 text-white">
             <tr>
                 <th class="px-4 py-3 text-left text-xs font-bold uppercase w-8">
@@ -357,34 +422,39 @@
                         onchange="document.querySelectorAll('.active-mk-checkbox').forEach(c => c.checked = this.checked)">
                 </th>
                 <th class="px-4 py-3 text-left text-xs font-bold uppercase">No</th>
-                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Kode MK</th>
-                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Nama Mata Kuliah</th>
-                <th class="px-4 py-3 text-center text-xs font-bold uppercase">SKS</th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase cursor-pointer select-none" onclick="sortActiveTable('kode_mk')">Kode MK <i class="fas fa-sort ml-1 opacity-40" id="active-sort-icon-kode_mk"></i></th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase cursor-pointer select-none" onclick="sortActiveTable('nama_mk')">Nama Mata Kuliah <i class="fas fa-sort ml-1 opacity-40" id="active-sort-icon-nama_mk"></i></th>
+                <th class="px-4 py-3 text-center text-xs font-bold uppercase cursor-pointer select-none" onclick="sortActiveTable('sks')">SKS <i class="fas fa-sort ml-1 opacity-40" id="active-sort-icon-sks"></i></th>
                 <th class="px-4 py-3 text-left text-xs font-bold uppercase">Prodi</th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase cursor-pointer select-none" onclick="sortActiveTable('semester')">Semester <i class="fas fa-sort ml-1 opacity-40" id="active-sort-icon-semester"></i></th>
                 <th class="px-4 py-3 text-left text-xs font-bold uppercase">Asal</th>
                 <th class="px-4 py-3 text-center text-xs font-bold uppercase">Aktif Sejak</th>
                 <th class="px-4 py-3 text-center text-xs font-bold uppercase">Aksi</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="active-tbody">
             @foreach($activePivots as $i => $pivot)
             @php $mk = $pivot->mataKuliah; @endphp
-            <tr class="hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition">
+            <tr class="hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition active-row"
+                data-kode="{{ strtolower($mk->kode_mk) }}" data-nama="{{ strtolower($mk->nama_mk) }}"
+                data-semester="{{ $mk->semester }}" data-sks="{{ $mk->sks }}">
                 <td class="px-4 py-3">
                     <input type="checkbox" value="{{ $mk->id }}" class="active-mk-checkbox w-4 h-4 rounded border-gray-300 text-emerald-600">
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{{ $i + 1 }}</td>
+                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 active-row-no">{{ $i + 1 }}</td>
                 <td class="px-4 py-3">
                     <span class="font-mono text-xs font-bold text-maroon dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded">{{ $mk->kode_mk }}</span>
                 </td>
                 <td class="px-4 py-3">
                     <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $mk->nama_mk }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Semester {{ $mk->semester }}</div>
                 </td>
                 <td class="px-4 py-3 text-center">
                     <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">{{ $mk->sks }} SKS</span>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ $mk->prodi?->nama_prodi }}</td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">Semester {{ $mk->semester }}</span>
+                </td>
                 <td class="px-4 py-3">
                     @if($pivot->source_semester_id)
                     <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
@@ -442,25 +512,49 @@
 {{-- ─────────── TAB: HISTORI TA ─────────── --}}
 @else
 @if($historyPivots->count() > 0)
+{{-- Filter Bar Histori --}}
+<div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 items-center">
+    <div class="relative flex-1 min-w-[200px] max-w-xs">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+        <input type="text" id="history-search" placeholder="Cari kode / nama MK..."
+            oninput="filterHistoryTable()"
+            class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-500">
+    </div>
+    <select id="history-semester-filter" onchange="filterHistoryTable()"
+        class="text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500">
+        <option value="">Semua Semester</option>
+        @for($s = 1; $s <= 8; $s++)
+        <option value="{{ $s }}">Semester {{ $s }}</option>
+        @endfor
+    </select>
+    <button type="button" onclick="document.getElementById('history-search').value='';document.getElementById('history-semester-filter').value='';filterHistoryTable()"
+        class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+        <i class="fas fa-times mr-1"></i> Reset
+    </button>
+    <span id="history-count" class="ml-auto text-xs text-gray-500 dark:text-gray-400"></span>
+</div>
 <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="history-table">
         <thead class="bg-purple-800 text-white">
             <tr>
                 <th class="px-4 py-3 text-left text-xs font-bold uppercase">No</th>
-                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Kode MK</th>
-                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Nama Mata Kuliah</th>
-                <th class="px-4 py-3 text-center text-xs font-bold uppercase">SKS</th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase cursor-pointer select-none" onclick="sortHistoryTable('kode_mk')">Kode MK <i class="fas fa-sort ml-1 opacity-40" id="history-sort-icon-kode_mk"></i></th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase cursor-pointer select-none" onclick="sortHistoryTable('nama_mk')">Nama Mata Kuliah <i class="fas fa-sort ml-1 opacity-40" id="history-sort-icon-nama_mk"></i></th>
+                <th class="px-4 py-3 text-center text-xs font-bold uppercase cursor-pointer select-none" onclick="sortHistoryTable('sks')">SKS <i class="fas fa-sort ml-1 opacity-40" id="history-sort-icon-sks"></i></th>
+                <th class="px-4 py-3 text-center text-xs font-bold uppercase cursor-pointer select-none" onclick="sortHistoryTable('semester')">Semester <i class="fas fa-sort ml-1 opacity-40" id="history-sort-icon-semester"></i></th>
                 <th class="px-4 py-3 text-center text-xs font-bold uppercase">Status</th>
                 <th class="px-4 py-3 text-left text-xs font-bold uppercase">Asal Semester</th>
                 <th class="px-4 py-3 text-center text-xs font-bold uppercase">Non-aktif Sejak</th>
                 <th class="px-4 py-3 text-center text-xs font-bold uppercase">Aksi</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="history-tbody">
             @foreach($historyPivots as $i => $pivot)
             @php $mk = $pivot->mataKuliah; @endphp
-            <tr class="hover:bg-purple-50 dark:hover:bg-purple-900/10 transition {{ $pivot->status === 'archived' ? 'opacity-60' : '' }}">
-                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{{ $i + 1 }}</td>
+            <tr class="hover:bg-purple-50 dark:hover:bg-purple-900/10 transition history-row {{ $pivot->status === 'archived' ? 'opacity-60' : '' }}"
+                data-kode="{{ strtolower($mk->kode_mk) }}" data-nama="{{ strtolower($mk->nama_mk) }}"
+                data-semester="{{ $mk->semester }}" data-sks="{{ $mk->sks }}">
+                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 history-row-no">{{ $i + 1 }}</td>
                 <td class="px-4 py-3">
                     <span class="font-mono text-xs font-bold text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-2 py-0.5 rounded">{{ $mk->kode_mk }}</span>
                 </td>
@@ -470,6 +564,9 @@
                 </td>
                 <td class="px-4 py-3 text-center">
                     <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">{{ $mk->sks }} SKS</span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">Semester {{ $mk->semester }}</span>
                 </td>
                 <td class="px-4 py-3 text-center">
                     @if($pivot->status === 'history')
@@ -556,7 +653,7 @@
                                 {{ $mk->kode_mk }} &bull; {{ $mk->sks }} SKS &bull; {{ $mk->prodi?->nama_prodi }}
                             </div>
                         </div>
-                        <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 flex-shrink-0">Smt {{ $mk->semester }}</span>
+                        <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 flex-shrink-0">Semester {{ $mk->semester }}</span>
                     </label>
                     @empty
                     <div class="text-center py-8 text-gray-400 dark:text-gray-500">
@@ -911,6 +1008,67 @@ function filterAttachList(q) {
         el.style.display = el.dataset.search.includes(q.toLowerCase()) ? '' : 'none';
     });
 }
+
+// ─── Client-side Filter & Sort for TA Aktif / Histori ─────────────────────────
+let _activeSortCol = null, _activeSortDir = 'asc';
+let _historySortCol = null, _historySortDir = 'asc';
+
+function _filterTable(rows, searchEl, semesterEl, countEl, noClass) {
+    const q = (document.getElementById(searchEl)?.value || '').toLowerCase();
+    const sem = document.getElementById(semesterEl)?.value || '';
+    let visible = 0;
+    rows.forEach(row => {
+        const matchSearch = !q || row.dataset.kode.includes(q) || row.dataset.nama.includes(q);
+        const matchSem = !sem || row.dataset.semester === sem;
+        const show = matchSearch && matchSem;
+        row.style.display = show ? '' : 'none';
+        if (show) { visible++; row.querySelector('.' + noClass).textContent = visible; }
+    });
+    const el = document.getElementById(countEl);
+    if (el) el.textContent = q || sem ? `Menampilkan ${visible} dari ${rows.length} MK` : '';
+}
+
+function _sortTable(tbodyId, rowClass, col, prefix) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    const rows = Array.from(tbody.querySelectorAll('.' + rowClass));
+    // Determine direction
+    let sortCol, sortDir;
+    if (prefix === 'active') {
+        if (_activeSortCol === col) _activeSortDir = _activeSortDir === 'asc' ? 'desc' : 'asc';
+        else { _activeSortCol = col; _activeSortDir = 'asc'; }
+        sortCol = _activeSortCol; sortDir = _activeSortDir;
+    } else {
+        if (_historySortCol === col) _historySortDir = _historySortDir === 'asc' ? 'desc' : 'asc';
+        else { _historySortCol = col; _historySortDir = 'asc'; }
+        sortCol = _historySortCol; sortDir = _historySortDir;
+    }
+    // Update icons
+    ['kode_mk','nama_mk','sks','semester'].forEach(c => {
+        const icon = document.getElementById(`${prefix}-sort-icon-${c}`);
+        if (icon) icon.className = c === col
+            ? `fas fa-sort-${sortDir === 'asc' ? 'up' : 'down'} ml-1`
+            : 'fas fa-sort ml-1 opacity-40';
+    });
+    // Sort
+    const dataKey = col === 'kode_mk' ? 'kode' : col === 'nama_mk' ? 'nama' : col;
+    const isNum = col === 'sks' || col === 'semester';
+    rows.sort((a, b) => {
+        let va = a.dataset[dataKey], vb = b.dataset[dataKey];
+        if (isNum) { va = parseInt(va) || 0; vb = parseInt(vb) || 0; }
+        let cmp = isNum ? va - vb : va.localeCompare(vb);
+        return sortDir === 'desc' ? -cmp : cmp;
+    });
+    rows.forEach(r => tbody.appendChild(r));
+    // Re-number visible rows
+    let num = 0;
+    rows.forEach(r => { if (r.style.display !== 'none') { num++; r.querySelector(`.${prefix}-row-no`).textContent = num; } });
+}
+
+function filterActiveTable() { _filterTable(document.querySelectorAll('.active-row'), 'active-search', 'active-semester-filter', 'active-count', 'active-row-no'); }
+function sortActiveTable(col) { _sortTable('active-tbody', 'active-row', col, 'active'); filterActiveTable(); }
+function filterHistoryTable() { _filterTable(document.querySelectorAll('.history-row'), 'history-search', 'history-semester-filter', 'history-count', 'history-row-no'); }
+function sortHistoryTable(col) { _sortTable('history-tbody', 'history-row', col, 'history'); filterHistoryTable(); }
 
 function filterRestoreList(q) {
     document.querySelectorAll('.restore-item').forEach(el => {

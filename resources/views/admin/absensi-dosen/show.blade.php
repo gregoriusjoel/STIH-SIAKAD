@@ -160,8 +160,16 @@
                         <tr class="hover:bg-gray-50/80 transition-colors group">
                             <td class="px-6 py-4 text-center text-sm text-gray-400 font-medium group-hover:text-gray-600">{{ $loop->iteration }}</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-xl text-sm font-bold text-gray-700 shadow-sm border border-gray-200 group-hover:border-gray-300 transition-colors">
-                                    {{ $att->pertemuan->nomor_pertemuan ?? '-' }}
+                                @php
+                                    $tipePT = $att->pertemuan->tipe_pertemuan ?? 'kuliah';
+                                    $tipeBadgePT = match($tipePT) {
+                                        'uts' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                        'uas' => 'bg-red-50 text-red-700 border-red-200',
+                                        default => 'bg-gray-100 text-gray-700 border-gray-200',
+                                    };
+                                @endphp
+                                <span class="inline-flex items-center justify-center min-w-[2.5rem] h-10 px-2 {{ $tipeBadgePT }} rounded-xl text-sm font-bold shadow-sm border group-hover:border-gray-300 transition-colors">
+                                    {{ $att->pertemuan->display_label ?? ($att->pertemuan->nomor_pertemuan ?? '-') }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-center">

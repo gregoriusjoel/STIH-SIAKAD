@@ -11,12 +11,16 @@ use App\Models\Jadwal;
 use App\Models\Mahasiswa;
 use App\Models\MataKuliah;
 use App\Models\ParentModel;
+use App\Services\AcademicPeriodService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $periodService = app(AcademicPeriodService::class);
+        $activeSemester = $periodService->getActiveSemester();
+
         $data = [
             'total_mahasiswa' => Mahasiswa::count(),
             'total_dosen' => Dosen::count(),
@@ -34,6 +38,9 @@ class DashboardController extends Controller
                 ->orderBy('start_date', 'asc')
                 ->limit(5)
                 ->get(),
+            // ── Active period badges from calendar ──
+            'active_periods' => $periodService->currentActiveTypes($activeSemester?->id),
+            'active_semester' => $activeSemester,
         ];
 
         return view('admin.dashboard', $data);

@@ -15,6 +15,7 @@ use App\Models\Presensi;
 use App\Models\Pertemuan;
 use App\Models\Dosen;
 use App\Models\DokumenKelas;
+use App\Services\ActiveMeetingResolver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
 
@@ -246,21 +247,24 @@ class LecturerController extends Controller
             return ($item['day'] ?? '') . ($item['time'] ?? '') . ($item['code'] ?? '');
         })->values()->toArray();
 
-        // Generate 16 meeting dates from semester start date
+        // Generate 16 meeting dates from perkuliahan period start (Kalender Akademik)
+        $periodServiceDash = app(\App\Services\AcademicPeriodService::class);
+        $perkuliahanRangeDash = $periodServiceDash->getDateRange(\App\Services\AcademicPeriodService::TYPE_PERKULIAHAN);
         $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
             ?? \App\Models\Semester::where('is_active', true)->first()
             ?? \App\Models\Semester::latest()->first();
 
+        $startDate = $perkuliahanRangeDash
+            ? $perkuliahanRangeDash['start']
+            : ($semesterAktif?->tanggal_mulai ? \Carbon\Carbon::parse($semesterAktif->tanggal_mulai) : null);
+
         $meetingDates = [];
-        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
-            $startDate = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
-            
+        if ($startDate) {
             // Generate dates for each schedule based on their day
             foreach ($allSchedules as $schedule) {
                 $dayName = $schedule['day'] ?? null;
                 if (!$dayName) continue;
                 
-                // Map day names to Carbon day constants
                 $dayMap = [
                     'Minggu' => 0,
                     'Senin' => 1,
@@ -274,7 +278,7 @@ class LecturerController extends Controller
                 $targetDay = $dayMap[$dayName] ?? null;
                 if ($targetDay === null) continue;
                 
-                // Find the first occurrence of this day from start date
+                // Find the first occurrence of this day from perkuliahan start date
                 $firstOccurrence = $startDate->copy();
                 while ($firstOccurrence->dayOfWeek !== $targetDay) {
                     $firstOccurrence->addDay();
@@ -380,23 +384,25 @@ class LecturerController extends Controller
 
     private function calculateProgress()
     {
-        $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
-            ?? \App\Models\Semester::latest()->first();
+        try {
+            $periodService = app(\App\Services\AcademicPeriodService::class);
+            $perkuliahanRange = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_PERKULIAHAN);
 
-        $progress = 0;
-        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
-            try {
-                $start = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
-                $now = \Carbon\Carbon::now();
+            $start = $perkuliahanRange
+                ? $perkuliahanRange['start']
+                : (\App\Models\Semester::where('status', 'aktif')->first()?->tanggal_mulai
+                    ? Carbon::parse(\App\Models\Semester::where('status', 'aktif')->first()->tanggal_mulai)
+                    : null);
+
+            if ($start) {
+                $now = Carbon::now();
                 if ($now->gte($start)) {
                     $weeks = $start->diffInWeeks($now);
-                    $progress = min(100, round(($weeks / 16) * 100));
+                    return min(100, round(($weeks / 16) * 100));
                 }
-            } catch (\Exception $e) {
-                $progress = 0;
             }
-        }
-        return $progress;
+        } catch (\Exception $e) {}
+        return 0;
     }
 
     public function inputNilai(Request $request)
@@ -492,27 +498,102 @@ class LecturerController extends Controller
             ];
         })->toArray();
 
+        // --- Dates from Kalender Akademik (AcademicPeriodService) ---
+        $periodService = app(\App\Services\AcademicPeriodService::class);
+        $perkuliahanRange = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_PERKULIAHAN);
+        $utsRange         = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_UTS);
+        $uasRange         = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_UAS);
+
+        // Prefer perkuliahan event start; fallback to semester.tanggal_mulai
+        $perkuliahanStart = $perkuliahanRange
+            ? $perkuliahanRange['start']
+            : ($semesterAktif?->tanggal_mulai ? Carbon::parse($semesterAktif->tanggal_mulai) : null);
+
+        // Recalculate progress using resolved perkuliahan start
+        if ($perkuliahanStart) {
+            $now = Carbon::now();
+            if ($now->gte($perkuliahanStart)) {
+                $pertemuanKe = (int) min(16, $perkuliahanStart->diffInWeeks($now) + 1);
+            }
+        }
+
+        // Determine class weekday (hari) from KelasMataKuliah or Jadwal
+        $hari = $kelasMataKuliah?->hari ?? $jadwal?->hari;
+        $dayMap = ['Minggu' => 0, 'Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6];
+        $targetDay = isset($hari) ? ($dayMap[$hari] ?? null) : null;
+
+        // Find first occurrence of class weekday on or after perkuliahan start
+        $firstOccurrence = null;
+        if ($perkuliahanStart && $targetDay !== null) {
+            $firstOccurrence = $perkuliahanStart->copy();
+            while ($firstOccurrence->dayOfWeek !== $targetDay) {
+                $firstOccurrence->addDay();
+            }
+        }
+
+        // Load existing Pertemuan records that have a stored tanggal
+        $savedPertemuanDates = $kelasMataKuliah
+            ? \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+                ->whereNotNull('tanggal')
+                ->get()
+                ->keyBy(fn ($p) => ($p->tipe_pertemuan ?? 'kuliah') . ':' . $p->nomor_pertemuan)
+            : collect();
+
+        // Build ordered meeting slots via ActiveMeetingResolver
+        $resolver = app(ActiveMeetingResolver::class);
+        $meetingSlots = $resolver->buildMeetingSlots();
+
+        // Build pertemuanDatesMap: 'tipe:nomor' => 'Y-m-d' (or null)
+        // Priority: 1. actual tanggal from pertemuan table
+        //           2. UTS/UAS start from academic_events (kalender akademik)
+        //           3. calculated from first class-weekday + week offset
+        $pertemuanDatesMap = [];
+        foreach ($meetingSlots as $slot) {
+            $key = $slot['tipe'] . ':' . $slot['nomor'];
+
+            if ($savedPertemuanDates->has($key)) {
+                $pertemuanDatesMap[$key] = $savedPertemuanDates->get($key)->tanggal->format('Y-m-d');
+                continue;
+            }
+            if ($slot['tipe'] === 'uts' && $utsRange) {
+                $pertemuanDatesMap[$key] = $utsRange['start']->format('Y-m-d');
+                continue;
+            }
+            if ($slot['tipe'] === 'uas' && $uasRange) {
+                $pertemuanDatesMap[$key] = $uasRange['start']->format('Y-m-d');
+                continue;
+            }
+            if ($slot['tipe'] === 'kuliah' && $firstOccurrence) {
+                // slot number gives correct week offset including UTS/UAS gaps
+                $pertemuanDatesMap[$key] = $firstOccurrence->copy()->addWeeks($slot['slot'] - 1)->format('Y-m-d');
+                continue;
+            }
+            $pertemuanDatesMap[$key] = null;
+        }
+
         $class_info = [
             'name' => $kelas->mataKuliah->nama_mk,
             'code' => $kelas->mataKuliah->kode_mk,
             'sks' => $kelas->mataKuliah->sks,
             'semester' => $kelas->mataKuliah->semester,
             'section' => $kelas->section,
-            'day' => $jadwal?->hari ?? '-',
-            'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
-            'room' => $jadwal?->ruangan ?? '-',
+            'day' => $hari ?? $jadwal?->hari ?? '-',
+            'hari' => $hari,
+            'time' => ($kelasMataKuliah?->jam_mulai && $kelasMataKuliah?->jam_selesai)
+                ? substr($kelasMataKuliah->jam_mulai, 0, 5) . ' - ' . substr($kelasMataKuliah->jam_selesai, 0, 5)
+                : ($jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-'),
+            'room' => $kelasMataKuliah?->ruangan?->kode_ruangan ?? $kelasMataKuliah?->ruang ?? $jadwal?->ruangan ?? '-',
             'students_count' => count($students),
             'progress' => $pertemuanKe,
             'total_pertemuan' => 16,
-            'semester_start_date' => $semesterAktif?->tanggal_mulai
+            'semester_start_date' => $perkuliahanStart?->format('Y-m-d'),
         ];
 
-
         if (request()->ajax()) {
-            return view('page.dosen.kelas.partials.detail-content', compact('class_info', 'students', 'id', 'kelas'))->with('is_modal', true);
+            return view('page.dosen.kelas.partials.detail-content', compact('class_info', 'students', 'id', 'kelas', 'meetingSlots', 'pertemuanDatesMap'))->with('is_modal', true);
         }
 
-        return view('page.dosen.kelas.detail', compact('class_info', 'students', 'id', 'kelas'))->with('is_modal', false);
+        return view('page.dosen.kelas.detail', compact('class_info', 'students', 'id', 'kelas', 'meetingSlots', 'pertemuanDatesMap'))->with('is_modal', false);
     }
 
     /**
@@ -538,20 +619,13 @@ class LecturerController extends Controller
             return back()->with('error', 'Tidak dapat menemukan record KelasMataKuliah untuk kelas ini. Silakan buat kelas mata kuliah terlebih dahulu.');
         }
 
-        // ✅ Get pertemuan number from request
+        // ✅ Get pertemuan number and type from request
         $pertemuanNo = request()->input('pertemuan', 1);
+        $tipePertemuan = request()->input('tipe_pertemuan', Pertemuan::TIPE_KULIAH);
         
-        // ✅ Find or create Pertemuan record
-        $pertemuan = Pertemuan::firstOrCreate(
-            [
-                'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
-                'nomor_pertemuan' => $pertemuanNo
-            ],
-            [
-                'topik' => 'Pertemuan ' . $pertemuanNo,
-                'status' => 'scheduled'
-            ]
-        );
+        // ✅ Find or create Pertemuan record with tipe_pertemuan
+        $resolver = app(ActiveMeetingResolver::class);
+        $pertemuan = $resolver->findOrCreatePertemuan($kelasMataKuliah, $tipePertemuan, $pertemuanNo);
 
         // ✅ Generate QR token (but don't activate yet)
         $pertemuan->generateQrToken(5);
@@ -578,23 +652,91 @@ class LecturerController extends Controller
 
         $jadwal = $kelas->jadwals->first();
 
-        // Re-calculate meeting date based on session number
-        $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
-            ?? \App\Models\Semester::where('is_active', true)->first()
-            ?? \App\Models\Semester::latest()->first();
+        // Resolve tipe_pertemuan and nomor from route parameter
+        // Supports: "kuliah:3", "uts:1", "uas:1" or plain integer (backward compat → slot number)
+        $resolver = app(ActiveMeetingResolver::class);
+        if (str_contains($pertemuan, ':')) {
+            [$tipe, $nomor] = explode(':', $pertemuan, 2);
+            $nomor = (int) $nomor;
+        } else {
+            // Legacy: plain integer = slot number; map to tipe:nomor
+            $mapped = $resolver->slotToTipeNomor((int) $pertemuan);
+            $tipe = $mapped['tipe'];
+            $nomor = $mapped['nomor'];
+        }
 
+        // Calculate slot number for ordering/display
+        $slotNumber = $resolver->tipeNomorToSlot($tipe, $nomor);
+
+        // Build label based on tipe
+        $meetingLabel = $resolver->labelFor($tipe, $nomor);
+
+        // --- Resolve meeting date (same priority as detail() page) ---
+        // Early fetch of KelasMataKuliah to get hari (day-of-week) for date calculation
+        $kmkForDate = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('kode_kelas', $kelas->section)
+            ->where('dosen_id', $kelas->dosen_id)
+            ->first()
+            ?? \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)->first();
+
+        // 1. Stored tanggal from Pertemuan record
+        $storedPertemuan = $kmkForDate
+            ? \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $kmkForDate->id)
+                ->where('nomor_pertemuan', $nomor)
+                ->where('tipe_pertemuan', $tipe)
+                ->whereNotNull('tanggal')
+                ->first()
+            : null;
+
+        $periodService = app(\App\Services\AcademicPeriodService::class);
         $meetingDate = '-';
-        if ($semesterAktif && $semesterAktif->tanggal_mulai) {
-            $start = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
-            $meetingDate = $start->copy()->addDays(($pertemuan - 1) * 7)->locale('id')->isoFormat('D MMMM YYYY');
+
+        if ($storedPertemuan?->tanggal) {
+            // Priority 1: actual date stored in pertemuan record
+            $meetingDate = $storedPertemuan->tanggal->locale('id')->isoFormat('D MMMM YYYY');
+        } elseif ($tipe === 'uts') {
+            // Priority 2a: UTS date from Kalender Akademik
+            $range = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_UTS);
+            if ($range) $meetingDate = $range['start']->locale('id')->isoFormat('D MMMM YYYY');
+        } elseif ($tipe === 'uas') {
+            // Priority 2b: UAS date from Kalender Akademik
+            $range = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_UAS);
+            if ($range) $meetingDate = $range['start']->locale('id')->isoFormat('D MMMM YYYY');
+        } else {
+            // Priority 3: perkuliahan period start + day-of-week + week offset
+            $perkuliahanRange = $periodService->getDateRange(\App\Services\AcademicPeriodService::TYPE_PERKULIAHAN);
+            $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
+                ?? \App\Models\Semester::where('is_active', true)->first()
+                ?? \App\Models\Semester::latest()->first();
+            $start = $perkuliahanRange
+                ? $perkuliahanRange['start']
+                : ($semesterAktif?->tanggal_mulai ? Carbon::parse($semesterAktif->tanggal_mulai) : null);
+
+            if ($start) {
+                $hari = $kmkForDate?->hari ?? $jadwal?->hari;
+                $dayMap = ['Minggu' => 0, 'Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6];
+                $targetDay = isset($hari) ? ($dayMap[$hari] ?? null) : null;
+                if ($targetDay !== null) {
+                    $firstOccurrence = $start->copy();
+                    while ($firstOccurrence->dayOfWeek !== $targetDay) { $firstOccurrence->addDay(); }
+                    $meetingDate = $firstOccurrence->addWeeks($slotNumber - 1)->locale('id')->isoFormat('D MMMM YYYY');
+                } else {
+                    $meetingDate = $start->copy()->addWeeks($slotNumber - 1)->locale('id')->isoFormat('D MMMM YYYY');
+                }
+            }
         }
 
         $meeting = [
-            'no' => $pertemuan,
-            'label' => 'Pertemuan ' . $pertemuan,
+            'no' => $slotNumber,
+            'nomor_pertemuan' => $nomor,
+            'tipe_pertemuan' => $tipe,
+            'label' => $meetingLabel,
             'date' => $meetingDate,
-            'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
-            'room' => $jadwal?->ruangan ?? '-',
+            'time' => ($kmkForDate?->jam_mulai && $kmkForDate?->jam_selesai)
+                ? substr($kmkForDate->jam_mulai, 0, 5) . ' - ' . substr($kmkForDate->jam_selesai, 0, 5)
+                : ($jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-'),
+            'room' => $kmkForDate?->ruangan?->kode_ruangan ?? $kmkForDate?->ruang ?? $jadwal?->ruangan ?? '-',
+            'is_exam' => in_array($tipe, [Pertemuan::TIPE_UTS, Pertemuan::TIPE_UAS]),
         ];
 
         // Fetch students
@@ -619,10 +761,10 @@ class LecturerController extends Controller
         if ($kelasMataKuliah) {
             $attendanceQuery = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id);
             
-            // Get records for current meeting only
+            // Get records for current meeting only (using slot number for backward compat with presensis.pertemuan)
             $currentMeetingQuery = clone $attendanceQuery;
             if (Schema::hasColumn('presensis', 'pertemuan')) {
-                $currentMeetingQuery->where('pertemuan', $pertemuan);
+                $currentMeetingQuery->where('pertemuan', $slotNumber);
             }
             $attendanceRecords = $currentMeetingQuery->get()->keyBy('mahasiswa_id');
 
@@ -670,7 +812,7 @@ class LecturerController extends Controller
 
         // Get tugas (assignments) for this mata kuliah and pertemuan
         $tasks = \App\Models\Tugas::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('pertemuan', $pertemuan)
+            ->where('pertemuan', $slotNumber)
             ->latest()
             ->get();
 
@@ -678,7 +820,7 @@ class LecturerController extends Controller
 
 
 
-        // ✅ Read QR from pertemuans table
+        // ✅ Read QR from pertemuans table (using tipe_pertemuan)
         $pertemuanRecord = null;
         $token = null;
         $qrEnabled = false;
@@ -686,7 +828,8 @@ class LecturerController extends Controller
 
         if ($kelasMataKuliah) {
             $pertemuanRecord = Pertemuan::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
-                ->where('nomor_pertemuan', $pertemuan)
+                ->where('nomor_pertemuan', $nomor)
+                ->where('tipe_pertemuan', $tipe)
                 ->first();
             
             if ($pertemuanRecord) {
@@ -696,12 +839,15 @@ class LecturerController extends Controller
             }
         }
 
-        // Get materials for this mata kuliah and pertemuan
+        // Get materials for this mata kuliah and pertemuan (slot-based for backward compat)
         $materis = \App\Models\Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('pertemuan', $pertemuan)
+            ->where('pertemuan', $slotNumber)
             ->with('dosen')
             ->latest()
             ->get();
+
+        // Build meeting slot list for the type dropdown selector
+        $meetingSlots = $resolver->buildMeetingSlots();
 
         if ($request->has('reload_attendance') && $request->ajax()) {
             $html = view('page.dosen.kelas.partials.student_attendance_table', compact('students'))->render();
@@ -715,7 +861,7 @@ class LecturerController extends Controller
             ]);
         }
 
-        return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students', 'tasks', 'materis', 'token', 'qrEnabled', 'qrExpires', 'id', 'pertemuanRecord', 'kelasMataKuliah'));
+        return view('page.dosen.kelas.lihat-rincian', compact('kelas', 'meeting', 'students', 'tasks', 'materis', 'token', 'qrEnabled', 'qrExpires', 'id', 'pertemuanRecord', 'kelasMataKuliah', 'meetingSlots'));
     }
 
     public function updateAttendance(Request $request, $id, $pertemuan)
@@ -727,31 +873,38 @@ class LecturerController extends Controller
 
         $kelas = Kelas::findOrFail($id);
         
+        // Resolve tipe + nomor → slot number for storage in presensis.pertemuan
+        $resolver = app(ActiveMeetingResolver::class);
+        if (str_contains((string) $pertemuan, ':')) {
+            [$tipe, $nomor] = explode(':', $pertemuan, 2);
+            $slotNumber = $resolver->tipeNomorToSlot($tipe, (int) $nomor);
+        } else {
+            $slotNumber = (int) $pertemuan;
+        }
+
         // Find or create KelasMataKuliah
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
             ->where('kode_kelas', $kelas->section)
             ->first();
 
         if (!$kelasMataKuliah) {
-             // Fallback or create logic if needed, but usually should exist
              return response()->json(['success' => false, 'message' => 'Kelas Mata Kuliah not found'], 404);
         }
 
         $studentId = $request->mahasiswa_id;
         $status = $request->status;
 
-        // Find existing record or create new
+        // Find existing record or create new (uses slot number for backward compat)
         $attendance = Presensi::updateOrCreate(
             [
                 'kelas_mata_kuliah_id' => $kelasMataKuliah->id,
                 'mahasiswa_id' => $studentId,
-                'pertemuan' => $pertemuan,
+                'pertemuan' => $slotNumber,
             ],
             [
                 'status' => $status,
                 'tanggal' => now()->toDateString(),
-                'waktu' => now(), // Update time to now
-                // We might need krs_id if strict relationship is required
+                'waktu' => now(),
                 'krs_id' => \App\Models\Krs::where('mahasiswa_id', $studentId)
                             ->where('kelas_id', $kelas->id)
                             ->whereIn('status', ['approved', 'disetujui'])
@@ -777,6 +930,18 @@ class LecturerController extends Controller
 
     public function meetingMaterials($id, $pertemuan)
     {
+        // Resolve slot number for backward compat
+        $resolver = app(ActiveMeetingResolver::class);
+        if (str_contains((string) $pertemuan, ':')) {
+            [$tipe, $nomor] = explode(':', $pertemuan, 2);
+            $slotNumber = $resolver->tipeNomorToSlot($tipe, (int) $nomor);
+            $meetingLabel = $resolver->labelFor($tipe, (int) $nomor);
+        } else {
+            $slotNumber = (int) $pertemuan;
+            $mapped = $resolver->slotToTipeNomor($slotNumber);
+            $meetingLabel = $resolver->labelFor($mapped['tipe'], $mapped['nomor']);
+        }
+
         $kelas = Kelas::with([
             'mataKuliah',
             'jadwals' => function ($q) {
@@ -786,7 +951,7 @@ class LecturerController extends Controller
 
         $jadwal = $kelas->jadwals->first();
 
-        // Re-calculate meeting date based on session number
+        // Re-calculate meeting date based on slot number
         $semesterAktif = \App\Models\Semester::where('status', 'aktif')->first()
             ?? \App\Models\Semester::where('is_active', true)->first()
             ?? \App\Models\Semester::latest()->first();
@@ -794,20 +959,20 @@ class LecturerController extends Controller
         $meetingDate = '-';
         if ($semesterAktif && $semesterAktif->tanggal_mulai) {
             $start = \Carbon\Carbon::parse($semesterAktif->tanggal_mulai);
-            $meetingDate = $start->copy()->addDays(($pertemuan - 1) * 7)->locale('id')->isoFormat('D MMMM YYYY');
+            $meetingDate = $start->copy()->addDays(($slotNumber - 1) * 7)->locale('id')->isoFormat('D MMMM YYYY');
         }
 
         $meeting = [
-            'no' => $pertemuan,
-            'label' => 'Pertemuan ' . $pertemuan,
+            'no' => $slotNumber,
+            'label' => $meetingLabel,
             'date' => $meetingDate,
             'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
             'room' => $jadwal?->ruangan ?? '-',
         ];
 
-        // Get materials for this mata kuliah and pertemuan
+        // Get materials for this mata kuliah and pertemuan (slot-based)
         $materis = \App\Models\Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('pertemuan', $pertemuan)
+            ->where('pertemuan', $slotNumber)
             ->with('dosen')
             ->latest()
             ->get();
@@ -1016,7 +1181,16 @@ class LecturerController extends Controller
             ->where('is_published', true)
             ->exists();
         
-        return view('page.dosen.input-nilai.kelas', compact('class_info', 'students', 'bobot', 'has_published_grades'));
+        // ── Academic period status for UTS/UAS gating ──
+        $periodService = app(\App\Services\AcademicPeriodService::class);
+        $utsStatus = $periodService->getStatus(\App\Services\AcademicPeriodService::TYPE_UTS);
+        $uasStatus = $periodService->getStatus(\App\Services\AcademicPeriodService::TYPE_UAS);
+        $periodStatuses = [
+            'uts' => $utsStatus,
+            'uas' => $uasStatus,
+        ];
+
+        return view('page.dosen.input-nilai.kelas', compact('class_info', 'students', 'bobot', 'has_published_grades', 'periodStatuses'));
     }
 
     /**
@@ -1160,6 +1334,12 @@ class LecturerController extends Controller
         
         $isAutoSave = $request->boolean('is_auto_save', false);
         
+        // ── Period-based gating for UTS/UAS components ──
+        $periodService = app(\App\Services\AcademicPeriodService::class);
+        $utsOpen = $periodService->isActive(\App\Services\AcademicPeriodService::TYPE_UTS);
+        $uasOpen = $periodService->isActive(\App\Services\AcademicPeriodService::TYPE_UAS);
+        $periodWarnings = [];
+
         \DB::beginTransaction();
         try {
             $savedCount = 0;
@@ -1178,8 +1358,20 @@ class LecturerController extends Controller
                 $nilai->nilai_proyek = $nilaiData['nilai_proyek'] ?? 0;
                 $nilai->nilai_quiz = $nilaiData['nilai_quiz'] ?? 0;
                 $nilai->nilai_tugas = $nilaiData['nilai_tugas'] ?? 0;
-                $nilai->nilai_uts = $nilaiData['nilai_uts'] ?? 0;
-                $nilai->nilai_uas = $nilaiData['nilai_uas'] ?? 0;
+                
+                // UTS/UAS: only update if their period is open, or keep existing value
+                if ($utsOpen || !$nilai->exists || $nilai->nilai_uts == 0) {
+                    $nilai->nilai_uts = $nilaiData['nilai_uts'] ?? 0;
+                    if (!$utsOpen && ($nilaiData['nilai_uts'] ?? 0) > 0) {
+                        $periodWarnings['uts'] = true;
+                    }
+                }
+                if ($uasOpen || !$nilai->exists || $nilai->nilai_uas == 0) {
+                    $nilai->nilai_uas = $nilaiData['nilai_uas'] ?? 0;
+                    if (!$uasOpen && ($nilaiData['nilai_uas'] ?? 0) > 0) {
+                        $periodWarnings['uas'] = true;
+                    }
+                }
                 
                 // Auto calculate final grade and bobot
                 $nilai->autoCalculateGrade($bobot);
@@ -1200,9 +1392,18 @@ class LecturerController extends Controller
             
             \DB::commit();
             
+            $msg = $isAutoSave ? "Autosave berhasil." : "Berhasil menyimpan {$savedCount} nilai mahasiswa.";
+            if (!empty($periodWarnings)) {
+                $parts = [];
+                if (isset($periodWarnings['uts'])) $parts[] = 'UTS';
+                if (isset($periodWarnings['uas'])) $parts[] = 'UAS';
+                $msg .= ' (Catatan: Periode ' . implode(' & ', $parts) . ' belum dibuka di Kalender Akademik)';
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => $isAutoSave ? "Autosave berhasil." : "Berhasil menyimpan {$savedCount} nilai mahasiswa.",
+                'message' => $msg,
+                'period_warnings' => array_keys($periodWarnings),
             ]);
             
         } catch (\Exception $e) {
@@ -1255,6 +1456,230 @@ class LecturerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat menarik nilai: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Download CSV template pre-filled with enrolled students for nilai import.
+     */
+    public function downloadNilaiTemplate($id)
+    {
+        $kelas = Kelas::with(['mataKuliah', 'dosen'])->findOrFail($id);
+
+        if (!$kelas->dosen || $kelas->dosen->user_id != Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses ke kelas ini.');
+        }
+
+        $bobot = \App\Models\BobotPenilaian::where('kelas_id', $id)->first();
+
+        $students = \App\Models\Krs::where('kelas_id', $id)
+            ->whereIn('status', ['approved', 'disetujui'])
+            ->with(['mahasiswa.user', 'nilai'])
+            ->get();
+
+        $filename = 'template_nilai_' . str_replace(' ', '_', $kelas->mataKuliah->kode_mk) . '_' . $kelas->section . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($students, $bobot) {
+            $file = fopen('php://output', 'w');
+            // BOM for Excel UTF-8
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($file, ['NIM', 'Nama Mahasiswa', 'Partisipatif', 'Proyek', 'Quiz', 'Tugas', 'UTS', 'UAS']);
+
+            foreach ($students as $krs) {
+                $m = $krs->mahasiswa;
+                $n = $krs->nilai;
+                fputcsv($file, [
+                    $m->nim ?? '',
+                    $m->user->name ?? $m->nama ?? '',
+                    $n->nilai_partisipatif ?? '',
+                    $n->nilai_proyek ?? '',
+                    $n->nilai_quiz ?? '',
+                    $n->nilai_tugas ?? '',
+                    $n->nilai_uts ?? '',
+                    $n->nilai_uas ?? '',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
+    }
+
+    /**
+     * Import nilai from CSV file.
+     */
+    public function importNilai(Request $request, $id)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        $kelas = Kelas::with(['mataKuliah', 'dosen'])->findOrFail($id);
+
+        if (!$kelas->dosen || $kelas->dosen->user_id != Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        }
+
+        $bobot = \App\Models\BobotPenilaian::where('kelas_id', $id)->first();
+        if (!$bobot || !$bobot->is_locked) {
+            return response()->json(['success' => false, 'message' => 'Bobot penilaian belum dikunci.'], 422);
+        }
+
+        // Build NIM → krs_id lookup
+        $krsRecords = \App\Models\Krs::where('kelas_id', $id)
+            ->whereIn('status', ['approved', 'disetujui'])
+            ->with('mahasiswa')
+            ->get();
+
+        $nimToKrs = [];
+        foreach ($krsRecords as $krs) {
+            $nim = $krs->mahasiswa->nim ?? null;
+            if ($nim) {
+                $nimToKrs[$nim] = $krs;
+            }
+        }
+
+        // Period gating
+        $periodService = app(\App\Services\AcademicPeriodService::class);
+        $utsOpen = $periodService->isActive(\App\Services\AcademicPeriodService::TYPE_UTS);
+        $uasOpen = $periodService->isActive(\App\Services\AcademicPeriodService::TYPE_UAS);
+
+        $file = $request->file('file');
+        $handle = fopen($file->getRealPath(), 'r');
+        if (!$handle) {
+            return response()->json(['success' => false, 'message' => 'Gagal membuka file.'], 422);
+        }
+
+        // Detect delimiter
+        $firstLine = fgets($handle);
+        rewind($handle);
+        $delimiter = (substr_count($firstLine, ';') > substr_count($firstLine, ',')) ? ';' : ',';
+
+        $header = null;
+        $updated = 0;
+        $skipped = 0;
+        $errors = [];
+        $rowNum = 0;
+        $importedStudents = [];
+
+        $nilaiFields = ['partisipatif', 'proyek', 'quiz', 'tugas', 'uts', 'uas'];
+
+        \DB::beginTransaction();
+        try {
+            while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+                $rowNum++;
+
+                if (!$header) {
+                    // Clean header
+                    $header = array_map(function ($h) {
+                        $h = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $h);
+                        return strtolower(trim($h));
+                    }, $row);
+                    continue;
+                }
+
+                $data = [];
+                foreach ($header as $i => $key) {
+                    $data[$key] = isset($row[$i]) ? trim($row[$i]) : null;
+                }
+
+                $nim = $data['nim'] ?? null;
+                if (!$nim || !isset($nimToKrs[$nim])) {
+                    $skipped++;
+                    if ($nim) {
+                        $errors[] = "Baris {$rowNum}: NIM '{$nim}' tidak ditemukan di kelas ini.";
+                    }
+                    continue;
+                }
+
+                $krs = $nimToKrs[$nim];
+                $nilai = \App\Models\Nilai::firstOrNew([
+                    'krs_id' => $krs->id,
+                    'kelas_id' => $id,
+                ]);
+
+                // Map CSV columns to nilai fields
+                $columnMap = [
+                    'partisipatif' => 'nilai_partisipatif',
+                    'proyek' => 'nilai_proyek',
+                    'quiz' => 'nilai_quiz',
+                    'tugas' => 'nilai_tugas',
+                    'uts' => 'nilai_uts',
+                    'uas' => 'nilai_uas',
+                ];
+
+                $periodWarnings = [];
+                foreach ($columnMap as $csvKey => $dbField) {
+                    $val = $data[$csvKey] ?? null;
+                    if ($val === null || $val === '') continue;
+
+                    $numVal = floatval(str_replace(',', '.', $val));
+                    if ($numVal < 0) $numVal = 0;
+                    if ($numVal > 100) $numVal = 100;
+
+                    // UTS/UAS gating
+                    if ($dbField === 'nilai_uts' && !$utsOpen && $nilai->exists && $nilai->nilai_uts > 0) {
+                        $periodWarnings[] = 'UTS';
+                        continue;
+                    }
+                    if ($dbField === 'nilai_uas' && !$uasOpen && $nilai->exists && $nilai->nilai_uas > 0) {
+                        $periodWarnings[] = 'UAS';
+                        continue;
+                    }
+
+                    $nilai->$dbField = $numVal;
+                }
+
+                $nilai->autoCalculateGrade($bobot);
+                $nilai->save();
+                $updated++;
+
+                // Return student data for live-update in the UI
+                $importedStudents[] = [
+                    'krs_id' => $krs->id,
+                    'nim' => $nim,
+                    'nilai_partisipatif' => (float) $nilai->nilai_partisipatif,
+                    'nilai_proyek' => (float) $nilai->nilai_proyek,
+                    'nilai_quiz' => (float) $nilai->nilai_quiz,
+                    'nilai_tugas' => (float) $nilai->nilai_tugas,
+                    'nilai_uts' => (float) $nilai->nilai_uts,
+                    'nilai_uas' => (float) $nilai->nilai_uas,
+                    'nilai_akhir' => (float) $nilai->nilai_akhir,
+                    'grade' => $nilai->grade,
+                    'bobot' => (float) $nilai->bobot,
+                ];
+            }
+
+            \DB::commit();
+            fclose($handle);
+
+            $msg = "Berhasil mengimpor nilai untuk {$updated} mahasiswa.";
+            if ($skipped > 0) $msg .= " {$skipped} baris dilewati.";
+
+            return response()->json([
+                'success' => true,
+                'message' => $msg,
+                'updated' => $updated,
+                'skipped' => $skipped,
+                'errors' => $errors,
+                'students' => $importedStudents,
+            ]);
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            fclose($handle);
+            \Log::error('Error importing nilai: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -1445,5 +1870,165 @@ class LecturerController extends Controller
         }
 
         return back()->withErrors(['error' => 'Dokumen tidak ditemukan.']);
+    }
+
+    /**
+     * Export Berita Acara Perkuliahan as PDF
+     */
+    public function exportBeritaAcara($id)
+    {
+        $kelas = Kelas::with(['mataKuliah.prodi', 'dosen.user', 'jadwals' => function ($q) {
+            $q->where('status', 'active');
+        }])->findOrFail($id);
+
+        $jadwal = $kelas->jadwals->first();
+
+        // Get time range from jadwal
+        $waktu = $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-';
+
+        // Get the KelasMataKuliah to find pertemuans
+        $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->where('kode_kelas', $kelas->section)
+            ->where('dosen_id', $kelas->dosen_id)
+            ->first();
+
+        // Get active semester
+        $semesterAktif = Semester::where('status', 'aktif')->first()
+            ?? Semester::where('is_active', true)->first()
+            ?? Semester::latest()->first();
+
+        // Count total students
+        $totalStudents = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+            ->where(function ($q) use ($kelasMataKuliah, $kelas) {
+                $q->where('kelas_id', $kelas->id);
+                if ($kelasMataKuliah) {
+                    $q->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
+                }
+            })->count();
+
+        // Load pertemuans if available
+        $pertemuans = collect();
+        if ($kelasMataKuliah) {
+            $pertemuans = Pertemuan::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+                ->orderBy('nomor_pertemuan')
+                ->get()
+                ->keyBy('nomor_pertemuan');
+        }
+
+        // Load materi indexed by pertemuan number
+        $materis = \App\Models\Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+            ->get()
+            ->groupBy('pertemuan');
+
+        // Calculate start date from semester
+        $startDate = $semesterAktif && $semesterAktif->tanggal_mulai
+            ? Carbon::parse($semesterAktif->tanggal_mulai)
+            : now();
+
+        // Indonesian day names
+        $dayNames = [
+            0 => 'Minggu', 1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu',
+            4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu'
+        ];
+
+        // Indonesian month names
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        // Build 16 rows
+        $rows = [];
+        for ($i = 1; $i <= 16; $i++) {
+            // Rows 8 and 16 are exam rows
+            if ($i === 8) {
+                $rows[] = [
+                    'no' => $i,
+                    'is_exam' => true,
+                    'exam_label' => 'Ujian Tengah Semester',
+                ];
+                continue;
+            }
+            if ($i === 16) {
+                $rows[] = [
+                    'no' => $i,
+                    'is_exam' => true,
+                    'exam_label' => 'Ujian Akhir Semester',
+                ];
+                continue;
+            }
+
+            // Calculate date for this meeting
+            $pertemuan = $pertemuans->get($i);
+            $meetingDate = null;
+
+            if ($pertemuan && $pertemuan->tanggal) {
+                $meetingDate = Carbon::parse($pertemuan->tanggal);
+            } else {
+                // Fallback: calculate based on semester start + weekly offset
+                // But first find the first occurrence of the actual class day
+                $dayMap = [
+                    'Minggu' => 0, 'Senin' => 1, 'Selasa' => 2, 'Rabu' => 3,
+                    'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6
+                ];
+                $targetDay = $dayMap[$jadwal->hari ?? ''] ?? $startDate->dayOfWeek;
+                
+                $firstOccurrence = $startDate->copy();
+                while ($firstOccurrence->dayOfWeek !== $targetDay) {
+                    $firstOccurrence->addDay();
+                }
+                
+                $meetingDate = $firstOccurrence->copy()->addWeeks($i - 1);
+            }
+
+            $dayName = $dayNames[$meetingDate->dayOfWeek] ?? '-';
+            $formattedDate = $dayName . ', ' . $meetingDate->day . ' ' . ($monthNames[$meetingDate->month] ?? '') . ' ' . $meetingDate->year;
+
+            // Get materi title for this meeting
+            $materiList = $materis->get($i);
+            $pokokBahasan = '-';
+            if ($materiList && $materiList->count() > 0) {
+                $pokokBahasan = $materiList->pluck('judul')->implode(', ');
+            }
+
+            // Count attendance for this meeting
+            $hadir = 0;
+            if ($kelasMataKuliah) {
+                $hadir = Presensi::where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
+                    ->where('pertemuan', $i)
+                    ->where('status', 'hadir')
+                    ->count();
+            }
+
+            $tidakHadir = $totalStudents - $hadir;
+
+            $rows[] = [
+                'no' => $i,
+                'is_exam' => false,
+                'hari_tgl' => $formattedDate,
+                'waktu' => $waktu,
+                'pokok_bahasan' => $pokokBahasan,
+                'hadir' => $hadir,
+                'tidak_hadir' => $tidakHadir < 0 ? 0 : $tidakHadir,
+            ];
+        }
+
+        $data = [
+            'mataKuliah' => $kelas->mataKuliah->nama_mk,
+            'kodeMK' => $kelas->mataKuliah->kode_mk,
+            'kelas' => $kelas->section,
+            'rows' => $rows,
+            'semester' => $semesterAktif->nama_semester ?? 'Ganjil',
+            'tahunAkademik' => $semesterAktif->tahun_ajaran ?? '2024/2025',
+            'prodi' => $kelas->mataKuliah->prodi->nama_prodi ?? 'Hukum',
+        ];
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.berita-acara-perkuliahan', $data)
+            ->setPaper('a4', 'landscape');
+
+        $filename = 'Berita Acara Perkuliahan ' . $kelas->mataKuliah->nama_mk . ' ' . $kelas->section . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

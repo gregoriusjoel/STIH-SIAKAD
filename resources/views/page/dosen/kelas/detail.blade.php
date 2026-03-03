@@ -45,21 +45,55 @@
     @endsection
 
     @php
+        // Build meetings list using dates resolved by controller:
+        //   1. Actual tanggal stored in pertemuan table (DB)
+        //   2. UTS/UAS start from Kalender Akademik (academic_events)
+        //   3. Calculated: first class-weekday from perkuliahan start + week offset
         $meetings = [];
-        $startDate = !empty($class_info['semester_start_date'])
-            ? \Carbon\Carbon::parse($class_info['semester_start_date'])
-            : now();
+        $pertemuanDatesMap = $pertemuanDatesMap ?? [];
 
-        for ($i = 1; $i <= ($class_info['total_pertemuan'] ?? 12); $i++) {
-            $meetings[] = [
-                'no' => $i,
-                'label' => 'Pertemuan ' . $i,
-                'date' => $startDate->copy()->addDays(($i - 1) * 7)->locale('id')->isoFormat('D MMM YYYY'),
-                'time' => $class_info['time'],
-                'present' => 0,
-                'total' => count($students),
-                'status' => 'Belum Dimulai'
-            ];
+        if (isset($meetingSlots) && $meetingSlots->count()) {
+            foreach ($meetingSlots as $slot) {
+                $key     = $slot['tipe'] . ':' . $slot['nomor'];
+                $dateStr = $pertemuanDatesMap[$key] ?? null;
+                $displayDate = $dateStr
+                    ? \Carbon\Carbon::parse($dateStr)->locale('id')->isoFormat('D MMM YYYY')
+                    : '-';
+
+                $meetings[] = [
+                    'no'          => $slot['slot'],
+                    'tipe'        => $slot['tipe'],
+                    'nomor'       => $slot['nomor'],
+                    'label'       => $slot['label'],
+                    'route_param' => $slot['tipe'] . ':' . $slot['nomor'],
+                    'date'        => $displayDate,
+                    'time'        => $class_info['time'],
+                    'present'     => 0,
+                    'total'       => count($students),
+                    'status'      => 'Belum Dimulai',
+                    'is_exam'     => in_array($slot['tipe'], ['uts', 'uas']),
+                ];
+            }
+        } else {
+            // Fallback when no meetingSlots passed from controller
+            $startDate = !empty($class_info['semester_start_date'])
+                ? \Carbon\Carbon::parse($class_info['semester_start_date'])
+                : now();
+            for ($i = 1; $i <= ($class_info['total_pertemuan'] ?? 16); $i++) {
+                $meetings[] = [
+                    'no'          => $i,
+                    'tipe'        => 'kuliah',
+                    'nomor'       => $i,
+                    'label'       => 'Pertemuan ' . $i,
+                    'route_param' => $i,
+                    'date'        => $startDate->copy()->addWeeks($i - 1)->locale('id')->isoFormat('D MMM YYYY'),
+                    'time'        => $class_info['time'],
+                    'present'     => 0,
+                    'total'       => count($students),
+                    'status'      => 'Belum Dimulai',
+                    'is_exam'     => false,
+                ];
+            }
         }
     @endphp
 
@@ -165,11 +199,11 @@
                         </button>
                     @endif
 
-                    <button
+                    <a href="{{ route('dosen.kelas.export-berita-acara', $id) }}"
                         class="flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all">
                         <span class="material-symbols-outlined text-[20px]">download</span>
                         Export Data
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -247,24 +281,52 @@
                 <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-100 dark:border-slate-800 p-2 shadow-sm">
                     <div class="flex flex-col gap-1 min-h-[400px]">
                         @foreach($meetings as $m)
+                            @php
+                                $isExam = $m['is_exam'] ?? false;
+                                $examColorClass = match($m['tipe'] ?? 'kuliah') {
+                                    'uts' => 'border-l-amber-500',
+                                    'uas' => 'border-l-red-500',
+                                    default => '',
+                                };
+                                $examBadgeClass = match($m['tipe'] ?? 'kuliah') {
+                                    'uts' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                    'uas' => 'bg-red-50 text-red-700 border-red-200',
+                                    default => '',
+                                };
+                                $examIcon = match($m['tipe'] ?? 'kuliah') {
+                                    'uts' => 'edit_note',
+                                    'uas' => 'assignment',
+                                    default => 'school',
+                                };
+                            @endphp
                             <div x-data="{ open: false }" class="group"
                                 x-show="{{ $loop->index }} >= (meetingPage - 1) * perPage && {{ $loop->index }} < meetingPage * perPage"
                                 x-transition:enter="transition ease-out duration-300"
                                 x-transition:enter-start="opacity-0 transform scale-95"
                                 x-transition:enter-end="opacity-100 transform scale-100">
                                 <button @click="open = !open"
-                                    class="w-full flex items-start gap-4 p-3 rounded-xl transition-colors text-left relative overflow-hidden"
+                                    class="w-full flex items-start gap-4 p-3 rounded-xl transition-colors text-left relative overflow-hidden {{ $isExam ? 'border-l-2 ' . $examColorClass : '' }}"
                                     :class="open ? 'bg-gray-50 dark:bg-slate-800' : 'hover:bg-gray-50 dark:hover:bg-slate-800'">
 
                                     {{-- Status Indicator Line --}}
+                                    @unless($isExam)
                                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-200 dark:bg-slate-700"
                                         :class="open ? 'bg-primary' : 'bg-gray-200 dark:bg-slate-700'"></div>
+                                    @endunless
 
                                     <div class="pl-2 flex-1">
-                                        <div class="flex justify-between items-start">
-                                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">
+                                        <div class="flex justify-between items-start gap-2">
+                                            <span class="text-xs font-bold uppercase tracking-wider {{ $isExam ? ($m['tipe'] === 'uts' ? 'text-amber-600' : 'text-red-600') : 'text-gray-500 dark:text-slate-400' }}">
+                                                @if($isExam)
+                                                    <span class="material-symbols-outlined text-[14px] align-middle mr-0.5">{{ $examIcon }}</span>
+                                                @endif
                                                 {{ $m['label'] }}
                                             </span>
+                                            @if($isExam)
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border {{ $examBadgeClass }}">
+                                                    {{ strtoupper($m['tipe']) }}
+                                                </span>
+                                            @endif
                                         </div>
                                         <h4 class="font-bold text-gray-800 dark:text-white text-sm mt-0.5">{{ $m['date'] }}</h4>
 
@@ -287,10 +349,10 @@
                                         </div>
 
                                         <div class="grid grid-cols-1 gap-2">
-                                            <a href="{{ route('dosen.kelas.pertemuan.detail', ['id' => $id, 'pertemuan' => $m['no']]) }}"
-                                                class="flex items-center justify-center gap-1.5 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-hover transition-all shadow-sm">
-                                                <span class="material-symbols-outlined text-[16px]">visibility</span>
-                                                Lihat Rincian
+                                            <a href="{{ route('dosen.kelas.pertemuan.detail', ['id' => $id, 'pertemuan' => $m['route_param'] ?? $m['no']]) }}"
+                                                class="flex items-center justify-center gap-1.5 py-2 {{ $isExam ? ($m['tipe'] === 'uts' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-red-600 hover:bg-red-700') : 'bg-primary hover:bg-primary-hover' }} text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+                                                <span class="material-symbols-outlined text-[16px]">{{ $isExam ? $examIcon : 'visibility' }}</span>
+                                                {{ $isExam ? 'Lihat ' . strtoupper($m['tipe']) : 'Lihat Rincian' }}
                                             </a>
                                         </div>
                                     </div>

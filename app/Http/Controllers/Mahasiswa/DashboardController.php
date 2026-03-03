@@ -62,6 +62,11 @@ class DashboardController extends Controller
         
         // Get KRS status
         $krsStatus = $activeKrs->isEmpty() ? 'Belum Di Isi' : 'Disetujui';
+
+        // ── Active academic periods for dashboard display ──
+        $periodService = app(\App\Services\AcademicPeriodService::class);
+        $activePeriods = $periodService->currentActiveTypes();
+        $krsperiodStatus = $periodService->getStatus(\App\Services\AcademicPeriodService::TYPE_PERIODE_KRS);
         
         return view('page.mahasiswa.dashboard', compact(
             'mahasiswa',
@@ -70,7 +75,9 @@ class DashboardController extends Controller
             'ipk',
             'totalSksNilai',
             'statusPembayaran',
-            'krsStatus'
+            'krsStatus',
+            'activePeriods',
+            'krsperiodStatus'
         ));
     }
     

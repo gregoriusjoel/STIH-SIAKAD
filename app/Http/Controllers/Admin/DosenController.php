@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
+use App\Services\TeachingAssignmentService;
+
 class DosenController extends Controller
 {
     public function index()
@@ -19,7 +21,14 @@ class DosenController extends Controller
 
     public function create()
     {
-        $mataKuliahs = \App\Models\MataKuliah::orderBy('nama_mk')->get();
+        // Prefer mata kuliah that are active in the current active semester
+        $semesterService = app(\App\Services\SemesterService::class);
+        $activeSemester = $semesterService->getActiveSemester();
+        if ($activeSemester) {
+            $mataKuliahs = \App\Models\MataKuliah::activeBySemester($activeSemester->id)->orderBy('nama_mk')->get();
+        } else {
+            $mataKuliahs = \App\Models\MataKuliah::orderBy('nama_mk')->get();
+        }
         $prodis = \App\Models\Prodi::where('status', 'aktif')->orderBy('nama_prodi')->get();
         return view('admin.dosen.create', compact('mataKuliahs', 'prodis'));
     }
@@ -96,29 +105,59 @@ class DosenController extends Controller
     {
         $dosen->load('user', 'kelasMataKuliahs.mataKuliah');
 
-        $assignedMataKuliahs = collect();
+        $service = app(TeachingAssignmentService::class);
+        $activeSemester = $service->getActiveSemester();
+        $semesters = $service->getSemestersWithAssignments();
 
-        // If mata_kuliah_ids stored as JSON, use them
-        if (!empty($dosen->mata_kuliah_ids) && is_array($dosen->mata_kuliah_ids) && count($dosen->mata_kuliah_ids) > 0) {
-            $assignedMataKuliahs = \App\Models\MataKuliah::whereIn('id', $dosen->mata_kuliah_ids)->get();
+        // Current TA assignments
+        $currentAssignments = $activeSemester
+            ? $service->getAssignments($dosen, $activeSemester->id)
+            : collect();
+
+        // Available MK for assignment
+        $semesterService = app(\App\Services\SemesterService::class);
+        $activeSem = $semesterService->getActiveSemester();
+        if ($activeSem) {
+            $availableMataKuliah = \App\Models\MataKuliah::activeBySemester($activeSem->id)->orderBy('kode_mk')->get();
         } else {
-            // Fallback: try to read from a pivot relation if the pivot table exists
-            try {
-                $assigned = $dosen->mataKuliahs()->get();
-                if ($assigned && $assigned->count()) {
-                    $assignedMataKuliahs = $assigned;
-                }
-            } catch (\Throwable $e) {
-                // pivot table likely doesn't exist — ignore
-            }
+            $availableMataKuliah = \App\Models\MataKuliah::orderBy('kode_mk')->get();
         }
 
-        return view('admin.dosen.show', compact('dosen', 'assignedMataKuliahs'));
+        // Previous semester for "copy" feature
+        $previousSemester = $activeSemester ? $service->getPreviousSemester($activeSemester) : null;
+        $previousAssignments = $previousSemester
+            ? $service->getAssignments($dosen, $previousSemester->id)
+            : collect();
+
+        // History semesters
+        $historySemesters = $service->listHistorySemesters($dosen);
+
+        // Legacy fallback—also pass for backward compat
+        $assignedMataKuliahs = $currentAssignments;
+
+        return view('admin.dosen.show', compact(
+            'dosen',
+            'assignedMataKuliahs',
+            'activeSemester',
+            'semesters',
+            'currentAssignments',
+            'availableMataKuliah',
+            'previousSemester',
+            'previousAssignments',
+            'historySemesters'
+        ));
     }
 
     public function edit(Dosen $dosen)
     {
-        $mataKuliahs = \App\Models\MataKuliah::orderBy('nama_mk')->get();
+        // Prefer mata kuliah that are active in the current active semester
+        $semesterService = app(\App\Services\SemesterService::class);
+        $activeSemester = $semesterService->getActiveSemester();
+        if ($activeSemester) {
+            $mataKuliahs = \App\Models\MataKuliah::activeBySemester($activeSemester->id)->orderBy('nama_mk')->get();
+        } else {
+            $mataKuliahs = \App\Models\MataKuliah::orderBy('nama_mk')->get();
+        }
         $prodis = \App\Models\Prodi::where('status', 'aktif')->orderBy('nama_prodi')->get();
         return view('admin.dosen.edit', compact('dosen', 'mataKuliahs', 'prodis'));
     }
@@ -558,5 +597,112 @@ class DosenController extends Controller
         };
 
         return response()->streamDownload($callback, 'dosen_import_template.csv', $headers);
+    }
+
+    // ────────────────────────────────────────────────
+    // Teaching Assignment AJAX Endpoints
+    // ────────────────────────────────────────────────
+
+    /**
+     * Save teaching assignments (draft → save).
+     * POST admin/dosen/{dosen}/assignments
+     */
+    public function storeAssignments(Request $request, Dosen $dosen)
+    {
+        $request->validate([
+            'semester_id' => 'required|exists:semesters,id',
+            'mata_kuliah_ids' => 'required|array|min:1',
+            'mata_kuliah_ids.*' => 'exists:mata_kuliahs,id',
+        ], [
+            'mata_kuliah_ids.required' => 'Pilih minimal 1 mata kuliah.',
+            'mata_kuliah_ids.min' => 'Pilih minimal 1 mata kuliah.',
+        ]);
+
+        $service = app(TeachingAssignmentService::class);
+        $result = $service->assignSubjects($dosen, $request->mata_kuliah_ids, $request->semester_id);
+
+        if (!empty($result['duplicates'])) {
+            $dupNames = array_map(fn($d) => $d['mata_kuliah_nama'] . ' (sudah diambil ' . $d['dosen_nama'] . ')', $result['duplicates']);
+            return back()->with('warning', 'Penugasan disimpan. Beberapa MK dilewati karena duplikat: ' . implode(', ', $dupNames))
+                ->with('success', $result['added'] . ' mata kuliah berhasil ditugaskan.');
+        }
+
+        return back()->with('success', $result['added'] . ' mata kuliah berhasil ditugaskan untuk semester ini.');
+    }
+
+    /**
+     * Remove a single assignment.
+     * DELETE admin/dosen/{dosen}/assignments/{mataKuliah}
+     */
+    public function destroyAssignment(Request $request, Dosen $dosen, \App\Models\MataKuliah $mataKuliah)
+    {
+        $semesterId = $request->input('semester_id');
+        if (!$semesterId) {
+            $activeSemester = app(TeachingAssignmentService::class)->getActiveSemester();
+            $semesterId = $activeSemester ? $activeSemester->id : null;
+        }
+
+        if (!$semesterId) {
+            return back()->with('error', 'Semester aktif tidak ditemukan.');
+        }
+
+        $service = app(TeachingAssignmentService::class);
+        $service->removeAssignment($dosen, $mataKuliah->id, $semesterId);
+
+        return back()->with('success', 'Penugasan ' . $mataKuliah->nama_mk . ' berhasil dihapus.');
+    }
+
+    /**
+     * Copy assignments from previous TA.
+     * POST admin/dosen/{dosen}/assignments/copy
+     */
+    public function copyAssignments(Request $request, Dosen $dosen)
+    {
+        $request->validate([
+            'source_semester_id' => 'required|exists:semesters,id',
+            'target_semester_id' => 'required|exists:semesters,id',
+        ]);
+
+        $service = app(TeachingAssignmentService::class);
+        $result = $service->copyFromPreviousTA($dosen, $request->source_semester_id, $request->target_semester_id);
+
+        $msg = $result['copied'] . ' mata kuliah berhasil disalin dari TA sebelumnya.';
+        if (!empty($result['skipped_duplicates'])) {
+            $dupNames = array_map(fn($d) => $d['mata_kuliah_nama'], $result['skipped_duplicates']);
+            $msg .= ' Dilewati karena duplikat: ' . implode(', ', $dupNames);
+        }
+
+        return back()->with('success', $msg);
+    }
+
+    /**
+     * AJAX: Get assignments for a specific semester (for history tab).
+     * GET admin/dosen/{dosen}/assignments/history/{semester}
+     */
+    public function getHistoryAssignments(Dosen $dosen, \App\Models\Semester $semester)
+    {
+        $service = app(TeachingAssignmentService::class);
+        $assignments = $service->getHistoryAssignments($dosen, $semester->id);
+
+        return response()->json([
+            'semester' => [
+                'id' => $semester->id,
+                'nama_semester' => $semester->nama_semester,
+                'tahun_ajaran' => $semester->tahun_ajaran,
+            ],
+            'assignments' => $assignments->map(fn($mk) => [
+                'id' => $mk->id,
+                'kode_mk' => $mk->kode_mk,
+                'nama_mk' => $mk->nama_mk,
+                'sks' => $mk->sks,
+                'kelas_count' => $mk->kelas_list->count(),
+                'kelas' => $mk->kelas_list->map(fn($k) => [
+                    'kode_kelas' => $k->kode_kelas,
+                    'hari' => $k->hari,
+                    'jam' => $k->jam_mulai . ' - ' . $k->jam_selesai,
+                ]),
+            ]),
+            'total_sks' => $assignments->sum('sks'),
+        ]);
     }
 }

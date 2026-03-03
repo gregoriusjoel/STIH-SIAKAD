@@ -58,27 +58,35 @@ class KRSController extends Controller
         // KRS control semester: prefer semester with KRS open (getCurrentSemester)
         $krsSemester = $this->getCurrentSemester();
 
-        // Check if KRS filling is allowed (by KRS settings)
-        if (!$krsSemester || !$krsSemester->krs_dapat_diisi) {
+        // ── Period check via AcademicPeriodService (Single Source of Truth) ──
+        $periodService = app(\App\Services\AcademicPeriodService::class);
+        $krsStatus = $periodService->getStatus(
+            \App\Services\AcademicPeriodService::TYPE_PERIODE_KRS,
+            $krsSemester?->id
+        );
+
+        // Primary check: is KRS period active in academic calendar?
+        $krsActiveByCalendar = $krsStatus['status'] === 'active';
+
+        // Fallback: also respect legacy krs_dapat_diisi + date range on semester
+        $krsActiveByLegacy = $krsSemester
+            && $krsSemester->krs_dapat_diisi
+            && (!$krsSemester->krs_mulai || !$krsSemester->krs_selesai
+                || Carbon::now()->between(
+                    Carbon::parse($krsSemester->krs_mulai)->startOfDay(),
+                    Carbon::parse($krsSemester->krs_selesai)->endOfDay()
+                ));
+
+        if (!$krsActiveByCalendar && !$krsActiveByLegacy) {
+            // Build informative message from period service
+            $message = $krsStatus['message'] ?? 'Pengisian KRS belum dibuka atau sudah ditutup. Silakan cek Kalender Akademik.';
+
             return view('page.mahasiswa.krs.closed', [
                 'mahasiswa' => $mahasiswa,
                 'semesterAktif' => $semesterAktif,
-                'message' => 'Pengisian KRS belum dibuka atau sudah ditutup. Silakan hubungi admin.',
+                'krsStatus' => $krsStatus,
+                'message' => $message,
             ]);
-        }
-
-        // Check if current date is within the allowed KRS period (if configured) on krsSemester
-        $now = Carbon::now();
-        if ($krsSemester->krs_mulai && $krsSemester->krs_selesai) {
-            $mulai = Carbon::parse($krsSemester->krs_mulai)->startOfDay();
-            $selesai = Carbon::parse($krsSemester->krs_selesai)->endOfDay();
-            if ($now->lt($mulai) || $now->gt($selesai)) {
-                return view('page.mahasiswa.krs.closed', [
-                    'mahasiswa' => $mahasiswa,
-                    'semesterAktif' => $semesterAktif,
-                    'message' => 'Pengisian KRS hanya dibuka pada ' . $mulai->format('d M Y') . ' sampai ' . $selesai->format('d M Y') . '.',
-                ]);
-            }
         }
 
         // Get student's current semester number (1-8)
@@ -394,18 +402,25 @@ class KRSController extends Controller
 
         $krsSemester = $this->getCurrentSemester();
 
-        if (!$krsSemester || !$krsSemester->krs_dapat_diisi) {
-            return back()->with('error', 'Pengisian KRS belum dibuka atau sudah ditutup.');
-        }
+        // ── Period gate via AcademicPeriodService ──
+        $periodService = app(\App\Services\AcademicPeriodService::class);
+        $krsActiveByCalendar = $periodService->isActive(
+            \App\Services\AcademicPeriodService::TYPE_PERIODE_KRS,
+            null,
+            $krsSemester?->id
+        );
 
-        // Server-side check for KRS period (based on krsSemester)
-        $now = Carbon::now();
-        if ($krsSemester->krs_mulai && $krsSemester->krs_selesai) {
-            $mulai = Carbon::parse($krsSemester->krs_mulai)->startOfDay();
-            $selesai = Carbon::parse($krsSemester->krs_selesai)->endOfDay();
-            if ($now->lt($mulai) || $now->gt($selesai)) {
-                return back()->with('error', 'Pengisian KRS tidak berada pada periode yang diizinkan.');
-            }
+        // Fallback: also respect legacy krs_dapat_diisi + date range
+        $krsActiveByLegacy = $krsSemester
+            && $krsSemester->krs_dapat_diisi
+            && (!$krsSemester->krs_mulai || !$krsSemester->krs_selesai
+                || Carbon::now()->between(
+                    Carbon::parse($krsSemester->krs_mulai)->startOfDay(),
+                    Carbon::parse($krsSemester->krs_selesai)->endOfDay()
+                ));
+
+        if (!$krsActiveByCalendar && !$krsActiveByLegacy) {
+            return back()->with('error', 'Pengisian KRS belum dibuka atau sudah ditutup. Silakan cek Kalender Akademik.');
         }
 
         $request->validate([

@@ -258,6 +258,35 @@
 
             {{-- Support & Info Column (Span 1) --}}
             <div class="space-y-6">
+
+                {{-- Active Academic Periods --}}
+                @if(!empty($activePeriods))
+                <div class="bg-white dark:bg-[#1a1c23] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-1 h-6 bg-green-500 rounded-full"></span>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Periode Aktif</h3>
+                    </div>
+                    <div class="space-y-2">
+                        @foreach($activePeriods as $period)
+                        <div class="flex items-center gap-3 p-3 rounded-xl {{ $period['colors']['bg'] }} border {{ $period['colors']['border'] }}">
+                            <i class="{{ $period['icon'] }} {{ $period['colors']['text'] }} text-lg"></i>
+                            <div class="flex-1 min-w-0">
+                                <span class="text-sm font-bold {{ $period['colors']['text'] }}">{{ $period['label'] }}</span>
+                                <span class="block text-[10px] {{ $period['colors']['text'] }} opacity-75">{{ $period['title'] }}</span>
+                            </div>
+                            <div class="text-right shrink-0">
+                                @if($period['days_left'] > 0)
+                                    <span class="text-xs font-bold {{ $period['colors']['text'] }}">{{ $period['days_left'] }}</span>
+                                    <span class="text-[10px] {{ $period['colors']['text'] }} opacity-75 block">hari lagi</span>
+                                @else
+                                    <span class="text-xs font-bold {{ $period['colors']['text'] }}">Hari ini</span>
+                                @endif
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
                 
                 {{-- Info Box --}}
                 <div class="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-2xl p-5 shadow-sm">
@@ -267,9 +296,19 @@
                         </div>
                         <div>
                             <h4 class="font-bold text-blue-900 dark:text-blue-300 mb-1">Informasi KRS</h4>
-                            <p class="text-sm text-blue-800 dark:text-blue-200/80 leading-relaxed">
-                                Pastikan pengisian KRS dilakukan sebelum batas waktu yang ditentukan. Hubungi bagian akademik jika ada kendala.
-                            </p>
+                            @if(isset($krsperiodStatus) && $krsperiodStatus['status'] === 'active')
+                                <p class="text-sm text-green-700 dark:text-green-300 leading-relaxed font-semibold">
+                                    <i class="fas fa-check-circle mr-1"></i> Pengisian KRS sedang dibuka! {{ $krsperiodStatus['message'] }}
+                                </p>
+                            @elseif(isset($krsperiodStatus) && $krsperiodStatus['status'] === 'upcoming')
+                                <p class="text-sm text-blue-800 dark:text-blue-200/80 leading-relaxed">
+                                    <i class="fas fa-clock mr-1"></i> {{ $krsperiodStatus['message'] }}
+                                </p>
+                            @else
+                                <p class="text-sm text-blue-800 dark:text-blue-200/80 leading-relaxed">
+                                    Pastikan pengisian KRS dilakukan sebelum batas waktu yang ditentukan. Hubungi bagian akademik jika ada kendala.
+                                </p>
+                            @endif
                         </div>
                      </div>
                 </div>
