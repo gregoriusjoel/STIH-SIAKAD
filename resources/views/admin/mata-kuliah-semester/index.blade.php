@@ -51,20 +51,20 @@
 
             {{-- Carry Forward --}}
             <button @click="openCarryForwardModal()"
-                class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium shadow">
+                class="flex items-center gap-2 px-4 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 transition text-sm font-medium shadow">
                 <i class="fas fa-copy"></i> Carry Forward
             </button>
 
             {{-- Restore from History --}}
             <button @click="openRestoreModal()"
-                class="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium shadow">
+                class="flex items-center gap-2 px-4 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 transition text-sm font-medium shadow">
                 <i class="fas fa-history"></i> Ambil dari Histori
             </button>
 
             {{-- Activate Semester --}}
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open"
-                    class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm font-medium shadow">
+                    class="flex items-center gap-2 px-4 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 transition text-sm font-medium shadow">
                     <i class="fas fa-toggle-on"></i> Aktifkan Semester
                 </button>
                 <div x-show="open" @click.away="open = false"
@@ -177,11 +177,11 @@
         <a href="{{ route('admin.mata-kuliah-semester.index', ['semester_id' => $selectedSemester?->id, 'tab' => 'history']) }}"
             class="px-6 py-3 text-sm font-semibold border-b-2 transition
                 {{ $tab === 'history'
-                    ? 'border-purple-600 text-purple-700 dark:text-purple-400 dark:border-purple-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-purple-600' }}">
+                    ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
             <i class="fas fa-archive mr-1"></i> Histori
             <span class="ml-1 px-2 py-0.5 rounded-full text-xs
-                {{ $tab === 'history' ? 'bg-purple-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
+                {{ $tab === 'history' ? 'bg-maroon text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
                 {{ $historyPivots->count() }}
             </span>
         </a>
@@ -283,13 +283,13 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
     @keydown.escape.window="$store.mkSemester.carryOpen = false">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div class="flex items-center justify-between px-6 py-4 bg-blue-600 text-white rounded-t-2xl">
+        <div class="flex items-center justify-between px-6 py-4 bg-maroon text-white rounded-t-2xl">
             <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-copy"></i> Carry Forward MK</h3>
             <button @click="$store.mkSemester.carryOpen = false" class="text-white text-xl">&times;</button>
         </div>
 
         <div class="p-5 flex-1 overflow-y-auto">
-            <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-800 dark:text-blue-300">
+            <div class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm text-maroon dark:text-red-300">
                 <i class="fas fa-info-circle mr-1"></i>
                 Salin daftar mata kuliah dari semester lama ke semester tujuan. MK yang sudah ada di tujuan akan dilewati.
             </div>
@@ -318,7 +318,7 @@
             </div>
 
             <button type="button" @click="cfPreview()"
-                class="mb-4 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-lg text-sm font-medium hover:bg-blue-200 transition">
+                class="mb-4 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-maroon dark:text-red-300 rounded-lg text-sm font-medium hover:bg-red-200 transition">
                 <i class="fas fa-eye mr-1"></i> Preview Carry Forward
             </button>
 
@@ -348,7 +348,7 @@
                 <button type="button" @click="$store.mkSemester.carryOpen = false"
                     class="px-5 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 text-sm">Batal</button>
                 <button type="submit" id="cf-submit-btn" disabled
-                    class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="px-5 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
                     <i class="fas fa-copy mr-1"></i> Salin Sekarang
                 </button>
             </div>
@@ -362,7 +362,7 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
     @keydown.escape.window="$store.mkSemester.restoreOpen = false">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div class="flex items-center justify-between px-6 py-4 bg-purple-700 text-white rounded-t-2xl">
+        <div class="flex items-center justify-between px-6 py-4 bg-maroon text-white rounded-t-2xl">
             <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-history"></i> Ambil dari Histori</h3>
             <button @click="$store.mkSemester.restoreOpen = false" class="text-white text-xl">&times;</button>
         </div>
@@ -388,7 +388,7 @@
 
                 {{-- Search --}}
                 <input type="text" id="restoreSearch" placeholder="Cari nama/kode MK di histori..."
-                    class="w-full mb-3 px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
+                    class="w-full mb-3 px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:ring-2 focus:ring-maroon"
                     oninput="filterRestoreList(this.value)">
 
                 {{-- History MK List --}}
@@ -397,7 +397,7 @@
                     <label class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer restore-item"
                         data-search="{{ strtolower($pivot->mataKuliah->kode_mk . ' ' . $pivot->mataKuliah->nama_mk) }}">
                         <input type="checkbox" name="mata_kuliah_ids[]" value="{{ $pivot->mata_kuliah_id }}"
-                            class="w-4 h-4 text-purple-600 border-gray-300 rounded">
+                            class="w-4 h-4 text-maroon border-gray-300 rounded">
                         <div class="flex-1 min-w-0">
                             <div class="text-sm font-semibold text-gray-800 dark:text-gray-100">{{ $pivot->mataKuliah->nama_mk }}</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">
@@ -423,7 +423,7 @@
                 <button type="button" @click="$store.mkSemester.restoreOpen = false"
                     class="px-5 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 text-sm">Batal</button>
                 <button type="submit"
-                    class="px-5 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 text-sm font-semibold">
+                    class="px-5 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 text-sm font-semibold">
                     <i class="fas fa-undo mr-1"></i> Tambahkan ke TA Aktif
                 </button>
             </div>

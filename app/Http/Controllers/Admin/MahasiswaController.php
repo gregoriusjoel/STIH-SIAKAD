@@ -176,4 +176,16 @@ class MahasiswaController extends Controller
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Toggle the document upload unlock status.
+     */
+    public function toggleDokumen(Mahasiswa $mahasiswa)
+    {
+        $mahasiswa->is_dokumen_unlocked = !$mahasiswa->is_dokumen_unlocked;
+        $mahasiswa->save();
+
+        $status = $mahasiswa->is_dokumen_unlocked ? 'dibuka' : 'dikunci';
+        return back()->with('success', "Akses upload dokumen mahasiswa berhasil {$status}.");
+    }
 }

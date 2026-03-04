@@ -28,6 +28,10 @@ class PengumumanController extends Controller
             'published_at' => 'nullable|date',
         ]);
 
+        if (empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
+
         Pengumuman::create($data);
 
         return redirect()->route('admin.pengumuman.index')->with('success', 'Pengumuman berhasil dibuat.');
@@ -46,6 +50,10 @@ class PengumumanController extends Controller
             'target' => 'required|in:semua,dosen,mahasiswa',
             'published_at' => 'nullable|date',
         ]);
+
+        if (empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
 
         $pengumuman->update($data);
 

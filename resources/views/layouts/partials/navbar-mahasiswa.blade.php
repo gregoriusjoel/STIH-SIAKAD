@@ -1,5 +1,11 @@
-<header class="bg-gradient-to-r from-[#8B1538] to-[#6D1029] dark:from-[#3a0a1a] dark:to-[#1a050d] border-b border-white/10 px-4 sm:px-6 md:px-8 shadow-md sticky top-0 z-40 transition-colors duration-200 h-16">
-    <div class="flex items-center justify-between h-full">
+<header class="bg-gradient-to-r from-[#8B1538] to-[#6D1029] dark:from-[#3a0a1a] dark:to-[#1a050d] border-b border-white/10 px-4 sm:px-6 md:px-8 shadow-md sticky top-0 z-40 transition-colors duration-200 h-16 relative overflow-hidden">
+    <!-- Decorative Background Images -->
+    <div class="absolute inset-0 pointer-events-none z-0 flex justify-between px-10 md:px-32 items-center opacity-5">
+        <img src="{{ asset('images/university_bg.png') }}" class="h-28 w-auto transform -rotate-12 translate-y-2" alt="">
+        <img src="{{ asset('images/university_bg.png') }}" class="h-32 w-auto transform rotate-6 -translate-y-4 hidden md:block" alt="">
+        <img src="{{ asset('images/university_bg.png') }}" class="h-24 w-auto transform rotate-12 translate-y-3" alt="">
+    </div>
+    <div class="flex items-center justify-between h-full relative z-10">
         <!-- Mobile Menu Button -->
         <button class="md:hidden w-10 h-10 flex items-center justify-center text-white/80 hover:bg-white/10 rounded-lg transition-colors" @click="sidebarOpen = !sidebarOpen">
             <i class="fas fa-bars text-xl"></i>

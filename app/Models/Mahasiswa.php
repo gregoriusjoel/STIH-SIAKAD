@@ -52,6 +52,7 @@ class Mahasiswa extends Model
         'kota_ktp',
         'kecamatan_ktp',
         'desa_ktp',
+        'is_dokumen_unlocked',
     ];
 
     protected $casts = [
@@ -59,6 +60,7 @@ class Mahasiswa extends Model
         'file_transkrip' => 'array',
         'file_kk' => 'array',
         'file_ktp' => 'array',
+        'is_dokumen_unlocked' => 'boolean',
     ];
 
     public function pengajuans()

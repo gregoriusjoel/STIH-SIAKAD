@@ -98,11 +98,11 @@
                 // toggle buttons
                 tabs.forEach(t => {
                     if (t.dataset.target === target) {
-                        t.classList.remove('border-transparent', 'text-slate-400', 'bg-transparent');
+                        t.classList.remove('border-transparent', 'text-slate-400', 'bg-transparent', 'hover:bg-slate-50', 'hover:text-slate-600', 'dark:hover:bg-slate-700', 'dark:hover:text-slate-300');
                         t.classList.add('border-primary/20', 'bg-primary/5', 'text-primary');
                     } else {
                         t.classList.remove('border-primary/20', 'bg-primary/5', 'text-primary');
-                        t.classList.add('border-transparent', 'text-slate-400', 'bg-transparent');
+                        t.classList.add('border-transparent', 'text-slate-400', 'bg-transparent', 'hover:bg-slate-50', 'hover:text-slate-600', 'dark:hover:bg-slate-700', 'dark:hover:text-slate-300');
                     }
                 });
 

@@ -222,6 +222,9 @@
                                         'bg-yellow-100 text-yellow-800': student.status === 'izin',
                                         'bg-gray-100 text-gray-800': student.status !== 'hadir' && student.status !== 'tidak hadir' && student.status !== 'izin'
                                     }" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold" x-text="student.status.toUpperCase()"></span>
+                                    <template x-if="student.status === 'hadir' && student.distance_meters !== null && student.distance_meters !== undefined">
+                                        <div class="text-[10px] text-gray-500 mt-0.5" x-text="'(' + Math.round(student.distance_meters) + 'm dari kampus)'"></div>
+                                    </template>
                                 </td>
                                 <td class="px-6 py-3 text-center text-sm text-gray-600" x-text="student.waktu_scan"></td>
                             </tr>
@@ -235,6 +238,7 @@
                 <span x-show="!loadingData" x-text="`Menampilkan ${attendanceData?.students?.length || 0} dari ${attendanceData?.total_students || 0} mahasiswa`"></span>
                 <span x-show="loadingData">Memuat...</span>
                 <span x-show="!loadingData && attendanceData && typeof attendanceData.total_hadir !== 'undefined'" class="ml-4 font-semibold text-green-600" x-text="`Hadir: ${attendanceData?.total_hadir || 0}`"></span>
+                <span x-show="!loadingData && attendanceData && typeof attendanceData.total_tidak_hadir !== 'undefined'" class="ml-4 font-semibold text-red-600" x-text="`Tidak Hadir: ${attendanceData?.total_tidak_hadir || 0}`"></span>
              </div>
         </div>
     </div>

@@ -238,10 +238,19 @@
             @endif
 
             @if (session('success'))
-                <div class="mb-6 p-4 rounded-lg bg-green-50 border-l-4 border-green-500">
-                    <div class="flex items-start">
-                        <i class="fas fa-check-circle text-green-500 mt-0.5 mr-3"></i>
-                        <span class="text-green-700 text-sm">{{ session('success') }}</span>
+                <div class="mb-6 relative overflow-hidden bg-[#F4FBF6] rounded-xl border border-[#EBEBEB] shadow-sm flex items-center">
+                    <!-- Left Accent Bar -->
+                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#22C55E] rounded-l-xl"></div>
+                    
+                    <div class="py-3 px-5 flex items-center">
+                        <div class="flex-shrink-0 mr-3">
+                            <svg class="w-5 h-5 text-[#22C55E]" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="text-[#065F46] font-medium text-sm">{{ session('success') }}</span>
+                        </div>
                     </div>
                 </div>
             @endif

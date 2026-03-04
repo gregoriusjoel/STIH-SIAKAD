@@ -121,26 +121,15 @@ class KelasController extends Controller
             }
 
             // Find attendance for this specific date/meeting
-            // Since we don't have 'pertemuan_ke' in Presensi, we might match by date range or just assume 
-            // the presensi records map to weeks if we had that info. 
-            // However, existing Presensi model has 'tanggal'.
-            // Let's try to match by date (approximate) or if the logic is not yet robust, 
-            // we will show "Belum Absen" for future, and "Tanpa Keterangan" for past if no record.
-
-            // For now, simpler matching: 
-            // If there is a presensi record with date matching this week's class date?
-            // Or simpler: just list the meetings. Matching specific attendance is hard without 'pertemuan_ke' column in Presensi.
-            // But let's check if we can match by date.
-
-            $formattedDate = $meetingDate->format('Y-m-d');
-            $attendance = $presensis->filter(function ($p) use ($formattedDate) {
-                return $p->tanggal && \Carbon\Carbon::parse($p->tanggal)->format('Y-m-d') === $formattedDate;
+            // Using exact 'pertemuan' match from the Presensi record
+            $attendance = $presensis->filter(function ($p) use ($i) {
+                return $p->pertemuan == $i;
             })->first();
 
             $status = 'Belum Dimulai';
             $statusClass = 'bg-gray-100 text-gray-500';
 
-            if ($meetingDate->isPast()) {
+            if ($meetingDate->isPast() || $attendance) {
                 if ($attendance) {
                     $status = $attendance->status; // Hadir, Izin, Sakit, Alpa
                     $statusClass = match ($status) {
@@ -150,7 +139,7 @@ class KelasController extends Controller
                         'Alpa' => 'bg-red-100 text-red-700',
                         default => 'bg-gray-100 text-gray-600'
                     };
-                } else {
+                } else if ($meetingDate->isPast()) {
                     $status = 'Tanpa Keterangan'; // Or Alpa?
                     $statusClass = 'bg-red-50 text-red-600';
                 }

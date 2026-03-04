@@ -232,7 +232,19 @@
             </div>
 
             <div x-data="{ previewOpen: false, previewUrl: '', previewType: '', previewTitle: '' }">
-                <h3 class="font-medium text-gray-800 border-b pb-2 mb-4">Dokumen Pribadi</h3>
+                <div class="flex items-center justify-between border-b pb-2 mb-4">
+                    <h3 class="font-medium text-gray-800">Dokumen Pribadi</h3>
+                    <form action="{{ route('admin.mahasiswa.toggle-dokumen', $mahasiswa) }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="text-xs px-3 py-1.5 rounded-md font-bold transition-colors shadow-sm
+                            {{ $mahasiswa->is_dokumen_unlocked 
+                                ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100' 
+                                : 'bg-green-50 text-green-600 border border-green-200 hover:bg-green-100' }}">
+                            <i class="fas {{ $mahasiswa->is_dokumen_unlocked ? 'fa-lock' : 'fa-unlock' }} mr-1"></i>
+                            {{ $mahasiswa->is_dokumen_unlocked ? 'Kunci Upload Dokumen' : 'Aktifkan Kembali Upload Dokumen' }}
+                        </button>
+                    </form>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Ijazah</label>

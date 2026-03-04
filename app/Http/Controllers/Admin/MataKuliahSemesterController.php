@@ -286,7 +286,7 @@ class MataKuliahSemesterController extends Controller
             $query->where('auditable_type', 'like', "%{$request->entity_type}%");
         }
 
-        $logs = $query->paginate(30)->withQueryString();
+        $logs = $query->paginate(10)->withQueryString();
 
         $actions = AuditLog::distinct()->pluck('action');
 

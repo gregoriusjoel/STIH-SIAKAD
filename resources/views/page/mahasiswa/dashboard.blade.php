@@ -186,7 +186,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {{-- Announcements Column (Span 2) --}}
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white dark:bg-[#1a1c23] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 flex flex-col h-full">
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center gap-3">
@@ -204,7 +204,7 @@
 
                     @php
                         if (!isset($pengumuman)) {
-                            $pengumuman = \App\Models\Pengumuman::whereNotNull('published_at')->orderByDesc('published_at')->get();
+                            $pengumuman = \App\Models\Pengumuman::where('published_at', '<=', now('Asia/Jakarta')->format('Y-m-d H:i:s'))->orderByDesc('published_at')->get();
                         }
                     @endphp
 
@@ -215,8 +215,8 @@
                                     <div class="flex items-start gap-4">
                                         <div class="shrink-0">
                                             <div class="w-12 h-12 rounded-lg bg-[#8B1538]/10 text-[#8B1538] dark:bg-red-900/20 dark:text-red-400 flex flex-col items-center justify-center">
-                                                <span class="text-xs font-bold uppercase">{{ $p->created_at ? $p->created_at->format('M') : 'N/A' }}</span>
-                                                <span class="text-lg font-bold leading-none">{{ $p->created_at ? $p->created_at->format('d') : '--' }}</span>
+                                                <span class="text-xs font-bold uppercase">{{ $p->published_at ? \Carbon\Carbon::parse($p->published_at)->format('M') : 'N/A' }}</span>
+                                                <span class="text-lg font-bold leading-none">{{ $p->published_at ? \Carbon\Carbon::parse($p->published_at)->format('d') : '--' }}</span>
                                             </div>
                                         </div>
                                         <div class="flex-1 min-w-0">
@@ -254,6 +254,132 @@
                         </div>
                     @endif
                 </div>
+
+                {{-- Tugas Dosen Card --}}
+                <div x-data="{ openTugasModal: false, selectedTugas: {} }" class="bg-white dark:bg-[#1a1c23] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 flex flex-col h-full">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-1 h-6 bg-maroon rounded-full"></span>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Tugas Kuliah</h3>
+                    </div>
+                    
+                    {{-- Assignments List --}}
+                    <div class="space-y-3">
+                        @forelse($tugasKuliah as $tugas)
+                            @php
+                                $dueDate = \Carbon\Carbon::parse($tugas->due_date);
+                                $isPast = $dueDate->isPast();
+                                $isUrgent = !$isPast && $dueDate->diffInDays(now()) <= 2;
+                                
+                                $isSubmitted = $tugas->submissions && $tugas->submissions->isNotEmpty();
+                                
+                                if ($isSubmitted) {
+                                    $deadlineLabel = 'Sudah mengumpulkan';
+                                    $tenggatColor = 'text-green-600';
+                                } else {
+                                    $deadlineLabel = $isPast ? 'Terlewat - Tidak mengumpulkan' : $dueDate->format('d M Y, H:i');
+                                    $tenggatColor = $isPast ? 'text-red-600' : ($isUrgent ? 'text-red-500' : 'text-maroon');
+                                }
+                                
+                                $tugasData = [
+                                    'judul' => $tugas->title,
+                                    'deskripsi' => $tugas->description ?? 'Tidak ada deskripsi.',
+                                    'matkul' => ($tugas->mataKuliah->nama_mk ?? '-') . ' - ' . ($tugas->dosen->user->name ?? '-'),
+                                    'deadline' => $deadlineLabel,
+                                    'link' => route('mahasiswa.kelas.show', $tugas->kelas_id) . '?tab=tugas'
+                                ];
+                            @endphp
+                            <div @click="selectedTugas = @js($tugasData); openTugasModal = true" 
+                                 class="group cursor-pointer p-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 hover:border-maroon/30 transition-colors">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-maroon transition-colors line-clamp-1">{{ $tugas->title }}</h4>
+                                    @if($isUrgent)
+                                        <span class="px-2 py-0.5 text-[10px] font-bold bg-red-100 text-red-600 rounded-full shrink-0">Urgent</span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-gray-500 mb-2 line-clamp-1">{{ $tugas->mataKuliah->nama_mk ?? '-' }} - {{ $tugas->dosen->user->name ?? '-' }}</p>
+                                <div class="flex items-center text-xs {{ $tenggatColor }} font-medium">
+                                    <i class="far fa-clock mr-1"></i> Tenggat: {{ $deadlineLabel }}
+                                </div>
+                            </div>
+                        @empty
+                            <div class="flex flex-col items-center justify-center py-8 text-center bg-gray-50 dark:bg-white/5 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                                <div class="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-2">
+                                    <i class="fas fa-check text-xl text-green-500"></i>
+                                </div>
+                                <p class="text-xs text-gray-500 font-medium">Tidak ada tugas aktif saat ini</p>
+                            </div>
+                        @endforelse
+                    </div>
+                    
+                    {{-- Modal --}}
+                    <template x-teleport="body">
+                        <div x-show="openTugasModal" 
+                             style="display: none;"
+                             class="fixed inset-0 z-[9999] overflow-y-auto" 
+                             aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                                <div x-show="openTugasModal" 
+                                     x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                                     class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity" 
+                                     @click="openTugasModal = false" aria-hidden="true"></div>
+
+                                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                                <div x-show="openTugasModal" 
+                                     x-transition:enter="ease-out duration-300 transform" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                     x-transition:leave="ease-in duration-200 transform" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                     class="relative z-50 inline-block align-bottom bg-white dark:bg-[#1a1c23] rounded-2xl text-left shadow-2xl transform transition-all sm:my-8 sm:align-middle md:max-w-3xl lg:max-w-4xl sm:w-full min-h-[50vh] border border-gray-100 dark:border-gray-800">
+                                    
+                                    <div class="flex flex-col h-full min-h-[50vh]">
+                                        <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-6 relative flex-1 overflow-y-auto">
+                                        <button @click="openTugasModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-500">
+                                            <i class="fas fa-times text-xl"></i>
+                                        </button>
+                                        
+                                        <div class="sm:flex sm:items-start h-full">
+                                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-maroon/10 dark:bg-maroon/20 text-maroon sm:mx-0 sm:h-10 sm:w-10">
+                                                <i class="fas fa-tasks text-lg"></i>
+                                            </div>
+                                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full flex flex-col">
+                                                <h3 class="text-xl leading-6 font-bold text-gray-900 dark:text-white" id="modal-title" x-text="selectedTugas.judul"></h3>
+                                                
+                                                <div class="mt-4 text-sm text-gray-500 dark:text-gray-400 space-y-3 flex-1">
+                                                    <div>
+                                                        <span class="font-semibold text-gray-700 dark:text-gray-300">Deskripsi:</span> 
+                                                        <div class="mt-2 prose prose-sm max-w-none text-gray-500 dark:text-gray-400 prose-p:my-1 prose-headings:my-2 bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-gray-100 dark:border-gray-800" x-html="selectedTugas.deskripsi"></div>
+                                                    </div>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                                        <p><span class="font-semibold text-gray-700 dark:text-gray-300 block mb-1">Mata Kuliah:</span> <span x-text="selectedTugas.matkul" class="text-gray-900 dark:text-gray-100"></span></p>
+                                                        <p><span class="font-semibold text-gray-700 dark:text-gray-300 block mb-1">Tenggat Waktu:</span> <span class="text-red-500 font-medium bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-lg inline-block" x-text="selectedTugas.deadline"></span></p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-6 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                                                    <p class="text-sm text-blue-800 dark:text-blue-300 flex items-start gap-3">
+                                                        <i class="fas fa-info-circle mt-0.5 shrink-0 text-base"></i>
+                                                        <span class="leading-relaxed">Ketuk tombol di bawah untuk diarahkan ke portal E-Learning guna melihat atau mengumpulkan tugas ini.</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="bg-gray-50 dark:bg-white/5 px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100 dark:border-gray-800 rounded-b-2xl">
+                                        <a :href="selectedTugas.link" class="w-full inline-flex justify-center items-center rounded-xl border border-transparent shadow-sm px-6 py-2.5 bg-maroon text-base font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-maroon sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                                            <i class="fas fa-external-link-alt mr-2"></i> Buka E-Learning
+                                        </a>
+                                        <button type="button" @click="openTugasModal = false" class="mt-3 w-full inline-flex justify-center items-center rounded-xl border border-gray-300 dark:border-gray-600 shadow-sm px-6 py-2.5 bg-white dark:bg-[#1a1c23] text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                                            Tutup
+                                        </button>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
             </div>
 
             {{-- Support & Info Column (Span 1) --}}

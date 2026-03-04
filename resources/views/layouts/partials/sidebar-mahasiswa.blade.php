@@ -18,7 +18,16 @@
     </div>
 
     {{-- Navigation --}}
-    <div class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar py-6 px-4 space-y-1 border-r border-gray-100 dark:border-gray-800">
+    <style>
+        .sidebar-no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .sidebar-no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <div class="flex-1 overflow-y-auto overflow-x-hidden sidebar-no-scrollbar py-6 px-4 space-y-1 border-r border-gray-100 dark:border-gray-800">
         
         @php
             $navItemClass = "group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-medium text-sm relative overflow-hidden";
@@ -75,9 +84,9 @@
                 <div x-show="openAkademik" x-collapse x-cloak
                      class="mt-1 ml-4 pl-4 border-l-2 border-gray-100 dark:border-gray-800 space-y-1">
                     @foreach([
-                        'mahasiswa.nilai.index'=>'Kartu Hasil Studi',
                         'mahasiswa.jadwal.index'=>'Jadwal Kelas',
                         'mahasiswa.kelas.index'=>'E-Learning',
+                        'mahasiswa.nilai.index'=>'Kartu Hasil Studi',
                         'mahasiswa.perpustakaan.index'=>'Perpustakaan',
                         'mahasiswa.prestasi.index'=>'Prestasi Mahasiswa',
                     ] as $route=>$label)

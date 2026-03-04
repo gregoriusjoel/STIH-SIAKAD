@@ -94,12 +94,12 @@
     @endif
 
     <button @click="carryOpen = true"
-        class="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs font-semibold transition">
+        class="flex items-center gap-2 px-3 py-1.5 bg-maroon text-white rounded-lg hover:bg-red-900 text-xs font-semibold transition">
         <i class="fas fa-copy"></i> Carry Forward
     </button>
 
     <button @click="restoreOpen = true"
-        class="flex items-center gap-2 px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-xs font-semibold transition">
+        class="flex items-center gap-2 px-3 py-1.5 bg-maroon text-white rounded-lg hover:bg-red-900 text-xs font-semibold transition">
         <i class="fas fa-history"></i> Ambil Histori
     </button>
 
@@ -107,7 +107,7 @@
 
     <div x-data="{ open: false }" class="relative">
         <button @click="open = !open" @click.away="open = false"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-xs font-semibold transition">
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-maroon text-white rounded-lg hover:bg-red-900 text-xs font-semibold transition">
             <i class="fas fa-toggle-on"></i> Aktifkan Semester <i class="fas fa-chevron-down text-xs ml-1"></i>
         </button>
         <div x-show="open" x-transition
@@ -172,14 +172,14 @@
         <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs {{ $tab === 'master' ? 'bg-maroon text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $mataKuliahs->total() }}</span>
     </a>
     <a href="{{ route('admin.mata-kuliah.index', ['tab' => 'ta-aktif', 'semester_id' => $selectedSemester?->id]) }}"
-        class="px-5 py-3 text-sm font-semibold border-b-2 transition {{ $tab === 'ta-aktif' ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400 dark:border-emerald-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-emerald-600' }}">
+        class="px-5 py-3 text-sm font-semibold border-b-2 transition {{ $tab === 'ta-aktif' ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
         <i class="fas fa-check-circle mr-1.5"></i> TA Aktif
-        <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs {{ $tab === 'ta-aktif' ? 'bg-emerald-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $activePivots->count() }}</span>
+        <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs {{ $tab === 'ta-aktif' ? 'bg-maroon text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $activePivots->count() }}</span>
     </a>
     <a href="{{ route('admin.mata-kuliah.index', ['tab' => 'histori', 'semester_id' => $selectedSemester?->id]) }}"
-        class="px-5 py-3 text-sm font-semibold border-b-2 transition {{ $tab === 'histori' ? 'border-purple-600 text-purple-700 dark:text-purple-400 dark:border-purple-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-purple-600' }}">
+        class="px-5 py-3 text-sm font-semibold border-b-2 transition {{ $tab === 'histori' ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
         <i class="fas fa-archive mr-1.5"></i> Histori TA
-        <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs {{ $tab === 'histori' ? 'bg-purple-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $historyPivots->count() }}</span>
+        <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs {{ $tab === 'histori' ? 'bg-maroon text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $historyPivots->count() }}</span>
     </a>
 </div>
 
@@ -266,7 +266,7 @@
                     </div>
                 </td>
                 <td class="px-5 py-4 text-center">
-                    <span class="px-2.5 py-1 text-sm font-bold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
+                    <span class="px-2.5 py-1 text-sm font-bold rounded-full bg-red-100 dark:bg-red-900/30 text-maroon dark:text-red-300">
                         {{ $mk->sks }} SKS
                     </span>
                 </td>
@@ -398,10 +398,10 @@
         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
         <input type="text" id="active-search" placeholder="Cari kode / nama MK..."
             oninput="filterActiveTable()"
-            class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-emerald-500">
+            class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
     </div>
     <select id="active-semester-filter" onchange="filterActiveTable()"
-        class="text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500">
+        class="text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-maroon">
         <option value="">Semua Semester</option>
         @for($s = 1; $s <= 8; $s++)
         <option value="{{ $s }}">Semester {{ $s }}</option>
@@ -415,7 +415,7 @@
 </div>
 <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="active-table">
-        <thead class="bg-emerald-700 text-white">
+        <thead class="bg-maroon text-white">
             <tr>
                 <th class="px-4 py-3 text-left text-xs font-bold uppercase w-8">
                     <input type="checkbox" id="select-all-active" class="w-4 h-4 rounded border-white/30"
@@ -435,11 +435,11 @@
         <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="active-tbody">
             @foreach($activePivots as $i => $pivot)
             @php $mk = $pivot->mataKuliah; @endphp
-            <tr class="hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition active-row"
+            <tr class="hover:bg-red-50 dark:hover:bg-red-900/10 transition active-row"
                 data-kode="{{ strtolower($mk->kode_mk) }}" data-nama="{{ strtolower($mk->nama_mk) }}"
                 data-semester="{{ $mk->semester }}" data-sks="{{ $mk->sks }}">
                 <td class="px-4 py-3">
-                    <input type="checkbox" value="{{ $mk->id }}" class="active-mk-checkbox w-4 h-4 rounded border-gray-300 text-emerald-600">
+                    <input type="checkbox" value="{{ $mk->id }}" class="active-mk-checkbox w-4 h-4 rounded border-gray-300 text-maroon">
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 active-row-no">{{ $i + 1 }}</td>
                 <td class="px-4 py-3">
@@ -449,11 +449,11 @@
                     <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $mk->nama_mk }}</div>
                 </td>
                 <td class="px-4 py-3 text-center">
-                    <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">{{ $mk->sks }} SKS</span>
+                    <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-red-100 dark:bg-red-900/30 text-maroon dark:text-red-300">{{ $mk->sks }} SKS</span>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ $mk->prodi?->nama_prodi }}</td>
                 <td class="px-4 py-3">
-                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">Semester {{ $mk->semester }}</span>
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-maroon dark:text-red-300">Semester {{ $mk->semester }}</span>
                 </td>
                 <td class="px-4 py-3">
                     @if($pivot->source_semester_id)
@@ -518,10 +518,10 @@
         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
         <input type="text" id="history-search" placeholder="Cari kode / nama MK..."
             oninput="filterHistoryTable()"
-            class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-500">
+            class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
     </div>
     <select id="history-semester-filter" onchange="filterHistoryTable()"
-        class="text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500">
+        class="text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-maroon">
         <option value="">Semua Semester</option>
         @for($s = 1; $s <= 8; $s++)
         <option value="{{ $s }}">Semester {{ $s }}</option>
@@ -535,7 +535,7 @@
 </div>
 <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="history-table">
-        <thead class="bg-purple-800 text-white">
+        <thead class="bg-maroon text-white">
             <tr>
                 <th class="px-4 py-3 text-left text-xs font-bold uppercase">No</th>
                 <th class="px-4 py-3 text-left text-xs font-bold uppercase cursor-pointer select-none" onclick="sortHistoryTable('kode_mk')">Kode MK <i class="fas fa-sort ml-1 opacity-40" id="history-sort-icon-kode_mk"></i></th>
@@ -551,12 +551,12 @@
         <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="history-tbody">
             @foreach($historyPivots as $i => $pivot)
             @php $mk = $pivot->mataKuliah; @endphp
-            <tr class="hover:bg-purple-50 dark:hover:bg-purple-900/10 transition history-row {{ $pivot->status === 'archived' ? 'opacity-60' : '' }}"
+            <tr class="hover:bg-red-50 dark:hover:bg-red-900/10 transition history-row {{ $pivot->status === 'archived' ? 'opacity-60' : '' }}"
                 data-kode="{{ strtolower($mk->kode_mk) }}" data-nama="{{ strtolower($mk->nama_mk) }}"
                 data-semester="{{ $mk->semester }}" data-sks="{{ $mk->sks }}">
                 <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 history-row-no">{{ $i + 1 }}</td>
                 <td class="px-4 py-3">
-                    <span class="font-mono text-xs font-bold text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-2 py-0.5 rounded">{{ $mk->kode_mk }}</span>
+                    <span class="font-mono text-xs font-bold text-maroon dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded">{{ $mk->kode_mk }}</span>
                 </td>
                 <td class="px-4 py-3">
                     <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $mk->nama_mk }}</div>
@@ -566,7 +566,7 @@
                     <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">{{ $mk->sks }} SKS</span>
                 </td>
                 <td class="px-4 py-3 text-center">
-                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">Semester {{ $mk->semester }}</span>
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-maroon dark:text-red-300">Semester {{ $mk->semester }}</span>
                 </td>
                 <td class="px-4 py-3 text-center">
                     @if($pivot->status === 'history')
@@ -592,7 +592,7 @@
                         <input type="hidden" name="target_semester_id" value="{{ $activeSemester->id }}">
                         <input type="hidden" name="mata_kuliah_ids[]" value="{{ $mk->id }}">
                         <button type="submit"
-                            class="px-2.5 py-1 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-200 rounded-lg transition font-medium">
+                            class="px-2.5 py-1 text-xs bg-red-100 dark:bg-red-900/30 text-maroon dark:text-red-400 hover:bg-red-200 rounded-lg transition font-medium">
                             <i class="fas fa-undo mr-1"></i> Pulihkan
                         </button>
                     </form>
@@ -683,12 +683,12 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
     @keydown.escape.window="carryOpen = false">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div class="flex items-center justify-between px-6 py-4 bg-blue-600 text-white rounded-t-2xl">
+        <div class="flex items-center justify-between px-6 py-4 bg-maroon text-white rounded-t-2xl">
             <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-copy"></i> Carry Forward MK</h3>
             <button @click="carryOpen = false" class="text-white text-xl">&times;</button>
         </div>
         <div class="p-5 flex-1 overflow-y-auto">
-            <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-800 dark:text-blue-300">
+            <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm text-maroon dark:text-red-300">
                 <i class="fas fa-info-circle mr-1"></i>
                 Salin daftar MK dari semester lama ke semester tujuan. Konflik otomatis dilewati.
             </div>
@@ -713,7 +713,7 @@
                 </div>
             </div>
             <button type="button" onclick="cfPreview()"
-                class="mb-4 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-lg text-sm font-medium hover:bg-blue-200 transition">
+                class="mb-4 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-maroon dark:text-red-300 rounded-lg text-sm font-medium hover:bg-red-200 transition">
                 <i class="fas fa-eye mr-1"></i> Preview
             </button>
             <div id="cf-preview" class="hidden space-y-3">
@@ -735,7 +735,7 @@
             <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t dark:border-gray-700 flex justify-end gap-3 rounded-b-2xl">
                 <button type="button" @click="carryOpen = false" class="px-5 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300">Batal</button>
                 <button type="submit" id="cf-submit-btn" disabled
-                    class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="px-5 py-2 bg-maroon text-white rounded-lg text-sm font-semibold hover:bg-red-900 disabled:opacity-50 disabled:cursor-not-allowed">
                     <i class="fas fa-copy mr-1"></i> Salin Sekarang
                 </button>
             </div>
@@ -748,7 +748,7 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
     @keydown.escape.window="restoreOpen = false">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div class="flex items-center justify-between px-6 py-4 bg-purple-700 text-white rounded-t-2xl">
+        <div class="flex items-center justify-between px-6 py-4 bg-maroon text-white rounded-t-2xl">
             <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-history"></i> Ambil dari Histori</h3>
             <button @click="restoreOpen = false" class="text-white text-xl">&times;</button>
         </div>
@@ -767,14 +767,14 @@
                     </select>
                 </div>
                 <input type="text" placeholder="Cari nama / kode MK..."
-                    class="w-full mb-3 px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
+                    class="w-full mb-3 px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:ring-2 focus:ring-maroon"
                     oninput="filterRestoreList(this.value)">
                 <div id="restore-list" class="border dark:border-gray-700 rounded-xl divide-y divide-gray-100 dark:divide-gray-700 max-h-72 overflow-y-auto">
                     @forelse($historyPivots as $pivot)
                     <label class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer restore-item"
                         data-search="{{ strtolower($pivot->mataKuliah->kode_mk . ' ' . $pivot->mataKuliah->nama_mk) }}">
                         <input type="checkbox" name="mata_kuliah_ids[]" value="{{ $pivot->mata_kuliah_id }}"
-                            class="w-4 h-4 text-purple-600 border-gray-300 rounded">
+                            class="w-4 h-4 text-maroon border-gray-300 rounded">
                         <div class="flex-1 min-w-0">
                             <div class="text-sm font-semibold text-gray-800 dark:text-gray-100">{{ $pivot->mataKuliah->nama_mk }}</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">
@@ -793,7 +793,7 @@
             </div>
             <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t dark:border-gray-700 flex justify-end gap-3 rounded-b-2xl">
                 <button type="button" @click="restoreOpen = false" class="px-5 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-purple-700 text-white rounded-lg text-sm font-semibold hover:bg-purple-800">
+                <button type="submit" class="px-5 py-2 bg-maroon text-white rounded-lg text-sm font-semibold hover:bg-red-900">
                     <i class="fas fa-undo mr-1"></i> Tambahkan ke TA Aktif
                 </button>
             </div>

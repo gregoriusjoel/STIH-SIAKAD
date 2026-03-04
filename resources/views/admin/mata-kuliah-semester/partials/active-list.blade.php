@@ -36,7 +36,7 @@
                         <div class="text-xs text-gray-500 dark:text-gray-400">Semester {{ $mk->semester }}</div>
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+                        <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-red-100 dark:bg-red-900/30 text-maroon dark:text-red-400">
                             {{ $mk->sks }} SKS
                         </span>
                     </td>

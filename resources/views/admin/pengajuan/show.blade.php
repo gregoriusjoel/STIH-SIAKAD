@@ -40,8 +40,19 @@
                         <div>
                             <label class="block text-xs font-semibold text-text-muted uppercase mb-1">Jenis Pengajuan</label>
                             <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium 
-                                {{ $pengajuan->jenis === 'cuti' ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700' }}">
-                                <i class="fas {{ $pengajuan->jenis === 'cuti' ? 'fa-pause' : 'fa-file-signature' }}"></i>
+                                @switch($pengajuan->jenis)
+                                    @case('cuti') bg-orange-50 text-orange-700 @break
+                                    @case('dispensasi') bg-purple-50 text-purple-700 @break
+                                    @case('izin_penelitian') bg-teal-50 text-teal-700 @break
+                                    @default bg-blue-50 text-blue-700
+                                @endswitch">
+                                <i class="fas
+                                    @switch($pengajuan->jenis)
+                                        @case('cuti') fa-pause @break
+                                        @case('dispensasi') fa-calendar-times @break
+                                        @case('izin_penelitian') fa-flask @break
+                                        @default fa-file-signature
+                                    @endswitch"></i>
                                 {{ $pengajuan->jenis_label }}
                             </div>
                         </div>
@@ -71,12 +82,26 @@
                             </div>
                         @endif
 
-                        @if($pengajuan->admin_note)
+                        @if($pengajuan->rejected_reason)
                             <div>
-                                <label class="block text-xs font-semibold text-text-muted uppercase mb-1">Catatan Admin</label>
-                                <p class="text-text-primary bg-yellow-50 border-l-4 border-yellow-400 rounded p-4 italic">
-                                    "{{ $pengajuan->admin_note }}"
+                                <label class="block text-xs font-semibold text-text-muted uppercase mb-1">Alasan Penolakan</label>
+                                <p class="text-red-700 bg-red-50 border-l-4 border-red-400 rounded p-4 italic">
+                                    "{{ $pengajuan->rejected_reason }}"
                                 </p>
+                            </div>
+                        @endif
+
+                        @if($pengajuan->payload_template && count($pengajuan->payload_template))
+                            <div class="pt-4 border-t border-border-color">
+                                <label class="block text-xs font-semibold text-text-muted uppercase mb-3">Data Isian Surat</label>
+                                <dl class="space-y-2">
+                                    @foreach($pengajuan->payload_template as $key => $val)
+                                        <div class="flex gap-2">
+                                            <dt class="text-xs text-text-muted w-40 shrink-0 capitalize">{{ str_replace('_', ' ', $key) }}</dt>
+                                            <dd class="text-sm text-text-primary font-medium">{{ $val }}</dd>
+                                        </div>
+                                    @endforeach
+                                </dl>
                             </div>
                         @endif
 
@@ -89,7 +114,9 @@
                                     </div>
                                     <div>
                                         <p class="font-medium text-text-primary">{{ $pengajuan->approver->name ?? 'Admin' }}</p>
-                                        <p class="text-xs text-text-muted">{{ $pengajuan->approved_at->locale('id')->isoFormat('D MMMM YYYY, HH:mm') }}</p>
+                                        @if($pengajuan->approved_at)
+                                            <p class="text-xs text-text-muted">{{ $pengajuan->approved_at->locale('id')->isoFormat('D MMMM YYYY, HH:mm') }}</p>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -97,28 +124,97 @@
                     </div>
                 </div>
 
-                {{-- Letter Preview (if approved) --}}
-                @if($pengajuan->status === 'disetujui' && $pengajuan->file_surat)
+                {{-- Generated DOCX (always show if available) --}}
+                @if($pengajuan->generated_doc_path)
+                    <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-blue-200">
+                        <div class="px-6 py-4 bg-blue-50 border-b border-blue-200">
+                            <h2 class="font-bold text-blue-800 flex items-center gap-2">
+                                <i class="fas fa-file-word"></i>
+                                Dokumen DOCX (Digenerate Mahasiswa)
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <a href="{{ route('admin.pengajuan.download-generated', $pengajuan->id) }}" 
+                                class="btn bg-blue-600 text-white hover:bg-blue-700 rounded-xl px-5 py-2.5 flex items-center gap-2 w-fit">
+                                <i class="fas fa-download"></i>
+                                Download DOCX
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Signed Document (for submitted/approved/rejected statuses) --}}
+                @if($pengajuan->signed_doc_path)
+                    <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-indigo-200">
+                        <div class="px-6 py-4 bg-indigo-50 border-b border-indigo-200">
+                            <h2 class="font-bold text-indigo-800 flex items-center gap-2">
+                                <i class="fas fa-file-signature"></i>
+                                Dokumen Bertanda Tangan (Upload Mahasiswa)
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <a href="{{ route('admin.pengajuan.download-signed', $pengajuan->id) }}" 
+                                class="btn bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl px-5 py-2.5 flex items-center gap-2 w-fit">
+                                <i class="fas fa-download"></i>
+                                Download Dokumen TTD
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Final Letter (if approved) --}}
+                @if($pengajuan->status === 'approved' && $pengajuan->file_surat)
                     <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-green-200">
                         <div class="px-6 py-4 bg-green-50 border-b border-green-200">
                             <h2 class="font-bold text-green-800 flex items-center gap-2">
                                 <i class="fas fa-file-pdf"></i>
-                                Surat Hasil Generate
+                                Surat Resmi (Disetujui)
                             </h2>
                         </div>
-                        <div class="p-6 space-y-4">
-                            <div class="flex gap-3">
-                                <a href="{{ route('admin.pengajuan.download', $pengajuan->id) }}" 
-                                    class="btn bg-green-600 text-white hover:bg-green-700 rounded-xl px-5 py-2.5 flex items-center gap-2">
-                                    <i class="fas fa-download"></i>
-                                    Download Surat PDF
-                                </a>
-                                <a href="{{ route('admin.pengajuan.preview', $pengajuan->id) }}" target="_blank"
-                                    class="btn bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl px-5 py-2.5 flex items-center gap-2">
-                                    <i class="fas fa-eye"></i>
-                                    Preview
-                                </a>
-                            </div>
+                        <div class="p-6">
+                            <a href="{{ route('admin.pengajuan.download', $pengajuan->id) }}" 
+                                class="btn bg-green-600 text-white hover:bg-green-700 rounded-xl px-5 py-2.5 flex items-center gap-2 w-fit">
+                                <i class="fas fa-download"></i>
+                                Download Surat Resmi
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Revision History --}}
+                @if($pengajuan->revisions->count() > 0)
+                    <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-border-color overflow-hidden">
+                        <div class="px-6 py-4 bg-gray-50 border-b border-border-color">
+                            <h2 class="font-bold text-text-primary flex items-center gap-2">
+                                <i class="fas fa-history text-gray-500"></i>
+                                Riwayat Revisi ({{ $pengajuan->revisions->count() }}x)
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <ol class="relative border-l border-gray-200 dark:border-gray-700 space-y-6">
+                                @foreach($pengajuan->revisions as $rev)
+                                    <li class="ml-4">
+                                        <div class="absolute w-3 h-3 bg-gray-300 rounded-full -left-1.5 border border-white"></div>
+                                        <div class="text-xs text-text-muted mb-1">Revisi #{{ $rev->revision_no }}</div>
+                                        @if($rev->note_from_admin)
+                                            <p class="text-sm bg-red-50 border-l-4 border-red-300 rounded p-2 text-red-700 mb-2">
+                                                <span class="font-semibold">Catatan admin:</span> {{ $rev->note_from_admin }}
+                                            </p>
+                                        @endif
+                                        @if($rev->note_from_mahasiswa)
+                                            <p class="text-sm bg-blue-50 border-l-4 border-blue-300 rounded p-2 text-blue-700 mb-2">
+                                                <span class="font-semibold">Catatan mahasiswa:</span> {{ $rev->note_from_mahasiswa }}
+                                            </p>
+                                        @endif
+                                        @if($rev->signed_doc_path)
+                                            <a href="{{ Storage::url($rev->signed_doc_path) }}" target="_blank"
+                                                class="inline-flex items-center gap-1 text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-text-secondary transition-colors">
+                                                <i class="fas fa-paperclip"></i> Lihat Dokumen TTD
+                                            </a>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ol>
                         </div>
                     </div>
                 @endif
@@ -166,7 +262,7 @@
                 </div>
 
                 {{-- Actions --}}
-                @if($pengajuan->status === 'pending')
+                @if($pengajuan->status === 'submitted')
                     <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-border-color overflow-hidden" x-data>
                         <div class="px-6 py-4 bg-yellow-50 border-b border-yellow-200">
                             <h2 class="font-bold text-yellow-800">Tindakan</h2>
@@ -175,18 +271,31 @@
                             <button @click="$dispatch('open-modal', 'approve-modal')" 
                                 class="w-full btn bg-green-600 text-white hover:bg-green-700 rounded-xl px-5 py-3 flex items-center justify-center gap-2 font-medium">
                                 <i class="fas fa-check-circle"></i>
-                                Setujui & Generate Surat
+                                Setujui Pengajuan
                             </button>
                             <button @click="$dispatch('open-modal', 'reject-modal')" 
                                 class="w-full btn bg-red-600 text-white hover:bg-red-700 rounded-xl px-5 py-3 flex items-center justify-center gap-2 font-medium">
                                 <i class="fas fa-times-circle"></i>
                                 Tolak Pengajuan
                             </button>
-                            <a href="{{ route('admin.pengajuan.preview', $pengajuan->id) }}" target="_blank"
-                                class="w-full btn bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-xl px-5 py-3 flex items-center justify-center gap-2 font-medium">
-                                <i class="fas fa-eye"></i>
-                                Preview Surat
-                            </a>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Status Info for non-actionable statuses --}}
+                @if(in_array($pengajuan->status, ['draft', 'generated']))
+                    <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                            <h2 class="font-bold text-gray-700">Status</h2>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-sm text-text-secondary">
+                                @if($pengajuan->status === 'draft')
+                                    Mahasiswa belum selesai mengisi formulir.
+                                @else
+                                    Dokumen sudah digenerate. Menunggu mahasiswa mengunggah dokumen bertanda tangan.
+                                @endif
+                            </p>
                         </div>
                     </div>
                 @endif
@@ -227,7 +336,7 @@
                     <form action="{{ route('admin.pengajuan.approve', $pengajuan->id) }}" method="POST">
                         @csrf
                         <div class="p-6">
-                            <p class="text-text-secondary mb-4">Anda yakin ingin menyetujui pengajuan ini? Sistem akan otomatis membuat surat resmi.</p>
+                            <p class="text-text-secondary mb-4">Anda yakin ingin menyetujui pengajuan ini? Nomor surat akan otomatis digenerate.</p>
                             
                             <div>
                                 <label class="block text-sm font-medium text-text-secondary mb-2">Catatan (Opsional)</label>
@@ -287,7 +396,7 @@
                             
                             <div>
                                 <label class="block text-sm font-medium text-text-secondary mb-2">Alasan Penolakan <span class="text-red-500">*</span></label>
-                                <textarea name="admin_note" rows="4" required
+                                <textarea name="rejected_reason" rows="4" required
                                     class="w-full rounded-xl border-border-color py-2.5 px-4 text-sm focus:ring-2 focus:ring-red-500"
                                     placeholder="Contoh: Dokumen pendukung tidak lengkap..."></textarea>
                             </div>

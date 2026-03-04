@@ -529,6 +529,8 @@ class KelasMataKuliahController extends Controller
                 'nim' => $krs->mahasiswa->nim ?? '-',
                 'status' => $presensi ? ($presensi->status ?? 'hadir') : 'tidak hadir',
                 'waktu_scan' => $presensi && $presensi->created_at ? ($presensi->created_at->format('H:i') . ' WIB') : '-',
+                'distance_meters' => $presensi ? $presensi->distance_meters : null,
+                'presence_mode' => $presensi ? $presensi->presence_mode : null,
             ];
         });
 
@@ -548,6 +550,7 @@ class KelasMataKuliahController extends Controller
             'students' => $formattedStudents,
             'total_students' => $students->count(),
             'total_hadir' => $formattedStudents->where('status', 'hadir')->count(),
+            'total_tidak_hadir' => $formattedStudents->where('status', 'tidak hadir')->count(),
         ]);
     }
 }

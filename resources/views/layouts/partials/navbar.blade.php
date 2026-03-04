@@ -1,6 +1,6 @@
 @php
     $s = $semesterAktif ?? \App\Models\Semester::where('status', 'aktif')->first();
-    $latestPengumumans = \App\Models\Pengumuman::whereNotNull('published_at')
+    $latestPengumumans = \App\Models\Pengumuman::where('published_at', '<=', now('Asia/Jakarta')->format('Y-m-d H:i:s'))
         ->whereIn('target', ['semua', 'dosen'])
         ->orderByDesc('published_at')
         ->limit(5)

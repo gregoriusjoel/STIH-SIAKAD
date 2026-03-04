@@ -43,7 +43,7 @@
             bottom: 0px;
             left: 0;
             width: 100%;
-            height: 55px;
+            height: 100px;
         }
         .footer-logo {
             position: absolute;
@@ -51,7 +51,7 @@
             bottom: 0;
         }
         .footer-logo img {
-            height: 55px;
+            height: 100px;
             width: auto;
         }
         .footer-text {
@@ -59,7 +59,7 @@
             font-family: Arial, sans-serif;
             font-size: 11px;
             width: 100%;
-            padding-top: 15px;
+            padding-top: 25px;
             line-height: 1.2;
         }
 

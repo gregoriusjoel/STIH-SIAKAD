@@ -773,11 +773,29 @@ $missingByTab[$info['tab']]++;
             </div>
 
             {{-- Dokumen Pribadi --}}
+            @php
+                $allDocsUploadedAndLocked = 
+                    !empty($mahasiswa->file_ijazah) && !collect($mahasiswa->file_ijazah)->filter()->isEmpty() &&
+                    !empty($mahasiswa->file_transkrip) && !collect($mahasiswa->file_transkrip)->filter()->isEmpty() &&
+                    !empty($mahasiswa->file_kk) && !collect($mahasiswa->file_kk)->filter()->isEmpty() &&
+                    !empty($mahasiswa->file_ktp) && !collect($mahasiswa->file_ktp)->filter()->isEmpty() &&
+                    !$mahasiswa->is_dokumen_unlocked;
+            @endphp
             <div>
                 <div class="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
                     <h3 class="text-[#1A1A1A] font-bold text-base tracking-tight">Dokumen Pribadi</h3>
                     <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Identity Documents</span>
                 </div>
+                
+                @if($allDocsUploadedAndLocked)
+                <div class="p-4 bg-green-50 border border-green-100 rounded-xl mb-6 flex items-start gap-3">
+                    <i class="fas fa-check-circle text-green-600 text-lg mt-0.5"></i>
+                    <div>
+                        <p class="text-sm font-bold text-green-800">Dokumen Lengkap & Terverifikasi</p>
+                        <p class="text-xs text-green-700 mt-1">Semua dokumen pribadi Anda telah diunggah dan tersimpan dalam sistem. Jika Anda perlu memperbarui dokumen, silakan hubungi Akademik.</p>
+                    </div>
+                </div>
+                @else
                 <div class="p-4 bg-orange-50 border border-orange-100 rounded-xl mb-6">
                     <p class="text-[11px] text-[#C2410C] font-semibold flex items-center gap-2">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -792,6 +810,7 @@ $missingByTab[$info['tab']]++;
                     ['name' => 'file_kk', 'label' => 'Kartu Keluarga (KK)', 'data' => $mahasiswa->file_kk],
                     ['name' => 'file_ktp', 'label' => 'KTP', 'data' => $mahasiswa->file_ktp],
                     ] as $doc)
+                    @if(empty($doc['data']) || collect($doc['data'])->filter()->isEmpty() || $mahasiswa->is_dokumen_unlocked)
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
                             <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">{{ $doc['label'] }}</label>
@@ -828,8 +847,10 @@ $missingByTab[$info['tab']]++;
                         </div>
                         @endif
                     </div>
+                    @endif
                     @endforeach
                 </div>
+                @endif
             </div>
 
             {{-- Data Asal Sekolah (inside Data Lanjutan tab) --}}
@@ -848,7 +869,6 @@ $missingByTab[$info['tab']]++;
                                 <option value="">Pilih Jenis Sekolah</option>
                                 <option value="1 - Umum" {{ $mahasiswa->jenis_sekolah === '1 - Umum' ? 'selected' : '' }}>1 - Umum</option>
                                 <option value="2 - Kejuruan" {{ $mahasiswa->jenis_sekolah === '2 - Kejuruan' ? 'selected' : '' }}>2 - Kejuruan</option>
-                                <option value="3 - Umum" {{ $mahasiswa->jenis_sekolah === '3 - Umum' ? 'selected' : '' }}>3 - Umum</option>
                             </select>
                         </div>
 
@@ -858,7 +878,7 @@ $missingByTab[$info['tab']]++;
                             <select name="jurusan_sekolah"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                 <option value="">Pilih Jurusan</option>
-                                @foreach(['SMU - IPA', 'SMU - IPS', 'SMU - Bahasa', 'SMK - Teknik Informatika', 'SMK - Teknik Mesin', 'SMK - Akuntansi', 'SMK - Lainnya'] as $j)
+                                @foreach(['SMA', 'SMK', 'MA'] as $j)
                                 <option value="{{ $j }}" {{ $mahasiswa->jurusan_sekolah === $j ? 'selected' : '' }}>{{ $j }}</option>
                                 @endforeach
                             </select>
@@ -867,15 +887,29 @@ $missingByTab[$info['tab']]++;
                         {{-- Tahun Lulus --}}
                         <div>
                             <label class="block text-sm text-gray-600 font-medium mb-2">Tahun Lulus</label>
-                            <input type="text" name="tahun_lulus" value="{{ $mahasiswa->tahun_lulus ?? '' }}" placeholder="Contoh: 2020"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                            <select name="tahun_lulus" 
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
+                                <option value="">Pilih Tahun</option>
+                                @php $currentYear = date('Y'); @endphp
+                                @for($year = $currentYear; $year >= 1970; $year--)
+                                    <option value="{{ $year }}" {{ ($mahasiswa->tahun_lulus ?? '') == $year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endfor
+                            </select>
                         </div>
 
                         {{-- Nilai Kelulusan --}}
                         <div>
                             <label class="block text-sm text-gray-600 font-medium mb-2">Nilai Kelulusan</label>
-                            <input type="number" name="nilai_kelulusan" value="{{ $mahasiswa->nilai_kelulusan ?? '' }}" step="0.01" min="0" max="100" placeholder="Contoh: 81.56"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                            <input type="number" name="nilai_kelulusan" value="{{ $mahasiswa->nilai_kelulusan ?? '' }}" step="0.01" min="0" max="100" placeholder="Contoh: 81,56"
+                                oninput="
+                                    if (this.value > 100) this.value = 100;
+                                    if (this.value < 0) this.value = 0;
+                                    let parts = this.value.toString().split('.');
+                                    if (parts[1] && parts[1].length > 2) this.value = parts[0] + '.' + parts[1].substring(0, 2);
+                                "
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium text-gray-700">
                         </div>
                     </div>
                 </div>
@@ -883,7 +917,10 @@ $missingByTab[$info['tab']]++;
         </div>
         {{-- Tab Content: Orang Tua / Wali --}}
         <div x-show="activeTab === 'orang_tua'" x-cloak class="space-y-12"
-            x-data="{ showOrangTua: true, showWali: {{ ($parent->nama_wali ?? '') ? 'true' : 'false' }} }">
+            x-data="{ 
+                showOrangTua: {{ (empty($parent) || empty($parent->nama_wali) || !empty($parent->nama_ayah) || !empty($parent->nama_ibu)) ? 'true' : 'false' }}, 
+                showWali: {{ !empty($parent->nama_wali) ? 'true' : 'false' }} 
+            }">
 
             {{-- Toggle Orang Tua / Wali --}}
             <div class="bg-[#F9FAFB] rounded-2xl p-6 border border-[#E5E7EB] shadow-sm">

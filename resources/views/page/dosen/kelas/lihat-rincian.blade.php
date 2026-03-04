@@ -257,9 +257,9 @@
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="grid grid-cols-1 {{ $metodePT !== 'asynchronous' ? 'md:grid-cols-2' : '' }} gap-8 items-center">
                         {{-- Left: QR Code --}}
-                        <div class="flex flex-col items-center justify-center text-center border-r-0 md:border-r border-gray-100 pr-0 md:pr-8">
+                        <div class="flex flex-col items-center justify-center text-center {{ $metodePT !== 'asynchronous' ? 'border-r-0 md:border-r border-gray-100 pr-0 md:pr-8' : '' }}">
                             @if(isset($token) && $token && $qrEnabled)
                                 <div class="mb-4">
                                     <h4 class="text-sm font-bold text-primary mb-1 flex items-center justify-center gap-2">
@@ -328,7 +328,8 @@
                             @endif
                         </div>
 
-                        {{-- Right: Link Absensi --}}
+                        {{-- Right: Link Absensi (hidden for asynchronous) --}}
+                        @if($metodePT !== 'asynchronous')
                         <div class="flex flex-col justify-center h-full">
                             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                                 <label class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-3 flex items-center gap-2">
@@ -366,6 +367,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
 

@@ -210,7 +210,7 @@
                                             </div>
                                             <div class="flex-1">
                                                 <h5 class="text-sm font-bold {{ $presenceMode === 'offline' ? 'text-green-900' : 'text-blue-900' }} mb-1">
-                                                    Status Kehadiran: {{ $presenceMode === 'offline' ? 'Hadir Offline (On-site)' : 'Hadir Online (Remote)' }}
+                                                    Status Kehadiran: {{ $presenceMode === 'offline' ? 'Hadir Offline (Kampus)' : 'Hadir Online' }}
                                                 </h5>
                                                 @if($distance !== null)
                                                     <p class="text-xs {{ $presenceMode === 'offline' ? 'text-green-700' : 'text-blue-700' }}">

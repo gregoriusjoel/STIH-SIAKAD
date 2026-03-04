@@ -198,11 +198,26 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         // Menu Pengajuan
         Route::prefix('pengajuan')->name('pengajuan.')->group(function () {
             Route::get('/', [PengajuanController::class, 'index'])->name('index');
+            // Step 1: Buat draft
             Route::post('/', [PengajuanController::class, 'store'])->name('store');
+            // Step 2: Generate dokumen (dispatch queue)
+            Route::post('/{pengajuan}/generate', [PengajuanController::class, 'generate'])->name('generate');
+            // Polling status
+            Route::get('/{pengajuan}/status', [PengajuanController::class, 'statusCheck'])->name('status');
+            // Step 3: Download generated doc
+            Route::get('/{pengajuan}/download-generated', [PengajuanController::class, 'downloadGenerated'])->name('download-generated');
+            // Step 4: Upload signed doc
+            Route::post('/{pengajuan}/upload-signed', [PengajuanController::class, 'uploadSigned'])->name('upload-signed');
+            // Step 5: Submit ke admin
+            Route::post('/{pengajuan}/submit', [PengajuanController::class, 'submit'])->name('submit');
+            // Download final surat approved
             Route::get('/{pengajuan}/download', [PengajuanController::class, 'download'])->name('download');
             Route::get('/{pengajuan}/preview', [PengajuanController::class, 'preview'])->name('preview');
+            // Delete pengajuan (mahasiswa)
+            Route::delete('/{pengajuan}', [PengajuanController::class, 'destroy'])->name('destroy');
+            // AJAX: config fields per jenis
+            Route::get('/jenis-config/{jenis}', [PengajuanController::class, 'jenisConfig'])->name('jenis-config');
             Route::view('/sidang', 'errors.503')->name('sidang.index');
-            // Route 'surat' should show the same pengajuan page (surat submissions)
             Route::get('/surat', [PengajuanController::class, 'index'])->name('surat.index');
             Route::view('/yudisium', 'errors.503')->name('yudisium.index');
         });
@@ -240,6 +255,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Mahasiswa Management
     Route::resource('mahasiswa', App\Http\Controllers\Admin\MahasiswaController::class);
+    Route::post('mahasiswa/{mahasiswa}/toggle-dokumen', [App\Http\Controllers\Admin\MahasiswaController::class, 'toggleDokumen'])->name('mahasiswa.toggle-dokumen');
 
     // Dosen Management
     Route::resource('dosen', App\Http\Controllers\Admin\DosenController::class);
@@ -395,8 +411,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/{pengajuan}', [App\Http\Controllers\Admin\PengajuanController::class, 'show'])->name('show');
         Route::post('/{pengajuan}/approve', [App\Http\Controllers\Admin\PengajuanController::class, 'approve'])->name('approve');
         Route::post('/{pengajuan}/reject', [App\Http\Controllers\Admin\PengajuanController::class, 'reject'])->name('reject');
+        // Download berbagai jenis dokumen
         Route::get('/{pengajuan}/download', [App\Http\Controllers\Admin\PengajuanController::class, 'download'])->name('download');
-        Route::get('/{pengajuan}/preview', [App\Http\Controllers\Admin\PengajuanController::class, 'preview'])->name('preview');
+        Route::get('/{pengajuan}/download-signed', [App\Http\Controllers\Admin\PengajuanController::class, 'downloadSigned'])->name('download-signed');
+        Route::get('/{pengajuan}/download-generated', [App\Http\Controllers\Admin\PengajuanController::class, 'downloadGenerated'])->name('download-generated');
     });
 
     // Import Data Management

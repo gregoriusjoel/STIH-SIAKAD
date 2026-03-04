@@ -99,6 +99,21 @@ class ImportService
             'unique_column' => 'kode_ruangan',
             'has_user' => false,
         ],
+        'orang_tua' => [
+            'model' => \App\Models\ParentModel::class,
+            'required_columns' => ['nim_mahasiswa', 'nama_ortu', 'hubungan'],
+            'column_mapping' => [
+                'nim_mahasiswa' => 'nim_mahasiswa',
+                'nama_ortu' => 'nama_ortu',
+                'email' => 'email',
+                'hubungan' => 'hubungan',
+                'pekerjaan' => 'pekerjaan',
+                'phone' => 'phone',
+                'address' => 'address',
+            ],
+            'unique_column' => 'nim_mahasiswa',
+            'has_user' => true,
+        ],
     ];
 
     /**
@@ -535,6 +550,8 @@ class ImportService
                 return $this->importMataKuliah($mappedData, $row, $existing);
             case 'ruangan':
                 return $this->importRuangan($mappedData, $row);
+            case 'orang_tua':
+                return $this->importOrangTua($mappedData, $row);
             default:
                 throw new \InvalidArgumentException('Handler tidak tersedia untuk tipe: ' . $type);
         }
@@ -767,6 +784,63 @@ class ImportService
             'lantai' => (int) ($data['lantai'] ?? 1),
             'kapasitas' => (int) $data['kapasitas'],
             'status' => $data['status'] ?? 'aktif',
+        ]);
+
+        return ['status' => 'success'];
+    }
+
+    /**
+     * Import Orang Tua/Wali
+     */
+    protected function importOrangTua(array $data, array $row): array
+    {
+        $nimMahasiswa = $data['nim_mahasiswa'] ?? $this->getColumnValue($row, 'nim_mahasiswa');
+        $namaOrtu = $data['nama_ortu'] ?? $this->getColumnValue($row, 'nama_ortu');
+        $hubungan = $data['hubungan'] ?? 'wali';
+
+        // Find mahasiswa
+        $mahasiswa = \App\Models\Mahasiswa::where('nim', $nimMahasiswa)->first();
+        if (!$mahasiswa) {
+            throw new \Exception("Mahasiswa dengan NIM {$nimMahasiswa} tidak ditemukan");
+        }
+
+        // Generate email if not provided
+        $email = $data['email'] ?? null;
+        if (empty($email)) {
+            $email = 'ortu.' . strtolower(str_replace(' ', '', $nimMahasiswa)) . '@parent.stih.ac.id';
+        }
+
+        // Check if user with this email already exists
+        $existingUser = \App\Models\User::where('email', $email)->first();
+        if ($existingUser) {
+            // Check if parent record already exists for this user+mahasiswa
+            $existingParent = \App\Models\ParentModel::where('user_id', $existingUser->id)
+                ->where('mahasiswa_id', $mahasiswa->id)
+                ->first();
+            if ($existingParent) {
+                return [
+                    'status' => 'skipped',
+                    'reason' => "Data orang tua untuk mahasiswa NIM {$nimMahasiswa} sudah ada",
+                ];
+            }
+        }
+
+        // Create user
+        $user = $existingUser ?? \App\Models\User::create([
+            'name' => $namaOrtu,
+            'email' => $email,
+            'password' => \Illuminate\Support\Facades\Hash::make('orangtua123'),
+            'role' => 'parent',
+        ]);
+
+        // Create parent record
+        \App\Models\ParentModel::create([
+            'user_id' => $user->id,
+            'mahasiswa_id' => $mahasiswa->id,
+            'hubungan' => strtolower($hubungan),
+            'pekerjaan' => $data['pekerjaan'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'address' => $data['address'] ?? null,
         ]);
 
         return ['status' => 'success'];

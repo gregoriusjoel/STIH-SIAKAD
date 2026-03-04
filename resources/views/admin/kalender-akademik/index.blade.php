@@ -1512,11 +1512,30 @@
                 }, 3000);
             }
             document.getElementById('import_file').addEventListener('change', function (e) {
-                const fileName = e.target.files[0]?.name;
+                const file = e.target.files[0];
+                const fileName = file?.name;
                 const nameContainer = document.getElementById('file-name');
                 const nameText = document.getElementById('file-name-text');
 
-                if (fileName) {
+                if (file) {
+                    // Validate file format
+                    const allowedExtensions = ['.csv', '.txt', '.pdf'];
+                    const lowerFileName = fileName.toLowerCase();
+                    const isValidExtension = allowedExtensions.some(ext => lowerFileName.endsWith(ext));
+
+                    if (!isValidExtension) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Format File Tidak Valid!',
+                            html: 'File yang diizinkan: <strong>CSV, TXT, atau PDF</strong>.<br><br>File "<strong>' + fileName + '</strong>" tidak dapat diupload.',
+                            confirmButtonColor: '#8B1538',
+                            confirmButtonText: 'OK'
+                        });
+                        e.target.value = '';
+                        nameContainer.classList.add('hidden');
+                        return;
+                    }
+
                     nameText.textContent = `File terpilih: ${fileName}`;
                     nameContainer.classList.remove('hidden');
                 } else {

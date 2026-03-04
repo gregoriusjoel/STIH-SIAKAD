@@ -334,6 +334,9 @@ class ProfilController extends Controller
             }
         }
 
+        // Lock document upload again after submission
+        $mahasiswaData['is_dokumen_unlocked'] = false;
+
         $mahasiswa->update($mahasiswaData);
 
         // Update or create parent data

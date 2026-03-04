@@ -9,7 +9,7 @@ class PengumumanController extends Controller
 {
     public function index()
     {
-        $query = Pengumuman::whereNotNull('published_at');
+        $query = Pengumuman::where('published_at', '<=', now('Asia/Jakarta')->format('Y-m-d H:i:s'));
 
         if (auth()->check()) {
             $role = auth()->user()->role;
@@ -26,6 +26,9 @@ class PengumumanController extends Controller
 
     public function show(Pengumuman $pengumuman)
     {
+        if ($pengumuman->published_at > now('Asia/Jakarta')->format('Y-m-d H:i:s') && (!auth()->check() || auth()->user()->role !== 'admin')) {
+            abort(404);
+        }
         return view('pengumuman.show', compact('pengumuman'));
     }
 }

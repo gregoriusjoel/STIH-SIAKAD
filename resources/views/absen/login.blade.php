@@ -207,58 +207,73 @@ function attendanceLoginForm() {
         reasonDetail: '{{ old("reason_detail") }}',
         isSubmitting: false,
         metodePengajaran: '{{ $metodePengajaran ?? "offline" }}',
+        hasError: {{ (old('reason_category') || $errors->has('reason_category')) ? 'true' : 'false' }},
         
         init() {
+            if (this.hasError) {
+                this.showReasonFields = true;
+                this.reasonRequired = true;
+            }
             this.getLocation();
         },
         
         getLocation() {
             if (!navigator.geolocation) {
-                this.locationError = 'Browser tidak mendukung geolocation.';
+                this.locationError = 'Browser atau koneksi tidak mendukung fitur lokasi.';
                 this.handleNoLocation();
                 return;
             }
             
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    this.latitude = position.coords.latitude;
-                    this.longitude = position.coords.longitude;
-                    this.locationSuccess = true;
-                    this.locationError = null;
-                    
-                    const distance = this.calculateDistance(
-                        this.latitude,
-                        this.longitude,
-                        -6.311252,
-                        106.811174
-                    );
-                    
-                    this.withinRadius = distance <= 100;
-                    
-                    if (this.metodePengajaran === 'offline' && !this.withinRadius) {
-                        this.showReasonFields = true;
-                        this.reasonRequired = true;
+            try {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        this.latitude = position.coords.latitude;
+                        this.longitude = position.coords.longitude;
+                        this.locationSuccess = true;
+                        this.locationError = null;
+                        
+                        const distance = this.calculateDistance(
+                            this.latitude,
+                            this.longitude,
+                            -6.311252,
+                            106.811174
+                        );
+                        
+                        this.withinRadius = distance <= 100;
+                        
+                        if (this.metodePengajaran === 'offline' && !this.withinRadius) {
+                            this.showReasonFields = true;
+                            this.reasonRequired = true;
+                        }
+                    },
+                    (error) => {
+                        let errorMsg = 'Gagal mendapatkan lokasi. ';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMsg += 'Izin lokasi ditolak.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMsg += 'Sinyal GPS tidak tersedia.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMsg += 'Waktu pencarian lokasi habis (timeout).';
+                                break;
+                            default:
+                                errorMsg += 'Error tidak diketahui.';
+                        }
+                        this.locationError = errorMsg;
+                        this.handleNoLocation();
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
                     }
-                },
-                (error) => {
-                    let errorMsg = 'Gagal mendapatkan lokasi. ';
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMsg += 'Izin lokasi ditolak.';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMsg += 'Lokasi tidak tersedia.';
-                            break;
-                        case error.TIMEOUT:
-                            errorMsg += 'Request timeout.';
-                            break;
-                        default:
-                            errorMsg += 'Error tidak diketahui.';
-                    }
-                    this.locationError = errorMsg;
-                    this.handleNoLocation();
-                }
-            );
+                );
+            } catch (err) {
+                this.locationError = 'Terjadi kesalahan sistem saat mencari lokasi.';
+                this.handleNoLocation();
+            }
         },
         
         handleNoLocation() {

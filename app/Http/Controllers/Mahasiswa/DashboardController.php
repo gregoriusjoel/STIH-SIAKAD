@@ -68,6 +68,34 @@ class DashboardController extends Controller
         $activePeriods = $periodService->currentActiveTypes();
         $krsperiodStatus = $periodService->getStatus(\App\Services\AcademicPeriodService::TYPE_PERIODE_KRS);
         
+        // Fetch Tugas based on active KRS
+        $mataKuliahIds = [];
+        $kelasIds = [];
+        foreach($activeKrs as $krs) {
+            if ($krs->mata_kuliah_id) $mataKuliahIds[] = $krs->mata_kuliah_id;
+            if ($krs->kelas_mata_kuliah_id) $kelasIds[] = $krs->kelas_mata_kuliah_id;
+            if ($krs->kelas_id) $kelasIds[] = $krs->kelas_id;
+        }
+
+        $tugasKuliah = collect();
+        if (!empty($mataKuliahIds) || !empty($kelasIds)) {
+            $tugasKuliah = \App\Models\Tugas::where(function($query) use ($mataKuliahIds, $kelasIds) {
+                if (!empty($mataKuliahIds)) {
+                    $query->orWhereIn('mata_kuliah_id', $mataKuliahIds);
+                }
+                if (!empty($kelasIds)) {
+                    $query->orWhereIn('kelas_id', $kelasIds);
+                }
+            })
+            // ->where('due_date', '>=', now()->subDays(1)) // Optional: hide old tasks
+            ->with(['mataKuliah', 'dosen.user', 'submissions' => function ($query) use ($mahasiswa) {
+                $query->where('mahasiswa_id', $mahasiswa->id);
+            }])
+            ->orderBy('due_date', 'desc')
+            ->take(5)
+            ->get();
+        }
+
         return view('page.mahasiswa.dashboard', compact(
             'mahasiswa',
             'totalSks',
@@ -77,7 +105,8 @@ class DashboardController extends Controller
             'statusPembayaran',
             'krsStatus',
             'activePeriods',
-            'krsperiodStatus'
+            'krsperiodStatus',
+            'tugasKuliah'
         ));
     }
     

@@ -29,17 +29,17 @@
             </div>
         </div>
 
-        {{-- Pending --}}
+        {{-- Submitted (Menunggu Review) --}}
         <div class="relative overflow-hidden bg-white dark:bg-bg-card rounded-2xl p-6 shadow-sm border border-yellow-200">
             <div class="relative z-10">
                 <div class="flex items-center justify-between mb-3">
-                    <h3 class="text-xs font-bold text-yellow-600 uppercase tracking-wider">Menunggu</h3>
+                    <h3 class="text-xs font-bold text-yellow-600 uppercase tracking-wider">Perlu Ditinjau</h3>
                     <div class="w-10 h-10 rounded-xl bg-yellow-50 flex items-center justify-center">
                         <i class="fas fa-clock text-yellow-600"></i>
                     </div>
                 </div>
-                <div class="text-3xl font-bold text-text-primary">{{ $stats['pending'] }}</div>
-                <p class="text-xs text-text-muted mt-1">Perlu ditinjau</p>
+                <div class="text-3xl font-bold text-text-primary">{{ $stats['submitted'] }}</div>
+                <p class="text-xs text-text-muted mt-1">Sudah diajukan mahasiswa</p>
             </div>
         </div>
 
@@ -52,7 +52,7 @@
                         <i class="fas fa-check-circle text-green-600"></i>
                     </div>
                 </div>
-                <div class="text-3xl font-bold text-text-primary">{{ $stats['disetujui'] }}</div>
+                <div class="text-3xl font-bold text-text-primary">{{ $stats['approved'] }}</div>
                 <p class="text-xs text-text-muted mt-1">Pengajuan diterima</p>
             </div>
         </div>
@@ -66,7 +66,7 @@
                         <i class="fas fa-times-circle text-red-600"></i>
                     </div>
                 </div>
-                <div class="text-3xl font-bold text-text-primary">{{ $stats['ditolak'] }}</div>
+                <div class="text-3xl font-bold text-text-primary">{{ $stats['rejected'] }}</div>
                 <p class="text-xs text-text-muted mt-1">Pengajuan ditolak</p>
             </div>
         </div>
@@ -88,9 +88,11 @@
                 <label class="block text-sm font-medium text-text-secondary mb-2">Status</label>
                 <select name="status" class="w-full rounded-xl border border-gray-300 bg-gray-50 py-2.5 px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary">
                     <option value="all" {{ request('status') === 'all' ? 'selected' : '' }}>Semua Status</option>
-                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Menunggu</option>
-                    <option value="disetujui" {{ request('status') === 'disetujui' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="ditolak" {{ request('status') === 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                    <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
+                    <option value="generated" {{ request('status') === 'generated' ? 'selected' : '' }}>Dokumen Digenerate</option>
+                    <option value="submitted" {{ request('status') === 'submitted' ? 'selected' : '' }}>Diajukan (Menunggu Review)</option>
+                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
+                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
                 </select>
             </div>
 
@@ -99,8 +101,9 @@
                 <label class="block text-sm font-medium text-text-secondary mb-2">Jenis</label>
                 <select name="jenis" class="w-full rounded-xl border border-gray-300 bg-gray-50 py-2.5 px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary">
                     <option value="all" {{ request('jenis') === 'all' ? 'selected' : '' }}>Semua Jenis</option>
-                    <option value="surat_aktif" {{ request('jenis') === 'surat_aktif' ? 'selected' : '' }}>Surat Aktif</option>
-                    <option value="cuti" {{ request('jenis') === 'cuti' ? 'selected' : '' }}>Cuti Akademik</option>
+                    @foreach($jenisOptions as $val => $label)
+                        <option value="{{ $val }}" {{ request('jenis') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
                 </select>
             </div>
 
@@ -147,9 +150,20 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-medium 
-                                        {{ $p->jenis === 'cuti' ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700' }}">
-                                <i class="fas {{ $p->jenis === 'cuti' ? 'fa-pause' : 'fa-file-signature' }}"></i>
+                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-medium
+                                @switch($p->jenis)
+                                    @case('cuti') bg-orange-50 text-orange-700 @break
+                                    @case('dispensasi') bg-purple-50 text-purple-700 @break
+                                    @case('izin_penelitian') bg-teal-50 text-teal-700 @break
+                                    @default bg-blue-50 text-blue-700
+                                @endswitch">
+                                <i class="fas
+                                    @switch($p->jenis)
+                                        @case('cuti') fa-pause @break
+                                        @case('dispensasi') fa-calendar-times @break
+                                        @case('izin_penelitian') fa-flask @break
+                                        @default fa-file-signature
+                                    @endswitch"></i>
                                 {{ $p->jenis_label }}
                             </span>
                         </td>

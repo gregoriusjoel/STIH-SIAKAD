@@ -21,7 +21,7 @@
 @endsection
 
 @section('content')
-    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8" x-data="{ 
+    <div class="max-w-6xl 2xl:max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8" x-data="{ 
         readIds: JSON.parse(localStorage.getItem('read_announcement_ids') || '[]'),
         init() {
             const id = {{ $pengumuman->id }};
@@ -40,7 +40,7 @@
             </a>
         </div>
 
-        <article class="bg-white dark:bg-slate-800 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+        <article id="announcement-card" class="bg-white dark:bg-slate-800 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
             {{-- Header --}}
             <header class="p-8 md:p-12 border-b border-slate-50 dark:border-slate-700/50 bg-slate-50/30 dark:bg-slate-700/30">
                 <div class="flex items-center gap-3 mb-6">
@@ -93,22 +93,85 @@
             </div>
 
             {{-- Footer Info --}}
-            <footer class="px-8 md:px-12 py-6 bg-slate-50/50 dark:bg-slate-700/20 border-t border-slate-50 dark:border-slate-700/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <footer class="px-8 md:px-12 py-6 bg-slate-50/50 dark:bg-slate-700/20 border-t border-slate-50 dark:border-slate-700/50 flex flex-col md:flex-row md:items-center justify-between gap-4" data-html2canvas-ignore>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-widest italic">
                     &copy; {{ date('Y') }} STIH Adhyaksa - Pusat Informasi
                 </p>
                 <div class="flex items-center gap-4">
-                    <button onclick="window.print()" class="flex items-center gap-2 text-xs font-black text-slate-500 hover:text-primary transition-colors uppercase tracking-widest">
-                        <span class="material-symbols-outlined text-[18px]">print</span>
-                        Cetak
-                    </button>
-                    <div class="size-1 bg-slate-300 rounded-full"></div>
-                    <button onclick="navigator.share({title: '{{ $pengumuman->judul }}', url: window.location.href})" class="flex items-center gap-2 text-xs font-black text-slate-500 hover:text-primary transition-colors uppercase tracking-widest">
-                        <span class="material-symbols-outlined text-[18px]">share</span>
-                        Bagikan
+                    <button id="btn-share" class="flex items-center gap-2 text-xs font-black text-slate-500 hover:text-primary transition-colors uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="material-symbols-outlined text-[18px] icon-share">share</span>
+                        <span class="text-share">Bagikan</span>
                     </button>
                 </div>
             </footer>
         </article>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    <script>
+        document.getElementById('btn-share').addEventListener('click', async function() {
+            const btn = this;
+            const textShare = btn.querySelector('.text-share');
+            const footer = document.querySelector('#announcement-card footer');
+            
+            try {
+                // UI Loading state
+                btn.disabled = true;
+                textShare.textContent = 'Memproses...';
+
+                // Temporarily hide the footer so it's not captured
+                const originalDisplay = footer.style.display;
+                footer.style.display = 'none';
+
+                const card = document.getElementById('announcement-card');
+                const bgColor = document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff';
+
+                // Capture the card as a blob (modern CSS supported)
+                const blob = await htmlToImage.toBlob(card, {
+                    pixelRatio: 2,
+                    backgroundColor: bgColor,
+                    style: {
+                        margin: '0',
+                        borderRadius: '32px'
+                    }
+                });
+
+                // Restore footer visibility
+                footer.style.display = originalDisplay;
+
+                if (!blob) throw new Error('Failed to create image blob');
+                
+                const file = new File([blob], 'Pengumuman_STIH.png', { type: 'image/png' });
+                
+                // Check if share as file is supported
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: '{{ addslashes($pengumuman->judul) }}',
+                        text: 'Ada pengumuman baru dari STIH Adhyaksa: {{ addslashes($pengumuman->judul) }}'
+                    });
+                } else {
+                    // Fallback: download the image if sharing files is not supported (e.g. some desktop browsers)
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Pengumuman_STIH.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    alert('Perangkat Anda tidak mendukung fitur berbagi gambar secara langsung. Gambar pengumuman telah diunduh ke perangkat Anda.');
+                }
+            } catch (error) {
+                console.error('Error sharing image:', error);
+                // Make sure to restore footer if error happens before restoring
+                if (footer) footer.style.display = '';
+                alert('Terjadi kesalahan saat memproses gambar pengumuman. Pastikan browser Anda mendukung fitur ini.');
+            } finally {
+                // Restore UI state
+                btn.disabled = false;
+                textShare.textContent = 'Bagikan';
+            }
+        });
+    </script>
 @endsection

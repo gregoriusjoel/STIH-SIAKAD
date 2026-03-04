@@ -47,6 +47,12 @@ class ImportController extends Controller
             'icon' => 'fa-door-open',
             'template_columns' => ['kode_ruangan', 'nama_ruangan', 'gedung', 'lantai', 'kapasitas', 'status'],
         ],
+        'orang_tua' => [
+            'title' => 'Import Data Orang Tua',
+            'description' => 'Import data orang tua/wali mahasiswa dari file CSV atau XLSX',
+            'icon' => 'fa-users',
+            'template_columns' => ['nim_mahasiswa', 'nama_ortu', 'email', 'hubungan', 'pekerjaan', 'phone', 'address'],
+        ],
     ];
 
     public function __construct(ImportService $importService)
@@ -313,6 +319,15 @@ class ImportController extends Controller
                 'lantai' => '1',
                 'kapasitas' => '40',
                 'status' => 'aktif',
+            ],
+            'orang_tua' => [
+                'nim_mahasiswa' => '2024001001',
+                'nama_ortu' => 'Budi Santoso',
+                'email' => 'budi.santoso@gmail.com',
+                'hubungan' => 'ayah',
+                'pekerjaan' => 'PNS',
+                'phone' => '081234567890',
+                'address' => 'Jl. Contoh No. 123',
             ],
         ];
 
