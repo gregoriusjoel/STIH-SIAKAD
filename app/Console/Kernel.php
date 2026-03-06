@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         \App\Console\Commands\ImportLocationsCommand::class,
         \App\Console\Commands\ProcessSemesterTransition::class,
+        \App\Console\Commands\SyncInternshipStatusCommand::class,
     ];
 
     /**
@@ -28,6 +29,12 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/semester-transition.log'));
+
+        // Auto-sync internship status based on start/end dates — runs daily at 00:05
+        $schedule->command('magang:sync-status')
+            ->dailyAt('00:05')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/internship-sync.log'));
 
         // Optional: Send reminder 7 days before semester ends
         // $schedule->command('semester:process-transition --status')

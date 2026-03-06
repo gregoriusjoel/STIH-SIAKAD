@@ -302,6 +302,22 @@
                     </a>
                 @endif
             </li>
+            <li>
+                @if(Route::has('admin.magang.index'))
+                    <a href="{{ route('admin.magang.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.magang.*') ? 'active' : '' }}">
+                        <i class="fas fa-briefcase w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Magang Mahasiswa</span>
+                        @php
+                            $pendingMagangCount = \App\Models\Internship::where('status', 'under_review')->count();
+                        @endphp
+                        @if($pendingMagangCount > 0)
+                            <span class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                {{ $pendingMagangCount }}
+                            </span>
+                        @endif
+                    </a>
+                @endif
+            </li>
         </ul>
     </div>
 

@@ -75,6 +75,11 @@ class Dosen extends Model
         return $this->belongsToMany(Mahasiswa::class, 'dosen_pa', 'dosen_id', 'mahasiswa_id')->withTimestamps();
     }
 
+    public function internshipSupervisions(): HasMany
+    {
+        return $this->hasMany(\App\Models\Internship::class, 'supervisor_dosen_id');
+    }
+
     public function availabilities(): HasMany
     {
         return $this->hasMany(DosenAvailability::class);

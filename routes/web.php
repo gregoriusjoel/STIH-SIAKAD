@@ -138,6 +138,14 @@ Route::prefix('dosen')->name('dosen.')->where(['pertemuan' => '[a-z0-9:]+'])->gr
     // Pengumuman untuk dosen
     Route::get('/pengumuman', [App\Http\Controllers\Page\PengumumanController::class, 'index'])->name('pengumuman.index');
     Route::get('/pengumuman/{pengumuman}', [App\Http\Controllers\Page\PengumumanController::class, 'show'])->name('pengumuman.show');
+
+    // ── Bimbingan Magang (Dosen) ──────────────────────────────────
+    Route::prefix('magang')->name('magang.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Dosen\InternshipController::class, 'index'])->name('index');
+        Route::get('/{internship}', [App\Http\Controllers\Dosen\InternshipController::class, 'show'])->name('show');
+        Route::post('/{internship}/logbook', [App\Http\Controllers\Dosen\InternshipController::class, 'storeLogbook'])->name('logbook.store');
+        Route::put('/{internship}/logbook/{logbook}', [App\Http\Controllers\Dosen\InternshipController::class, 'updateLogbook'])->name('logbook.update');
+    });
 });
 
 // Mahasiswa Portal Routes
@@ -227,6 +235,22 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
     Route::view('/perpustakaan', 'errors.503')->name('perpustakaan.index');
     Route::view('/prestasi', 'errors.503')->name('prestasi.index');
 
+    // ── Magang (Internship) ──────────────────────────────────────
+    Route::prefix('magang')->name('magang.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'store'])->name('store');
+        Route::get('/{internship}', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'show'])->name('show');
+        Route::get('/{internship}/edit', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'edit'])->name('edit');
+        Route::put('/{internship}', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'update'])->name('update');
+        Route::post('/{internship}/submit', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'submit'])->name('submit');
+        Route::get('/{internship}/generate-letter', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'generateLetter'])->name('generate-letter');
+        Route::post('/{internship}/upload-signed', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'uploadSigned'])->name('upload-signed');
+        Route::post('/{internship}/submit-review', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'submitForReview'])->name('submit-review');
+        Route::post('/{internship}/logbook', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'storeLogbook'])->name('logbook.store');
+        Route::get('/{internship}/download-acceptance', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'downloadAcceptanceLetter'])->name('download-acceptance');
+        Route::delete('/{internship}', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'destroy'])->name('destroy');
+    });
 
 });
 
@@ -415,6 +439,29 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/{pengajuan}/download', [App\Http\Controllers\Admin\PengajuanController::class, 'download'])->name('download');
         Route::get('/{pengajuan}/download-signed', [App\Http\Controllers\Admin\PengajuanController::class, 'downloadSigned'])->name('download-signed');
         Route::get('/{pengajuan}/download-generated', [App\Http\Controllers\Admin\PengajuanController::class, 'downloadGenerated'])->name('download-generated');
+    });
+
+    // ── Magang Management (Admin) ──────────────────────────────────
+    Route::prefix('magang')->name('magang.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\InternshipController::class, 'index'])->name('index');
+        Route::get('/{internship}', [App\Http\Controllers\Admin\InternshipController::class, 'show'])->name('show');
+        Route::post('/{internship}/approve', [App\Http\Controllers\Admin\InternshipController::class, 'approve'])->name('approve');
+        Route::post('/{internship}/reject', [App\Http\Controllers\Admin\InternshipController::class, 'reject'])->name('reject');
+        Route::post('/{internship}/assign-supervisor', [App\Http\Controllers\Admin\InternshipController::class, 'assignSupervisor'])->name('assign-supervisor');
+        Route::post('/{internship}/upload-acceptance', [App\Http\Controllers\Admin\InternshipController::class, 'uploadAcceptanceLetter'])->name('upload-acceptance');
+        Route::post('/{internship}/start', [App\Http\Controllers\Admin\InternshipController::class, 'startInternship'])->name('start');
+        Route::post('/{internship}/complete', [App\Http\Controllers\Admin\InternshipController::class, 'markCompleted'])->name('complete');
+        Route::post('/{internship}/course-mappings', [App\Http\Controllers\Admin\InternshipController::class, 'saveCourseMappings'])->name('course-mappings');
+        Route::post('/{internship}/grades', [App\Http\Controllers\Admin\InternshipController::class, 'inputGrades'])->name('grades');
+        Route::post('/{internship}/close', [App\Http\Controllers\Admin\InternshipController::class, 'close'])->name('close');
+        // ── NEW: PDF generation, sign, send, date update, grade preview ──
+        Route::post('/{internship}/generate-official-pdf', [App\Http\Controllers\Admin\InternshipController::class, 'generateOfficialPdf'])->name('generate-official-pdf');
+        Route::get('/{internship}/download-official-pdf', [App\Http\Controllers\Admin\InternshipController::class, 'downloadOfficialPdf'])->name('download-official-pdf');
+        Route::post('/{internship}/upload-signed-pdf', [App\Http\Controllers\Admin\InternshipController::class, 'uploadSignedPdf'])->name('upload-signed-pdf');
+        Route::get('/{internship}/download-signed-pdf', [App\Http\Controllers\Admin\InternshipController::class, 'downloadSignedPdf'])->name('download-signed-pdf');
+        Route::post('/{internship}/send-to-student', [App\Http\Controllers\Admin\InternshipController::class, 'sendToStudent'])->name('send-to-student');
+        Route::post('/{internship}/update-dates', [App\Http\Controllers\Admin\InternshipController::class, 'updateDates'])->name('update-dates');
+        Route::post('/{internship}/preview-grade', [App\Http\Controllers\Admin\InternshipController::class, 'previewGrade'])->name('preview-grade');
     });
 
     // Import Data Management

@@ -37,7 +37,8 @@
 
         <div x-data="{
             openAkademik: {{ Request::routeIs('mahasiswa.nilai*','mahasiswa.kelas*','mahasiswa.jadwal*','mahasiswa.perpustakaan*','mahasiswa.prestasi*') ? 'true' : 'false' }},
-            openPengajuan: {{ Request::routeIs('mahasiswa.pengajuan*') ? 'true' : 'false' }}
+            openPengajuan: {{ Request::routeIs('mahasiswa.pengajuan*') ? 'true' : 'false' }},
+            openMagang: {{ Request::routeIs('mahasiswa.magang*') ? 'true' : 'false' }}
         }" class="space-y-1">
 
             {{-- Dashboard --}}
@@ -126,6 +127,13 @@
                     @endforeach
                 </div>
             </div>
+
+            {{-- Magang --}}
+            <a href="{{ route('mahasiswa.magang.index') }}"
+               class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.magang*') ? $activeClass : $inactiveClass }}">
+                <i class="fas fa-briefcase w-5 text-center transition-transform group-hover:scale-110"></i>
+                <span class="tracking-wide">Magang</span>
+            </a>
 
             {{-- Separator --}}
             <div class="pt-4 pb-2">

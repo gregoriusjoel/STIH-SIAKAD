@@ -84,16 +84,23 @@ class ParentController extends Controller
 
         $nilaiData = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->whereHas('nilai')
-            ->with(['kelasMataKuliah.mataKuliah', 'kelasMataKuliah.semester', 'nilai'])
+            ->with(['kelasMataKuliah.mataKuliah', 'kelasMataKuliah.semester', 'mataKuliah', 'semester', 'nilai'])
             ->get()
             ->groupBy(function ($item) {
-                return $item->kelasMataKuliah->semester->nama_semester ?? 'Unknown';
+                if ($item->kelasMataKuliah && $item->kelasMataKuliah->semester) {
+                    return $item->kelasMataKuliah->semester->nama_semester;
+                }
+                if ($item->semester) {
+                    return $item->semester->nama_semester;
+                }
+                $semNo = $item->mataKuliah?->semester ?? $item->kelasMataKuliah?->mataKuliah?->semester;
+                return $semNo ? "Semester {$semNo}" : 'Lainnya';
             });
 
         // Calculate IPK
         $allNilai = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->whereHas('nilai')
-            ->with(['nilai', 'kelasMataKuliah.mataKuliah'])
+            ->with(['nilai', 'kelasMataKuliah.mataKuliah', 'mataKuliah'])
             ->get();
 
         $totalBobot = 0;
@@ -101,7 +108,7 @@ class ParentController extends Controller
         foreach ($allNilai as $krs) {
             if ($krs->nilai) {
                 $bobot = $this->getBobot($krs->nilai->grade); // using grade column as per prev file
-                $sks = $krs->kelasMataKuliah->mataKuliah->sks ?? 0;
+                $sks = $krs->kelasMataKuliah?->mataKuliah?->sks ?? $krs->mataKuliah?->sks ?? 0;
                 $totalBobot += ($bobot * $sks);
                 $totalSks += $sks;
             }

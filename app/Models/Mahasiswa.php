@@ -260,6 +260,23 @@ class Mahasiswa extends Model
         return $this->belongsToMany(Dosen::class, 'dosen_pa', 'mahasiswa_id', 'dosen_id')->withTimestamps();
     }
 
+    public function internships(): HasMany
+    {
+        return $this->hasMany(Internship::class);
+    }
+
+    /**
+     * Get active/ongoing internship for this mahasiswa (if any).
+     */
+    public function activeInternship()
+    {
+        return $this->internships()->whereIn('status', [
+            Internship::STATUS_ONGOING,
+            Internship::STATUS_SUPERVISOR_ASSIGNED,
+            Internship::STATUS_ACCEPTANCE_LETTER_READY,
+        ])->latest()->first();
+    }
+
     /**
      * Check if the student profile is complete
      * Profile is complete when all required fields are filled
