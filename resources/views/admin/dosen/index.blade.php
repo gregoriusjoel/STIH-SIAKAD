@@ -111,7 +111,7 @@
     </a>
     <a href="{{ route('admin.dosen.index', ['tab' => 'dosen-aktif', 'semester_id' => $selectedSemester?->id]) }}"
         class="px-5 py-3 text-sm font-semibold border-b-2 transition {{ $tab === 'dosen-aktif' ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
-        <i class="fas fa-users mr-1.5"></i> Dosen Aktif TA
+        <i class="fas fa-users mr-1.5"></i> Dosen Aktif
         <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs {{ $tab === 'dosen-aktif' ? 'bg-maroon text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $dosenAktifCount }}</span>
     </a>
     <a href="{{ route('admin.dosen.index', ['tab' => 'histori', 'semester_id' => $selectedSemester?->id]) }}"
@@ -130,23 +130,13 @@
 
 {{-- Filter bar --}}
 <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-    <form method="GET" action="{{ route('admin.dosen.index') }}" class="flex flex-wrap gap-3 items-center">
-        <input type="hidden" name="tab" value="master">
+    <div class="flex flex-wrap gap-3 items-center">
         <div class="relative flex-1 min-w-[200px] max-w-sm">
             <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama / NIDN dosen..."
+            <input type="text" id="searchInput" placeholder="Cari nama / NIDN dosen..."
                 class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
         </div>
-        <button type="submit" class="px-3 py-2 bg-maroon text-white text-sm rounded-lg hover:bg-red-900 transition">
-            <i class="fas fa-search mr-1"></i> Cari
-        </button>
-        @if($search)
-        <a href="{{ route('admin.dosen.index', ['tab' => 'master']) }}"
-            class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
-            <i class="fas fa-times mr-1"></i> Reset
-        </a>
-        @endif
-    </form>
+    </div>
 </div>
 
 @if($dosens->isEmpty())
@@ -156,28 +146,28 @@
 </div>
 @else
 <div class="overflow-x-auto">
-<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-    <thead class="bg-gray-50 dark:bg-gray-700">
+<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="masterDosenTable">
+    <thead class="bg-maroon text-white">
         <tr>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase text-gray-500 dark:text-gray-400 whitespace-nowrap">No</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase text-gray-500 dark:text-gray-400 whitespace-nowrap"><i class="fas fa-id-card mr-1"></i>NIDN</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase text-gray-500 dark:text-gray-400 whitespace-nowrap"><i class="fas fa-user mr-1"></i>Nama Dosen</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase text-gray-500 dark:text-gray-400 whitespace-nowrap"><i class="fas fa-graduation-cap mr-1"></i>Pendidikan</th>
-            <th class="px-5 py-4 text-center text-xs font-bold uppercase text-gray-500 dark:text-gray-400 whitespace-nowrap">MK Aktif</th>
-            <th class="px-5 py-4 text-center text-xs font-bold uppercase text-gray-500 dark:text-gray-400 whitespace-nowrap">Status</th>
-            <th class="px-5 py-4 text-center text-xs font-bold uppercase text-gray-500 dark:text-gray-400 whitespace-nowrap">Aksi</th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap">No</th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap"><i class="fas fa-id-card mr-1"></i>NIDN</th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap"><i class="fas fa-user mr-1"></i>Nama Dosen</th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap"><i class="fas fa-graduation-cap mr-1"></i>Pendidikan</th>
+            <th class="px-5 py-4 text-center text-xs font-bold uppercase whitespace-nowrap">MK Aktif</th>
+            <th class="px-5 py-4 text-center text-xs font-bold uppercase whitespace-nowrap">Status</th>
+            <th class="px-5 py-4 text-center text-xs font-bold uppercase whitespace-nowrap">Aksi</th>
         </tr>
     </thead>
     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
         @foreach($dosens as $i => $dosen)
-        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition searchable-row">
             <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap">
                 {{ ($dosens->currentPage() - 1) * $dosens->perPage() + $loop->iteration }}
             </td>
-            <td class="px-5 py-4 whitespace-nowrap">
+            <td class="px-5 py-4 whitespace-nowrap search-nidn">
                 <span class="text-sm font-mono text-maroon dark:text-red-400 font-bold">{{ $dosen->nidn ?: '-' }}</span>
             </td>
-            <td class="px-5 py-4">
+            <td class="px-5 py-4 search-nama">
                 <div class="flex items-center gap-3 min-w-[200px]">
                     <div class="h-9 w-9 rounded-full bg-maroon flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                         {{ strtoupper(substr($dosen->user->name, 0, 1)) }}
@@ -265,24 +255,13 @@
 
 {{-- Filter bar --}}
 <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-    <form method="GET" action="{{ route('admin.dosen.index') }}" class="flex flex-wrap gap-3 items-center">
-        <input type="hidden" name="tab" value="dosen-aktif">
-        @if($selectedSemester)<input type="hidden" name="semester_id" value="{{ $selectedSemester->id }}">@endif
+    <div class="flex flex-wrap gap-3 items-center">
         <div class="relative flex-1 min-w-[200px] max-w-sm">
             <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama dosen..."
+            <input type="text" id="searchInput2" placeholder="Cari nama / NIDN dosen..."
                 class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
         </div>
-        <button type="submit" class="px-3 py-2 bg-maroon text-white text-sm rounded-lg hover:bg-red-900 transition">
-            <i class="fas fa-search mr-1"></i> Cari
-        </button>
-        @if($search)
-        <a href="{{ route('admin.dosen.index', ['tab' => 'dosen-aktif', 'semester_id' => $selectedSemester?->id]) }}"
-            class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
-            <i class="fas fa-times mr-1"></i> Reset
-        </a>
-        @endif
-    </form>
+    </div>
 </div>
 
 @if($dosenAktif->isEmpty())
@@ -308,12 +287,12 @@
     </thead>
     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
         @foreach($dosenAktif as $i => $dosen)
-        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition searchable-row-2">
             <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400 font-medium">{{ $i + 1 }}</td>
-            <td class="px-5 py-4">
+            <td class="px-5 py-4 search-nidn-2">
                 <span class="text-sm font-mono text-maroon dark:text-red-400 font-bold">{{ $dosen->nidn }}</span>
             </td>
-            <td class="px-5 py-4">
+            <td class="px-5 py-4 search-nama-2">
                 <div class="flex items-center gap-3">
                     <div class="h-9 w-9 rounded-full bg-maroon flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                         {{ strtoupper(substr($dosen->user->name, 0, 1)) }}
@@ -405,25 +384,14 @@
 
 {{-- Filter bar --}}
 <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-    <form method="GET" action="{{ route('admin.dosen.index') }}" class="flex flex-wrap gap-3 items-center">
-        <input type="hidden" name="tab" value="histori">
-        @if($selectedSemester)<input type="hidden" name="semester_id" value="{{ $selectedSemester->id }}">@endif
+    <div class="flex flex-wrap gap-3 items-center">
         <div class="relative flex-1 min-w-[200px] max-w-sm">
             <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama / NIDN dosen..."
+            <input type="text" id="searchInput3" placeholder="Cari nama / NIDN dosen..."
                 class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
         </div>
-        <button type="submit" class="px-3 py-2 bg-maroon text-white text-sm rounded-lg hover:bg-red-900 transition">
-            <i class="fas fa-search mr-1"></i> Cari
-        </button>
-        @if($search)
-        <a href="{{ route('admin.dosen.index', ['tab' => 'histori', 'semester_id' => $selectedSemester?->id]) }}"
-            class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
-            <i class="fas fa-times mr-1"></i> Reset
-        </a>
-        @endif
         <span class="ml-auto text-xs text-gray-400 dark:text-gray-500">{{ $historiDosen->count() }} dosen ditemukan</span>
-    </form>
+    </div>
 </div>
 
 @if($historiDosen->isEmpty())
@@ -436,7 +404,7 @@
 <div class="p-6 space-y-5">
     @foreach($historiDosen as $dosenData)
     {{-- Card Dosen --}}
-    <div x-data="{ open: true }" class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
+    <div x-data="{ open: true }" class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm searchable-row-3">
         {{-- Dosen Header --}}
         <button type="button" @click="open = !open"
             class="w-full flex items-center justify-between px-5 py-4 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition text-left">
@@ -446,8 +414,8 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ $dosenData['name'] }}</span>
-                        <span class="font-mono text-xs text-gray-400 dark:text-gray-500">{{ $dosenData['nidn'] }}</span>
+                        <span class="text-sm font-bold text-gray-900 dark:text-gray-100 search-nama-3">{{ $dosenData['name'] }}</span>
+                        <span class="font-mono text-xs text-gray-400 dark:text-gray-500 search-nidn-3">{{ $dosenData['nidn'] }}</span>
                         @if($dosenData['pendidikan'])
                         <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
                             {{ $dosenData['pendidikan'] }}
@@ -1033,6 +1001,34 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 @endif
+
+// Client-Side Search (Instant Filter)
+document.addEventListener('DOMContentLoaded', function() {
+    function setupRealtimeSearch(inputId, rowClass, nameClass, nidnClass) {
+        const searchInput = document.getElementById(inputId);
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll(rowClass);
+                
+                rows.forEach(row => {
+                    const nama = row.querySelector(nameClass)?.textContent.toLowerCase() || '';
+                    const nidn = row.querySelector(nidnClass)?.textContent.toLowerCase() || '';
+                    
+                    if (nama.includes(query) || nidn.includes(query)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+    }
+
+    setupRealtimeSearch('searchInput', '.searchable-row', '.search-nama', '.search-nidn');
+    setupRealtimeSearch('searchInput2', '.searchable-row-2', '.search-nama-2', '.search-nidn-2');
+    setupRealtimeSearch('searchInput3', '.searchable-row-3', '.search-nama-3', '.search-nidn-3');
+});
 </script>
 @endpush
 @endsection

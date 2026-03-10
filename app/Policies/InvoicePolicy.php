@@ -21,7 +21,7 @@ class InvoicePolicy
     public function view(User $user, Invoice $invoice): bool
     {
         // Finance can view all
-        if ($user->role === 'finance') {
+        if (in_array($user->role, ['finance', 'keuangan'])) {
             return true;
         }
 
@@ -48,7 +48,7 @@ class InvoicePolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'finance';
+        return in_array($user->role, ['finance', 'keuangan']);
     }
 
     /**
@@ -56,7 +56,7 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice): bool
     {
-        return $user->role === 'finance';
+        return in_array($user->role, ['finance', 'keuangan']);
     }
 
     /**
@@ -64,7 +64,7 @@ class InvoicePolicy
      */
     public function delete(User $user, Invoice $invoice): bool
     {
-        return $user->role === 'finance' && $invoice->status === 'DRAFT';
+        return in_array($user->role, ['finance', 'keuangan']) && $invoice->status === 'DRAFT';
     }
 
     /**
@@ -72,6 +72,6 @@ class InvoicePolicy
      */
     public function publish(User $user, Invoice $invoice): bool
     {
-        return $user->role === 'finance' && $invoice->status === 'DRAFT';
+        return in_array($user->role, ['finance', 'keuangan']) && $invoice->status === 'DRAFT';
     }
 }

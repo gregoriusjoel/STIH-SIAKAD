@@ -382,12 +382,15 @@ class AcademicCalendarController extends Controller
                 }
 
                 AcademicEvent::create([
-                    'title' => $title,
-                    'start_date' => $start,
-                    'end_date' => $end,
-                    'event_type' => $type,
+                    'title'       => $title,
+                    'start_date'  => $start,
+                    'end_date'    => $end,
+                    'event_type'  => $type,
                     'description' => $desc,
-                    'color' => $color,
+                    'color'       => $color,
+                    'is_active'   => true,
+                    'created_by'  => auth()->id(),
+                    'updated_by'  => auth()->id(),
                 ]);
 
                 $count++;
@@ -419,6 +422,8 @@ class AcademicCalendarController extends Controller
 
             // Normalize spaces
             $text = preg_replace('/\s+/', ' ', $text);
+            // Normalize em-dash / en-dash to regular hyphen so regex works uniformly
+            $text = str_replace(["\xe2\x80\x93", "\xe2\x80\x94", '–', '—'], ' - ', $text);
 
             // New Logic: Find Date, then assume previous digits are 'No' and following string is 'Title'.
             // Pattern: Number (Optional) + DateString + Title
@@ -457,6 +462,14 @@ class AcademicCalendarController extends Controller
                 if (empty($dateStr))
                     continue;
 
+                // If the title begins with an em/en-dash followed by a date fragment
+                // (e.g. "– 06 Februari 2026 Masa Perkuliahan..."), it means the PDF
+                // range end date got split off. Reattach it to dateStr.
+                if (preg_match('/^[-–—]\s*(\d+.*?20\d\d)\s+(.*)$/su', $title, $trailMatch)) {
+                    $dateStr = $dateStr . ' - ' . trim($trailMatch[1]);
+                    $title   = trim($trailMatch[2]);
+                }
+
                 // Cleanup Title
                 $title = str_ireplace('Kegiatan', '', $title);
                 $title = trim($title);
@@ -481,12 +494,15 @@ class AcademicCalendarController extends Controller
                     $type = 'perkuliahan';
 
                 AcademicEvent::create([
-                    'title' => $title,
-                    'start_date' => $dates['start'],
-                    'end_date' => $dates['end'],
-                    'event_type' => $type,
+                    'title'       => $title,
+                    'start_date'  => $dates['start'],
+                    'end_date'    => $dates['end'],
+                    'event_type'  => $type,
                     'description' => 'Imported from PDF',
-                    'color' => $this->getEventColor($type)
+                    'color'       => $this->getEventColor($type),
+                    'is_active'   => true,
+                    'created_by'  => auth()->id(),
+                    'updated_by'  => auth()->id(),
                 ]);
                 $count++;
             }
@@ -519,6 +535,7 @@ class AcademicCalendarController extends Controller
         // Handle: "09 - 11 Maret 2026"
         // Handle: "30 Maret 2026"
         // Handle: "30 Maret - 15 Mei 2026"
+        // Handle em-dash: "09 – 11 Maret 2026" (U+2013)
 
         $months = [
             'Januari' => '01',
@@ -535,8 +552,9 @@ class AcademicCalendarController extends Controller
             'Desember' => '12'
         ];
 
-        // Normalize spaces
+        // Normalize spaces and replace em-dash / en-dash with regular hyphen
         $str = preg_replace('/\s+/', ' ', $str);
+        $str = str_replace(["\xe2\x80\x93", "\xe2\x80\x94", '–', '—'], '-', $str);
 
         // Check for " - "
         if (str_contains($str, '-')) {
@@ -556,15 +574,21 @@ class AcademicCalendarController extends Controller
                 $end = "$y2-$mo2-$d2";
 
                 // Check P1
-                if (is_numeric($p1)) {
-                    // Same month/year
-                    $start = "$y2-$mo2-" . str_pad($p1, 2, '0', STR_PAD_LEFT);
+                if (is_numeric(trim($p1))) {
+                    // Same month/year as P2
+                    $start = "$y2-$mo2-" . str_pad(trim($p1), 2, '0', STR_PAD_LEFT);
                 } else {
-                    // Different month? "30 Maret"
-                    if (preg_match('/(\d+)\s+([A-Za-z]+)/', $p1, $m1)) {
-                        $d1 = $m1[1];
-                        $mo1 = $months[$m1[2]] ?? '01';
-                        $start = "$y2-$mo1-" . str_pad($d1, 2, '0', STR_PAD_LEFT);
+                    // Different month — try to extract day, (optional month), (optional year)
+                    if (preg_match('/(\d+)\s+([A-Za-z]+)(?:\s+(20\d\d))?/', $p1, $m1)) {
+                        $d1   = $m1[1];
+                        $mo1  = $months[$m1[2]] ?? '01';
+                        $y1   = $m1[3] ?? null;
+                        if (!$y1) {
+                            // Infer year: if start month is later in year than end month,
+                            // the range crosses a year boundary (e.g. Dec → Jan)
+                            $y1 = ((int)$mo1 > (int)$mo2) ? (string)((int)$y2 - 1) : $y2;
+                        }
+                        $start = "$y1-$mo1-" . str_pad($d1, 2, '0', STR_PAD_LEFT);
                     } else {
                         return null;
                     }

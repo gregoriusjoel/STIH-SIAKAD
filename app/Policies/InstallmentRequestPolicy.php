@@ -12,7 +12,7 @@ class InstallmentRequestPolicy
      */
     public function view(User $user, InstallmentRequest $request): bool
     {
-        if ($user->role === 'finance') {
+        if (in_array($user->role, ['finance', 'keuangan'])) {
             return true;
         }
 
@@ -37,7 +37,7 @@ class InstallmentRequestPolicy
      */
     public function review(User $user, InstallmentRequest $request): bool
     {
-        return $user->role === 'finance' && $request->status === 'SUBMITTED';
+        return in_array($user->role, ['finance', 'keuangan']) && $request->status === 'SUBMITTED';
     }
 
     /**

@@ -192,9 +192,9 @@
             <i class="fas fa-arrow-right ml-1.5 text-[10px]"></i>
         </a>
     </div>
-    <div class="p-4 min-h-[120px] flex flex-col justify-center">
+    <div class="p-4 flex flex-col justify-center">
         @if($academic_events->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-3">
                 @foreach($academic_events as $event)
                     <div class="group bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-100 dark:border-gray-600 border-l-4 border-l-blue-500 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
                         <div class="flex items-start gap-3">
@@ -204,8 +204,8 @@
                                 </div>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="font-bold text-sm text-gray-800 dark:text-gray-100 mb-1 truncate">{{ $event->title ?? $event->name }}</h4>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 flex items-center mb-2">
+                                <h4 class="font-bold text-sm text-gray-800 dark:text-gray-100 mb-1 truncate" title="{{ $event->title ?? $event->name }}">{{ $event->title ?? $event->name }}</h4>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400 flex items-center mb-2">
                                     <i class="fas fa-clock mr-1.5 text-blue-500/70"></i>
                                     <span class="truncate">
                                         @if($event->start_date && $event->end_date)

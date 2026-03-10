@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'parent.role' => \App\Http\Middleware\ParentMiddleware::class,
             'mahasiswa.status' => \App\Http\Middleware\CheckMahasiswaStatus::class,
             'semester.lock' => \App\Http\Middleware\CheckSemesterLock::class,
         ]);

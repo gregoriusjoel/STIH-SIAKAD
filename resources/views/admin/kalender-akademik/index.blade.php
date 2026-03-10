@@ -16,7 +16,7 @@
 @endsection
 
 @section('content')
-    <div class="h-full flex flex-col bg-slate-50 dark:bg-gray-900">
+    <div class="min-h-full flex flex-col bg-slate-50 dark:bg-gray-900 pb-8">
         <!-- Header -->
         <div class="mb-6 px-1 relative z-20">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -73,8 +73,8 @@
 
             <!-- Calendar (Left 2/3) -->
             <div
-                class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-slate-200/60 dark:border-gray-700 p-4 md:p-6 relative flex flex-col min-h-[600px]">
-                <div id="calendar" class="flex-1 w-full font-sans text-slate-600 dark:text-gray-300"></div>
+                class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-slate-200/60 dark:border-gray-700 p-4 md:p-6 mb-6 lg:mb-0">
+                <div id="calendar" class="w-full font-sans text-slate-600 dark:text-gray-300"></div>
 
                 <!-- Calendar Legend -->
                 <div class="mt-4 pt-4 border-t border-slate-100 dark:border-gray-700">
@@ -106,7 +106,7 @@
 
             <!-- Upcoming List (Right 1/3) -->
             <div
-                class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-slate-200/60 dark:border-gray-700 overflow-hidden flex flex-col h-[calc(100vh-200px)] lg:h-auto">
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-slate-200/60 dark:border-gray-700 overflow-hidden flex flex-col h-fit">
                 <div
                     class="px-5 py-4 border-b border-slate-100 dark:border-gray-700 bg-slate-50/50 dark:bg-gray-900/50 flex justify-between items-center sticky top-0 z-10">
                     <div>
@@ -146,7 +146,17 @@
                         0
                     </div>
                 </div>
-                <div id="upcomingList" class="flex-1 overflow-y-auto p-0 custom-scrollbar relative">
+                <!-- Use utilities to hide scrollbar while keeping scroll functionality -->
+                <style>
+                    .no-scrollbar::-webkit-scrollbar {
+                        display: none;
+                    }
+                    .no-scrollbar {
+                        -ms-overflow-style: none;  /* IE and Edge */
+                        scrollbar-width: none;  /* Firefox */
+                    }
+                </style>
+                <div id="upcomingList" class="flex-1 overflow-y-auto p-0 no-scrollbar relative max-h-[600px]">
                     <div class="flex flex-col items-center justify-center h-48 text-slate-400">
                         <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
                         <span class="text-sm">Memuat jadwal...</span>
@@ -526,11 +536,6 @@
             }
 
             /* FullCalendar Customization */
-            #calendar {
-                height: 100%;
-                min-height: 500px;
-            }
-
             /* Hide scrollbar but keep functionality */
             #calendar .fc-scroller {
                 scrollbar-width: none;
@@ -767,12 +772,13 @@
             /* Events */
             .fc-event {
                 border: none !important;
-                padding: 2px 6px;
-                font-size: 0.85rem;
-                font-weight: 500;
-                border-radius: 6px;
+                padding: 1px 4px !important;
+                font-size: 0.75rem !important;
+                font-weight: 600 !important;
+                border-radius: 4px !important;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
                 transition: transform 0.1s;
+                margin-bottom: 2px !important;
             }
 
             .fc-event:hover {
@@ -962,7 +968,8 @@
                     },
                     themeSystem: 'standard',
                     locale: 'id',
-                    dayMaxEvents: true,
+                    fixedWeekCount: false, // Don't always show 6 weeks (saves space)
+                    dayMaxEvents: false, // Show all events, auto-expand rows
                     events: function (info, successCallback, failureCallback) {
                         const semesterId = document.getElementById('filterSemester').value;
                         let url = '{{ route('admin.kalender.data') }}' + `?start=${info.startStr}&end=${info.endStr}`;
@@ -1017,7 +1024,8 @@
                     eventResize: function (info) {
                         confirmUpdateDate(info);
                     },
-                    height: '100%',
+                    height: 'auto',
+                    contentHeight: 'auto',
                 });
                 calendar.render();
 
@@ -1049,103 +1057,137 @@
 
                     if (upcoming.length === 0) {
                         listEl.innerHTML = `
-                                                                                                                                                <div class="flex flex-col items-center justify-center h-full py-10 text-slate-400 dark:text-gray-500">
-                                                                                                                                                    <i class="fas fa-calendar-times text-4xl mb-3 opacity-50"></i>
-                                                                                                                                                    <p class="text-sm">Tidak ada agenda mendatang</p>
-                                                                                                                                                </div>
-                                                                                                                                            `;
+                            <div class="flex flex-col items-center justify-center h-full py-10 text-slate-400 dark:text-gray-500">
+                                <i class="fas fa-calendar-times text-4xl mb-3 opacity-50"></i>
+                                <p class="text-sm">Tidak ada agenda mendatang</p>
+                            </div>
+                        `;
                         return;
                     }
 
-                    let html = '<div class="w-full px-1">';
+                    const perPage = 6;
+                    let currentPage = 1;
 
-                    upcoming.forEach(event => {
-                        const start = new Date(event.start);
-                        const day = start.toLocaleDateString('id-ID', { day: 'numeric' });
-                        const month = start.toLocaleDateString('id-ID', { month: 'short' });
-                        const year = start.getFullYear();
-                        const title = event.title;
+                    window.loadMoreUpcoming = function() {
+                        const listContainer = document.getElementById('upcomingList');
+                        const previousHeight = listContainer.scrollHeight;
+                        
+                        currentPage++;
+                        renderPage();
+                        
+                        // Scroll smoothly to the newly added items
+                        requestAnimationFrame(() => {
+                            listContainer.scrollTo({
+                                top: previousHeight - 50,
+                                behavior: 'smooth'
+                            });
+                        });
+                    };
 
-                        // Normalized Type
-                        const rawType = event.event_type || 'Lainnya';
-                        const type = rawType.replace('_', ' ');
-                        const lowerTitle = title.toLowerCase();
-                        const lowerType = rawType.toLowerCase();
+                    function renderPage() {
+                        const end = currentPage * perPage;
+                        const itemsToRender = upcoming.slice(0, end);
+                        let html = '<div class="w-full px-1">';
 
-                        // --- Color Logic ---
-                        let theme = 'orange'; // default
+                        itemsToRender.forEach(event => {
+                            const start = new Date(event.start);
+                            const day = start.toLocaleDateString('id-ID', { day: 'numeric' });
+                            const month = start.toLocaleDateString('id-ID', { month: 'short' });
+                            const year = start.getFullYear();
+                            const title = event.title;
 
-                        if (lowerType.includes('libur') || lowerTitle.includes('libur')) {
-                            theme = 'red';
-                        } else if (lowerType.includes('krs') || lowerTitle.includes('krs')) {
-                            theme = 'blue';
-                        } else if (lowerType.includes('kuliah') || lowerTitle.includes('perkuliahan')) {
-                            theme = 'green';
-                        } else if (lowerType.includes('uts') || lowerType.includes('uas') || lowerTitle.includes('uts') || lowerTitle.includes('uas') || lowerTitle.includes('ujian')) {
-                            theme = 'amber';
+                            // Normalized Type
+                            const rawType = event.event_type || 'Lainnya';
+                            const type = rawType.replace('_', ' ');
+                            const lowerTitle = title.toLowerCase();
+                            const lowerType = rawType.toLowerCase();
+
+                            // --- Color Logic ---
+                            let theme = 'orange'; // default
+
+                            if (lowerType.includes('libur') || lowerTitle.includes('libur')) {
+                                theme = 'red';
+                            } else if (lowerType.includes('krs') || lowerTitle.includes('krs')) {
+                                theme = 'blue';
+                            } else if (lowerType.includes('kuliah') || lowerTitle.includes('perkuliahan')) {
+                                theme = 'green';
+                            } else if (lowerType.includes('uts') || lowerType.includes('uas') || lowerTitle.includes('uts') || lowerTitle.includes('uas') || lowerTitle.includes('ujian')) {
+                                theme = 'amber';
+                            }
+
+                            // Theme Styles Map
+                            const styles = {
+                                red: {
+                                    card: 'bg-red-50 dark:bg-red-900/10 border-red-100 dark:border-red-900/30',
+                                    title: 'text-red-700 dark:text-red-400',
+                                    icon: 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800',
+                                    badge: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
+                                },
+                                blue: {
+                                    card: 'bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30',
+                                    title: 'text-blue-700 dark:text-blue-400',
+                                    icon: 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+                                    badge: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                },
+                                green: {
+                                    card: 'bg-green-50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30',
+                                    title: 'text-green-700 dark:text-green-400',
+                                    icon: 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800',
+                                    badge: 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300'
+                                },
+                                amber: {
+                                    card: 'bg-amber-50 dark:bg-amber-900/10 border-amber-100 dark:border-amber-900/30',
+                                    title: 'text-amber-700 dark:text-amber-400',
+                                    icon: 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800',
+                                    badge: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
+                                },
+                                orange: {
+                                    card: 'bg-orange-50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-900/30',
+                                    title: 'text-orange-700 dark:text-orange-400',
+                                    icon: 'bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800',
+                                    badge: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                }
+                            };
+
+                            const s = styles[theme];
+
+                            html += `
+                                <div class="${s.card} p-4 rounded-xl shadow-sm border mb-3 hover:shadow-md transition-all cursor-pointer group" onclick="calendar.gotoDate('${event.start}')">
+                                    <div class="flex gap-4 items-center">
+                                        <div class="flex-none flex flex-col items-center justify-center w-14 h-14 rounded-xl border ${s.icon}">
+                                            <span class="text-xl font-bold leading-none">${day}</span>
+                                            <span class="text-[10px] uppercase font-bold mt-1">${month}</span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="text-sm font-bold ${s.title} line-clamp-2 leading-tight mb-1">
+                                                ${title}
+                                            </h4>
+                                            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-gray-400">
+                                                <span class="capitalize ${s.badge} px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide truncate max-w-[100px]">
+                                                    ${type}
+                                                </span>
+                                                <span>${year}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+
+                        html += '</div>';
+
+                        if (end < upcoming.length) {
+                             html += `<div class="mt-4 pb-2 text-center">
+                                <button type="button" onclick="window.loadMoreUpcoming()" class="px-5 py-2 text-xs font-bold uppercase tracking-wider text-maroon bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:text-red-400 rounded-lg transition-colors shadow-sm">
+                                    Lihat Lebih Banyak
+                                </button>
+                             </div>`;
                         }
 
-                        // Theme Styles Map
-                        const styles = {
-                            red: {
-                                card: 'bg-red-50 dark:bg-red-900/10 border-red-100 dark:border-red-900/30',
-                                title: 'text-red-700 dark:text-red-400',
-                                icon: 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800',
-                                badge: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
-                            },
-                            blue: {
-                                card: 'bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30',
-                                title: 'text-blue-700 dark:text-blue-400',
-                                icon: 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800',
-                                badge: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
-                            },
-                            green: {
-                                card: 'bg-green-50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30',
-                                title: 'text-green-700 dark:text-green-400',
-                                icon: 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800',
-                                badge: 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300'
-                            },
-                            amber: {
-                                card: 'bg-amber-50 dark:bg-amber-900/10 border-amber-100 dark:border-amber-900/30',
-                                title: 'text-amber-700 dark:text-amber-400',
-                                icon: 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800',
-                                badge: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
-                            },
-                            orange: {
-                                card: 'bg-orange-50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-900/30',
-                                title: 'text-orange-700 dark:text-orange-400',
-                                icon: 'bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800',
-                                badge: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
-                            }
-                        };
+                        listEl.innerHTML = html;
+                    }
 
-                        const s = styles[theme];
-
-                        html += `
-                                                                                                                                                <div class="${s.card} p-4 rounded-xl shadow-sm border mb-3 hover:shadow-md transition-all cursor-pointer group" onclick="calendar.gotoDate('${event.start}')">
-                                                                                                                                                    <div class="flex gap-4 items-center">
-                                                                                                                                                        <div class="flex-none flex flex-col items-center justify-center w-14 h-14 rounded-xl border ${s.icon}">
-                                                                                                                                                            <span class="text-xl font-bold leading-none">${day}</span>
-                                                                                                                                                            <span class="text-[10px] uppercase font-bold mt-1">${month}</span>
-                                                                                                                                                        </div>
-                                                                                                                                                        <div class="flex-1 min-w-0">
-                                                                                                                                                            <h4 class="text-sm font-bold ${s.title} line-clamp-2 leading-tight mb-1">
-                                                                                                                                                                ${title}
-                                                                                                                                                            </h4>
-                                                                                                                                                            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-gray-400">
-                                                                                                                                                                <span class="capitalize ${s.badge} px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide truncate max-w-[100px]">
-                                                                                                                                                                    ${type}
-                                                                                                                                                                </span>
-                                                                                                                                                                <span>${year}</span>
-                                                                                                                                                            </div>
-                                                                                                                                                        </div>
-                                                                                                                                                    </div>
-                                                                                                                                                </div>
-                                                                                                                                            `;
-                    });
-
-                    html += '</div>';
-                    listEl.innerHTML = html;
+                    renderPage();
                 }
 
                 function updateUpcomingList_OLD(events) {

@@ -16,26 +16,46 @@
 
     <style>
         .sidebar {
-            background-color: #7a1621;
-            /* maroon */
+            background: linear-gradient(180deg, #5a0015 0%, #7a1621 100%);
         }
 
-        .sidebar-link:not(.active):hover {
-            background-color: rgba(255, 255, 255, 0.06);
+        .sidebar-link {
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
         }
 
         .sidebar-link.active {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-right: 4px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-left: 4px solid #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .top-badge {
+            background: linear-gradient(135deg, #ff7b7b 0%, #b22222 100%);
+            box-shadow: 0 2px 10px rgba(178, 34, 34, 0.3);
         }
 
         .btn-maroon {
             background-color: #800020;
             color: white;
+            transition: all 0.3s ease;
         }
 
         .btn-maroon:hover {
             background-color: #5a0015;
+            box-shadow: 0 4px 12px rgba(90, 0, 21, 0.3);
+            transform: translateY(-1px);
         }
 
         .text-maroon {
@@ -49,15 +69,8 @@
         .border-maroon {
             border-color: #800020;
         }
-
-        /* Header tweaks */
-        .top-badge {
-            background: linear-gradient(90deg, #ff7b7b, #b22222);
-        }
     </style>
     @stack('styles')
-
-
 </head>
 
 <body class="bg-gray-100">
@@ -130,22 +143,24 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Top Navbar -->
-            <header class="bg-white shadow-sm z-10">
+            <header class="glass-navbar shadow-sm z-10 sticky top-0">
                 <div class="flex items-center justify-between px-6 py-3">
                     <div class="flex items-center gap-4">
-                        <button class="text-gray-500 md:hidden focus:outline-none focus:text-gray-700"
+                        <button class="text-gray-500 md:hidden focus:outline-none focus:text-gray-700 hover:bg-gray-100 p-2 rounded-lg transition"
                             id="sidebar-toggle">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <nav class="text-sm text-gray-500">
-                            <span class="mr-2">Home</span>
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>
-                            <span class="font-semibold text-gray-800">@yield('page-title', 'Dashboard')</span>
+                        <nav class="text-sm text-gray-500 hidden sm:flex items-center font-medium">
+                            <span class="mr-2 hover:text-maroon transition cursor-pointer">Home</span>
+                            <i class="fas fa-chevron-right text-[10px] mr-2 text-gray-400"></i>
+                            <span class="font-bold text-gray-800 text-base tracking-wide">@yield('page-title', 'Dashboard')</span>
                         </nav>
-                        <div class="ml-4 hidden sm:block">
+                        <div class="ml-4 hidden md:block">
                             <span
-                                class="inline-block px-3 py-1 rounded-full text-xs font-medium text-white top-badge">Ganjil
-                                2025/2026</span>
+                                class="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold text-white top-badge shadow-sm tracking-wide">
+                                <i class="fas fa-calendar-check mr-2"></i>
+                                Ganjil 2025/2026
+                            </span>
                         </div>
                     </div>
 

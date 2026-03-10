@@ -8,7 +8,7 @@ class ApproveInstallmentRequestRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->role === 'finance';
+        return in_array($this->user()->role, ['finance', 'keuangan']);
     }
 
     public function rules(): array

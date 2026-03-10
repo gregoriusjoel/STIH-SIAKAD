@@ -12,7 +12,7 @@ class PaymentProofPolicy
      */
     public function view(User $user, PaymentProof $proof): bool
     {
-        if ($user->role === 'finance') {
+        if (in_array($user->role, ['finance', 'keuangan'])) {
             return true;
         }
 
@@ -36,6 +36,6 @@ class PaymentProofPolicy
      */
     public function review(User $user, PaymentProof $proof): bool
     {
-        return $user->role === 'finance' && $proof->status === 'UPLOADED';
+        return in_array($user->role, ['finance', 'keuangan']) && $proof->status === 'UPLOADED';
     }
 }

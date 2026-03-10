@@ -32,7 +32,7 @@ Route::get('/', function () {
             return redirect()->route('mahasiswa.dashboard');
         } elseif ($user->role === 'parent') {
             return redirect()->route('parent.dashboard');
-        } elseif ($user->role === 'finance') {
+        } elseif (in_array($user->role, ['finance', 'keuangan'])) {
             return redirect()->route('finance.invoices.index');
         }
         return redirect()->route('dosen.dashboard');
@@ -256,7 +256,7 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
 
 });
 
-Route::prefix('parent')->name('parent.')->middleware(['auth'])->group(function () {
+Route::prefix('parent')->name('parent.')->middleware(['auth', 'parent.role'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Parent\ParentController::class, 'dashboard'])->name('dashboard');
     Route::get('/nilai', [App\Http\Controllers\Parent\ParentController::class, 'nilai'])->name('nilai');
     Route::get('/jadwal', [App\Http\Controllers\Parent\ParentController::class, 'jadwal'])->name('jadwal');

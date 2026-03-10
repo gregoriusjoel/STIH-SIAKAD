@@ -4,51 +4,53 @@
 @section('page-title', 'Jam Perkuliahan')
 
 @section('content')
-    <div class="w-full">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
-            <div
-                class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex flex-col md:flex-row md:items-center justify-between">
-                <div>
-                    <h3 class="text-xl font-bold flex items-center">
-                        <i class="fas fa-clock mr-3 text-2xl"></i>
-                        Master Data Jam Perkuliahan
-                    </h3>
-                    <p class="text-sm mt-1 text-white text-opacity-90">Kelola jadwal sesi perkuliahan</p>
-                </div>
+    <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-clock mr-3 text-maroon"></i>
+                Jam Perkuliahan
+            </h2>
+            <p class="text-gray-600 text-sm mt-1">Kelola jadwal sesi perkuliahan</p>
+        </div>
+        <div class="flex-shrink-0">
+            <div class="flex space-x-2">
                 <a href="{{ route('admin.jam-perkuliahan.create') }}"
-                    class="mt-4 md:mt-0 inline-flex items-center px-5 py-2.5 bg-white text-maroon font-semibold rounded-lg hover:bg-gray-100 transition shadow-md">
-                    <i class="fas fa-plus mr-2"></i> Tambah Jam Baru
+                    class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md">
+                    <i class="fas fa-plus mr-2"></i>
+                    Tambah Jam Baru
                 </a>
             </div>
+        </div>
+    </div>
 
-
-            <div class="p-6">
-
-                <!-- Table -->
-                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                    <i class="fas fa-list-ol text-gray-400 dark:text-gray-500 mr-1"></i> Sesi
-                                </th>
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                    <i class="fas fa-clock text-gray-400 dark:text-gray-500 mr-1"></i> Waktu
-                                </th>
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                    <i class="fas fa-hourglass-half text-gray-400 dark:text-gray-500 mr-1"></i> Durasi
-                                </th>
-                                <th
-                                    class="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                    Status</th>
-                                <th
-                                    class="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                    Aksi</th>
-                            </tr>
-                        </thead>
+    <!-- Data Table -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-maroon text-white">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                            Sesi
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                            Waktu
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                            Durasi
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
+                            Aksi
+                        </th>
+                    </tr>
+                </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                             @forelse($jamPerkuliahan as $jam)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
@@ -137,8 +139,6 @@
                     </table>
                 </div>
             </div>
-        </div>
-    </div>
 
     @push('scripts')
         <script>
