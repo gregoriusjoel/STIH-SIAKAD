@@ -190,33 +190,26 @@
 @if($tab === 'master')
 {{-- Filter Bar --}}
 <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 items-center">
-    <form method="GET" action="{{ route('admin.mata-kuliah.index') }}" class="flex flex-wrap gap-3 items-center w-full">
-        <input type="hidden" name="tab" value="master">
-        @if($selectedSemester)<input type="hidden" name="semester_id" value="{{ $selectedSemester->id }}">@endif
+    <div class="flex flex-wrap gap-3 items-center w-full">
         <div class="relative flex-1 min-w-[200px] max-w-xs">
             <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input type="text" name="search" value="{{ $search }}" placeholder="Cari kode / nama MK..."
+            <input type="text" id="master-search" placeholder="Cari kode / nama MK..."
+                oninput="filterMasterTable()"
                 class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
         </div>
-        <select name="semester_filter" onchange="this.form.submit()"
+        <select id="master-semester-filter" onchange="filterMasterTable()"
             class="text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-maroon">
             <option value="">Semua Semester</option>
             @for($s = 1; $s <= 8; $s++)
-            <option value="{{ $s }}" {{ $semesterFilter == $s ? 'selected' : '' }}>Semester {{ $s }}</option>
+            <option value="{{ $s }}">Semester {{ $s }}</option>
             @endfor
         </select>
-        <button type="submit" class="px-3 py-2 bg-maroon text-white text-sm rounded-lg hover:bg-red-900 transition">
-            <i class="fas fa-search mr-1"></i> Cari
-        </button>
-        @if($search || $semesterFilter)
-        <a href="{{ route('admin.mata-kuliah.index', ['tab' => 'master', 'semester_id' => $selectedSemester?->id]) }}"
+        <button type="button" onclick="document.getElementById('master-search').value='';document.getElementById('master-semester-filter').value='';filterMasterTable()"
             class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
             <i class="fas fa-times mr-1"></i> Reset
-        </a>
-        @endif
-        <input type="hidden" name="sort" value="{{ $sort }}">
-        <input type="hidden" name="sort_dir" value="{{ $sortDir }}">
-    </form>
+        </button>
+        <span id="master-count" class="ml-auto text-xs text-gray-500 dark:text-gray-400"></span>
+    </div>
 </div>
 <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -245,10 +238,12 @@
                 <th class="px-5 py-4 text-center text-xs font-bold uppercase"><i class="fas fa-cog mr-1"></i>Aksi</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="master-tbody">
             @forelse($mataKuliahs as $mk)
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400 font-medium">
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition master-row"
+                data-kode="{{ strtolower($mk->kode_mk) }}" data-nama="{{ strtolower($mk->nama_mk) }}"
+                data-semester="{{ $mk->semester }}" data-sks="{{ $mk->sks }}">
+                <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400 font-medium master-row-no">
                     {{ ($mataKuliahs->currentPage() - 1) * $mataKuliahs->perPage() + $loop->iteration }}
                 </td>
                 <td class="px-5 py-4">
@@ -1065,6 +1060,7 @@ function _sortTable(tbodyId, rowClass, col, prefix) {
     rows.forEach(r => { if (r.style.display !== 'none') { num++; r.querySelector(`.${prefix}-row-no`).textContent = num; } });
 }
 
+function filterMasterTable() { _filterTable(document.querySelectorAll('.master-row'), 'master-search', 'master-semester-filter', 'master-count', 'master-row-no'); }
 function filterActiveTable() { _filterTable(document.querySelectorAll('.active-row'), 'active-search', 'active-semester-filter', 'active-count', 'active-row-no'); }
 function sortActiveTable(col) { _sortTable('active-tbody', 'active-row', col, 'active'); filterActiveTable(); }
 function filterHistoryTable() { _filterTable(document.querySelectorAll('.history-row'), 'history-search', 'history-semester-filter', 'history-count', 'history-row-no'); }

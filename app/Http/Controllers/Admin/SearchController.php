@@ -32,6 +32,9 @@ class SearchController extends Controller
             'jadwals' => ['tables' => ['jadwals', 'jadwal'], 'columns' => ['hari', 'ruang', 'keterangan']],
             'semesters' => ['tables' => ['semesters', 'semester'], 'columns' => ['nama_semester', 'tahun_ajaran']],
             'krs' => ['tables' => ['krs', 'krs_items'], 'columns' => ['id']],
+            'ruangans' => ['tables' => ['ruangans', 'ruangan'], 'columns' => ['nama_ruang', 'kode']],
+            'prodis' => ['tables' => ['prodis', 'prodi'], 'columns' => ['nama_prodi', 'kode_prodi']],
+            'pengumumans' => ['tables' => ['pengumumans', 'pengumuman'], 'columns' => ['judul']],
         ];
 
         // Static admin features (label and route name)
@@ -41,10 +44,24 @@ class SearchController extends Controller
             ['key' => 'mata_kuliah', 'label' => 'Mata Kuliah', 'route' => 'admin.mata-kuliah.index'],
             ['key' => 'kelas', 'label' => 'Kelas Mata Kuliah', 'route' => 'admin.kelas-mata-kuliah.index'],
             ['key' => 'jadwal', 'label' => 'Jadwal Perkuliahan', 'route' => 'admin.jadwal.index'],
-            ['key' => 'parents', 'label' => 'Data Parent', 'route' => 'admin.parents.index'],
+            ['key' => 'parents', 'label' => 'Data Orang Tua', 'route' => 'admin.parents.index'],
             ['key' => 'users', 'label' => 'Manajemen User', 'route' => 'admin.users.index'],
             ['key' => 'semester', 'label' => 'Semester & Tahun Ajaran', 'route' => 'admin.semester.index'],
             ['key' => 'krs', 'label' => 'Manajemen KRS', 'route' => 'admin.krs.index'],
+            ['key' => 'ruangan', 'label' => 'Manajemen Ruangan', 'route' => 'admin.ruangan.index'],
+            ['key' => 'jam_perkuliahan', 'label' => 'Jam Perkuliahan', 'route' => 'admin.jam-perkuliahan.index'],
+            ['key' => 'prodi', 'label' => 'Program Studi', 'route' => 'admin.prodi.index'],
+            ['key' => 'fakultas', 'label' => 'Fakultas', 'route' => 'admin.fakultas.index'],
+            ['key' => 'magang', 'label' => 'Bimbingan Magang', 'route' => 'admin.magang.index'],
+            ['key' => 'kalender', 'label' => 'Kalender Akademik', 'route' => 'admin.kalender.index'],
+            ['key' => 'dosen_pa', 'label' => 'Dosen Pembimbing Akademik', 'route' => 'admin.dosen-pa.index'],
+            ['key' => 'pengajuan', 'label' => 'Pengajuan Surat', 'route' => 'admin.pengajuan.index'],
+            ['key' => 'jadwal_generator', 'label' => 'Auto Generate Jadwal', 'route' => 'admin.jadwal_generator.index'],
+            ['key' => 'jadwal_admin_approval', 'label' => 'Persetujuan Jadwal', 'route' => 'admin.jadwal_admin_approval.index'],
+            ['key' => 'availability', 'label' => 'Ketersediaan Dosen', 'route' => 'admin.availability.index'],
+            ['key' => 'import', 'label' => 'Import Data', 'route' => 'admin.import.index'],
+            ['key' => 'pengumuman', 'label' => 'Pengumuman', 'route' => 'admin.pengumuman.index'],
+            ['key' => 'absensi_dosen', 'label' => 'Absensi Dosen', 'route' => 'admin.absensi_dosen.index'],
         ];
 
         // search database tables (try common table name variants)
@@ -104,6 +121,9 @@ class SearchController extends Controller
                 'jadwals' => 'jadwal',
                 'semesters' => 'semester',
                 'krs' => 'krs',
+                'ruangans' => 'ruangan',
+                'prodis' => 'prodi',
+                'pengumumans' => 'pengumuman',
             ];
 
             $outResults = [];

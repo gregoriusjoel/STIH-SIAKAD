@@ -38,7 +38,16 @@ class JamPerkuliahanController extends Controller
         $request->validate([
             'jam_ke' => 'required|integer|min:1|unique:jam_perkuliahan,jam_ke',
             'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'jam_selesai' => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) use ($request) {
+                    $jamMulai = $request->input('jam_mulai');
+                    if ($jamMulai && $value !== '00:00' && strtotime($value) <= strtotime($jamMulai)) {
+                        $fail('Jam selesai harus lebih besar dari jam mulai (kecuali 00:00).');
+                    }
+                },
+            ],
             'is_active' => 'boolean',
         ]);
 
@@ -80,7 +89,16 @@ class JamPerkuliahanController extends Controller
         $request->validate([
             'jam_ke' => 'required|integer|min:1|unique:jam_perkuliahan,jam_ke,' . $id,
             'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'jam_selesai' => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) use ($request) {
+                    $jamMulai = $request->input('jam_mulai');
+                    if ($jamMulai && $value !== '00:00' && strtotime($value) <= strtotime($jamMulai)) {
+                        $fail('Jam selesai harus lebih besar dari jam mulai (kecuali 00:00).');
+                    }
+                },
+            ],
             'is_active' => 'boolean',
         ]);
 

@@ -78,6 +78,9 @@
                                         @php
                                             $start = strtotime($jam->jam_mulai);
                                             $end = strtotime($jam->jam_selesai);
+                                            if (substr($jam->jam_selesai, 0, 5) === '00:00') {
+                                                $end = strtotime('+1 day', $end);
+                                            }
                                             $duration = ($end - $start) / 60;
                                         @endphp
                                         <span

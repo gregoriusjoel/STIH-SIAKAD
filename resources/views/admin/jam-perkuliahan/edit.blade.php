@@ -100,6 +100,9 @@
                                         @php
                                             $start = strtotime($jam->jam_mulai);
                                             $end = strtotime($jam->jam_selesai);
+                                            if (substr($jam->jam_selesai, 0, 5) === '00:00') {
+                                                $end = strtotime('+1 day', $end);
+                                            }
                                             $duration = ($end - $start) / 60;
                                         @endphp
                                         <span id="preview-durasi">{{ $duration }} menit</span>
@@ -172,7 +175,12 @@
                     const start = jamMulai.value.split(':').map(Number);
                     const end = jamSelesai.value.split(':').map(Number);
                     const startMin = start[0] * 60 + start[1];
-                    const endMin = end[0] * 60 + end[1];
+                    let endMin = end[0] * 60 + end[1];
+                    
+                    if (endMin < startMin && jamSelesai.value === '00:00') {
+                        endMin += (24 * 60);
+                    }
+                    
                     const duration = endMin - startMin;
                     document.getElementById('preview-durasi').textContent = duration + ' menit';
                 }
