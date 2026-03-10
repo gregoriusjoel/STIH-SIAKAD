@@ -112,6 +112,9 @@ class KelasController extends Controller
 
         $presensis = \App\Models\Presensi::where('krs_id', $krs->id)->get();
 
+        // Magang conversion students are always considered HADIR — skip Presensi lookup
+        $isInternship = (bool) $krs->is_internship_conversion;
+
         for ($i = 1; $i <= $totalPertemuan; $i++) {
             $meetingDate = $startDate->copy()->addDays(($i - 1) * 7);
 
@@ -120,31 +123,38 @@ class KelasController extends Controller
                 continue;
             }
 
-            // Find attendance for this specific date/meeting
-            // Using exact 'pertemuan' match from the Presensi record
-            $attendance = $presensis->filter(function ($p) use ($i) {
-                return $p->pertemuan == $i;
-            })->first();
-
-            $status = 'Belum Dimulai';
-            $statusClass = 'bg-gray-100 text-gray-500';
-
-            if ($meetingDate->isPast() || $attendance) {
-                if ($attendance) {
-                    $status = $attendance->status; // Hadir, Izin, Sakit, Alpa
-                    $statusClass = match ($status) {
-                        'Hadir' => 'bg-green-100 text-green-700',
-                        'Izin' => 'bg-blue-100 text-blue-700',
-                        'Sakit' => 'bg-yellow-100 text-yellow-700',
-                        'Alpa' => 'bg-red-100 text-red-700',
-                        default => 'bg-gray-100 text-gray-600'
-                    };
-                } else if ($meetingDate->isPast()) {
-                    $status = 'Tanpa Keterangan'; // Or Alpa?
-                    $statusClass = 'bg-red-50 text-red-600';
-                }
+            // For internship conversion KRS: auto-hadir for all past meetings
+            if ($isInternship) {
+                $status = 'Hadir';
+                $statusClass = 'bg-orange-100 text-orange-700';
+                $attendance = null;
             } else {
+                // Find attendance for this specific date/meeting
+                // Using exact 'pertemuan' match from the Presensi record
+                $attendance = $presensis->filter(function ($p) use ($i) {
+                    return $p->pertemuan == $i;
+                })->first();
+
                 $status = 'Belum Dimulai';
+                $statusClass = 'bg-gray-100 text-gray-500';
+
+                if ($meetingDate->isPast() || $attendance) {
+                    if ($attendance) {
+                        $status = $attendance->status; // Hadir, Izin, Sakit, Alpa
+                        $statusClass = match ($status) {
+                            'Hadir' => 'bg-green-100 text-green-700',
+                            'Izin' => 'bg-blue-100 text-blue-700',
+                            'Sakit' => 'bg-yellow-100 text-yellow-700',
+                            'Alpa' => 'bg-red-100 text-red-700',
+                            default => 'bg-gray-100 text-gray-600'
+                        };
+                    } else if ($meetingDate->isPast()) {
+                        $status = 'Tanpa Keterangan'; // Or Alpa?
+                        $statusClass = 'bg-red-50 text-red-600';
+                    }
+                } else {
+                    $status = 'Belum Dimulai';
+                }
             }
 
             // Load actual materi from database for this pertemuan
@@ -214,8 +224,12 @@ class KelasController extends Controller
             // Prepare attendance data for display
             $attendanceStatus = null;
             $attendanceData = null;
-            
-            if ($attendance) {
+
+            if ($isInternship) {
+                // Magang conversion: always hadir
+                $attendanceStatus = 'hadir';
+                $attendanceData = ['presence_mode' => 'internship'];
+            } elseif ($attendance) {
                 $attendanceStatus = strtolower($attendance->status); // hadir, izin, sakit, alpa
                 $attendanceData = [
                     'presence_mode' => $attendance->presence_mode,

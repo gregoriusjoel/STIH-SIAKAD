@@ -171,23 +171,6 @@
             <!-- Main Content -->
             <main class="flex-1 w-full min-w-0 p-4 sm:p-6 lg:p-8 bg-bg-body transition-colors duration-200">
 
-                @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                        <p class="text-green-800 font-medium">{{ session('success') }}</p>
-                    </div>
-                </div>
-                @endif
-
-                @if(session('error'))
-                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
-                        <p class="text-red-800 font-medium">{{ session('error') }}</p>
-                    </div>
-                </div>
-                @endif
 
                 @yield('content')
 

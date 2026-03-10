@@ -4,6 +4,25 @@
 @section('page-title', 'Magang / Internship')
 
 @section('content')
+@php
+    $mahasiswaSemester = (int) (Auth::user()->mahasiswa->semester ?? 0);
+    $canApplyMagang = $mahasiswaSemester >= 5;
+
+    // Cek magang yang sudah disetujui/berjalan
+    $blockedStatuses = [
+        \App\Models\Internship::STATUS_APPROVED,
+        \App\Models\Internship::STATUS_SENT_TO_STUDENT,
+        \App\Models\Internship::STATUS_SUPERVISOR_ASSIGNED,
+        \App\Models\Internship::STATUS_ACCEPTANCE_LETTER_READY,
+        \App\Models\Internship::STATUS_ONGOING,
+        \App\Models\Internship::STATUS_COMPLETED,
+        \App\Models\Internship::STATUS_GRADED,
+        \App\Models\Internship::STATUS_CLOSED,
+    ];
+    $hasApprovedInternship = \App\Models\Internship::where('mahasiswa_id', Auth::user()->mahasiswa->id)
+        ->whereIn('status', $blockedStatuses)
+        ->exists();
+@endphp
 <div class="px-4 py-6 max-w-[1600px] mx-auto space-y-6">
 
     {{-- Premium Header Card --}}
@@ -21,13 +40,28 @@
                 <p class="text-sm text-gray-500 font-medium">Kelola pengajuan dan pantau progres program magang Anda.</p>
             </div>
         </div>
-        <div class="relative z-10 z-10 w-full sm:w-auto mt-2 sm:mt-0 shadow-lg shadow-[#8B1538]/10 rounded-xl">
-            <a href="{{ route('mahasiswa.magang.create') }}"
-               class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] text-white rounded-xl font-bold transition-all hover:shadow-xl hover:shadow-red-900/30 overflow-hidden relative">
-                <span class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
-                <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">add_circle</span>
-                <span class="relative">Ajukan Magang</span>
-            </a>
+        <div class="relative z-10 w-full sm:w-auto mt-2 sm:mt-0">
+            @if($hasApprovedInternship)
+                {{-- Sudah punya magang aktif/acc --}}
+                <div class="inline-flex items-center gap-2 px-5 py-3 bg-gray-100 border border-gray-300 text-gray-500 rounded-xl text-sm font-semibold cursor-not-allowed" title="Anda sudah memiliki magang yang disetujui">
+                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                    Magang Sudah Disetujui
+                </div>
+            @elseif($canApplyMagang)
+                <div class="shadow-lg shadow-[#8B1538]/10 rounded-xl">
+                    <a href="{{ route('mahasiswa.magang.create') }}"
+                       class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] text-white rounded-xl font-bold transition-all hover:shadow-xl hover:shadow-red-900/30 overflow-hidden relative">
+                        <span class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
+                        <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">add_circle</span>
+                        <span class="relative">Ajukan Magang</span>
+                    </a>
+                </div>
+            @else
+                <div class="inline-flex items-center gap-2 px-5 py-3 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl text-sm font-semibold cursor-not-allowed" title="Anda belum memenuhi syarat semester untuk mendaftar magang">
+                    <span class="material-symbols-outlined text-[18px]">lock</span>
+                    Ajukan Magang (Tersedia di Semester 5)
+                </div>
+            @endif
         </div>
     </div>
 
@@ -103,7 +137,7 @@
                             <div>
                                 <p class="text-[10px] font-bold text-purple-400/80 uppercase tracking-widest leading-none mb-1">Semester</p>
                                 <p class="text-xs font-semibold text-gray-700">
-                                    {{ $internship->semester?->nama ?? '-' }}
+                                    {{ $internship->semester_mahasiswa ? 'Semester ' . $internship->semester_mahasiswa : '-' }}
                                 </p>
                             </div>
                         </div>

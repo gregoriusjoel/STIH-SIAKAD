@@ -246,9 +246,11 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         Route::post('/{internship}/submit', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'submit'])->name('submit');
         Route::get('/{internship}/generate-letter', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'generateLetter'])->name('generate-letter');
         Route::post('/{internship}/upload-signed', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'uploadSigned'])->name('upload-signed');
+        Route::post('/{internship}/upload-acceptance', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'uploadAcceptance'])->name('upload-acceptance');
         Route::post('/{internship}/submit-review', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'submitForReview'])->name('submit-review');
         Route::post('/{internship}/logbook', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'storeLogbook'])->name('logbook.store');
         Route::get('/{internship}/download-acceptance', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'downloadAcceptanceLetter'])->name('download-acceptance');
+        Route::get('/{internship}/download-official', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'downloadOfficial'])->name('download-official');
         Route::delete('/{internship}', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'destroy'])->name('destroy');
     });
 
@@ -284,6 +286,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Dosen Management
     Route::resource('dosen', App\Http\Controllers\Admin\DosenController::class);
     Route::post('dosen/import', [App\Http\Controllers\Admin\DosenController::class, 'import'])->name('dosen.import');
+    Route::post('dosen/carry-forward-all', [App\Http\Controllers\Admin\DosenController::class, 'carryForwardAll'])->name('dosen.carry-forward-all');
     Route::post('dosen/{dosen}/toggle-status', [App\Http\Controllers\Admin\DosenController::class, 'toggleStatus'])->name('dosen.toggle-status');
 
     // Teaching Assignment (Penugasan Mengajar)
@@ -291,6 +294,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('dosen/{dosen}/assignments/{mataKuliah}', [App\Http\Controllers\Admin\DosenController::class, 'destroyAssignment'])->name('dosen.assignments.destroy');
     Route::post('dosen/{dosen}/assignments/copy', [App\Http\Controllers\Admin\DosenController::class, 'copyAssignments'])->name('dosen.assignments.copy');
     Route::get('dosen/{dosen}/assignments/history/{semester}', [App\Http\Controllers\Admin\DosenController::class, 'getHistoryAssignments'])->name('dosen.assignments.history');
+    Route::get('dosen/{dosen}/quick-assign', [App\Http\Controllers\Admin\DosenController::class, 'quickAssignData'])->name('dosen.quick-assign.data');
 
     Route::resource('dosen-pa', App\Http\Controllers\Admin\DosenPaController::class);
     Route::get('dosen-pa/{id}/mahasiswa', [App\Http\Controllers\Admin\DosenPaController::class, 'getMahasiswa'])->name('dosen-pa.mahasiswa');

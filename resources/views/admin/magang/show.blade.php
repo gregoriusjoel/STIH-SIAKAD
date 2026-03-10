@@ -3,7 +3,7 @@
 @section('title', 'Detail Magang – ' . ($internship->mahasiswa?->user?->name ?? 'N/A'))
 
 @section('content')
-<div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[1600px] mx-auto font-inter" x-data="{ showGradeForm: false, showMappingForm: false, showRejectForm: false, showPdfPanel: false, showDateForm: false }">
+<div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[1600px] mx-auto font-inter" x-data="{ showGradeForm: false, showMappingForm: false, showRejectForm: false, showPdfPanel: window.location.hash === '#pdf-panel', showDateForm: false }" x-init="if(window.location.hash === '#pdf-panel') { setTimeout(() => { document.getElementById('pdf-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, 100); }">
 
     {{-- Back + Flash --}}
     <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
@@ -180,36 +180,60 @@
                 </button>
             @endif
 
-            @if($internship->status === \App\Models\Internship::STATUS_SUPERVISOR_ASSIGNED)
-                {{-- Surat penerimaan dibuat oleh pihak instansi. Admin hanya mengonfirmasi & opsional unggah salinannya. --}}
-                <form method="POST" action="{{ route('admin.magang.upload-acceptance', $internship) }}" enctype="multipart/form-data"
-                      class="inline-flex items-center gap-3 flex-wrap">
-                    @csrf
-                    <div class="flex flex-col gap-1">
-                        <span class="text-xs text-gray-500 font-medium">Upload surat dari instansi (opsional, PDF/gambar):</span>
-                        <input type="file" name="acceptance_letter" accept=".pdf,.jpg,.jpeg,.png"
-                               class="text-xs border border-gray-200 rounded-lg px-2 py-1 text-gray-600">
-                    </div>
-                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-teal-600/20">
-                        <span class="material-symbols-outlined text-[16px]">check_circle</span> Konfirmasi Surat Diterima dari Instansi
-                    </button>
-                </form>
+            @if($internship->status === \App\Models\Internship::STATUS_ACCEPTANCE_LETTER_READY)
+                {{-- Surat penerimaan dikonfirmasi, magang siap dimulai --}}
+                <div class="flex flex-wrap items-center gap-3">
+                    <form method="POST" action="{{ route('admin.magang.start', $internship) }}" class="inline">
+                        @csrf
+                        <button type="submit"
+                                onclick="return confirm('Mulai magang sekarang? Status akan berubah menjadi Magang Berjalan dan KRS konversi akan diinjeksi.')"
+                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-emerald-600/20">
+                            <span class="material-symbols-outlined text-[16px]">play_circle</span> Mulai Magang
+                        </button>
+                    </form>
+                    <span class="text-xs text-gray-500 font-medium">
+                        Atau biarkan otomatis — magang akan dimulai pada
+                        <span class="font-bold text-gray-700">{{ $internship->periode_mulai?->format('d M Y') ?? '-' }}</span>
+                        saat scheduler berjalan.
+                    </span>
+                </div>
             @endif
 
-            @if($internship->status === \App\Models\Internship::STATUS_ACCEPTANCE_LETTER_READY)
-                <form method="POST" action="{{ route('admin.magang.start', $internship) }}" class="inline">
-                    @csrf
-                    <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-blue-600/20">
-                        <span class="material-symbols-outlined text-[16px]">play_circle</span> Mulai Magang
-                    </button>
-                </form>
+            @if($internship->status === \App\Models\Internship::STATUS_SUPERVISOR_ASSIGNED)
+                {{-- Surat penerimaan dibuat oleh pihak instansi. Admin mengonfirmasi SETELAH mahasiswa upload. --}}
+                @if($internship->acceptance_letter_path)
+                    {{-- Mahasiswa has uploaded – show download + confirm --}}
+                    <a href="{{ asset('storage/' . $internship->acceptance_letter_path) }}"
+                       target="_blank"
+                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-teal-200 hover:bg-teal-50 text-teal-700 text-sm font-bold rounded-xl transition shadow-sm">
+                        <span class="material-symbols-outlined text-[16px]">download</span> Lihat Surat Penerimaan (upload mahasiswa)
+                    </a>
+                    <form method="POST" action="{{ route('admin.magang.upload-acceptance', $internship) }}" class="inline-flex items-center">
+                        @csrf
+                        <button type="submit"
+                                onclick="return confirm('Konfirmasi surat penerimaan dari mahasiswa sudah valid? Status magang akan menjadi Surat Siap dan magang akan dimulai sesuai tanggal mulai.')"
+                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-teal-600/20">
+                            <span class="material-symbols-outlined text-[16px]">check_circle</span> Konfirmasi Surat Penerimaan
+                        </button>
+                    </form>
+                @else
+                    {{-- Mahasiswa has NOT yet uploaded --}}
+                    <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold rounded-xl">
+                        <span class="material-symbols-outlined text-[16px]">hourglass_top</span>
+                        Menunggu mahasiswa mengunggah surat penerimaan dari instansi
+                    </div>
+                @endif
             @endif
+
+            {{-- Status ONGOING dan COMPLETED diatur otomatis oleh scheduler berdasarkan tanggal mulai/selesai --}}
 
             @if($internship->status === \App\Models\Internship::STATUS_ONGOING)
                 <form method="POST" action="{{ route('admin.magang.complete', $internship) }}" class="inline">
                     @csrf
-                    <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-green-600/20">
-                        <span class="material-symbols-outlined text-[16px]">flag</span> Tandai Selesai
+                    <button type="submit"
+                            onclick="return confirm('Tandai magang sebagai selesai? Status akan berubah menjadi Magang Selesai.')"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-blue-600/20">
+                        <span class="material-symbols-outlined text-[16px]">check_circle</span> Selesai
                     </button>
                 </form>
             @endif
@@ -261,7 +285,7 @@
         </div>
 
         {{-- PDF Generation Panel (for APPROVED status) --}}
-        <div x-show="showPdfPanel" x-cloak class="mt-5 p-5 bg-indigo-50/80 border border-indigo-200/60 rounded-2xl space-y-5">
+        <div id="pdf-panel" x-show="showPdfPanel" x-cloak class="mt-5 p-5 bg-indigo-50/80 border border-indigo-200/60 rounded-2xl space-y-5">
             <h4 class="text-xs font-bold text-indigo-600 uppercase tracking-widest flex items-center gap-2">
                 <span class="material-symbols-outlined text-[15px]">picture_as_pdf</span> Surat Permohonan Magang Resmi
             </h4>
@@ -291,7 +315,7 @@
                 @if($internship->admin_final_pdf_path)
                     <p class="mt-2 text-[11px] text-green-600 font-semibold flex items-center gap-1">
                         <span class="material-symbols-outlined text-[13px]">check_circle</span>
-                        PDF sudah digenerate &bull; {{ pathinfo($internship->admin_final_pdf_path, PATHINFO_EXTENSION) === 'pdf' ? 'Format: PDF' : 'Format: DOCX (LibreOffice tidak tersedia)' }}
+                        PDF sudah digenerate &bull; {{ pathinfo($internship->admin_final_pdf_path, PATHINFO_EXTENSION) === 'pdf' ? 'Format: PDF' : 'Format: DOCX' }}
                     </p>
                 @endif
             </div>
@@ -660,38 +684,81 @@
     </div>
 
     {{-- Logbooks --}}
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 mb-6">
-        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[16px]">assignment</span> Logbook Magang
-        </h3>
-        @if($internship->logbooks->isEmpty())
-            <div class="text-center py-10">
-                <span class="material-symbols-outlined text-4xl text-gray-200 mb-2 block">menu_book</span>
-                <p class="text-sm text-gray-400 font-medium">Belum ada entri logbook.</p>
-            </div>
-        @else
-            <div class="space-y-3 max-h-96 overflow-y-auto pr-1">
-                @foreach($internship->logbooks->sortByDesc('tanggal') as $log)
-                    <div class="p-4 border border-gray-100 hover:border-gray-200 rounded-2xl transition-colors bg-gray-50/30">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <span class="text-xs font-bold text-gray-600">{{ \Carbon\Carbon::parse($log->tanggal)->isoFormat('dddd, D MMMM Y') }}</span>
-                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide {{ $log->created_by_role === 'dosen' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600' }}">
-                                {{ ucfirst($log->created_by_role) }}
-                            </span>
+    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mt-6 mb-6">
+        <div class="p-6 sm:p-8 bg-gradient-to-br from-white to-gray-50/50 border-b border-gray-100">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+                <div>
+                    <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-600/10 text-indigo-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[18px]">menu_book</span>
                         </div>
-                        @if($log->kegiatan)
-                            <p class="text-sm text-gray-700">{{ $log->kegiatan }}</p>
-                        @endif
-                        @if($log->catatan_dosen)
-                            <div class="mt-3 pl-3 border-l-2 border-blue-200">
-                                <p class="text-xs font-bold text-blue-500 mb-0.5">Catatan Dosen</p>
-                                <p class="text-sm text-blue-700">{{ $log->catatan_dosen }}</p>
-                            </div>
-                        @endif
-                    </div>
-                @endforeach
+                        Logbook Magang
+                    </h3>
+                    <p class="text-xs font-medium text-gray-500 mt-1 ml-10">Kegiatan harian yang dicatat oleh mahasiswa dan catatan dari pembimbing.</p>
+                </div>
             </div>
-        @endif
+        </div>
+
+        <div class="bg-gray-50/30">
+            @if($internship->logbooks->isEmpty())
+                <div class="text-center py-16 px-4">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200">
+                        <span class="material-symbols-outlined text-3xl text-gray-300">history_edu</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-gray-600 mb-1">Belum Ada Entri Logbook</h4>
+                    <p class="text-xs text-gray-400 max-w-sm mx-auto leading-relaxed">Mahasiswa belum mencatat kegiatan apapun.</p>
+                </div>
+            @else
+                <div class="divide-y divide-gray-100/80 max-h-[600px] overflow-y-auto pr-1">
+                    @foreach($internship->logbooks->sortByDesc('tanggal') as $log)
+                        <div class="p-6 sm:px-8 hover:bg-white transition-colors group">
+                            <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                                {{-- Date Column --}}
+                                <div class="shrink-0 sm:w-32 pt-1 border-l-2 {{ $log->created_by_role === 'dosen' ? 'border-sky-400' : 'border-indigo-600' }} pl-3 sm:pl-0 sm:border-l-0 sm:text-right">
+                                    <div class="text-[10px] font-black tracking-widest uppercase text-gray-400 mb-1">
+                                        {{ \Carbon\Carbon::parse($log->tanggal)->format('M Y') }}
+                                    </div>
+                                    <div class="text-xl font-black text-gray-800 leading-none mb-1.5">
+                                        {{ \Carbon\Carbon::parse($log->tanggal)->format('d') }}
+                                    </div>
+                                    <div class="text-[11px] font-bold text-gray-500">
+                                        {{ \Carbon\Carbon::parse($log->tanggal)->isoFormat('dddd') }}
+                                    </div>
+                                </div>
+                                
+                                {{-- Content Column --}}
+                                <div class="flex-1 min-w-0 space-y-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {{ $log->created_by_role === 'dosen' ? 'bg-sky-50 text-sky-600 border border-sky-100' : 'bg-indigo-50 text-indigo-700 border border-indigo-100' }}">
+                                            <span class="material-symbols-outlined text-[12px]">{{ $log->created_by_role === 'dosen' ? 'school' : 'person' }}</span>
+                                            {{ ucfirst($log->created_by_role) }}
+                                        </span>
+                                    </div>
+                                    
+                                    @if($log->kegiatan)
+                                        <div class="text-sm text-gray-700 leading-relaxed font-medium break-words">
+                                            {!! nl2br(e($log->kegiatan)) !!}
+                                        </div>
+                                    @endif
+                                    
+                                    @if($log->catatan_dosen)
+                                        <div class="mt-4 p-4 rounded-xl bg-sky-50/50 border border-sky-100 flex gap-3 items-start">
+                                            <div class="shrink-0 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-sky-500 border border-sky-100">
+                                                <span class="material-symbols-outlined text-[16px]">forum</span>
+                                            </div>
+                                            <div class="min-w-0 flex-1 z-10">
+                                                <p class="text-[10px] font-bold text-sky-600 uppercase tracking-widest mb-1.5">Catatan Bimbingan</p>
+                                                <p class="text-sm text-sky-900 leading-relaxed break-words">{!! nl2br(e($log->catatan_dosen)) !!}</p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
     </div>
 
     {{-- Revisions --}}

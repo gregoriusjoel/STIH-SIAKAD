@@ -34,8 +34,34 @@ class InternshipController extends Controller
     public function create()
     {
         $mahasiswa      = Auth::user()->mahasiswa;
-        $activeSemester = Semester::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first()
+            ?? Semester::orderByDesc('id')->first();
         $mataKuliahs    = MataKuliah::orderBy('nama_mk')->get();
+
+        // Mahasiswa harus minimal semester 5 untuk mendaftar magang
+        if ((int) ($mahasiswa->semester ?? 0) < 5) {
+            return redirect()->route('mahasiswa.magang.index')
+                ->with('error', 'Pendaftaran magang hanya dapat dilakukan mulai Semester 5. Semester Anda saat ini adalah Semester ' . ($mahasiswa->semester ?? 1) . '.');
+        }
+
+        // Cek apakah mahasiswa sudah memiliki magang yang sedang berjalan/disetujui
+        $blockedStatuses = [
+            Internship::STATUS_APPROVED,
+            Internship::STATUS_SENT_TO_STUDENT,
+            Internship::STATUS_SUPERVISOR_ASSIGNED,
+            Internship::STATUS_ACCEPTANCE_LETTER_READY,
+            Internship::STATUS_ONGOING,
+            Internship::STATUS_COMPLETED,
+            Internship::STATUS_GRADED,
+            Internship::STATUS_CLOSED,
+        ];
+        $hasApprovedInternship = Internship::where('mahasiswa_id', $mahasiswa->id)
+            ->whereIn('status', $blockedStatuses)
+            ->exists();
+        if ($hasApprovedInternship) {
+            return redirect()->route('mahasiswa.magang.index')
+                ->with('error', 'Anda sudah memiliki magang yang telah disetujui. Pengajuan baru tidak dapat dilakukan.');
+        }
 
         return view('page.mahasiswa.magang.create', compact('activeSemester', 'mataKuliahs', 'mahasiswa'));
     }
@@ -58,7 +84,39 @@ class InternshipController extends Controller
         ]);
 
         $mahasiswa = Auth::user()->mahasiswa;
-        $activeSemester = Semester::where('is_active', true)->firstOrFail();
+        $activeSemester = Semester::where('is_active', true)->first()
+            ?? Semester::orderByDesc('id')->first();
+
+        // Semester validation
+        if ((int) ($mahasiswa->semester ?? 0) < 5) {
+            return redirect()->route('mahasiswa.magang.index')
+                ->with('error', 'Pendaftaran magang hanya dapat dilakukan mulai Semester 5. Semester Anda saat ini adalah Semester ' . ($mahasiswa->semester ?? 1) . '.');
+        }
+
+        // Cek magang yang sudah disetujui
+        $blockedStatuses = [
+            Internship::STATUS_APPROVED,
+            Internship::STATUS_SENT_TO_STUDENT,
+            Internship::STATUS_SUPERVISOR_ASSIGNED,
+            Internship::STATUS_ACCEPTANCE_LETTER_READY,
+            Internship::STATUS_ONGOING,
+            Internship::STATUS_COMPLETED,
+            Internship::STATUS_GRADED,
+            Internship::STATUS_CLOSED,
+        ];
+        $hasApprovedInternship = Internship::where('mahasiswa_id', $mahasiswa->id)
+            ->whereIn('status', $blockedStatuses)
+            ->exists();
+        if ($hasApprovedInternship) {
+            return redirect()->route('mahasiswa.magang.index')
+                ->with('error', 'Anda sudah memiliki magang yang telah disetujui. Pengajuan baru tidak dapat dilakukan.');
+        }
+
+        if (!$activeSemester) {
+            return redirect()->back()
+                ->with('error', 'Tidak ada semester aktif. Silakan hubungi admin untuk mengaktifkan semester terlebih dahulu.')
+                ->withInput();
+        }
 
         $data = $request->only([
             'instansi', 'alamat_instansi', 'posisi',
@@ -85,7 +143,7 @@ class InternshipController extends Controller
     public function show(Internship $internship)
     {
         $this->authorizeView($internship);
-        $internship->load(['semester', 'supervisorDosen.user', 'courseMappings.mataKuliah', 'logbooks', 'revisions']);
+        $internship->load(['semester', 'supervisorDosen.user', 'courseMappings.mataKuliah', 'logbooks', 'revisions', 'krsEntries.nilai', 'krsEntries.mataKuliah']);
 
         return view('page.mahasiswa.magang.show', compact('internship'));
     }
@@ -154,7 +212,7 @@ class InternshipController extends Controller
 
         try {
             $path = $this->workflow->generateRequestLetter($internship);
-            return Storage::disk('public')->download($path, 'Surat_Permohonan_Magang.docx');
+            return Storage::disk('public')->download($path, 'Surat_Pengantar_Magang.docx');
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', 'Gagal generate surat: ' . $e->getMessage());
         }
@@ -175,6 +233,28 @@ class InternshipController extends Controller
 
         return redirect()->route('mahasiswa.magang.show', $internship)
             ->with('success', 'Surat yang sudah ditandatangani berhasil diunggah.');
+    }
+
+    /**
+     * Mahasiswa uploads acceptance letter received from the company (instansi).
+     * This only saves the file. Admin must confirm separately before magang can start.
+     */
+    public function uploadAcceptance(Request $request, Internship $internship)
+    {
+        $this->authorizeView($internship);
+
+        $request->validate([
+            'acceptance_letter' => 'required|file|mimes:pdf,docx,jpg,jpeg,png|max:5120',
+        ]);
+
+        try {
+            $this->workflow->saveMahasiswaAcceptanceLetter($internship, $request->file('acceptance_letter'));
+            return redirect()->route('mahasiswa.magang.show', $internship)
+                ->with('success', 'Surat penerimaan berhasil diunggah. Menunggu konfirmasi dari admin sebelum magang dapat dimulai.');
+        } catch (\Throwable $e) {
+            return redirect()->route('mahasiswa.magang.show', $internship)
+                ->with('error', 'Gagal mengunggah surat penerimaan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -210,6 +290,28 @@ class InternshipController extends Controller
 
         return redirect()->route('mahasiswa.magang.show', $internship)
             ->with('success', 'Logbook berhasil ditambahkan.');
+    }
+
+    /**
+     * Download admin-signed official PDF (Surat Pengantar Resmi TTD).
+     */
+    public function downloadOfficial(Internship $internship)
+    {
+        $this->authorizeView($internship);
+
+        $path = $internship->admin_signed_pdf_path ?? $internship->admin_final_pdf_path;
+
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+            return redirect()->back()->with('error', 'Surat resmi belum tersedia.');
+        }
+
+        $ext = pathinfo($path, PATHINFO_EXTENSION);
+        $nim = $internship->mahasiswa?->nim ?? $internship->id;
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->download(
+            $path,
+            "Surat_Pengantar_Resmi_{$nim}.{$ext}"
+        );
     }
 
     /**

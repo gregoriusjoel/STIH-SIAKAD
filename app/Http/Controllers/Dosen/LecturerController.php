@@ -779,8 +779,32 @@ class LecturerController extends Controller
         $students = $krsCollection->map(function ($krs) use ($attendanceRecords, $totalAttendanceCounts, $kelas, $kelasMataKuliah) {
             $m = $krs->mahasiswa;
             $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
-            
-            // Check if student has attendance record for this meeting
+            $isInternship = (bool) $krs->is_internship_conversion;
+
+            // Magang conversion students are automatically HADIR — skip Presensi lookup
+            if ($isInternship) {
+                $semester = $m->semester ?? $m->getCurrentSemester();
+                return [
+                    'id' => $m->id,
+                    'name' => $userName,
+                    'nim' => $m->nim ?? null,
+                    'prodi' => $m->prodi ?? null,
+                    'semester' => $semester,
+                    'status_mahasiswa' => $m->status ?? 'Aktif',
+                    'attendance_status' => 'hadir',
+                    'attendance_time' => null,
+                    'total_attendance' => $kelasMataKuliah->meeting_count ?? 0,
+                    'krs_id' => $krs->id,
+                    'kelas_mata_kuliah_id' => $kelasMataKuliah->id ?? null,
+                    'presence_mode' => 'internship',
+                    'distance_meters' => null,
+                    'reason_category' => null,
+                    'reason_detail' => null,
+                    'is_internship' => true,
+                ];
+            }
+
+            // Normal student — check if student has attendance record for this meeting
             $attendanceRecord = $attendanceRecords->get($m->id);
             $attendanceStatus = $attendanceRecord ? $attendanceRecord->status : null; // 'hadir', 'izin', 'sakit', 'alpa'
             $attendanceTime = $attendanceRecord && $attendanceRecord->waktu 
@@ -807,6 +831,7 @@ class LecturerController extends Controller
                 'distance_meters' => $attendanceRecord->distance_meters ?? null,
                 'reason_category' => $attendanceRecord->reason_category ?? null,
                 'reason_detail' => $attendanceRecord->reason_detail ?? null,
+                'is_internship' => false,
             ];
         })->toArray();
 
@@ -893,6 +918,22 @@ class LecturerController extends Controller
 
         $studentId = $request->mahasiswa_id;
         $status = $request->status;
+
+        // Block manual attendance change for internship conversion students (auto-hadir)
+        $isInternshipKrs = \App\Models\Krs::where('mahasiswa_id', $studentId)
+            ->where(function($q) use ($kelas, $kelasMataKuliah) {
+                $q->where('kelas_id', $kelas->id)
+                  ->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
+            })
+            ->where('is_internship_conversion', true)
+            ->exists();
+
+        if ($isInternshipKrs) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kehadiran mahasiswa magang otomatis tercatat HADIR dan tidak dapat diubah.',
+            ], 422);
+        }
 
         // Find existing record or create new (uses slot number for backward compat)
         $attendance = Presensi::updateOrCreate(
@@ -1156,6 +1197,7 @@ class LecturerController extends Controller
                     'krs_id' => $krs->id,
                     'nim' => $mahasiswa->nim ?? '-',
                     'name' => $mahasiswa->user->name ?? $mahasiswa->nama ?? '-',
+                    'is_internship' => (bool) $krs->is_internship_conversion,
                     'nilai_id' => $nilai->id ?? null,
                     'nilai_partisipatif' => $nilai->nilai_partisipatif ?? 0,
                     'nilai_proyek' => $nilai->nilai_proyek ?? 0,

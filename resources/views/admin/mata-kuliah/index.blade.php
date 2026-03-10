@@ -40,7 +40,7 @@
         <button onclick="document.getElementById('importModal').classList.remove('hidden')"
             class="group bg-white dark:bg-gray-800 text-maroon dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 border-2 border-maroon/10 hover:border-maroon px-4 py-2 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-sm text-sm font-bold">
             <i class="fas fa-file-import text-xs"></i>
-            Import CSV
+            Import Mata Kuliah
         </button>
         <a href="{{ route('admin.mata-kuliah.create') }}"
             class="bg-maroon text-white hover:bg-red-900 px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-md text-sm font-medium">

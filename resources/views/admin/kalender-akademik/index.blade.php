@@ -44,7 +44,7 @@
                     </div>
 
                     <div class="flex gap-3 w-full sm:w-auto">
-                        <button onclick="document.getElementById('importModal').classList.remove('hidden')"
+                        <button id="openImportBtn" onclick="openImportModal()"
                             class="flex-1 sm:flex-none justify-center px-5 py-2.5 bg-white dark:bg-gray-800 text-slate-700 dark:text-gray-300 hover:text-maroon dark:hover:text-red-400 hover:bg-slate-50 dark:hover:bg-gray-700 border border-slate-200 dark:border-gray-700 rounded-xl hover:border-maroon/30 transition-all duration-200 shadow-sm font-bold text-sm flex items-center gap-2 group">
                             <i
                                 class="fas fa-file-import text-slate-400 dark:text-gray-500 group-hover:text-maroon dark:group-hover:text-red-400 transition-colors"></i>
@@ -394,15 +394,14 @@
         </div>
     </div>
     <!-- Import Modal -->
-    <div id="importModal" tabindex="-1" aria-hidden="true"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/80 backdrop-blur-sm px-4">
+    <div id="importModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/80 backdrop-blur-sm px-4" onclick="if(event.target===this) closeImportModal()">
 
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-xl overflow-hidden">
+        <div id="importModalDialog" role="dialog" aria-modal="true" aria-labelledby="importModalTitle" tabindex="-1" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-xl overflow-hidden">
 
             <!-- Header -->
             <div class="flex items-start justify-between px-6 py-5 bg-maroon rounded-t-2xl">
                 <div>
-                    <h3 class="text-xl font-bold text-white">Upload Jadwal</h3>
+                    <h3 id="importModalTitle" class="text-xl font-bold text-white">Upload Jadwal</h3>
                     <p class="text-sm text-white mt-1">Import jadwal akademik dari file CSV atau PDF</p>
                 </div>
                 <button onclick="closeImportModal()"
@@ -1474,14 +1473,28 @@
             }
 
             function openImportModal() {
-                document.getElementById('importModal').classList.remove('hidden');
+                const modal = document.getElementById('importModal');
+                const dialog = document.getElementById('importModalDialog');
+                if (!modal || !dialog) return;
+                modal.classList.remove('hidden');
+                // ensure aria-hidden is not present on the shown element
+                if (modal.hasAttribute('aria-hidden')) modal.removeAttribute('aria-hidden');
+                // focus the dialog for accessibility
+                setTimeout(() => dialog.focus(), 10);
             }
             window.openImportModal = openImportModal;
 
             function closeImportModal() {
-                document.getElementById('importModal').classList.add('hidden');
+                const modal = document.getElementById('importModal');
+                const dialog = document.getElementById('importModalDialog');
+                modal.classList.add('hidden');
+                // mark hidden for assistive tech if desired
+                modal.setAttribute('aria-hidden', 'true');
                 document.getElementById('importForm').reset();
                 document.getElementById('file-name').classList.add('hidden');
+                // return focus to the button that opened the modal
+                const trigger = document.getElementById('openImportBtn');
+                if (trigger) trigger.focus();
             }
 
             function showNotification(message, type = 'success') {

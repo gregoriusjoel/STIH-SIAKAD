@@ -34,9 +34,14 @@ class InternshipController extends Controller
         $dosen = Auth::user()->dosen;
         if (!$dosen || $internship->supervisor_dosen_id !== $dosen->id) abort(403);
 
-        $internship->load(['mahasiswa.user', 'semester', 'courseMappings.mataKuliah', 'logbooks', 'revisions']);
+        $internship->load(['mahasiswa.user', 'semester', 'courseMappings.mataKuliah', 'revisions']);
+        
+        $logbooks = $internship->logbooks()
+            ->orderByDesc('tanggal')
+            ->orderByDesc('created_at')
+            ->paginate(2);
 
-        return view('page.dosen.magang.show', compact('internship'));
+        return view('page.dosen.magang.show', compact('internship', 'logbooks'));
     }
 
     /**

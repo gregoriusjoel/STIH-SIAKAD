@@ -181,12 +181,12 @@
                     aria-labelledby="modal-title" role="dialog" aria-modal="true">
                     <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" id="krsCalendarBackdrop">
                     </div>
-                    <div class="relative w-full max-w-7xl bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-2xl flex flex-col h-[90vh] overflow-hidden transform transition-all">
+                    <div class="relative w-full max-w-6xl bg-white dark:bg-[#1a1d2e] rounded-2xl md:rounded-3xl shadow-2xl flex flex-col h-[85vh] overflow-hidden transform transition-all border border-gray-100/50">
                         {{-- Header --}}
-                        <div class="flex items-center justify-between px-6 py-5 bg-maroon text-white z-20 rounded-t-2xl shrink-0">
+                        <div class="flex items-center justify-between px-5 md:px-6 py-4 bg-gradient-to-r from-maroon to-[#8B1538] text-white z-20 shrink-0 border-b border-[#5C0A22]/20">
                             <div>
-                                <h4 class="text-2xl font-bold tracking-tight">Kalender Jadwal</h4>
-                                <p class="text-sm text-white/80 mt-1">Semester {{ $semesterAktif->nama_semester ?? 'Aktif' }}</p>
+                                <h4 class="text-xl font-bold tracking-tight">Kalender Jadwal</h4>
+                                <p class="text-[11px] md:text-sm text-white/80 mt-0.5 font-medium">Semester {{ $semesterAktif->nama_semester ?? 'Aktif' }}</p>
                             </div>
                             <button type="button" id="closeKrsCalendar" class="group p-2 rounded-full hover:bg-white/10 transition-colors focus:outline-none">
                                 <div class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 group-hover:bg-white/20 transition">
@@ -195,25 +195,25 @@
                             </button>
                         </div>
 
-                        {{-- Content Wrapper: Flex Col on mobile, Flex Row on XL screens --}}
-                        <div class="flex flex-col xl:flex-row flex-1 overflow-hidden min-h-0">
+                        {{-- Content Wrapper: Stacked on mobile, Flex Row on XL screens --}}
+                        <div class="flex flex-col xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden min-h-0 custom-scrollbar">
 
-                            {{-- LEFT COLUMN: Calendar --}}
-                            <div class="flex-1 flex flex-col min-w-0 bg-gray-50 relative border-r border-gray-200 order-2 xl:order-1">
+                            {{-- LEFT COLUMN: Calendar (Top on mobile) --}}
+                            <div class="flex-none xl:flex-1 w-full xl:w-auto h-[55vh] min-h-[400px] xl:h-full xl:min-h-0 flex flex-col min-w-0 bg-gray-50 dark:bg-[#151826] relative border-b xl:border-b-0 xl:border-r border-gray-200 dark:border-slate-700/50 order-1 xl:order-1">
                                  {{-- Scrollable Calendar Area --}}
-                                 <div id="calendarScrollContainer" class="flex-1 overflow-auto custom-scrollbar relative">
+                                 <div id="calendarScrollContainer" class="flex-1 overflow-auto custom-scrollbar relative bg-gray-50/50 dark:bg-transparent">
                                      @php
                                         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
                                         $hStart = 6;
                                         $hEnd = 22;
-                                        $rowHeight = 60; 
+                                        $rowHeight = 55; 
                                      @endphp
 
-                                     {{-- Use inline style for min-width to ensure horizontal scroll if needed --}}
-                                     <div class="min-w-[900px] p-6">
+                                     {{-- Min-width to ensure horizontal scroll if needed, w-full to expand on desktop --}}
+                                     <div class="min-w-[750px] xl:min-w-0 xl:w-full p-4 md:p-6 pb-12 xl:pb-6">
 
-                                     {{-- Grid Container --}}
-                                     <div class="flex">
+                                     {{-- Grid Flex Wrapper --}}
+                                     <div class="flex w-full">
                                          {{-- Time Axis --}}
                                          <div class="w-16 flex-shrink-0 flex flex-col pt-10 text-xs text-gray-400 font-medium text-right pr-4 select-none">
                                              @for($h = $hStart; $h <= $hEnd; $h++)
@@ -224,7 +224,7 @@
                                          </div>
 
                                          {{-- Grid Container --}}
-                                         <div class="flex-1 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                                         <div class="flex-1 w-full bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden"
                                              style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background-color: #f3f4f6;">
                                                  @foreach($days as $day)
                                                      @php
@@ -304,8 +304,8 @@
                                                      <div class="relative bg-white dark:bg-[#1a1d2e]"
                                                          style="height: {{ ($hEnd - $hStart + 1) * $rowHeight }}px">
                                                          {{-- Header --}}
-                                                         <div class="h-10 bg-gray-50/80 border-b border-gray-100 flex items-center justify-center sticky top-0 z-30 backdrop-blur-sm">
-                                                             <span class="font-bold text-gray-700 text-xs uppercase tracking-wide">{{ $day }}</span>
+                                                         <div class="h-10 bg-white/90 dark:bg-[#1a1d2e]/90 border-b border-gray-100 dark:border-slate-700 flex items-center justify-center sticky top-0 z-30 backdrop-blur-md shadow-sm">
+                                                             <span class="font-bold text-gray-700 dark:text-gray-300 text-[11px] uppercase tracking-wider">{{ $day }}</span>
                                                          </div>
 
                                                          {{-- Grid Lines --}}
@@ -357,59 +357,69 @@
                                  </div>
                              </div>
 
-                             {{-- Legend (Moved here) --}}
-                             <div class="px-6 py-3 bg-white border-t border-gray-200 flex flex-wrap gap-4 text-xs font-medium text-gray-600 shrink-0 z-10">
-                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span> Wajib Nasional</div>
-                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span> Wajib Prodi</div>
-                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-500"></span> Pilihan</div>
-                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-500"></span> Peminatan</div>
+                             {{-- Legend --}}
+                             <div class="px-5 md:px-6 py-3 bg-white/80 dark:bg-[#1a1d2e]/80 backdrop-blur-sm border-t border-gray-200/60 dark:border-slate-700/50 flex flex-wrap gap-x-4 gap-y-2 text-[10px] md:text-[11px] font-semibold text-gray-600 dark:text-gray-400 shrink-0 z-10 sticky bottom-0">
+                                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm"></span> Wajib Nasional</div>
+                                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm"></span> Wajib Prodi</div>
+                                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-sm"></span> Pilihan</div>
+                                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm"></span> Peminatan</div>
                              </div>
                         </div>
 
-                        {{-- RIGHT COLUMN: Table Details --}}
-                        <div class="w-[450px] flex flex-col bg-white shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] z-20">
-                             <div class="px-5 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center shrink-0">
-                                <h5 class="font-bold text-gray-800 flex items-center gap-2">
-                                    <i class="fas fa-list text-maroon"></i> Rincian Jadwal
+                        {{-- RIGHT COLUMN: Table Details (Sidebar on Desktop) --}}
+                        <div class="flex-none xl:flex-none w-full xl:w-[400px] flex flex-col bg-white dark:bg-[#1a1d2e] shadow-none xl:shadow-[-10px_0_20px_-10px_rgba(0,0,0,0.05)] z-20 order-2 xl:order-2 shrink-0 h-auto border-t xl:border-t-0 xl:border-l border-gray-200/80 dark:border-slate-700 relative">
+                             <div class="px-5 xl:px-6 py-4 border-b border-gray-100 dark:border-slate-700/80 bg-white dark:bg-[#1a1d2e] flex justify-between items-center shrink-0">
+                                <h5 class="font-bold text-gray-800 dark:text-gray-100 text-[15px] flex items-center gap-2.5">
+                                    <div class="w-7 h-7 rounded-lg bg-maroon/10 dark:bg-rose-900/20 flex items-center justify-center">
+                                        <i class="fas fa-list-ul text-maroon dark:text-rose-400 text-xs"></i>
+                                    </div>
+                                    Rincian Jadwal
                                 </h5>
                              </div>
 
-                             <div class="flex-1 overflow-y-auto p-0 custom-scrollbar">
-                                 <div class="overflow-x-auto">
-                                    <table class="w-full text-sm text-left align-middle">
-                                        <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 sticky top-0 z-10">
+                             <div class="flex-none xl:flex-1 overflow-visible xl:overflow-y-auto p-0 custom-scrollbar bg-gray-50/30 dark:bg-[#151826]/30">
+                                 <div class="overflow-x-auto overflow-y-hidden">
+                                     <table class="w-full text-left align-middle">
+                                        <thead class="bg-gray-50/80 dark:bg-slate-800/80 text-gray-500 dark:text-gray-400 font-semibold text-[11px] uppercase border-b border-gray-100 dark:border-slate-700/50 sticky top-0 z-10 backdrop-blur-md">
                                             <tr>
-                                                <th class="px-4 py-3 whitespace-nowrap">Jadwal</th>
-                                                <th class="px-4 py-3 min-w-[150px]">Mata Kuliah</th>
-                                                <th class="px-4 py-3 text-center">SKS</th>
-                                                <th class="px-4 py-3 whitespace-nowrap">Ruang</th>
+                                                <th class="px-5 py-3 tracking-wider">Mata Kuliah</th>
+                                                <th class="px-3 py-3 text-center tracking-wider">Ruang</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="divide-y divide-gray-100">
+                                        <tbody class="divide-y divide-gray-100/80 dark:divide-slate-700/50">
                                             @forelse($calendarKelas->sortBy(function ($k) {
                                                     return $k->jadwals->first()->hari ?? 'Z';
                                                 }) as $kelas)
                                                     @foreach($kelas->jadwals as $jadwal)
-                                                        <tr class="hover:bg-gray-50">
-                                                            <td class="px-4 py-3 whitespace-nowrap">
-                                                                <div class="font-bold text-gray-800">{{ $jadwal->hari }}</div>
-                                                                <div class="text-xs text-blue-600 font-medium mt-0.5">
-                                                                    {{ substr($jadwal->jam_mulai, 0, 5) }} - {{ substr($jadwal->jam_selesai, 0, 5) }}
+                                                        <tr class="hover:bg-white dark:hover:bg-[#1a1d2e] transition-colors duration-200 group">
+                                                            <td class="px-5 py-4">
+                                                                <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                                                                    <div class="text-[10px] font-bold text-gray-700 dark:text-gray-300 {{ strtolower($jadwal->hari) == 'senin' ? 'text-blue-600 dark:text-blue-400' : (strtolower($jadwal->hari) == 'selasa' ? 'text-green-600 dark:text-green-400' : (strtolower($jadwal->hari) == 'rabu' ? 'text-purple-600 dark:text-purple-400' : (strtolower($jadwal->hari) == 'kamis' ? 'text-orange-600 dark:text-orange-400' : 'text-red-600 dark:text-red-400'))) }}">{{ $jadwal->hari }}</div>
+                                                                    <div class="text-[9px] bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 border border-gray-200/50 dark:border-slate-700 px-1.5 py-0.5 rounded font-medium">
+                                                                        {{ substr($jadwal->jam_mulai, 0, 5) }} - {{ substr($jadwal->jam_selesai, 0, 5) }}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="font-bold text-gray-800 dark:text-gray-100 text-[13px] leading-tight group-hover:text-maroon dark:group-hover:text-rose-400 transition-colors line-clamp-2 duration-200">{{ $kelas->mataKuliah->nama_mk ?? '-' }}</div>
+                                                                <div class="flex items-center gap-2 mt-1.5 line-clamp-1">
+                                                                    <span class="text-[9px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-800/30 px-1.5 py-0.5 rounded font-mono font-bold">{{ $kelas->mataKuliah->kode_mk ?? '-' }}</span>
+                                                                    <span class="text-[10px] text-gray-400 dark:text-gray-500 font-bold">• {{ $kelas->mataKuliah->sks ?? 0 }} SKS</span>
+                                                                    <span class="text-[10px] text-gray-400 dark:text-gray-500 ml-auto truncate flex items-center gap-1">
+                                                                        <i class="fas fa-user-tie text-[9px] opacity-70"></i> {{ explode(',', $kelas->dosen?->nama ?? '-')[0] }}
+                                                                    </span>
                                                                 </div>
                                                             </td>
-                                                            <td class="px-4 py-3">
-                                                                <div class="font-medium text-gray-900 line-clamp-2">{{ $kelas->mataKuliah->nama_mk ?? '-' }}</div>
-                                                                <div class="text-xs text-gray-500 mt-0.5 font-mono">{{ $kelas->mataKuliah->kode_mk ?? '-' }}</div>
-                                                                <div class="text-[10px] text-gray-400 mt-0.5">{{ $kelas->dosen?->nama ?? '-' }}</div>
+                                                            <td class="px-3 py-4 text-center align-top pt-5">
+                                                                <span class="text-[11px] font-bold text-gray-600 dark:text-gray-300">{{ $jadwal->ruangan ?? '-' }}</span>
                                                             </td>
-                                                            <td class="px-4 py-3 text-center font-bold">{{ $kelas->mataKuliah->sks ?? 0 }}</td>
-                                                            <td class="px-4 py-3 text-gray-600 text-center">{{ $jadwal->ruangan ?? '-' }}</td>
                                                         </tr>
                                                     @endforeach
                                             @empty
                                                 <tr>
-                                                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                                                        Tidak ada jadwal.
+                                                    <td colspan="2" class="px-5 py-12 text-center">
+                                                        <div class="w-12 h-12 rounded-full bg-gray-50 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3">
+                                                            <i class="fas fa-calendar-times text-gray-400 dark:text-gray-500 text-xl"></i>
+                                                        </div>
+                                                        <p class="text-[13px] font-medium text-gray-500 dark:text-gray-400">Tidak ada jadwal.</p>
                                                     </td>
                                                 </tr>
                                             @endforelse

@@ -159,20 +159,33 @@ class InternshipWorkflowService
     }
 
     /**
-     * Receive / confirm acceptance letter from the company (instansi).
-     * Admin optionally uploads a scanned copy; status advances to ACCEPTANCE_LETTER_READY.
+     * Mahasiswa uploads the acceptance letter from the company (instansi).
+     * Only saves the file — does NOT advance status.
+     * Admin must confirm separately via receiveAcceptanceLetter().
+     */
+    public function saveMahasiswaAcceptanceLetter(Internship $internship, \Illuminate\Http\UploadedFile $file): void
+    {
+        $ext  = $file->getClientOriginalExtension();
+        $name = 'acceptance_' . $internship->id . '_' . time() . '.' . $ext;
+        $path = $file->storeAs('internship/acceptance', $name, 'public');
+        $internship->update(['acceptance_letter_path' => $path]);
+    }
+
+    /**
+     * Admin confirms that acceptance letter has been received/reviewed.
+     * Status advances to ACCEPTANCE_LETTER_READY so the scheduler can start magang on periode_mulai.
      */
     public function receiveAcceptanceLetter(Internship $internship, ?\Illuminate\Http\UploadedFile $file = null): void
     {
-        $updates = [];
-
-        if ($file) {
-            $path = $file->store('internship/acceptance', 'public');
-            $updates['acceptance_letter_path'] = $path;
+        if (!$internship->acceptance_letter_path && !$file) {
+            throw new \LogicException('Mahasiswa belum mengunggah surat penerimaan. Tunggu mahasiswa mengupload terlebih dahulu.');
         }
 
-        if ($updates) {
-            $internship->update($updates);
+        if ($file) {
+            $ext  = $file->getClientOriginalExtension();
+            $name = 'acceptance_' . $internship->id . '_' . time() . '.' . $ext;
+            $path = $file->storeAs('internship/acceptance', $name, 'public');
+            $internship->update(['acceptance_letter_path' => $path]);
         }
 
         $internship->transitionTo(Internship::STATUS_ACCEPTANCE_LETTER_READY);

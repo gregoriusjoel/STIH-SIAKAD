@@ -1,8 +1,13 @@
 @forelse($students as $index => $student)
-    <tr class="hover:bg-gray-50/50 transition-colors">
+    <tr class="hover:bg-gray-50/50 transition-colors{{ ($student['is_internship'] ?? false) ? ' bg-orange-50/30' : '' }}">
         <td class="px-4 py-3 text-gray-500 font-medium text-[13px]">{{ $index + 1 }}</td>
         <td class="px-4 py-3">
-            <div class="font-bold text-gray-800 text-[13px]">{{ $student['name'] }}</div>
+            <div class="font-bold text-gray-800 text-[13px] flex items-center gap-2">
+                {{ $student['name'] }}
+                @if($student['is_internship'] ?? false)
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-orange-100 text-orange-700">Magang</span>
+                @endif
+            </div>
             <div class="text-[11px] text-gray-500">{{ $student['prodi'] }}</div>
         </td>
         <td class="px-4 py-3 font-mono text-[13px] text-gray-600">{{ $student['nim'] }}</td>
@@ -15,7 +20,12 @@
                     $reasonDetail = $student['reason_detail'] ?? null;
                 @endphp
                 
-                @if($presenceMode === 'offline')
+                @if($presenceMode === 'internship')
+                    <span class="inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-orange-100 text-orange-700">
+                        <span class="material-symbols-outlined text-[14px] leading-none">work</span>
+                        <span class="leading-none mt-[1.5px]">Hadir (Magang)</span>
+                    </span>
+                @elseif($presenceMode === 'offline')
                     <span class="inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700">
                         <span class="material-symbols-outlined text-[14px] leading-none">check_circle</span>
                         <span class="leading-none mt-[1.5px]">Hadir Offline</span>

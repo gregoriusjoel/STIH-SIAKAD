@@ -370,53 +370,92 @@
                     </thead>
                     <tbody class="bg-white dark:bg-[#1a1d2e] divide-y divide-gray-200 dark:divide-slate-700">
                         <template x-for="(student, index) in students" :key="student.krs_id">
-                            <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors"
+                                :class="student.is_internship ? 'bg-orange-50/40 dark:bg-orange-900/10' : ''"
+                            >
                                 <td class="px-4 py-3 text-sm text-gray-900 dark:text-white" x-text="index + 1"></td>
                                 <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white" x-text="student.nim"></td>
-                                <td class="px-4 py-3 text-sm text-gray-900 dark:text-white" x-text="student.name"></td>
-                                <td class="px-4 py-3 text-center">
-                                    <input type="number" 
-                                           x-model.number="student.nilai_partisipatif"
-                                           @input="validateGrade(student, 'nilai_partisipatif')"
-                                           min="0" max="100" step="0.01"
-                                           class="w-20 px-2 py-1 text-center border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white">
+                                <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                                    <div class="flex items-center gap-2">
+                                        <span x-text="student.name"></span>
+                                        <template x-if="student.is_internship">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">Magang</span>
+                                        </template>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <input type="number" 
-                                           x-model.number="student.nilai_proyek"
-                                           @input="validateGrade(student, 'nilai_proyek')"
-                                           min="0" max="100" step="0.01"
-                                           class="w-20 px-2 py-1 text-center border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white">
+                                    <template x-if="!student.is_internship">
+                                        <input type="number" 
+                                               x-model.number="student.nilai_partisipatif"
+                                               @input="validateGrade(student, 'nilai_partisipatif')"
+                                               min="0" max="100" step="0.01"
+                                               class="w-20 px-2 py-1 text-center border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white">
+                                    </template>
+                                    <template x-if="student.is_internship">
+                                        <span class="text-xs text-gray-400 dark:text-slate-500 italic">—</span>
+                                    </template>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <input type="number" 
-                                           x-model.number="student.nilai_quiz"
-                                           @input="validateGrade(student, 'nilai_quiz')"
-                                           min="0" max="100" step="0.01"
-                                           class="w-20 px-2 py-1 text-center border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white">
+                                    <template x-if="!student.is_internship">
+                                        <input type="number" 
+                                               x-model.number="student.nilai_proyek"
+                                               @input="validateGrade(student, 'nilai_proyek')"
+                                               min="0" max="100" step="0.01"
+                                               class="w-20 px-2 py-1 text-center border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white">
+                                    </template>
+                                    <template x-if="student.is_internship">
+                                        <span class="text-xs text-gray-400 dark:text-slate-500 italic">—</span>
+                                    </template>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <input type="number" 
-                                           x-model.number="student.nilai_tugas"
-                                           @input="validateGrade(student, 'nilai_tugas')"
-                                           min="0" max="100" step="0.01"
-                                           class="w-20 px-2 py-1 text-center border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white">
+                                    <template x-if="!student.is_internship">
+                                        <input type="number" 
+                                               x-model.number="student.nilai_quiz"
+                                               @input="validateGrade(student, 'nilai_quiz')"
+                                               min="0" max="100" step="0.01"
+                                               class="w-20 px-2 py-1 text-center border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white">
+                                    </template>
+                                    <template x-if="student.is_internship">
+                                        <span class="text-xs text-gray-400 dark:text-slate-500 italic">—</span>
+                                    </template>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <input type="number" 
-                                           x-model.number="student.nilai_uts"
-                                           @input="validateGrade(student, 'nilai_uts')"
-                                           min="0" max="100" step="0.01"
-                                           class="w-20 px-2 py-1 text-center rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white"
-                                           :class="periodStatuses.uts.status === 'active' ? 'border border-green-400 dark:border-green-600' : (periodStatuses.uts.status === 'closed' ? 'border border-amber-400 dark:border-amber-600 bg-amber-50/50 dark:bg-amber-900/10' : 'border border-gray-300 dark:border-slate-600')">
+                                    <template x-if="!student.is_internship">
+                                        <input type="number" 
+                                               x-model.number="student.nilai_tugas"
+                                               @input="validateGrade(student, 'nilai_tugas')"
+                                               min="0" max="100" step="0.01"
+                                               class="w-20 px-2 py-1 text-center border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white">
+                                    </template>
+                                    <template x-if="student.is_internship">
+                                        <span class="text-xs text-gray-400 dark:text-slate-500 italic">—</span>
+                                    </template>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <input type="number" 
-                                           x-model.number="student.nilai_uas"
-                                           @input="validateGrade(student, 'nilai_uas')"
-                                           min="0" max="100" step="0.01"
-                                           class="w-20 px-2 py-1 text-center rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white"
-                                           :class="periodStatuses.uas.status === 'active' ? 'border border-green-400 dark:border-green-600' : (periodStatuses.uas.status === 'closed' ? 'border border-amber-400 dark:border-amber-600 bg-amber-50/50 dark:bg-amber-900/10' : 'border border-gray-300 dark:border-slate-600')">
+                                    <template x-if="!student.is_internship">
+                                        <input type="number" 
+                                               x-model.number="student.nilai_uts"
+                                               @input="validateGrade(student, 'nilai_uts')"
+                                               min="0" max="100" step="0.01"
+                                               class="w-20 px-2 py-1 text-center rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white"
+                                               :class="periodStatuses.uts.status === 'active' ? 'border border-green-400 dark:border-green-600' : (periodStatuses.uts.status === 'closed' ? 'border border-amber-400 dark:border-amber-600 bg-amber-50/50 dark:bg-amber-900/10' : 'border border-gray-300 dark:border-slate-600')">
+                                    </template>
+                                    <template x-if="student.is_internship">
+                                        <span class="text-xs text-gray-400 dark:text-slate-500 italic">—</span>
+                                    </template>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <template x-if="!student.is_internship">
+                                        <input type="number" 
+                                               x-model.number="student.nilai_uas"
+                                               @input="validateGrade(student, 'nilai_uas')"
+                                               min="0" max="100" step="0.01"
+                                               class="w-20 px-2 py-1 text-center rounded-lg focus:ring-2 focus:ring-primary dark:bg-slate-700 dark:text-white"
+                                               :class="periodStatuses.uas.status === 'active' ? 'border border-green-400 dark:border-green-600' : (periodStatuses.uas.status === 'closed' ? 'border border-amber-400 dark:border-amber-600 bg-amber-50/50 dark:bg-amber-900/10' : 'border border-gray-300 dark:border-slate-600')">
+                                    </template>
+                                    <template x-if="student.is_internship">
+                                        <span class="text-xs text-gray-400 dark:text-slate-500 italic">—</span>
+                                    </template>
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     <span class="text-sm font-bold text-primary" x-text="student.nilai_akhir.toFixed(2)"></span>
@@ -687,7 +726,7 @@
                 },
 
                 async executeAutoSave() {
-                    const nilaiData = this.students.map(student => ({
+                    const nilaiData = this.students.filter(s => !s.is_internship).map(student => ({
                         krs_id: student.krs_id,
                         nilai_partisipatif: parseFloat(student.nilai_partisipatif) || 0,
                         nilai_proyek: parseFloat(student.nilai_proyek) || 0,
@@ -737,7 +776,7 @@
                 async saveAllNilai() {
                     this.isSaving = true;
 
-                    const nilaiData = this.students.map(student => ({
+                    const nilaiData = this.students.filter(s => !s.is_internship).map(student => ({
                         krs_id: student.krs_id,
                         nilai_partisipatif: parseFloat(student.nilai_partisipatif) || 0,
                         nilai_proyek: parseFloat(student.nilai_proyek) || 0,

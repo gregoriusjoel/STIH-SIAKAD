@@ -24,9 +24,9 @@ class InternshipLetterService
 
         $context = $this->buildContext($internship);
 
-        $templatePath = base_path('docs/Surat Permohonan Magang.docx');
+        $templatePath = base_path('docs/FORM PENGAJUAN SURAT PENGANTAR MAGANG.docx');
         if (!file_exists($templatePath)) {
-            throw new \RuntimeException("Template 'Surat Permohonan Magang.docx' tidak ditemukan di folder docs/.");
+            throw new \RuntimeException("Template 'FORM PENGAJUAN SURAT PENGANTAR MAGANG.docx' tidak ditemukan di folder docs/.");
         }
 
         $processor = new TemplateProcessor($templatePath);

@@ -121,24 +121,40 @@
                                 </div>
 
                                 {{-- Details --}}
-                                @if($bobotPenilaian)
+                                @if($bobotPenilaian || $krs->is_internship_conversion)
                                     <div x-show="expanded" x-collapse>
                                         <div class="px-5 pb-5 pt-1 border-t border-dashed border-slate-100 dark:border-slate-800">
                                             <p class="text-[9px] font-black text-primary uppercase tracking-[0.15em] mb-3 flex items-center gap-2">
                                                 <span class="size-1 bg-primary rounded-full animate-pulse"></span>
                                                 Komponen
+                                                @if($krs->is_internship_conversion && !$bobotPenilaian)
+                                                    <span class="ml-1 text-[8px] font-bold text-slate-400 normal-case tracking-normal">(Konversi Magang)</span>
+                                                @endif
                                             </p>
                                             
                                             <div class="grid grid-cols-2 gap-2">
                                                 @php
-                                                    $components = [
-                                                        ['label' => 'Part.', 'nilai' => $nilai->nilai_partisipatif ?? 0, 'bobot' => $bobotPenilaian->bobot_partisipatif],
-                                                        ['label' => 'Proyek', 'nilai' => $nilai->nilai_proyek ?? 0, 'bobot' => $bobotPenilaian->bobot_proyek],
-                                                        ['label' => 'Quiz', 'nilai' => $nilai->nilai_quiz ?? 0, 'bobot' => $bobotPenilaian->bobot_quiz],
-                                                        ['label' => 'Tugas', 'nilai' => $nilai->nilai_tugas ?? 0, 'bobot' => $bobotPenilaian->bobot_tugas],
-                                                        ['label' => 'UTS', 'nilai' => $nilai->nilai_uts ?? 0, 'bobot' => $bobotPenilaian->bobot_uts],
-                                                        ['label' => 'UAS', 'nilai' => $nilai->nilai_uas ?? 0, 'bobot' => $bobotPenilaian->bobot_uas],
-                                                    ];
+                                                    if ($bobotPenilaian) {
+                                                        $components = [
+                                                            ['label' => 'Part.', 'nilai' => $nilai->nilai_partisipatif ?? 0, 'bobot' => $bobotPenilaian->bobot_partisipatif],
+                                                            ['label' => 'Proyek', 'nilai' => $nilai->nilai_proyek ?? 0, 'bobot' => $bobotPenilaian->bobot_proyek],
+                                                            ['label' => 'Quiz', 'nilai' => $nilai->nilai_quiz ?? 0, 'bobot' => $bobotPenilaian->bobot_quiz],
+                                                            ['label' => 'Tugas', 'nilai' => $nilai->nilai_tugas ?? 0, 'bobot' => $bobotPenilaian->bobot_tugas],
+                                                            ['label' => 'UTS', 'nilai' => $nilai->nilai_uts ?? 0, 'bobot' => $bobotPenilaian->bobot_uts],
+                                                            ['label' => 'UAS', 'nilai' => $nilai->nilai_uas ?? 0, 'bobot' => $bobotPenilaian->bobot_uas],
+                                                        ];
+                                                    } else {
+                                                        // Konversi magang: semua komponen sama rata dengan nilai yang diinputkan
+                                                        $nilaiInput = $nilaiAngka;
+                                                        $components = [
+                                                            ['label' => 'Part.', 'nilai' => $nilaiInput, 'bobot' => 16.67],
+                                                            ['label' => 'Proyek', 'nilai' => $nilaiInput, 'bobot' => 16.67],
+                                                            ['label' => 'Quiz', 'nilai' => $nilaiInput, 'bobot' => 16.67],
+                                                            ['label' => 'Tugas', 'nilai' => $nilaiInput, 'bobot' => 16.67],
+                                                            ['label' => 'UTS', 'nilai' => $nilaiInput, 'bobot' => 16.67],
+                                                            ['label' => 'UAS', 'nilai' => $nilaiInput, 'bobot' => 16.65],
+                                                        ];
+                                                    }
                                                 @endphp
 
                                                 @foreach($components as $comp)
@@ -146,7 +162,7 @@
                                                         <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-2.5 border border-slate-100 dark:border-slate-800 flex flex-col justify-between">
                                                             <div class="flex items-center justify-between mb-1">
                                                                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">{{ $comp['label'] }}</p>
-                                                                <span class="text-[9px] font-bold text-primary bg-primary/5 px-1 py-0.5 rounded leading-none">{{ $comp['bobot'] }}%</span>
+                                                                <span class="text-[9px] font-bold text-primary bg-primary/5 px-1 py-0.5 rounded leading-none">{{ number_format($comp['bobot'], 2) }}%</span>
                                                             </div>
                                                             <div class="flex items-baseline leading-none mt-1">
                                                                 <span class="text-lg font-black text-slate-900 dark:text-white">{{ number_format($comp['nilai'], 0) }}</span>

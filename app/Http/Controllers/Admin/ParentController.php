@@ -112,7 +112,13 @@ class ParentController extends Controller
         try {
             $user = $parent->user;
             $parent->delete();
-            $user->delete();
+
+            // Only delete the user account if it belongs to a 'parent' role
+            // (safety guard to prevent accidentally deleting mahasiswa accounts)
+            if ($user && $user->role === 'parent') {
+                $user->delete();
+            }
+
             DB::commit();
             return redirect()->route('admin.parents.index')->with('success', 'Data orang tua berhasil dihapus');
         } catch (\Exception $e) {

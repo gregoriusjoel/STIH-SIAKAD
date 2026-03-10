@@ -49,16 +49,37 @@ class InternshipKrsService
 
         DB::transaction(function () use ($internship, $mappings, $activeSemester) {
             foreach ($mappings as $mapping) {
-                // Check if KRS entry already exists for this MK + mahasiswa + semester
-                $exists = Krs::where('mahasiswa_id', $internship->mahasiswa_id)
+                // Guard: skip if this MK has already been injected for this internship
+                $alreadyInjected = Krs::where('mahasiswa_id', $internship->mahasiswa_id)
                     ->where('mata_kuliah_id', $mapping->mata_kuliah_id)
+                    ->where('is_internship_conversion', true)
                     ->where('internship_id', $internship->id)
                     ->exists();
 
-                if ($exists) continue;
+                if ($alreadyInjected) continue;
 
-                // Find or skip: if there's a KelasMataKuliah for this MK in active semester, use it.
-                // Otherwise, create KRS without kelas_mata_kuliah_id (direct MK reference).
+                // Prefer updating an existing approved KRS for this MK+semester
+                // instead of creating a duplicate row. This preserves kelas_id / kelas_mata_kuliah_id.
+                $existingKrs = Krs::where('mahasiswa_id', $internship->mahasiswa_id)
+                    ->where('mata_kuliah_id', $mapping->mata_kuliah_id)
+                    ->where('semester_id', $activeSemester->id)
+                    ->whereNull('internship_id')
+                    ->whereIn('status', ['approved', 'disetujui'])
+                    ->first();
+
+                if ($existingKrs) {
+                    // Stamp the existing KRS as a conversion entry — keeps kelas_id intact
+                    // so the student remains visible in the dosen's class list.
+                    $existingKrs->update([
+                        'is_internship_conversion' => true,
+                        'internship_id'            => $internship->id,
+                        'keterangan'               => 'Konversi Magang - ' . $internship->instansi,
+                    ]);
+                    continue;
+                }
+
+                // No existing KRS — create a new one.
+                // Try to resolve kelas_id via KelasMataKuliah so the KHS semester/SKS chain works.
                 $kelasMk = KelasMataKuliah::where('mata_kuliah_id', $mapping->mata_kuliah_id)
                     ->where('semester_id', $activeSemester->id)
                     ->first();
@@ -67,8 +88,8 @@ class InternshipKrsService
                     'mahasiswa_id'             => $internship->mahasiswa_id,
                     'mata_kuliah_id'           => $mapping->mata_kuliah_id,
                     'kelas_mata_kuliah_id'     => $kelasMk?->id,
-                    'kelas_id'                 => null,
-                    'semester_id'              => $activeSemester->id,   // ← FIX: direct semester link untuk KHS grouping
+                    'kelas_id'                 => $kelasMk?->kelas_id ?? null,
+                    'semester_id'              => $activeSemester->id,
                     'status'                   => 'approved',
                     'keterangan'               => 'Konversi Magang - ' . $internship->instansi,
                     'internship_id'            => $internship->id,

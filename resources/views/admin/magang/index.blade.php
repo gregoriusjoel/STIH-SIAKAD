@@ -3,7 +3,7 @@
 @section('title', 'Manajemen Magang Mahasiswa')
 
 @section('content')
-<div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto font-inter">
+<div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[1600px] mx-auto font-inter">
 
     {{-- Page Header --}}
     <div class="sm:flex sm:justify-between sm:items-center mb-8">

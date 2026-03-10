@@ -50,16 +50,16 @@
                                         @endif
                                     </div>
 
-                                    <hr class="my-4 border-t border-gray-100 dark:border-gray-700">
-                                        <div class="mt-3 flex flex-col md:flex-row items-stretch md:items-center gap-3">
-                                        <a href="{{ route('admin.semester.manage') }}" class="px-6 py-3 bg-maroon text-white rounded-full hover:bg-red-900 transition flex items-center justify-center shadow-sm"><i class="fas fa-plus mr-2"></i>Set Semester Baru</a>
-                                        <a href="{{ route('admin.kalender.index') }}" class="px-5 py-3 border border-gray-300 dark:border-gray-600 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition flex items-center justify-center">Lihat Kalender Akademik</a>
+                                    <hr class="my-4 md:my-5 border-t border-gray-100 dark:border-gray-700">
+                                    <div class="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                        <a href="{{ route('admin.semester.manage') }}" class="w-full sm:w-auto px-5 py-2.5 bg-maroon text-white text-sm font-semibold rounded-full hover:bg-red-900 transition flex items-center justify-center shadow-sm whitespace-nowrap"><i class="fas fa-plus mr-2"></i>Set Semester Baru</a>
+                                        <a href="{{ route('admin.kalender.index') }}" class="w-full sm:w-auto px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-full text-gray-700 dark:text-gray-300 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition flex items-center justify-center whitespace-nowrap">Lihat Kalender Akademik</a>
                                     </div>
                                 @else
                                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-2">Belum ada semester aktif</h3>
                                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Silakan atur semester aktif pada halaman Semester & Tahun Ajaran.</p>
                                     <div class="mt-4">
-                                        <a href="{{ route('admin.semester.manage') }}" class="w-full md:w-auto px-4 py-3 bg-maroon text-white rounded-lg hover:bg-red-900 transition flex items-center justify-center"><i class="fas fa-cog mr-2"></i>Atur Semester</a>
+                                        <a href="{{ route('admin.semester.manage') }}" class="w-full sm:w-auto px-5 py-2.5 bg-maroon text-white text-sm font-semibold rounded-lg hover:bg-red-900 transition inline-flex items-center justify-center"><i class="fas fa-cog mr-2"></i>Atur Semester</a>
                                     </div>
                                 @endif
                             </div>
@@ -129,7 +129,7 @@
                                 <input type="date" name="krs_selesai" value="{{ $semesterAktif->krs_selesai?->format('Y-m-d') }}" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm">
                             </div>
 
-                            <button type="submit" class="w-full px-4 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 transition flex items-center justify-center mt-4 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-maroon/30 ring-1 ring-maroon/10">
+                            <button type="submit" class="w-full px-5 py-2.5 bg-maroon text-white text-sm font-semibold rounded-lg hover:bg-red-900 transition flex items-center justify-center mt-5 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-maroon/30 ring-1 ring-maroon/10">
                                 <i class="fas fa-save mr-2"></i>
                                 Simpan Pengaturan
                             </button>
@@ -145,13 +145,15 @@
             <div class="block md:hidden space-y-4">
                 @forelse($krsData as $mahasiswa)
                     @php
+                        $uniqueKrs = collect($mahasiswa->krs)->unique('mata_kuliah_id');
                         $totalSks = 0;
                         $krsStatus = 'draft';
-                        if (!empty($mahasiswa->krs)) {
-                            foreach ($mahasiswa->krs as $k) {
-                                $sks = optional(optional($k->kelas)->mataKuliah)->sks ?? optional($k->mataKuliah)->sks ?? 0;
+                        if ($uniqueKrs->isNotEmpty()) {
+                            foreach ($uniqueKrs as $k) {
+                                $sks = optional($k->mataKuliah)->sks
+                                    ?? optional(optional($k->kelas)->mataKuliah)->sks
+                                    ?? 0;
                                 $totalSks += (int) $sks;
-                                // If any KRS is not draft, consider it as submitted
                                 if ($k->status !== 'draft') {
                                     $krsStatus = $k->status;
                                 }
@@ -275,14 +277,16 @@
                 @endphp
                 @forelse($krsData as $mahasiswa)
                     @php
-                        // calculate total SKS for this mahasiswa
+                        // Deduplicate by mata_kuliah_id to avoid double-counting
+                        $uniqueKrs = collect($mahasiswa->krs)->unique('mata_kuliah_id');
                         $totalSks = 0;
                         $krsStatus = 'draft';
-                        if (!empty($mahasiswa->krs)) {
-                            foreach ($mahasiswa->krs as $k) {
-                                $sks = optional(optional($k->kelas)->mataKuliah)->sks ?? optional($k->mataKuliah)->sks ?? 0;
+                        if ($uniqueKrs->isNotEmpty()) {
+                            foreach ($uniqueKrs as $k) {
+                                $sks = optional($k->mataKuliah)->sks
+                                    ?? optional(optional($k->kelas)->mataKuliah)->sks
+                                    ?? 0;
                                 $totalSks += (int) $sks;
-                                // If any KRS is not draft, consider it as submitted
                                 if ($k->status !== 'draft') {
                                     $krsStatus = $k->status;
                                 }
@@ -422,11 +426,12 @@
                         $currentSemesterInfo = $mahasiswa->getCurrentSemesterInfo();
                     @endphp
                     <div><strong class="text-gray-900 dark:text-gray-100">Semester:</strong> Semester {{ $currentSemesterInfo->semester_number ?? '-' }}</div>
-                    <div><strong class="text-gray-900 dark:text-gray-100">Total SKS:</strong> {{ $mahasiswa->krs->sum(function($k) { return optional(optional($k->kelas)->mataKuliah)->sks ?? optional(optional($k->kelasMataKuliah)->mataKuliah)->sks ?? optional($k->mataKuliah)->sks ?? 0; }) }} SKS</div>
+                    <div><strong class="text-gray-900 dark:text-gray-100">Total SKS:</strong> {{ collect($mahasiswa->krs)->unique('mata_kuliah_id')->sum(function($k) { return optional($k->mataKuliah)->sks ?? optional(optional($k->kelas)->mataKuliah)->sks ?? 0; }) }} SKS</div>
                 </div>
                 <div class="border-t dark:border-gray-700 pt-4">
                     <strong class="block mb-2 text-gray-900 dark:text-gray-100">Daftar Mata Kuliah:</strong>
                     @if($mahasiswa->krs->count() > 0)
+                    @php $uniqueKrsModal = collect($mahasiswa->krs)->unique('mata_kuliah_id'); @endphp
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
@@ -436,13 +441,13 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach($mahasiswa->krs as $krsItem)
+                                @foreach($uniqueKrsModal as $krsItem)
                                     <tr>
                                         <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
-                                            {{ optional(optional($krsItem->kelas)->mataKuliah)->nama_mk ?? optional(optional($krsItem->kelasMataKuliah)->mataKuliah)->nama_mk ?? optional($krsItem->mataKuliah)->nama_mk ?? '-' }}
+                                            {{ optional($krsItem->mataKuliah)->nama_mk ?? optional(optional($krsItem->kelas)->mataKuliah)->nama_mk ?? '-' }}
                                         </td>
                                         <td class="px-3 py-2 text-sm text-center text-gray-900 dark:text-gray-100">
-                                            {{ optional(optional($krsItem->kelas)->mataKuliah)->sks ?? optional(optional($krsItem->kelasMataKuliah)->mataKuliah)->sks ?? optional($krsItem->mataKuliah)->sks ?? '-' }}
+                                            {{ optional($krsItem->mataKuliah)->sks ?? optional(optional($krsItem->kelas)->mataKuliah)->sks ?? '-' }}
                                         </td>
                                         <td class="px-3 py-2 text-sm text-center">
                                             @if($krsItem->status === 'draft')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Dosen;
+use App\Models\Semester;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,10 +14,202 @@ use App\Services\TeachingAssignmentService;
 
 class DosenController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $dosens = Dosen::with('user', 'kelasMataKuliahs.mataKuliah')->paginate(10);
-        return view('admin.dosen.index', compact('dosens'));
+        $service        = app(TeachingAssignmentService::class);
+        $semesterService = app(\App\Services\SemesterService::class);
+
+        $activeSemester  = $semesterService->getActiveSemester();
+        $allSemesters    = Semester::orderByDesc('tahun_ajaran')->orderByDesc('nama_semester')->get();
+
+        $selectedSemesterId = $request->input('semester_id', $activeSemester?->id);
+        $selectedSemester   = $allSemesters->firstWhere('id', $selectedSemesterId) ?? $activeSemester;
+
+        $tab    = $request->input('tab', 'master');
+        $search = trim($request->input('search', ''));
+
+        // ── Tab: Master Dosen ────────────────────────────────────────────────
+        $dosens = null;
+        if ($tab === 'master') {
+            $dosens = Dosen::with(['user', 'kelasMataKuliahs.mataKuliah', 'kelasMataKuliahs.semester'])
+                ->when($search, function ($q) use ($search) {
+                    $q->whereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"))
+                      ->orWhere('nidn', 'like', "%{$search}%");
+                })
+                ->orderBy(User::select('name')->whereColumn('users.id', 'dosens.user_id'))
+                ->paginate(15)
+                ->withQueryString();
+        }
+
+        // ── Tab: Dosen Aktif TA ──────────────────────────────────────────────
+        $dosenAktif      = collect();
+        $dosenAktifCount = 0;
+
+        if ($selectedSemester) {
+            // All distinct dosen_ids assigned in selected semester
+            $assignedDosenIds = DB::table('dosen_mata_kuliah')
+                ->where('semester_id', $selectedSemester->id)
+                ->pluck('dosen_id')
+                ->unique();
+
+            $dosenAktifCount = $assignedDosenIds->count();
+
+            if ($tab === 'dosen-aktif') {
+                $dosenAktif = Dosen::with([
+                        'user',
+                        'mataKuliahs' => fn($q) => $q->wherePivot('semester_id', $selectedSemester->id)->orderBy('kode_mk'),
+                    ])
+                    ->whereIn('id', $assignedDosenIds)
+                    ->when($search, fn($q) => $q->whereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")))
+                    ->get()
+                    ->sortBy(fn($d) => $d->user->name);
+            }
+        }
+
+        // ── Tab: Histori ─────────────────────────────────────────────────────
+        $historiDosen = collect();
+
+        if ($tab === 'histori') {
+            $rows = DB::table('dosen_mata_kuliah as dma')
+                ->join('dosens', 'dosens.id', '=', 'dma.dosen_id')
+                ->join('users', 'users.id', '=', 'dosens.user_id')
+                ->join('mata_kuliahs', 'mata_kuliahs.id', '=', 'dma.mata_kuliah_id')
+                ->join('semesters', 'semesters.id', '=', 'dma.semester_id')
+                ->when($search, fn($q) => $q->where(function ($q2) use ($search) {
+                    $q2->where('users.name', 'like', "%{$search}%")
+                       ->orWhere('dosens.nidn', 'like', "%{$search}%");
+                }))
+                ->select(
+                    'dosens.id as dosen_id',
+                    'users.name as dosen_name',
+                    'dosens.nidn',
+                    'dosens.pendidikan',
+                    'dosens.status as dosen_status',
+                    'semesters.id as semester_id',
+                    'semesters.nama_semester',
+                    'semesters.tahun_ajaran',
+                    'semesters.is_active',
+                    'mata_kuliahs.id as mk_id',
+                    'mata_kuliahs.kode_mk',
+                    'mata_kuliahs.nama_mk',
+                    'mata_kuliahs.sks'
+                )
+                ->orderBy('users.name')
+                ->orderByDesc('semesters.tahun_ajaran')
+                ->orderByDesc('semesters.nama_semester')
+                ->get();
+
+            // Group: dosen → semester → MK
+            $historiDosen = $rows->groupBy('dosen_id')->map(function ($dosenRows) {
+                $first = $dosenRows->first();
+                $semesters = $dosenRows->groupBy('semester_id')->map(function ($semRows) {
+                    $s = $semRows->first();
+                    return [
+                        'id'           => $s->semester_id,
+                        'label'        => $s->nama_semester . ' ' . $s->tahun_ajaran,
+                        'tahun_ajaran' => $s->tahun_ajaran,
+                        'nama_semester'=> $s->nama_semester,
+                        'is_active'    => (bool) $s->is_active,
+                        'matakuliah'   => $semRows->map(fn($r) => [
+                            'id'      => $r->mk_id,
+                            'kode_mk' => $r->kode_mk,
+                            'nama_mk' => $r->nama_mk,
+                            'sks'     => $r->sks,
+                        ])->values(),
+                    ];
+                })->values();
+
+                return [
+                    'dosen_id'  => $first->dosen_id,
+                    'name'      => $first->dosen_name,
+                    'nidn'      => $first->nidn,
+                    'pendidikan'=> $first->pendidikan,
+                    'status'    => $first->dosen_status,
+                    'semesters' => $semesters,
+                    'total_ta'  => $semesters->count(),
+                    'total_mk'  => $dosenRows->pluck('mk_id')->unique()->count(),
+                ];
+            })->values();
+        }
+
+        // ── Shared data for modals ────────────────────────────────────────────
+        $previousSemester   = $selectedSemester ? $service->getPreviousSemester($selectedSemester) : null;
+        $availableDosens    = Dosen::with('user')->where('status', 'aktif')
+            ->get()->sortBy(fn($d) => $d->user->name);
+        $availableMataKuliah = $selectedSemester
+            ? \App\Models\MataKuliah::activeBySemester($selectedSemester->id)->orderBy('kode_mk')->get()
+            : \App\Models\MataKuliah::orderBy('kode_mk')->get();
+
+        return view('admin.dosen.index', compact(
+            'dosens',
+            'activeSemester', 'allSemesters', 'selectedSemester',
+            'tab', 'search',
+            'dosenAktif', 'dosenAktifCount',
+            'historiDosen',
+            'availableDosens', 'availableMataKuliah',
+            'previousSemester'
+        ));
+    }
+
+    /**
+     * Bulk carry-forward: copy all dosen assignments from source semester to target.
+     * POST admin/dosen/carry-forward-all
+     */
+    public function carryForwardAll(Request $request)
+    {
+        $request->validate([
+            'source_semester_id' => 'required|exists:semesters,id',
+            'target_semester_id' => 'required|exists:semesters,id|different:source_semester_id',
+        ]);
+
+        $sourceSemId = (int) $request->source_semester_id;
+        $targetSemId = (int) $request->target_semester_id;
+
+        // Fetch all rows from source
+        $sourceRows = DB::table('dosen_mata_kuliah')
+            ->where('semester_id', $sourceSemId)
+            ->get();
+
+        if ($sourceRows->isEmpty()) {
+            return back()->with('error', 'Tidak ada data penugasan pada semester sumber.');
+        }
+
+        $userId = auth()->id();
+        $now    = now();
+        $copied = 0;
+        $skipped = 0;
+
+        DB::beginTransaction();
+        try {
+            foreach ($sourceRows as $row) {
+                $exists = DB::table('dosen_mata_kuliah')
+                    ->where('dosen_id', $row->dosen_id)
+                    ->where('mata_kuliah_id', $row->mata_kuliah_id)
+                    ->where('semester_id', $targetSemId)
+                    ->exists();
+
+                if ($exists) { $skipped++; continue; }
+
+                DB::table('dosen_mata_kuliah')->insert([
+                    'dosen_id'       => $row->dosen_id,
+                    'mata_kuliah_id' => $row->mata_kuliah_id,
+                    'semester_id'    => $targetSemId,
+                    'created_by'     => $userId,
+                    'created_at'     => $now,
+                    'updated_at'     => $now,
+                ]);
+                $copied++;
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal carry forward: ' . $e->getMessage());
+        }
+
+        $msg = "{$copied} penugasan berhasil disalin ke semester tujuan.";
+        if ($skipped) $msg .= " {$skipped} dilewati (sudah ada).";
+
+        return back()->with('success', $msg);
     }
 
     public function create()
@@ -703,6 +896,61 @@ class DosenController extends Controller
                 ]),
             ]),
             'total_sks' => $assignments->sum('sks'),
+        ]);
+    }
+
+    /**
+     * AJAX: Data for Quick Assign Drawer on index page.
+     * GET admin/dosen/{dosen}/quick-assign
+     */
+    public function quickAssignData(Dosen $dosen)
+    {
+        $dosen->load(['user', 'kelasMataKuliahs.mataKuliah']);
+
+        $semesterService = app(\App\Services\SemesterService::class);
+        $activeSemester  = $semesterService->getActiveSemester();
+
+        $service = app(TeachingAssignmentService::class);
+        $currentAssignments = $activeSemester
+            ? $service->getAssignments($dosen, $activeSemester->id)
+            : collect();
+
+        // All MK ever taught by this dosen (historic)
+        $historicMkIds = $dosen->kelasMataKuliahs
+            ->pluck('mata_kuliah_id')
+            ->unique()
+            ->values();
+
+        // All available MK
+        $allMK = \App\Models\MataKuliah::orderBy('semester')
+            ->orderBy('kode_mk')
+            ->get(['id', 'kode_mk', 'nama_mk', 'sks', 'semester']);
+
+        return response()->json([
+            'dosen' => [
+                'id'   => $dosen->id,
+                'name' => $dosen->user->name,
+                'nidn' => $dosen->nidn,
+            ],
+            'active_semester' => $activeSemester ? [
+                'id'    => $activeSemester->id,
+                'label' => $activeSemester->nama_semester . ' ' . $activeSemester->tahun_ajaran,
+            ] : null,
+            'current_ids'         => $currentAssignments->pluck('id')->values(),
+            'current_assignments' => $currentAssignments->map(fn($mk) => [
+                'id'      => $mk->id,
+                'kode_mk' => $mk->kode_mk,
+                'nama_mk' => $mk->nama_mk,
+                'sks'     => $mk->sks,
+            ]),
+            'historic_mk_ids' => $historicMkIds,
+            'available_mk'    => $allMK->map(fn($mk) => [
+                'id'      => $mk->id,
+                'kode_mk' => $mk->kode_mk,
+                'nama_mk' => $mk->nama_mk,
+                'sks'     => $mk->sks,
+                'semester'=> $mk->semester,
+            ]),
         ]);
     }
 }

@@ -522,6 +522,22 @@ class KelasMataKuliahController extends Controller
             ->keyBy('mahasiswa_id');
 
         $formattedStudents = $students->map(function ($krs, $index) use ($presensis) {
+            $isInternship = (bool) $krs->is_internship_conversion;
+
+            // Magang conversion students are always HADIR automatically
+            if ($isInternship) {
+                return [
+                    'no' => $index + 1,
+                    'nama' => $krs->mahasiswa->user->name ?? $krs->mahasiswa->nama ?? '-',
+                    'nim' => $krs->mahasiswa->nim ?? '-',
+                    'status' => 'hadir',
+                    'waktu_scan' => 'Otomatis (Magang)',
+                    'distance_meters' => null,
+                    'presence_mode' => 'internship',
+                    'is_internship' => true,
+                ];
+            }
+
             $presensi = $presensis->get($krs->mahasiswa_id);
             return [
                 'no' => $index + 1,
@@ -531,6 +547,7 @@ class KelasMataKuliahController extends Controller
                 'waktu_scan' => $presensi && $presensi->created_at ? ($presensi->created_at->format('H:i') . ' WIB') : '-',
                 'distance_meters' => $presensi ? $presensi->distance_meters : null,
                 'presence_mode' => $presensi ? $presensi->presence_mode : null,
+                'is_internship' => false,
             ];
         });
 
