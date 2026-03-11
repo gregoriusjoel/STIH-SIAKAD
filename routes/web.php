@@ -309,6 +309,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     })->name('verify-password');
 
     // Parent Management
+    Route::get('parents/existing/{mahasiswa_id}', [App\Http\Controllers\Admin\ParentController::class, 'getExistingData'])->name('parents.existing');
     Route::resource('parents', App\Http\Controllers\Admin\ParentController::class);
 
     // Master Data Management

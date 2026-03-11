@@ -59,15 +59,32 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
+                                    @php
+                                        // Determine actual parent name if user_id belongs to mahasiswa
+                                        $parentName = $parent->user->name;
+                                        $parentEmail = $parent->user->email;
+                                        if ($parent->user && $parent->user->role === 'mahasiswa') {
+                                            if ($parent->hubungan === 'ayah' && $parent->nama_ayah) $parentName = $parent->nama_ayah;
+                                            elseif ($parent->hubungan === 'ibu' && $parent->nama_ibu) $parentName = $parent->nama_ibu;
+                                            elseif ($parent->hubungan === 'wali' && $parent->nama_wali) $parentName = $parent->nama_wali;
+                                            // Fallbacks if hubungan isn't set
+                                            elseif ($parent->nama_ayah) $parentName = $parent->nama_ayah;
+                                            elseif ($parent->nama_ibu) $parentName = $parent->nama_ibu;
+                                            elseif ($parent->nama_wali) $parentName = $parent->nama_wali;
+                                            $parentEmail = '- (Belum ada Akun Valid)';
+                                        }
+                                    @endphp
                                     <div
                                         class="h-10 w-10 rounded-full bg-maroon flex items-center justify-center text-white font-bold mr-3">
-                                        {{ strtoupper(substr($parent->user->name, 0, 1)) }}
+                                        {{ strtoupper(substr($parentName, 0, 1)) }}
                                     </div>
                                     <div>
-                                        <div class="text-sm font-semibold text-gray-900">{{ $parent->user->name }}</div>
+                                        <div class="text-sm font-semibold text-gray-900">{{ $parentName }}</div>
                                         <div class="text-xs text-gray-500">
+                                            @if($parentEmail !== '- (Belum ada Akun Valid)')
                                             <i class="fas fa-envelope text-gray-400 mr-1"></i>
-                                            {{ $parent->user->email }}
+                                            @endif
+                                            {{ $parentEmail }}
                                         </div>
                                     </div>
                                 </div>

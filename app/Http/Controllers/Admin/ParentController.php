@@ -24,6 +24,18 @@ class ParentController extends Controller
         return view('admin.parents.create', compact('mahasiswas'));
     }
 
+    public function getExistingData($mahasiswa_id)
+    {
+        $parentData = ParentModel::where('mahasiswa_id', $mahasiswa_id)->first();
+        if ($parentData) {
+            return response()->json([
+                'success' => true,
+                'data' => $parentData
+            ]);
+        }
+        return response()->json(['success' => false, 'message' => 'No existing data found for this mahasiswa']);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -46,14 +58,34 @@ class ParentController extends Controller
                 'role' => 'parent',
             ]);
 
-            ParentModel::create([
+            $parentData = [
                 'user_id' => $user->id,
                 'mahasiswa_id' => $request->mahasiswa_id,
                 'hubungan' => $request->hubungan,
                 'pekerjaan' => $request->pekerjaan,
                 'phone' => $request->phone,
                 'address' => $request->address,
-            ]);
+                'tipe_wali' => $request->hubungan === 'wali' ? 'wali' : 'orang_tua',
+            ];
+
+            if ($request->hubungan === 'ayah') {
+                $parentData['nama_ayah'] = $request->name;
+                $parentData['handphone_ayah'] = $request->phone;
+                $parentData['alamat_ayah'] = $request->address;
+                $parentData['pekerjaan_ayah'] = $request->pekerjaan;
+            } elseif ($request->hubungan === 'ibu') {
+                $parentData['nama_ibu'] = $request->name;
+                $parentData['handphone_ibu'] = $request->phone;
+                $parentData['alamat_ibu'] = $request->address;
+                $parentData['pekerjaan_ibu'] = $request->pekerjaan;
+            } elseif ($request->hubungan === 'wali') {
+                $parentData['nama_wali'] = $request->name;
+                $parentData['handphone_wali'] = $request->phone;
+                $parentData['alamat_wali'] = $request->address;
+                $parentData['pekerjaan_wali'] = $request->pekerjaan;
+            }
+
+            ParentModel::create($parentData);
 
             DB::commit();
             return redirect()->route('admin.parents.index')->with('success', 'Data orang tua berhasil ditambahkan');
@@ -84,19 +116,61 @@ class ParentController extends Controller
 
         DB::beginTransaction();
         try {
-            $userData = ['name' => $request->name, 'email' => $request->email];
-            if ($request->filled('password')) {
-                $userData['password'] = Hash::make($request->password);
+            // Handle User Account Logic
+            // If the parent already has a dedicated 'parent' user account, just update it.
+            if ($parent->user && $parent->user->role === 'parent') {
+                $userData = ['name' => $request->name, 'email' => $request->email];
+                if ($request->filled('password')) {
+                    $userData['password'] = Hash::make($request->password);
+                }
+                $parent->user->update($userData);
+            } 
+            // If the parent is still tied to the 'mahasiswa' user account and the admin provides an email,
+            // we should create a new dedicated 'parent' user account for them.
+            elseif ($parent->user && $parent->user->role === 'mahasiswa' && $request->filled('email')) {
+                // To avoid duplicate email conflicts, we'll check if the email isn't already used
+                $existingUser = User::where('email', $request->email)->first();
+                if(!$existingUser) {
+                    $newUser = User::create([
+                        'name' => $request->name,
+                        'email' => $request->email,
+                        'password' => Hash::make($request->password ?? 'parent123'),
+                        'role' => 'parent',
+                    ]);
+                    $parent->user_id = $newUser->id;
+                    $parent->save();
+                } else {
+                    throw new \Exception('Email sudah digunakan oleh pengguna lain.');
+                }
             }
-            $parent->user->update($userData);
 
-            $parent->update([
+            $updateData = [
                 'mahasiswa_id' => $request->mahasiswa_id,
                 'hubungan' => $request->hubungan,
                 'pekerjaan' => $request->pekerjaan,
                 'phone' => $request->phone,
                 'address' => $request->address,
-            ]);
+                'tipe_wali' => $request->hubungan === 'wali' ? 'wali' : 'orang_tua',
+            ];
+
+            if ($request->hubungan === 'ayah') {
+                $updateData['nama_ayah'] = $request->name;
+                $updateData['handphone_ayah'] = $request->phone;
+                $updateData['alamat_ayah'] = $request->address;
+                $updateData['pekerjaan_ayah'] = $request->pekerjaan;
+            } elseif ($request->hubungan === 'ibu') {
+                $updateData['nama_ibu'] = $request->name;
+                $updateData['handphone_ibu'] = $request->phone;
+                $updateData['alamat_ibu'] = $request->address;
+                $updateData['pekerjaan_ibu'] = $request->pekerjaan;
+            } elseif ($request->hubungan === 'wali') {
+                $updateData['nama_wali'] = $request->name;
+                $updateData['handphone_wali'] = $request->phone;
+                $updateData['alamat_wali'] = $request->address;
+                $updateData['pekerjaan_wali'] = $request->pekerjaan;
+            }
+
+            $parent->update($updateData);
 
             DB::commit();
             return redirect()->route('admin.parents.index')->with('success', 'Data orang tua berhasil diperbarui');
