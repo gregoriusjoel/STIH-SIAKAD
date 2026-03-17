@@ -318,6 +318,22 @@
                     </a>
                 @endif
             </li>
+            <li>
+                @if(Route::has('admin.thesis.index'))
+                    <a href="{{ route('admin.thesis.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.thesis.*') ? 'active' : '' }}">
+                        <i class="fas fa-graduation-cap w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Sidang Skripsi</span>
+                        @php
+                            $pendingThesisCount = \App\Models\ThesisSubmission::whereIn('status', ['PROPOSAL_SUBMITTED','SIDANG_REG_SUBMITTED'])->count();
+                        @endphp
+                        @if($pendingThesisCount > 0)
+                            <span class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                {{ $pendingThesisCount }}
+                            </span>
+                        @endif
+                    </a>
+                @endif
+            </li>
         </ul>
     </div>
 
@@ -366,6 +382,12 @@
                         <span class="text-sm font-medium">Manajemen User</span>
                     </a>
                 @endif
+            </li>
+            <li>
+                <a href="{{ route('admin.audit-logs.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.audit-logs.*') ? 'active' : '' }}">
+                    <i class="fas fa-history w-5 mr-3"></i>
+                    <span class="text-sm font-medium">Log Audit Aktivitas</span>
+                </a>
             </li>
         </ul>
     </div>

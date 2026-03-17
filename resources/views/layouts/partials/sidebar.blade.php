@@ -115,6 +115,20 @@
                 <p class="text-sm {{ Request::routeIs('dosen.magang.*') ? 'font-black' : 'font-semibold' }}">Bimbingan Magang</p>
             </a>
 
+            @if(Route::has('dosen.thesis.index'))
+            <a href="{{ route('dosen.thesis.index') }}" 
+               @click="if(window.innerWidth < 1024) sidebarOpen = false" 
+               class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.thesis.*') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
+                @if(Request::routeIs('dosen.thesis.*'))
+                    <div class="absolute left-0 w-1.5 h-6 bg-primary rounded-r-full shadow-[2px_0_12px_rgba(139,21,56,0.2)]"></div>
+                @endif
+                <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 {{ Request::routeIs('dosen.thesis.*') ? 'fill-current' : 'text-slate-400 group-hover:text-primary' }}">
+                    school
+                </span>
+                <p class="text-sm {{ Request::routeIs('dosen.thesis.*') ? 'font-black' : 'font-semibold' }}">Bimbingan Skripsi</p>
+            </a>
+            @endif
+
             <!-- Premium Bottom Section -->
             <div class="mt-auto pt-8 pb-4 flex flex-col gap-2">
                 <div class="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent mb-4 opacity-60"></div>

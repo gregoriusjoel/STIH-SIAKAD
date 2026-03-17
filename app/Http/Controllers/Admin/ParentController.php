@@ -103,9 +103,23 @@ class ParentController extends Controller
 
     public function update(Request $request, ParentModel $parent)
     {
+        // Tentukan ID user mana yang dikecualikan dari aturan unique email.
+        // Jika parent saat ini masih menginduk ke mahasiswa, dan admin menginput email yang sudah ada (misal orphaned parent user),
+        // kita akan mengizinkannya asalkan role user tersebut adalah 'parent'.
+        $userIdToIgnore = $parent->user_id;
+
+        if ($parent->user && $parent->user->role === 'mahasiswa' && $request->filled('email')) {
+            $existingUser = User::where('email', $request->email)->first();
+            if ($existingUser && $existingUser->role === 'parent') {
+                // Jika email sudah dipakai oleh user dengan role 'parent', kita anggap aman untuk di-link.
+                // Mengecualikan id ini agar lolos validasi unique.
+                $userIdToIgnore = $existingUser->id;
+            }
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $parent->user_id,
+            'email' => 'required|email|unique:users,email,' . $userIdToIgnore,
             'password' => 'nullable|min:6',
             'mahasiswa_id' => 'nullable|exists:mahasiswas,id',
             'hubungan' => 'required|in:ayah,ibu,wali',
@@ -117,31 +131,33 @@ class ParentController extends Controller
         DB::beginTransaction();
         try {
             // Handle User Account Logic
-            // If the parent already has a dedicated 'parent' user account, just update it.
-            if ($parent->user && $parent->user->role === 'parent') {
+            // Jika parent sudah memiliki akun 'parent' sendiri ATAU kita akan me-link ke akun parent yang sudah ada
+            if (($parent->user && $parent->user->role === 'parent') || ($userIdToIgnore !== $parent->user_id)) {
+                
+                $targetUser = $userIdToIgnore !== $parent->user_id ? User::find($userIdToIgnore) : $parent->user;
+                
                 $userData = ['name' => $request->name, 'email' => $request->email];
                 if ($request->filled('password')) {
                     $userData['password'] = Hash::make($request->password);
                 }
-                $parent->user->update($userData);
-            } 
-            // If the parent is still tied to the 'mahasiswa' user account and the admin provides an email,
-            // we should create a new dedicated 'parent' user account for them.
-            elseif ($parent->user && $parent->user->role === 'mahasiswa' && $request->filled('email')) {
-                // To avoid duplicate email conflicts, we'll check if the email isn't already used
-                $existingUser = User::where('email', $request->email)->first();
-                if(!$existingUser) {
-                    $newUser = User::create([
-                        'name' => $request->name,
-                        'email' => $request->email,
-                        'password' => Hash::make($request->password ?? 'parent123'),
-                        'role' => 'parent',
-                    ]);
-                    $parent->user_id = $newUser->id;
+                $targetUser->update($userData);
+
+                // Update $parent->user_id jika target ternyata user yang berbeda (hasil take over)
+                if ($targetUser->id !== $parent->user_id) {
+                    $parent->user_id = $targetUser->id;
                     $parent->save();
-                } else {
-                    throw new \Exception('Email sudah digunakan oleh pengguna lain.');
                 }
+            } 
+            // Jika parent masih menginduk ke 'mahasiswa' dan ternyata TIDAK ADA user existing dengan email tsb, buat baru.
+            elseif ($parent->user && $parent->user->role === 'mahasiswa' && $request->filled('email')) {
+                $newUser = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password ?? 'parent123'),
+                    'role' => 'parent',
+                ]);
+                $parent->user_id = $newUser->id;
+                $parent->save();
             }
 
             $updateData = [

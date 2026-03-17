@@ -451,7 +451,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Alamat</label>
-                        <div>{{ $parent->alamat_ayah ?? $parent->alamat_ortu ?? 'Belum diisi' }}</div>
+                        <div>{{ $parent->alamat_ayah ?? 'Belum diisi' }}</div>
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Provinsi</label>
@@ -459,7 +459,7 @@
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Kota/Kabupaten</label>
-                        <div>{{ $parent->kota_ayah ?? $parent->kota_ortu ?? 'Belum diisi' }}</div>
+                        <div>{{ $parent->kota_ayah ?? 'Belum diisi' }}</div>
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Kecamatan</label>
@@ -467,11 +467,11 @@
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Desa/Kelurahan</label>
-                        <div>{{ $parent->desa_ayah ?? $parent->desa_ortu ?? 'Belum diisi' }}</div>
+                        <div>{{ $parent->desa_ayah ?? 'Belum diisi' }}</div>
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-400 uppercase">Handphone</label>
-                        <div>{{ $parent->handphone_ayah ?? $parent->handphone_ortu ?? 'Belum diisi' }}</div>
+                        <div>{{ $parent->handphone_ayah ?? 'Belum diisi' }}</div>
                     </div>
                 </div>
             </div>

@@ -224,7 +224,7 @@
                     </div>
 
                     <div class="flex-1 px-6">
-                        <div class="max-w-2xl mx-auto">
+                        <div class="relative w-full max-w-4xl group">
                             <form action="{{ route('admin.search') }}" method="GET" class="relative"
                                 id="header-search-form" data-search-url="{{ route('admin.search') }}">
                                 <div class="relative">

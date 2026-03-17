@@ -267,29 +267,4 @@ class MataKuliahSemesterController extends Controller
         return redirect()->back()->with('error', 'Gagal membuka kunci semester.');
     }
 
-    /* ─────────────────────────────────────────
-     *  AUDIT LOG PAGE
-     * ───────────────────────────────────────── */
-
-    public function auditLogs(Request $request)
-    {
-        $query = AuditLog::with('actor')
-            ->orderBy('created_at', 'desc');
-
-        if ($request->filled('action')) {
-            $query->where('action', $request->action);
-        }
-        if ($request->filled('actor_id')) {
-            $query->where('actor_id', $request->actor_id);
-        }
-        if ($request->filled('entity_type')) {
-            $query->where('auditable_type', 'like', "%{$request->entity_type}%");
-        }
-
-        $logs = $query->paginate(10)->withQueryString();
-
-        $actions = AuditLog::distinct()->pluck('action');
-
-        return view('admin.mata-kuliah-semester.audit-logs', compact('logs', 'actions'));
-    }
 }

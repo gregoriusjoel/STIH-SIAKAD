@@ -7,8 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+use App\Traits\Auditable;
+
 class Dosen extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'user_id',
         'nidn',

@@ -16,34 +16,72 @@
 
     <style>
         .sidebar {
-            background: linear-gradient(180deg, #5a0015 0%, #7a1621 100%);
+            background-color: #ffffff;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+        }
+
+        .sidebar-header {
+            background: transparent;
+            border-bottom: none;
         }
 
         .sidebar-link {
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #4b5563;
+            border-radius: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid transparent;
+        }
+
+        .sidebar-link i {
+            color: #9ca3af;
+            transition: color 0.3s ease;
         }
 
         .sidebar-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: #fce7f3; /* Light pink/maroon tint */
+            color: #800020;
             transform: translateX(4px);
+            border-color: rgba(128, 0, 32, 0.1);
+        }
+
+        .sidebar-link:hover i {
+            color: #800020;
         }
 
         .sidebar-link.active {
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-            border-left: 4px solid #fff;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #800020 0%, #a00028 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(128, 0, 32, 0.2);
+            font-weight: 500;
+        }
+
+        .sidebar-link.active i {
+            color: #ffffff;
+        }
+
+        .nav-section-title {
+            color: #9ca3af;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            padding: 0 1rem;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
         }
 
         .glass-navbar {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .top-badge {
-            background: linear-gradient(135deg, #ff7b7b 0%, #b22222 100%);
-            box-shadow: 0 2px 10px rgba(178, 34, 34, 0.3);
+            background: linear-gradient(135deg, #800020 0%, #a00028 100%);
+            box-shadow: 0 2px 10px rgba(178, 34, 34, 0.2);
         }
 
         .btn-maroon {
@@ -54,7 +92,7 @@
 
         .btn-maroon:hover {
             background-color: #5a0015;
-            box-shadow: 0 4px 12px rgba(90, 0, 21, 0.3);
+            box-shadow: 0 4px 12px rgba(90, 0, 21, 0.2);
             transform: translateY(-1px);
         }
 
@@ -69,137 +107,115 @@
         .border-maroon {
             border-color: #800020;
         }
+        
+        /* Custom scrollbar for sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 4px;
+        }
+        .sidebar:hover::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+        }
     </style>
     @stack('styles')
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-50 text-gray-800 antialiased selection:bg-maroon selection:text-white">
     <div class="flex h-screen overflow-hidden">
         <!-- Mobile Backdrop -->
-        <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/50 z-40 hidden md:hidden transition-opacity"></div>
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
 
         <!-- Sidebar -->
         <aside
-            class="sidebar w-64 flex-shrink-0 overflow-y-auto fixed inset-y-0 left-0 z-50 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0 md:static md:block border-r border-maroon/20">
-            <div class="p-6">
-                <h1 class="text-2xl font-bold text-white text-center">SIAKAD STIH</h1>
-                <p class="text-white text-center text-sm mt-1">Parent Panel</p>
+            class="sidebar w-72 flex-shrink-0 overflow-y-auto fixed inset-y-0 left-0 z-50 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0 md:static md:block flex flex-col">
+            
+            <div class="sidebar-header p-6 flex flex-col items-center justify-center min-h-[140px] relative overflow-hidden bg-white">
+                <div class="w-14 h-14 bg-white border border-gray-100 rounded-xl shadow-sm flex items-center justify-center mb-2 transform transition-transform hover:scale-105 p-2">
+                    <img src="{{ asset('images/logo_stih_color.png') }}" onerror="this.src='{{ asset('images/logo_stih_white.png') }}';" alt="Logo STIH" class="w-full h-full object-contain filter drop-shadow-sm" />
+                </div>
+                <h1 class="text-xl font-bold text-gray-800 tracking-wide z-10">SIAKAD STIH</h1>
+                <p class="text-maroon text-xs font-bold tracking-widest uppercase mt-1 z-10">Orang Tua/Wali</p>
             </div>
 
-            <nav class="px-4 pb-4">
+            <nav class="flex-1 px-4 py-6">
                 <a href="{{ route('parent.dashboard') }}"
-                    class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('parent.dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-home w-5 mr-3"></i>
-                    Dashboard
+                    class="sidebar-link flex items-center px-4 py-3 text-sm {{ request()->routeIs('parent.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-border-all w-6 text-center text-lg mr-3"></i>
+                    <span>Dashboard</span>
                 </a>
 
-                <div class="mt-4">
-                    <p class="text-gray-300 text-xs uppercase px-4 mb-2">Akademik</p>
+                <div class="nav-section-title">Akademik</div>
 
-                    <a href="{{ route('parent.nilai') }}"
-                        class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('parent.nilai*') ? 'active' : '' }}">
-                        <i class="fas fa-graduation-cap w-5 mr-3"></i>
-                        Nilai Akademik
-                    </a>
+                <a href="{{ route('parent.nilai') }}"
+                    class="sidebar-link flex items-center px-4 py-3 text-sm {{ request()->routeIs('parent.nilai*') ? 'active' : '' }}">
+                    <i class="fas fa-award w-6 text-center text-lg mr-3"></i>
+                    <span>Nilai Akademik</span>
+                </a>
 
-                    <a href="{{ route('parent.jadwal') }}"
-                        class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('parent.jadwal*') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-alt w-5 mr-3"></i>
-                        Jadwal Kuliah
-                    </a>
+                <a href="{{ route('parent.jadwal') }}"
+                    class="sidebar-link flex items-center px-4 py-3 text-sm {{ request()->routeIs('parent.jadwal*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-day w-6 text-center text-lg mr-3"></i>
+                    <span>Jadwal Kuliah</span>
+                </a>
 
-                    <a href="{{ route('parent.presensi') }}"
-                        class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('parent.presensi*') ? 'active' : '' }}">
-                        <i class="fas fa-user-check w-5 mr-3"></i>
-                        Presensi
-                    </a>
+                <a href="{{ route('parent.presensi') }}"
+                    class="sidebar-link flex items-center px-4 py-3 text-sm {{ request()->routeIs('parent.presensi*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-user w-6 text-center text-lg mr-3"></i>
+                    <span>Presensi</span>
+                </a>
+
+                <div class="nav-section-title">Keuangan</div>
+
+                <a href="{{ route('parent.pembayaran') }}"
+                    class="sidebar-link flex items-center px-4 py-3 text-sm {{ request()->routeIs('parent.pembayaran*') ? 'active' : '' }}">
+                    <i class="fas fa-wallet w-6 text-center text-lg mr-3"></i>
+                    <span>Pembayaran</span>
+                </a>
+
+            </nav>
+            
+            <!-- Sidebar Footer -->
+            <div class="mt-auto bg-gray-50/50">
+                <div class="p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-maroon to-red-600 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-gray-800 truncate">{{ Auth::user()->name }}</p>
+                        <p class="text-xs text-gray-500 font-medium truncate">Orang Tua/Wali</p>
+                    </div>
                 </div>
-
-                <div class="mt-4">
-                    <p class="text-gray-300 text-xs uppercase px-4 mb-2">Keuangan</p>
-
-                    <a href="{{ route('parent.pembayaran') }}"
-                        class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg mb-2 {{ request()->routeIs('parent.pembayaran*') ? 'active' : '' }}">
-                        <i class="fas fa-credit-card w-5 mr-3"></i>
-                        Pembayaran
-                    </a>
-                </div>
-
-                <div class="mt-4">
-                    <p class="text-gray-300 text-xs uppercase px-4 mb-2">Sistem</p>
-
-                    <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                
+                <div class="px-4 pb-4">
+                    <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
-                            class="sidebar-link w-full flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-900/50 transition-colors">
-                            <i class="fas fa-sign-out-alt w-5 mr-3"></i>
-                            Logout
+                            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors group border border-red-100/50">
+                            <i class="fas fa-sign-out-alt text-red-500 group-hover:text-red-700 transition-colors"></i>
+                            <span>Logout</span>
                         </button>
                     </form>
                 </div>
-            </nav>
+            </div>
         </aside>
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Navbar -->
-            <header class="glass-navbar shadow-sm z-10 sticky top-0">
-                <div class="flex items-center justify-between px-6 py-3">
-                    <div class="flex items-center gap-4">
-                        <button class="text-gray-500 md:hidden focus:outline-none focus:text-gray-700 hover:bg-gray-100 p-2 rounded-lg transition"
-                            id="sidebar-toggle">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                        <nav class="text-sm text-gray-500 hidden sm:flex items-center font-medium">
-                            <span class="mr-2 hover:text-maroon transition cursor-pointer">Home</span>
-                            <i class="fas fa-chevron-right text-[10px] mr-2 text-gray-400"></i>
-                            <span class="font-bold text-gray-800 text-base tracking-wide">@yield('page-title', 'Dashboard')</span>
-                        </nav>
-                        <div class="ml-4 hidden md:block">
-                            <span
-                                class="inline-flex items-center px-4 py-1 rounded-full text-xs font-bold text-white top-badge shadow-sm tracking-wide">
-                                <i class="fas fa-calendar-check mr-2"></i>
-                                Ganjil 2025/2026
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="flex-1 px-6 hidden md:block">
-                        <div class="max-w-xl mx-auto">
-                            <div class="relative">
-                                <input type="text" placeholder="Cari data..."
-                                    class="w-full border rounded-full px-4 py-2 pl-10 focus:ring-2 focus:ring-maroon focus:border-transparent text-sm" />
-                                <div
-                                    class="absolute left-0 top-0 h-full pl-3 pr-2 flex items-center pointer-events-none text-gray-500">
-                                    <i class="fas fa-search"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4">
-
-
-                        <div class="flex items-center space-x-3">
-                            <div class="text-right mr-2 hidden sm:block">
-                                <div class="text-sm font-medium text-gray-800">
-                                    {{ Auth::user()->name }}
-                                </div>
-                                <div class="text-xs text-gray-500">Orang Tua</div>
-                            </div>
-                            <div
-                                class="w-10 h-10 bg-maroon rounded-full flex items-center justify-center text-white font-bold shadow-md">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <!-- Mobile Sidebar Toggle -->
+            <button class="md:hidden fixed top-4 right-4 z-50 bg-white p-2 rounded-lg shadow-md text-maroon hover:bg-gray-50 focus:outline-none" id="sidebar-toggle">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
 
 
 
             <!-- Content Area -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50/30 p-4 md:p-6 lg:p-8">
                 <!-- Flash Messages -->
                 @if(session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"

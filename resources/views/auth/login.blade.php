@@ -229,7 +229,7 @@
 
             <!-- Error Messages -->
             @if (session('error'))
-                <div class="mb-6 p-4 rounded-lg bg-red-50 border-l-4 border-red-500">
+                <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-100">
                     <div class="flex items-start">
                         <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3"></i>
                         <span class="text-red-700 text-sm">{{ session('error') }}</span>
@@ -239,9 +239,6 @@
 
             @if (session('success'))
                 <div class="mb-6 relative overflow-hidden bg-[#F4FBF6] rounded-xl border border-[#EBEBEB] shadow-sm flex items-center">
-                    <!-- Left Accent Bar -->
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#22C55E] rounded-l-xl"></div>
-                    
                     <div class="py-3 px-5 flex items-center">
                         <div class="flex-shrink-0 mr-3">
                             <svg class="w-5 h-5 text-[#22C55E]" viewBox="0 0 20 20" fill="currentColor">

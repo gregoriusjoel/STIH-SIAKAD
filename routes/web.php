@@ -146,6 +146,19 @@ Route::prefix('dosen')->name('dosen.')->where(['pertemuan' => '[a-z0-9:]+'])->gr
         Route::post('/{internship}/logbook', [App\Http\Controllers\Dosen\InternshipController::class, 'storeLogbook'])->name('logbook.store');
         Route::put('/{internship}/logbook/{logbook}', [App\Http\Controllers\Dosen\InternshipController::class, 'updateLogbook'])->name('logbook.update');
     });
+
+    // ── Skripsi / Sidang (Dosen) ──────────────────────────────────
+    Route::prefix('thesis')->name('thesis.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Dosen\ThesisController::class, 'index'])->name('index');
+        Route::get('/{thesis}', [App\Http\Controllers\Dosen\ThesisController::class, 'show'])->name('show');
+        Route::post('/guidance/{guidance}/approve', [App\Http\Controllers\Dosen\ThesisController::class, 'approveGuidance'])->name('guidance.approve');
+        Route::post('/guidance/{guidance}/reject', [App\Http\Controllers\Dosen\ThesisController::class, 'rejectGuidance'])->name('guidance.reject');
+        Route::post('/revision/{revision}/approve', [App\Http\Controllers\Dosen\ThesisController::class, 'approveRevision'])->name('revision.approve');
+        // Supervisor request actions
+        Route::post('/{thesis}/supervisor/accept', [App\Http\Controllers\Dosen\ThesisController::class, 'acceptSupervisor'])->name('supervisor.accept');
+        Route::post('/{thesis}/supervisor/reject', [App\Http\Controllers\Dosen\ThesisController::class, 'rejectSupervisor'])->name('supervisor.reject');
+        Route::get('/download/{encodedPath}', [App\Http\Controllers\Dosen\ThesisController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
+    });
 });
 
 // Mahasiswa Portal Routes
@@ -254,6 +267,19 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         Route::delete('/{internship}', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'destroy'])->name('destroy');
     });
 
+    // ── Skripsi / Sidang (Mahasiswa) ──────────────────────────────────
+    Route::prefix('thesis')->name('thesis.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'index'])->name('index');
+        Route::get('/proposal', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'proposalForm'])->name('proposal');
+        Route::post('/proposal', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'submitProposal'])->name('proposal.submit');
+        Route::get('/bimbingan', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'bimbingan'])->name('bimbingan');
+        Route::post('/bimbingan', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'storeGuidance'])->name('bimbingan.store');
+        Route::get('/sidang/daftar', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'sidangRegistration'])->name('sidang.registration');
+        Route::post('/sidang/{reg}/upload', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'uploadSidangFile'])->name('sidang.upload');
+        Route::post('/sidang/{reg}/submit', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'submitSidangRegistration'])->name('sidang.submit');
+        Route::post('/revisi/upload', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'uploadRevision'])->name('revision.upload');
+    });
+
 });
 
 Route::prefix('parent')->name('parent.')->middleware(['auth', 'parent.role'])->group(function () {
@@ -337,7 +363,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::patch('/semesters/{semester}/lock', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'lockSemester'])->name('lock-semester')->withoutMiddleware('semester.lock');
         Route::patch('/semesters/{semester}/unlock', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'unlockSemester'])->name('unlock-semester')->withoutMiddleware('semester.lock');
     });
-    Route::get('audit-logs', [App\Http\Controllers\Admin\MataKuliahSemesterController::class, 'auditLogs'])->name('mata-kuliah-semester.audit-logs');
+    // Audit Logs (Global)
+    Route::get('audit-logs', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit-logs.index');
     // ─────────────────────────────────────────────────────────────────────
 
     // Ruangan Management
@@ -486,6 +513,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::prefix('absensi-dosen')->name('absensi_dosen.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\AbsensiDosenController::class, 'index'])->name('index');
         Route::get('/{dosen}/{kelasMataKuliah}', [App\Http\Controllers\Admin\AbsensiDosenController::class, 'show'])->name('show');
+    });
+
+    // ── Skripsi / Sidang (Admin) ──────────────────────────────────
+    Route::prefix('thesis')->name('thesis.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ThesisController::class, 'index'])->name('index');
+        Route::get('/{thesis}', [App\Http\Controllers\Admin\ThesisController::class, 'show'])->name('show');
+        Route::post('/{thesis}/proposal/approve', [App\Http\Controllers\Admin\ThesisController::class, 'approveProposal'])->name('proposal.approve');
+        Route::post('/{thesis}/proposal/reject', [App\Http\Controllers\Admin\ThesisController::class, 'rejectProposal'])->name('proposal.reject');
+        Route::post('/registration/{reg}/verify', [App\Http\Controllers\Admin\ThesisController::class, 'verifySidangRegistration'])->name('sidang.verify');
+        Route::post('/registration/{reg}/reject', [App\Http\Controllers\Admin\ThesisController::class, 'rejectSidangRegistration'])->name('sidang.reject');
+        Route::get('/{thesis}/schedule', [App\Http\Controllers\Admin\ThesisController::class, 'scheduleForm'])->name('schedule.form');
+        Route::post('/{thesis}/schedule', [App\Http\Controllers\Admin\ThesisController::class, 'storeSidangSchedule'])->name('schedule.store');
+        Route::post('/{thesis}/complete', [App\Http\Controllers\Admin\ThesisController::class, 'completeSidang'])->name('complete');
+        Route::get('/download/{encodedPath}', [App\Http\Controllers\Admin\ThesisController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
     });
 });
 

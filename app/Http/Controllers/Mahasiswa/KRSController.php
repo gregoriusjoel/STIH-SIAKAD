@@ -556,8 +556,17 @@ class KRSController extends Controller
             Storage::disk('public')->put($path, $pdf->output());
 
             if ($status === 'approved') {
+                \App\Models\AuditLog::log('krs.submitted', $mahasiswa, [
+                    'semester_id' => $krsSemester->id,
+                    'total_mk' => count($selectedMkIds),
+                    'total_sks' => $totalSks
+                ]);
                 return redirect()->route('mahasiswa.krs.confirm')->with('success', 'KRS berhasil diajukan dan difinalisasi. Anda tidak dapat mengubahnya kembali.');
             } else {
+                \App\Models\AuditLog::log('krs.draft_saved', $mahasiswa, [
+                    'semester_id' => $krsSemester->id,
+                    'total_mk' => count($selectedMkIds)
+                ]);
                 return redirect()->route('mahasiswa.krs.confirm')->with('success', 'Draft KRS berhasil disimpan. Anda dapat melanjutkan pengisian kapan saja.');
             }
 

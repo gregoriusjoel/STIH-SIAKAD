@@ -27,18 +27,40 @@ class DosenController extends Controller
 
         $tab    = $request->input('tab', 'master');
         $search = trim($request->input('search', ''));
+        $sortBy = $request->input('sort_by', 'name');
+        $sortDir = $request->input('sort_direction', 'asc');
 
         // ── Tab: Master Dosen ────────────────────────────────────────────────
         $dosens = null;
         if ($tab === 'master') {
-            $dosens = Dosen::with(['user', 'kelasMataKuliahs.mataKuliah', 'kelasMataKuliahs.semester'])
+            $query = Dosen::with(['user', 'kelasMataKuliahs.mataKuliah', 'kelasMataKuliahs.semester'])
                 ->when($search, function ($q) use ($search) {
                     $q->whereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"))
                       ->orWhere('nidn', 'like', "%{$search}%");
-                })
-                ->orderBy(User::select('name')->whereColumn('users.id', 'dosens.user_id'))
-                ->paginate(15)
-                ->withQueryString();
+                });
+
+            // Sorting logic
+            if ($sortBy === 'name') {
+                $query->orderBy(User::select('name')->whereColumn('users.id', 'dosens.user_id'), $sortDir);
+            } elseif ($sortBy === 'nidn') {
+                $query->orderBy('nidn', $sortDir);
+            } elseif ($sortBy === 'pendidikan') {
+                $query->orderBy('pendidikan', $sortDir);
+            } elseif ($sortBy === 'status') {
+                $query->orderBy('status', $sortDir);
+            } elseif ($sortBy === 'mk_aktif') {
+                $query->withCount(['kelasMataKuliahs as mk_aktif_count' => function($q) use ($activeSemester) {
+                    if ($activeSemester) {
+                        $q->where('semester_id', $activeSemester->id);
+                    } else {
+                        $q->where('id', 0);
+                    }
+                }])->orderBy('mk_aktif_count', $sortDir);
+            } else {
+                $query->orderBy(User::select('name')->whereColumn('users.id', 'dosens.user_id'), 'asc');
+            }
+
+            $dosens = $query->paginate(15)->withQueryString();
         }
 
         // ── Tab: Dosen Aktif TA ──────────────────────────────────────────────
@@ -55,14 +77,29 @@ class DosenController extends Controller
             $dosenAktifCount = $assignedDosenIds->count();
 
             if ($tab === 'dosen-aktif') {
-                $dosenAktif = Dosen::with([
+                $query = Dosen::with([
                         'user',
                         'mataKuliahs' => fn($q) => $q->wherePivot('semester_id', $selectedSemester->id)->orderBy('kode_mk'),
                     ])
                     ->whereIn('id', $assignedDosenIds)
-                    ->when($search, fn($q) => $q->whereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")))
-                    ->get()
-                    ->sortBy(fn($d) => $d->user->name);
+                    ->when($search, fn($q) => $q->whereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")));
+
+                // Apply dynamic sorting to collection since we usesortBy/sortByDesc below
+                $dosenAktif = $query->get();
+                
+                if ($sortBy === 'name') {
+                    $dosenAktif = $sortDir === 'asc' ? $dosenAktif->sortBy(fn($d) => $d->user->name) : $dosenAktif->sortByDesc(fn($d) => $d->user->name);
+                } elseif ($sortBy === 'nidn') {
+                    $dosenAktif = $sortDir === 'asc' ? $dosenAktif->sortBy('nidn') : $dosenAktif->sortByDesc('nidn');
+                } elseif ($sortBy === 'pendidikan') {
+                    $dosenAktif = $sortDir === 'asc' ? $dosenAktif->sortBy('pendidikan') : $dosenAktif->sortByDesc('pendidikan');
+                } elseif ($sortBy === 'status') {
+                    $dosenAktif = $sortDir === 'asc' ? $dosenAktif->sortBy('status') : $dosenAktif->sortByDesc('status');
+                } elseif ($sortBy === 'mk_aktif') {
+                    $dosenAktif = $sortDir === 'asc' ? $dosenAktif->sortBy(fn($d) => $d->mataKuliahs->count()) : $dosenAktif->sortByDesc(fn($d) => $d->mataKuliahs->count());
+                } else {
+                    $dosenAktif = $dosenAktif->sortBy(fn($d) => $d->user->name);
+                }
             }
         }
 
@@ -93,14 +130,10 @@ class DosenController extends Controller
                     'mata_kuliahs.kode_mk',
                     'mata_kuliahs.nama_mk',
                     'mata_kuliahs.sks'
-                )
-                ->orderBy('users.name')
-                ->orderByDesc('semesters.tahun_ajaran')
-                ->orderByDesc('semesters.nama_semester')
-                ->get();
+                );
 
             // Group: dosen → semester → MK
-            $historiDosen = $rows->groupBy('dosen_id')->map(function ($dosenRows) {
+            $historiDosen = $rows->get()->groupBy('dosen_id')->map(function ($dosenRows) {
                 $first = $dosenRows->first();
                 $semesters = $dosenRows->groupBy('semester_id')->map(function ($semRows) {
                     $s = $semRows->first();
@@ -129,7 +162,21 @@ class DosenController extends Controller
                     'total_ta'  => $semesters->count(),
                     'total_mk'  => $dosenRows->pluck('mk_id')->unique()->count(),
                 ];
-            })->values();
+            });
+
+            // Apply manual sorting to historiDosen collection
+            if ($sortBy === 'name') {
+                $historiDosen = $sortDir === 'asc' ? $historiDosen->sortBy('name') : $historiDosen->sortByDesc('name');
+            } elseif ($sortBy === 'nidn') {
+                $historiDosen = $sortDir === 'asc' ? $historiDosen->sortBy('nidn') : $historiDosen->sortByDesc('nidn');
+            } elseif ($sortBy === 'pendidikan') {
+                $historiDosen = $sortDir === 'asc' ? $historiDosen->sortBy('pendidikan') : $historiDosen->sortByDesc('pendidikan');
+            } elseif ($sortBy === 'status') {
+                $historiDosen = $sortDir === 'asc' ? $historiDosen->sortBy('status') : $historiDosen->sortByDesc('status');
+            } else {
+                $historiDosen = $historiDosen->sortBy('name');
+            }
+            $historiDosen = $historiDosen->values();
         }
 
         // ── Shared data for modals ────────────────────────────────────────────
@@ -143,7 +190,7 @@ class DosenController extends Controller
         return view('admin.dosen.index', compact(
             'dosens',
             'activeSemester', 'allSemesters', 'selectedSemester',
-            'tab', 'search',
+            'tab', 'search', 'sortBy', 'sortDir',
             'dosenAktif', 'dosenAktifCount',
             'historiDosen',
             'availableDosens', 'availableMataKuliah',

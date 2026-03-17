@@ -22,7 +22,7 @@
 @endpush
 
 @section('content')
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="w-full space-y-6">
 
         {{-- Welcome Card --}}
         <div class="relative bg-gradient-to-r from-maroon to-red-900 rounded-2xl shadow-xl text-white p-8 overflow-hidden"
@@ -143,72 +143,7 @@
             </div>
         </div>
 
-        {{-- Quick Actions --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                <div class="w-8 h-8 rounded-lg bg-red-50 text-maroon flex items-center justify-center mr-3">
-                    <i class="fas fa-bolt text-sm"></i>
-                </div>
-                Akses Cepat
-            </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <a href="{{ route('parent.nilai') }}"
-                    class="group flex flex-col p-5 border border-gray-100 bg-gray-50/50 rounded-xl hover:bg-white hover:border-red-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-red-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="flex items-center gap-4 relative z-10">
-                        <div class="w-12 h-12 bg-white shadow-sm text-red-600 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
-                            <i class="fas fa-graduation-cap text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-800 group-hover:text-red-800 transition-colors duration-300">Lihat Nilai</div>
-                            <div class="text-xs font-medium text-gray-500">Pantau Transkrip</div>
-                        </div>
-                    </div>
-                </a>
 
-                <a href="{{ route('parent.jadwal') }}"
-                    class="group flex flex-col p-5 border border-gray-100 bg-gray-50/50 rounded-xl hover:bg-white hover:border-teal-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-teal-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="flex items-center gap-4 relative z-10">
-                        <div class="w-12 h-12 bg-white shadow-sm text-teal-600 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all duration-300">
-                            <i class="fas fa-calendar-alt text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-800 group-hover:text-teal-800 transition-colors duration-300">Jadwal Kuliah</div>
-                            <div class="text-xs font-medium text-gray-500">Cek Jadwal Harian</div>
-                        </div>
-                    </div>
-                </a>
-
-                <a href="{{ route('parent.presensi') }}"
-                    class="group flex flex-col p-5 border border-gray-100 bg-gray-50/50 rounded-xl hover:bg-white hover:border-purple-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="flex items-center gap-4 relative z-10">
-                        <div class="w-12 h-12 bg-white shadow-sm text-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
-                            <i class="fas fa-user-check text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-800 group-hover:text-purple-800 transition-colors duration-300">Presensi</div>
-                            <div class="text-xs font-medium text-gray-500">Kehadiran Harian</div>
-                        </div>
-                    </div>
-                </a>
-
-                <a href="{{ route('parent.pembayaran') }}"
-                    class="group flex flex-col p-5 border border-gray-100 bg-gray-50/50 rounded-xl hover:bg-white hover:border-orange-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="flex items-center gap-4 relative z-10">
-                        <div class="w-12 h-12 bg-white shadow-sm text-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-orange-600 group-hover:text-white transition-all duration-300">
-                            <i class="fas fa-file-invoice-dollar text-xl"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-800 group-hover:text-orange-800 transition-colors duration-300">Pembayaran</div>
-                            <div class="text-xs font-medium text-gray-500">Info Uang Kuliah</div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
 
         {{-- Ringkasan Presensi --}}
         @if($presensiStats['total'] > 0)

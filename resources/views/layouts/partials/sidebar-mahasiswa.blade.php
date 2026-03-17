@@ -135,6 +135,15 @@
                 <span class="tracking-wide">Magang</span>
             </a>
 
+            {{-- Skripsi --}}
+            @if(Route::has('mahasiswa.thesis.index'))
+            <a href="{{ route('mahasiswa.thesis.index') }}"
+               class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.thesis*') ? $activeClass : $inactiveClass }}">
+                <i class="fas fa-graduation-cap w-5 text-center transition-transform group-hover:scale-110"></i>
+                <span class="tracking-wide">Skripsi</span>
+            </a>
+            @endif
+
             {{-- Separator --}}
             <div class="pt-4 pb-2">
                 <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Keuangan</p>

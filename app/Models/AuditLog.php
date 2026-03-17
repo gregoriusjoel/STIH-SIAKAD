@@ -74,12 +74,20 @@ class AuditLog extends Model
 
         $user = auth()->user();
 
-        if ($user instanceof \App\Models\Admin || (method_exists($user, 'hasRole') && $user->hasRole('admin'))) {
+        if ($user->isAdmin()) {
             return 'admin';
         }
 
-        if ($user instanceof \App\Models\Dosen || (method_exists($user, 'hasRole') && $user->hasRole('dosen'))) {
+        if ($user->isDosen()) {
             return 'dosen';
+        }
+
+        if ($user->isMahasiswa()) {
+            return 'mahasiswa';
+        }
+
+        if ($user->isParent()) {
+            return 'parent';
         }
 
         return 'user';

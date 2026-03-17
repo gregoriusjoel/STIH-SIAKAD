@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\MataKuliah;
 use App\Models\Fakultas;
 
+use App\Traits\Auditable;
+
 class Prodi extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'kode_prodi',
         'nama_prodi',

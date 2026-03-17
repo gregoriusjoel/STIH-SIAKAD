@@ -11,7 +11,7 @@
     $sksSemesterIni  = $currentAssignments->sum('sks');
 @endphp
 
-<div x-data="dosenDetail()" class="w-full max-w-6xl mx-auto space-y-6">
+<div x-data="dosenDetail()" class="w-full space-y-6">
 
     {{-- Flash Messages --}}
     @if(session('success'))

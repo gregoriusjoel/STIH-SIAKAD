@@ -157,10 +157,6 @@
         </span>
         @endif
         @endif
-        <a href="{{ route('admin.mata-kuliah-semester.audit-logs') }}"
-            class="flex items-center gap-1 px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-400">
-            <i class="fas fa-clipboard-list"></i> Audit
-        </a>
     </div>
 </div>
 

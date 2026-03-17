@@ -59,6 +59,11 @@ class LoginController extends Controller
 
             $request->session()->regenerate();
 
+            \App\Models\AuditLog::log('user.login', $user, [
+                'ip' => $request->ip(),
+                'role' => $user->role
+            ]);
+
             $request->session()->put('user', [
                 'id' => $user->id,
                 'name' => $user->name,

@@ -1431,6 +1431,13 @@ class LecturerController extends Controller
                 $nilai->save();
                 $savedCount++;
             }
+
+            if (!$isAutoSave && $savedCount > 0) {
+                \App\Models\AuditLog::log('grades.published', $kelas, [
+                    'saved_count' => $savedCount,
+                    'mata_kuliah' => $kelas->mataKuliah->nama_mk
+                ]);
+            }
             
             \DB::commit();
             

@@ -114,6 +114,10 @@ class ParentController extends Controller
             'PUBLISHED' => 'belum_bayar',
             default     => 'belum_ada',
         };
+        
+        \App\Models\AuditLog::log('parent.view_dashboard', $mahasiswa, [
+            'student_name' => $mahasiswa->nama
+        ]);
 
         return view('page.parent.dashboard', compact(
             'mahasiswa',
@@ -160,6 +164,10 @@ class ParentController extends Controller
         // IPK cumulative
         $ipk = $this->calculateIpk($allKrs);
 
+        \App\Models\AuditLog::log('parent.view_grades', $mahasiswa, [
+            'student_name' => $mahasiswa->nama
+        ]);
+
         return view('page.parent.nilai', compact('mahasiswa', 'nilaiData', 'ipk', 'ipsPerSemester'));
     }
 
@@ -185,6 +193,10 @@ class ParentController extends Controller
                 'mataKuliah',
             ])
             ->get();
+
+        \App\Models\AuditLog::log('parent.view_schedule', $mahasiswa, [
+            'student_name' => $mahasiswa->nama
+        ]);
 
         return view('page.parent.jadwal', compact('mahasiswa', 'activeKrs', 'activeSemester'));
     }
@@ -218,6 +230,10 @@ class ParentController extends Controller
         ];
         $presensiStats['total'] = array_sum($presensiStats);
 
+        \App\Models\AuditLog::log('parent.view_attendance', $mahasiswa, [
+            'student_name' => $mahasiswa->nama
+        ]);
+
         return view('page.parent.presensi', compact('mahasiswa', 'presensiData', 'presensiStats', 'activeSemester'));
     }
 
@@ -236,6 +252,10 @@ class ParentController extends Controller
         $totalTagihan  = $invoices->sum('total_tagihan');
         $totalTerbayar = $invoices->sum(fn($inv) => $inv->total_paid ?? 0);
         $sisaTagihan   = $totalTagihan - $totalTerbayar;
+
+        \App\Models\AuditLog::log('parent.view_payments', $mahasiswa, [
+            'student_name' => $mahasiswa->nama
+        ]);
 
         return view('page.parent.pembayaran', compact(
             'mahasiswa',

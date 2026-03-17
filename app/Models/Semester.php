@@ -7,8 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+use App\Traits\Auditable;
+
 class Semester extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'nama_semester',
         'tahun_ajaran',

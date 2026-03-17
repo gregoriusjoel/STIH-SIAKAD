@@ -408,13 +408,106 @@ $missingByTab[$info['tab']]++;
                 <div class="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
                     <h3 class="text-[#1A1A1A] font-bold text-base tracking-tight">Alamat Sesuai KTP</h3>
                     <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Identity Card Address</span>
+                    <button type="button" id="copyDomisiliToKtp"
+                        class="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#8B1538]/10 hover:bg-[#8B1538]/20 text-[#8B1538] text-[11px] font-bold rounded-lg transition-all duration-200 border border-[#8B1538]/20 hover:border-[#8B1538]/30 hover:shadow-sm active:scale-95">
+                        <i class="fas fa-copy text-[10px]"></i>
+                        Salin dari Alamat Domisili
+                    </button>
                 </div>
+                <script>
+                    document.getElementById('copyDomisiliToKtp').addEventListener('click', function() {
+                        const btn = this;
+                        const origHTML = btn.innerHTML;
+
+                        // 1. Copy alamat textarea
+                        const alamatDom = document.querySelector('textarea[name="alamat"]');
+                        const alamatKtp = document.querySelector('textarea[name="alamat_ktp"]');
+                        if (alamatDom && alamatKtp) alamatKtp.value = alamatDom.value;
+
+                        // 2. Copy RT / RW
+                        const rtDom = document.querySelector('input[name="rt"]');
+                        const rwDom = document.querySelector('input[name="rw"]');
+                        const rtKtp = document.querySelector('input[name="rt_ktp"]');
+                        const rwKtp = document.querySelector('input[name="rw_ktp"]');
+                        if (rtDom && rtKtp) rtKtp.value = rtDom.value;
+                        if (rwDom && rwKtp) rwKtp.value = rwDom.value;
+
+                        // 3. Copy Provinsi and trigger cascade
+                        const provDom = document.getElementById('provinsiSelect');
+                        const provKtp = document.getElementById('provinsiKtpSelect');
+                        if (provDom && provKtp) {
+                            provKtp.value = provDom.value;
+                            provKtp.dispatchEvent(new Event('change'));
+                        }
+
+                        // 4. After provinsi populates kota, copy kota
+                        const kotaDomValue = document.getElementById('kotaSelect')?.value || '';
+                        setTimeout(function() {
+                            const kotaKtp = document.getElementById('kotaKtpSelect');
+                            if (kotaKtp) {
+                                // Find and select the matching option
+                                for (let i = 0; i < kotaKtp.options.length; i++) {
+                                    if (kotaKtp.options[i].value === kotaDomValue) {
+                                        kotaKtp.selectedIndex = i;
+                                        break;
+                                    }
+                                }
+                                kotaKtp.dispatchEvent(new Event('change'));
+                            }
+
+                            // 5. After kota populates kecamatan, copy kecamatan
+                            const kecDomValue = document.getElementById('kecamatanSelect')?.value || '';
+                            setTimeout(function() {
+                                const kecKtp = document.getElementById('kecamatanKtpSelect');
+                                if (kecKtp) {
+                                    for (let i = 0; i < kecKtp.options.length; i++) {
+                                        if (kecKtp.options[i].value === kecDomValue) {
+                                            kecKtp.selectedIndex = i;
+                                            break;
+                                        }
+                                    }
+                                    kecKtp.dispatchEvent(new Event('change'));
+                                }
+
+                                // 6. After kecamatan set, copy desa via Alpine component
+                                const desaDomInput = document.querySelector('input[name="desa"]');
+                                const desaDomValue = desaDomInput ? desaDomInput.value : '';
+                                setTimeout(function() {
+                                    // Find the Alpine component for desa KTP
+                                    const desaKtpInput = document.querySelector('input[name="desa_ktp"]');
+                                    if (desaKtpInput && desaDomValue) {
+                                        const alpineEl = desaKtpInput.closest('[x-data]');
+                                        if (alpineEl && alpineEl.__x) {
+                                            alpineEl.__x.$data.selected = desaDomValue;
+                                            alpineEl.__x.$data.selectedText = desaDomValue;
+                                        } else if (alpineEl && typeof Alpine !== 'undefined') {
+                                            Alpine.evaluate(alpineEl, `selected = '${desaDomValue.replace(/'/g, "\\'")}'`);
+                                            Alpine.evaluate(alpineEl, `selectedText = '${desaDomValue.replace(/'/g, "\\'")}'`);
+                                        }
+                                        desaKtpInput.value = desaDomValue;
+                                        desaKtpInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                    }
+                                }, 150);
+                            }, 100);
+                        }, 100);
+
+                        // Button feedback animation
+                        btn.innerHTML = '<i class="fas fa-check text-[10px]"></i> Berhasil Disalin';
+                        btn.classList.add('bg-green-100', 'text-green-700', 'border-green-300');
+                        btn.classList.remove('bg-[#8B1538]/10', 'text-[#8B1538]', 'border-[#8B1538]/20');
+                        setTimeout(function() {
+                            btn.innerHTML = origHTML;
+                            btn.classList.remove('bg-green-100', 'text-green-700', 'border-green-300');
+                            btn.classList.add('bg-[#8B1538]/10', 'text-[#8B1538]', 'border-[#8B1538]/20');
+                        }, 2000);
+                    });
+                </script>
                 <div class="space-y-5">
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         {{-- Alamat Lengkap (Full Width) --}}
                         <div class="md:col-span-2 space-y-2">
-                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Alamat</label>
+                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Alamat Lengkap</label>
                             <textarea name="alamat_ktp" rows="3"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $mahasiswa->alamat_ktp }}</textarea>
                         </div>
@@ -702,7 +795,7 @@ $missingByTab[$info['tab']]++;
                     document.addEventListener('DOMContentLoaded', function() {
                         // Small delay to ensure Alpine.js has rendered the elements
                         setTimeout(function() {
-                            setupAddressGroup('provinsiAyahSelect', 'kotaAyahSelect', 'kecamatanAyahSelect', @json($parent->kota_ayah ?? $parent->kota_ortu ?? ''), @json($parent->kecamatan_ayah ?? ''));
+                            setupAddressGroup('provinsiAyahSelect', 'kotaAyahSelect', 'kecamatanAyahSelect', @json($parent->kota_ayah ?? ''), @json($parent->kecamatan_ayah ?? ''));
                             setupAddressGroup('provinsiIbuSelect', 'kotaIbuSelect', 'kecamatanIbuSelect', @json($parent->kota_ibu ?? ''), @json($parent->kecamatan_ibu ?? ''));
                             setupAddressGroup('provinsiWaliSelect', 'kotaWaliSelect', 'kecamatanWaliSelect', @json($parent->kota_wali ?? ''), @json($parent->kecamatan_wali ?? ''));
                         }, 100);
@@ -728,7 +821,8 @@ $missingByTab[$info['tab']]++;
                         {{-- Tanggal Lahir --}}
                         <div>
                             <label class="block text-sm text-gray-600 font-medium mb-2">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" value="{{ $mahasiswa->tanggal_lahir ? \Carbon\Carbon::parse($mahasiswa->tanggal_lahir)->format('Y-m-d') : '' }}"
+                            <input type="date" name="tanggal_lahir" value="{{ $mahasiswa->tanggal_lahir ? \Carbon\Carbon::parse($mahasiswa->tanggal_lahir)->format('Y-m-d') : '' }}" max="9999-12-31"
+                                oninput="if(this.value && this.value.split('-')[0].length > 4) { const parts = this.value.split('-'); parts[0] = parts[0].slice(0, 4); this.value = parts.join('-'); }"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
                         </div>
 
@@ -1077,7 +1171,7 @@ $missingByTab[$info['tab']]++;
                             <div class="md:col-span-2">
                                 <label class="block text-sm text-gray-600 font-medium mb-2">Alamat Lengkap</label>
                                 <textarea name="alamat_ayah" rows="3"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $parent->alamat_ayah ?? $parent->alamat_ortu ?? '' }}</textarea>
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium resize-none">{{ $parent->alamat_ayah ?? '' }}</textarea>
                             </div>
 
                             {{-- Provinsi --}}
@@ -1152,8 +1246,8 @@ $missingByTab[$info['tab']]++;
                                         return {
                                             open: false,
                                             search: '',
-                                            selected: @json($parent->desa_ayah ?? $parent->desa_ortu ?? ''),
-                                            selectedText: @json($parent->desa_ayah ?? $parent->desa_ortu ?? 'Pilih Desa'),
+                                            selected: @json($parent->desa_ayah ?? ''),
+                                            selectedText: @json($parent->desa_ayah ?? 'Pilih Desa'),
                                             allOptions: window.villagesData,
                                             currentDistrictCode: '',
                                             noKecamatanSelected: true,
@@ -1231,7 +1325,7 @@ $missingByTab[$info['tab']]++;
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
                                         <span class="text-sm font-bold opacity-50">+62</span>
                                     </div>
-                                    <input type="text" name="handphone_ayah" value="{{ $parent->handphone_ayah ?? $parent->handphone_ortu ?? '' }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
+                                    <input type="text" name="handphone_ayah" value="{{ $parent->handphone_ayah ?? '' }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
                                         class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
                                 </div>
                             </div>

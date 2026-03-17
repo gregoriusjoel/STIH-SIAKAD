@@ -150,11 +150,36 @@
     <thead class="bg-maroon text-white">
         <tr>
             <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap">No</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap"><i class="fas fa-id-card mr-1"></i>NIDN</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap"><i class="fas fa-user mr-1"></i>Nama Dosen</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap"><i class="fas fa-graduation-cap mr-1"></i>Pendidikan</th>
-            <th class="px-5 py-4 text-center text-xs font-bold uppercase whitespace-nowrap">MK Aktif</th>
-            <th class="px-5 py-4 text-center text-xs font-bold uppercase whitespace-nowrap">Status</th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'nidn', 'sort_direction' => ($sortBy === 'nidn' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center gap-1">
+                    <i class="fas fa-id-card mr-1"></i>NIDN
+                    <i class="fas {{ $sortBy === 'nidn' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_direction' => ($sortBy === 'name' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center gap-1">
+                    <i class="fas fa-user mr-1"></i>Nama Dosen
+                    <i class="fas {{ $sortBy === 'name' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase whitespace-nowrap">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'pendidikan', 'sort_direction' => ($sortBy === 'pendidikan' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center gap-1">
+                    <i class="fas fa-graduation-cap mr-1"></i>Pendidikan
+                    <i class="fas {{ $sortBy === 'pendidikan' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
+            <th class="px-5 py-4 text-center text-xs font-bold uppercase whitespace-nowrap">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'mk_aktif', 'sort_direction' => ($sortBy === 'mk_aktif' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center justify-center gap-1">
+                    MK Aktif
+                    <i class="fas {{ $sortBy === 'mk_aktif' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
+            <th class="px-5 py-4 text-center text-xs font-bold uppercase whitespace-nowrap">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'status', 'sort_direction' => ($sortBy === 'status' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center justify-center gap-1">
+                    Status
+                    <i class="fas {{ $sortBy === 'status' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
             <th class="px-5 py-4 text-center text-xs font-bold uppercase whitespace-nowrap">Aksi</th>
         </tr>
     </thead>
@@ -276,12 +301,37 @@
     <thead class="bg-maroon text-white">
         <tr>
             <th class="px-5 py-4 text-left text-xs font-bold uppercase">No</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase"><i class="fas fa-id-card mr-1"></i>NIDN</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase"><i class="fas fa-user mr-1"></i>Nama Dosen</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase"><i class="fas fa-graduation-cap mr-1"></i>Pendidikan</th>
-            <th class="px-5 py-4 text-left text-xs font-bold uppercase"><i class="fas fa-book-open mr-1"></i>Mata Kuliah Diampu</th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'nidn', 'sort_direction' => ($sortBy === 'nidn' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center gap-1">
+                    <i class="fas fa-id-card mr-1"></i>NIDN
+                    <i class="fas {{ $sortBy === 'nidn' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_direction' => ($sortBy === 'name' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center gap-1">
+                    <i class="fas fa-user mr-1"></i>Nama Dosen
+                    <i class="fas {{ $sortBy === 'name' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'pendidikan', 'sort_direction' => ($sortBy === 'pendidikan' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center gap-1">
+                    <i class="fas fa-graduation-cap mr-1"></i>Pendidikan
+                    <i class="fas {{ $sortBy === 'pendidikan' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
+            <th class="px-5 py-4 text-left text-xs font-bold uppercase">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'mk_aktif', 'sort_direction' => ($sortBy === 'mk_aktif' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center gap-1">
+                    <i class="fas fa-book-open mr-1"></i>Mata Kuliah Diampu
+                    <i class="fas {{ $sortBy === 'mk_aktif' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
             <th class="px-5 py-4 text-center text-xs font-bold uppercase whitespace-nowrap"><i class="fas fa-chart-pie mr-1"></i>Total SKS</th>
-            <th class="px-5 py-4 text-center text-xs font-bold uppercase">Status</th>
+            <th class="px-5 py-4 text-center text-xs font-bold uppercase">
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'status', 'sort_direction' => ($sortBy === 'status' && $sortDir === 'asc') ? 'desc' : 'asc']) }}" class="hover:text-red-200 transition-colors flex items-center justify-center gap-1">
+                    Status
+                    <i class="fas {{ $sortBy === 'status' ? ($sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort' }} opacity-50"></i>
+                </a>
+            </th>
             <th class="px-5 py-4 text-center text-xs font-bold uppercase">Aksi</th>
         </tr>
     </thead>

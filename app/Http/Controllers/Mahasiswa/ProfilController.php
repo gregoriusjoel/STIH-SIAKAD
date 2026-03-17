@@ -237,7 +237,6 @@ class ProfilController extends Controller
             'kecamatan_wali' => 'nullable|string|max:255',
             'desa_wali' => 'nullable|string|max:255',
             'provinsi_wali' => 'nullable|string|max:255',
-            'negara_wali' => 'nullable|string|max:255',
             'handphone_wali' => 'nullable|string|max:20',
             'keluarga' => 'nullable|array',
             'keluarga.*.nama' => 'nullable|string|max:255',
@@ -375,7 +374,6 @@ class ProfilController extends Controller
             'kecamatan_wali' => $request->kecamatan_wali,
             'desa_wali' => $request->desa_wali,
             'provinsi_wali' => $request->provinsi_wali,
-            'negara_wali' => $request->negara_wali,
             'handphone_wali' => $request->handphone_wali,
             'keluarga' => $request->keluarga,
         ];

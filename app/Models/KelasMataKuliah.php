@@ -7,8 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+use App\Traits\Auditable;
+
 class KelasMataKuliah extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'mata_kuliah_id',
         'dosen_id',
