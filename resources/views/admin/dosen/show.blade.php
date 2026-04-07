@@ -356,7 +356,6 @@
                                 <div class="flex flex-wrap gap-2">
                                     <template x-for="mk in filteredMataKuliah" :key="mk.id">
                                         <button type="button"
-                                            x-show="!currentIds.includes(mk.id)"
                                             @click="toggleDraft(mk)"
                                             :class="draftIds.includes(mk.id)
                                                 ? 'bg-maroon text-white border-maroon shadow-sm shadow-maroon/20'
@@ -370,7 +369,7 @@
                                             <i x-show="draftIds.includes(mk.id)" class="fas fa-check text-[9px] ml-0.5"></i>
                                         </button>
                                     </template>
-                                    <div x-show="filteredMataKuliah.filter(mk => !currentIds.includes(mk.id)).length === 0"
+                                    <div x-show="filteredMataKuliah.length === 0"
                                          class="w-full text-center py-6 text-gray-400 text-sm">
                                         <i class="fas fa-search-minus mr-2"></i>Tidak ada mata kuliah yang sesuai pencarian.
                                     </div>
@@ -567,7 +566,7 @@ function dosenDetail() {
     return {
         activeTab: 'profil',
         mkSearch: '',
-        draftIds: [],
+        draftIds: [...@json($currentAssignments->pluck('id')->values())],
         selectedHistorySemester: '',
         historyData: null,
         historyLoading: false,

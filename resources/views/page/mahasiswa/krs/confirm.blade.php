@@ -22,7 +22,7 @@
                             class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 overflow-hidden shadow-inner ring-4 ring-gray-50">
                             @php $foto = $mahasiswa->foto ?? null; @endphp
                             @if(!empty($foto))
-                                <img src="{{ asset('storage/' . $foto) }}" alt="Profile" class="w-full h-full object-cover">
+                                <img src="{{ $mahasiswa->foto_url ?? '' }}" alt="Profile" class="w-full h-full object-cover">
                             @else
                                 <i class="fas fa-user text-4xl text-gray-300"></i>
                             @endif

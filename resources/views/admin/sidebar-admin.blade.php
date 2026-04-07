@@ -319,16 +319,16 @@
                 @endif
             </li>
             <li>
-                @if(Route::has('admin.thesis.index'))
-                    <a href="{{ route('admin.thesis.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.thesis.*') ? 'active' : '' }}">
+                @if(Route::has('admin.skripsi.index'))
+                    <a href="{{ route('admin.skripsi.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.skripsi.*') ? 'active' : '' }}">
                         <i class="fas fa-graduation-cap w-5 mr-3"></i>
                         <span class="text-sm font-medium">Sidang Skripsi</span>
                         @php
-                            $pendingThesisCount = \App\Models\ThesisSubmission::whereIn('status', ['PROPOSAL_SUBMITTED','SIDANG_REG_SUBMITTED'])->count();
+                            $pendingSkripsiCount = \App\Models\SkripsiSubmission::whereIn('status', ['PROPOSAL_SUBMITTED','SIDANG_REG_SUBMITTED'])->count();
                         @endphp
-                        @if($pendingThesisCount > 0)
+                        @if($pendingSkripsiCount > 0)
                             <span class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                                {{ $pendingThesisCount }}
+                                {{ $pendingSkripsiCount }}
                             </span>
                         @endif
                     </a>

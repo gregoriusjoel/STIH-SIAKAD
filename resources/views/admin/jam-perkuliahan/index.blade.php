@@ -141,6 +141,11 @@
                         </tbody>
                     </table>
                 </div>
+                @if ($jamPerkuliahan->hasPages())
+                    <div class="px-6 py-4 border-t border-gray-200 shadow-sm bg-gray-50 rounded-b-xl">
+                        {{ $jamPerkuliahan->links() }}
+                    </div>
+                @endif
             </div>
 
     @push('scripts')

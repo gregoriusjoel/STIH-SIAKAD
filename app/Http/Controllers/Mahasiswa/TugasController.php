@@ -3,28 +3,28 @@
 namespace App\Http\Controllers\Mahasiswa;
 
 use App\Http\Controllers\Controller;
+use App\Services\FileStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Tugas;
 use App\Models\TugasSubmission;
 
 class TugasController extends Controller
 {
+    public function __construct(private FileStorageService $storage) {}
+
     /**
-     * Download tugas file
+     * Download tugas file from S3.
      */
     public function download($id)
     {
         $tugas = Tugas::findOrFail($id);
 
-        // Check if file exists
-        if (!$tugas->file_path || !Storage::disk('public')->exists($tugas->file_path)) {
+        if (!$tugas->file_path || !$this->storage->exists($tugas->file_path)) {
             return redirect()->back()->with('error', 'File tidak ditemukan.');
         }
 
-        // Return file download
-        return Storage::disk('public')->download(
+        return $this->storage->download(
             $tugas->file_path,
             $tugas->file_name ?? basename($tugas->file_path)
         );
@@ -38,19 +38,19 @@ class TugasController extends Controller
         }
 
         $tugas = Tugas::findOrFail($tugasId);
-        
+
         // Get submission type rules based on tugas settings
         $submissionType = $tugas->submission_type ?? 'any';
-        
+
         // Define validation rules based on submission type
         $rules = ['comments' => 'nullable|string'];
-        
+
         if ($submissionType === 'text') {
             $rules['text_submission'] = 'required|string|max:50000'; // 50KB text limit
         } else {
             // File validation based on submission type
             $fileRules = 'required|file|max:10240'; // 10MB max
-            
+
             switch ($submissionType) {
                 case 'pdf':
                     $fileRules .= '|mimes:pdf';
@@ -66,10 +66,10 @@ class TugasController extends Controller
                     // Allow any file type
                     break;
             }
-            
+
             $rules['file'] = $fileRules;
         }
-        
+
         $validated = $request->validate($rules);
 
         $submission = TugasSubmission::where('tugas_id', $tugas->id)
@@ -78,31 +78,31 @@ class TugasController extends Controller
 
         // Handle file upload
         $filePath = $submission ? $submission->file_path : null;
+
         if ($request->hasFile('file')) {
-            // Delete old file if exists
-            if ($submission && $submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
-                Storage::disk('public')->delete($submission->file_path);
+            // Delete old file from S3 if exists
+            if ($submission && $submission->file_path) {
+                $this->storage->delete($submission->file_path);
             }
-            $filePath = $request->file('file')->store('tugas_submissions', 'public');
+            $filePath = $this->storage->upload($request->file('file'), 'documents/tugas-submissions');
         } elseif ($request->has('text_submission') && $submissionType === 'text') {
-             // If they submit text and there was a file before, we could delete it, 
-             // but here we just leave logic as is since validation enforces file/text correctly.
-             if ($submission && $submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
-                 Storage::disk('public')->delete($submission->file_path);
-             }
-             $filePath = null;
+            // If they switch to text submission, remove old file
+            if ($submission && $submission->file_path) {
+                $this->storage->delete($submission->file_path);
+            }
+            $filePath = null;
         }
 
         // Create or update submission
         $submission = TugasSubmission::updateOrCreate(
             [
-                'tugas_id' => $tugas->id,
+                'tugas_id'     => $tugas->id,
                 'mahasiswa_id' => $mahasiswa->id,
             ],
             [
-                'file_path' => $filePath,
+                'file_path'       => $filePath,
                 'text_submission' => $request->input('text_submission'),
-                'comments' => $request->input('comments')
+                'comments'        => $request->input('comments'),
             ]
         );
 

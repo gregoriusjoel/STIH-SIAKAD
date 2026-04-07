@@ -127,6 +127,7 @@ class ThesisController extends Controller
             403, 'Bimbingan belum tersedia.'
         );
 
+        // Riwayat bimbingan lama (read-only)
         $guidances = $submission->guidances()->orderByDesc('tanggal_bimbingan')->get();
 
         return view('page.mahasiswa.thesis.bimbingan', compact('mahasiswa', 'submission', 'guidances'));
@@ -148,6 +149,74 @@ class ThesisController extends Controller
         ));
 
         return back()->with('success', 'Data bimbingan berhasil ditambahkan.');
+    }
+
+    // ── Logbook Template & Upload ─────────────────────────────────────────
+
+    public function downloadLogbookTemplate()
+    {
+        $mahasiswa  = $this->getMahasiswa();
+        $submission = ThesisSubmission::where('mahasiswa_id', $mahasiswa->id)->latest()->firstOrFail();
+
+        abort_unless(
+            in_array($submission->status, [
+                ThesisStatus::BIMBINGAN_ACTIVE,
+                ThesisStatus::ELIGIBLE_SIDANG,
+                ThesisStatus::SIDANG_REG_DRAFT,
+                ThesisStatus::SIDANG_REG_REJECTED,
+            ], true),
+            403, 'Template belum tersedia.'
+        );
+
+        $content  = $this->fileService->generateLogbookTemplate($submission);
+        $filename = 'Logbook_Bimbingan_' . str_replace(' ', '_', $mahasiswa->user->name ?? 'Mahasiswa') . '.docx';
+
+        return response($content, 200, [
+            'Content-Type'        => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function uploadLogbook(Request $request)
+    {
+        $mahasiswa  = $this->getMahasiswa();
+        $submission = ThesisSubmission::where('mahasiswa_id', $mahasiswa->id)->latest()->firstOrFail();
+
+        abort_unless(
+            in_array($submission->status, [
+                ThesisStatus::BIMBINGAN_ACTIVE,
+                ThesisStatus::ELIGIBLE_SIDANG,
+                ThesisStatus::SIDANG_REG_DRAFT,
+                ThesisStatus::SIDANG_REG_REJECTED,
+            ], true),
+            403, 'Upload logbook tidak diizinkan pada status ini.'
+        );
+
+        $request->validate([
+            'logbook' => ['required', 'file', 'mimes:pdf', 'max:10240'],
+        ], [
+            'logbook.required' => 'File logbook wajib diupload.',
+            'logbook.mimes'    => 'File harus dalam format PDF.',
+            'logbook.max'      => 'Ukuran file maksimal 10MB.',
+        ]);
+
+        // Delete old logbook file if re-uploading
+        if ($submission->logbook_file_path) {
+            $this->fileService->delete($submission->logbook_file_path);
+        }
+
+        $path = $this->fileService->storeLogbook($mahasiswa, $request->file('logbook'));
+
+        $submission->update([
+            'logbook_file_path'    => $path,
+            'logbook_original_name'=> $request->file('logbook')->getClientOriginalName(),
+            'logbook_uploaded_at'  => now(),
+        ]);
+
+        // Transition status if needed
+        $this->workflow->uploadLogbook($submission);
+
+        return back()->with('success', 'Logbook bimbingan berhasil diupload.');
     }
 
     // ── Sidang Registration ───────────────────────────────────────────────

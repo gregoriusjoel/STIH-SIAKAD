@@ -125,7 +125,7 @@ class PengajuanController extends Controller
             return redirect()->back()->with('error', 'Dokumen belum tersedia untuk diunduh.');
         }
 
-        return Storage::disk('public')->download(
+        return Storage::disk('s3')->download(
             $pengajuan->generated_doc_path,
             'Surat_' . $pengajuan->jenis_label . '_' . $pengajuan->mahasiswa->nim . '.docx'
         );
@@ -190,7 +190,7 @@ class PengajuanController extends Controller
             return redirect()->back()->with('error', 'Surat belum tersedia atau pengajuan belum disetujui.');
         }
 
-        return Storage::disk('public')->download(
+        return Storage::disk('s3')->download(
             $pengajuan->file_surat,
             'Surat_Approved_' . $pengajuan->mahasiswa->nim . '.pdf'
         );
@@ -206,7 +206,7 @@ class PengajuanController extends Controller
             return redirect()->back()->with('error', 'Surat belum tersedia atau pengajuan belum disetujui.');
         }
 
-        return Storage::disk('public')->response(
+        return Storage::disk('s3')->response(
             $pengajuan->file_surat,
             'preview.pdf',
             ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline; filename="preview.pdf"']

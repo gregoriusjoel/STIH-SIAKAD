@@ -11,12 +11,14 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentProof;
 use App\Models\Pembayaran;
+use App\Services\FileStorageService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Storage;
 
 class MahasiswaPaymentController extends Controller
 {
     use AuthorizesRequests;
+
+    public function __construct(private FileStorageService $storage) {}
 
     /**
      * Show mahasiswa invoices and existing payments
@@ -155,10 +157,9 @@ class MahasiswaPaymentController extends Controller
             return redirect()->back()->with('error', 'Cicilan sebelumnya harus dibayar terlebih dahulu');
         }
 
-        // Store file
-        $file = $request->file('file');
-        $fileName = time() . '_' . $student->npm . '_' . $installment->id . '.' . $file->getClientOriginalExtension();
-        $filePath = $file->storeAs('payment-proofs', $fileName, 'public');
+        // Store file on S3
+        $file       = $request->file('file');
+        $filePath   = $this->storage->upload($file, 'documents/payment-proofs');
 
         // Create proof
         PaymentProof::create([

@@ -32,8 +32,8 @@
         <!-- Info Ruangan -->
         <div class="lg:col-span-2">
             <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800">Informasi Ruangan</h3>
+                <div class="px-6 py-4 bg-maroon border-b border-maroon">
+                    <h3 class="text-lg font-semibold text-white">Informasi Ruangan</h3>
                 </div>
 
                 <div class="p-6">
@@ -112,8 +112,8 @@
         <!-- Statistik Penggunaan -->
         <div>
             <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800">Statistik Penggunaan</h3>
+                <div class="px-6 py-4 bg-maroon border-b border-maroon">
+                    <h3 class="text-lg font-semibold text-white">Statistik Penggunaan</h3>
                 </div>
 
                 <div class="p-6 space-y-4">
@@ -140,8 +140,8 @@
     <!-- Jadwal Aktif -->
     @if($ruangan->jadwals->count() > 0)
         <div class="mt-6 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800">
+            <div class="px-6 py-4 bg-maroon border-b border-maroon">
+                <h3 class="text-lg font-semibold text-white">
                     <i class="fas fa-calendar-check mr-2"></i>
                     Jadwal Aktif di Ruangan Ini
                 </h3>
@@ -196,8 +196,8 @@
     <!-- Proposal Jadwal -->
     @if($ruangan->jadwalProposals->count() > 0)
         <div class="mt-6 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800">
+            <div class="px-6 py-4 bg-maroon border-b border-maroon">
+                <h3 class="text-lg font-semibold text-white">
                     <i class="fas fa-clock mr-2"></i>
                     Proposal Jadwal di Ruangan Ini
                 </h3>

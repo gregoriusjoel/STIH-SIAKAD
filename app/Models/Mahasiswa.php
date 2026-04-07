@@ -12,6 +12,32 @@ class Mahasiswa extends Model
 {
     use Auditable;
 
+    /**
+     * Get the S3 public URL for the student's photo, or null if not set.
+     */
+    public function getFotoUrlAttribute(): ?string
+    {
+        if (!$this->foto) {
+            return null;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('s3')->url($this->foto);
+    }
+
+    /**
+     * Get the S3 public URL for an arbitrary file path.
+     * Usage in Blade: {{ $mahasiswa->s3Url($file) }}
+     */
+    public function s3Url(?string $path): ?string
+    {
+        if (!$path) {
+            return null;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('s3')->url($path);
+    }
+
+
     protected $table = 'mahasiswas';
 
     protected $fillable = [

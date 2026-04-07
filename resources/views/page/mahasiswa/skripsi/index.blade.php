@@ -43,12 +43,12 @@
             'tip'   => 'Pantau halaman ini secara berkala untuk update status proposal.',
         ],
         3 => [
-            'icon'  => 'forum',
+            'icon'  => 'menu_book',
             'color' => 'text-blue-600',
             'bg'    => 'bg-blue-50',
-            'title' => 'Langkah: Lakukan Bimbingan',
-            'body'  => 'Lakukan minimal ' . $summary['min_bimbingan'] . ' sesi bimbingan dengan dosen pembimbing. Setiap sesi dicatat di log bimbingan.',
-            'tip'   => 'Jadwalkan bimbingan rutin agar progres skripsi berjalan lancar.',
+            'title' => 'Langkah: Upload Logbook Bimbingan',
+            'body'  => 'Download template logbook, isi setiap sesi bimbingan dengan dosen pembimbing, minta tanda tangan, lalu upload dalam format PDF.',
+            'tip'   => 'Pastikan logbook sudah diisi lengkap dan ditandatangani dosen sebelum diupload.',
         ],
         4 => [
             'icon'  => 'assignment',
@@ -78,7 +78,7 @@
             'icon'  => 'military_tech',
             'color' => 'text-emerald-600',
             'bg'    => 'bg-emerald-50',
-            'title' => 'Skripsi Selesai! 🎓',
+            'title' => 'Skripsi Selesai! <span class="material-symbols-outlined text-lg align-text-bottom text-emerald-600 ml-1">school</span>',
             'body'  => 'Selamat! Skripsi kamu telah disetujui. Proses skripsi selesai secara resmi.',
             'tip'   => 'Jangan lupa urus administrasi yudisium dan wisuda.',
         ],
@@ -122,10 +122,14 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl">
-                <span class="material-symbols-outlined text-[16px] text-blue-500">forum</span>
+                <span class="material-symbols-outlined text-[16px] {{ ($summary['has_logbook'] ?? false) ? 'text-emerald-500' : 'text-amber-500' }}">menu_book</span>
                 <div>
-                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wider leading-none">Bimbingan</p>
-                    <p class="text-sm font-black text-blue-700 leading-tight">{{ $summary['total_bimbingan'] }}/{{ $summary['min_bimbingan'] }}</p>
+                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wider leading-none">Logbook</p>
+                    @if($summary['has_logbook'] ?? false)
+                    <p class="text-sm font-black text-emerald-700 leading-tight">✓ Diupload</p>
+                    @else
+                    <p class="text-sm font-black text-amber-600 leading-tight">Belum</p>
+                    @endif
                 </div>
             </div>
             @if($sksEligible && $submission)
@@ -204,7 +208,9 @@
 
     @if($submission && $submission->status->value === 'THESIS_COMPLETED')
     <div class="rounded-2xl p-4 flex items-center gap-4 border border-emerald-200" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5)">
-        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-2xl shrink-0">🎓</div>
+        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-emerald-600 shrink-0">
+            <span class="material-symbols-outlined text-[28px]">school</span>
+        </div>
         <div>
             <p class="font-black text-emerald-800">Selamat! Skripsi Selesai!</p>
             <p class="text-xs text-emerald-600 mt-0.5">Revisi disetujui pada {{ $submission->revision_approved_at?->format('d F Y') }}</p>
@@ -225,34 +231,54 @@
                     <span class="text-xs font-bold text-[#8B1538]">{{ $currentStep }}/7</span>
                 </div>
                 <div class="px-4 py-2 bg-gray-50 border-b border-gray-100">
+                    @php
+                        $isGlobalError = $submission && in_array($submission->status->value, ['PROPOSAL_REJECTED', 'SIDANG_REG_REJECTED', 'REVISION_PENDING']);
+                        $barColor = $isGlobalError ? 'linear-gradient(90deg,#f97316,#ea580c)' : 'linear-gradient(90deg,#8B1538,#c0392b)';
+                        $textColor = $isGlobalError ? 'text-orange-600' : 'text-[#8B1538]';
+                    @endphp
                     <div class="flex justify-between text-[11px] mb-1">
                         <span class="text-gray-400 font-medium">Progress</span>
-                        <span class="font-bold text-[#8B1538]">{{ round(($currentStep/7)*100) }}%</span>
+                        <span class="font-bold {{ $textColor }}">{{ round(($currentStep/7)*100) }}%</span>
                     </div>
-                    <div class="bg-gray-200 rounded-full h-1.5">
-                        <div class="rounded-full h-1.5 transition-all"
-                            style="width:{{ round(($currentStep/7)*100) }}%; background:linear-gradient(90deg,#8B1538,#c0392b)"></div>
+                    <div class="bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                        <div class="rounded-full h-full transition-all"
+                            style="width:{{ round(($currentStep/7)*100) }}%; background:{{ $barColor }}"></div>
                     </div>
                 </div>
                 <ol class="px-2 py-2 flex flex-col gap-1">
                     @foreach($steps as $step => $label)
-                    @php $done = $step < $currentStep; $active = $step === $currentStep; @endphp
+                    @php 
+                        $done = $step < $currentStep; 
+                        $active = $step === $currentStep; 
+                        $isErrorState = $active && $isGlobalError;
+                    @endphp
                     <li class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors
-                        {{ $active ? 'bg-red-50 border border-red-100' : ($done ? 'hover:bg-gray-50' : '') }}">
+                        {{ $active ? ($isErrorState ? 'bg-orange-50 border border-orange-200' : 'bg-red-50 border border-red-100') : ($done ? 'hover:bg-gray-50' : '') }}">
                         <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 text-xs font-black
                             {{ $done ? 'bg-[#8B1538] border-[#8B1538] text-white' :
-                               ($active ? 'bg-white border-[#8B1538] text-[#8B1538]' : 'bg-white border-gray-200 text-gray-300') }}">
+                               ($active ? ($isErrorState ? 'bg-white border-orange-500 text-orange-500' : 'bg-white border-[#8B1538] text-[#8B1538]') : 'bg-white border-gray-200 text-gray-300') }}">
                             @if($done)
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             @else
-                            {{ $step }}
+                                @if($isErrorState)
+                                <span class="material-symbols-outlined text-[16px]">priority_high</span>
+                                @else
+                                {{ $step }}
+                                @endif
                             @endif
                         </div>
-                        <span class="text-sm font-semibold flex-1
-                            {{ $active ? 'text-[#8B1538]' : ($done ? 'text-gray-600' : 'text-gray-300') }}">
-                            {{ $label }}
-                        </span>
-                        @if($active)<div class="w-2 h-2 rounded-full bg-[#8B1538] shrink-0"></div>@endif
+                        <div class="flex-1 min-w-0">
+                            <span class="text-sm font-semibold block truncate
+                                {{ $active ? ($isErrorState ? 'text-orange-700' : 'text-[#8B1538]') : ($done ? 'text-gray-600' : 'text-gray-300') }}">
+                                {{ $label }}
+                            </span>
+                            @if($isErrorState)
+                            <span class="text-[9px] font-black text-orange-500 uppercase tracking-widest mt-0.5 block">Perlu Perhatian</span>
+                            @endif
+                        </div>
+                        @if($active)
+                            <div class="w-2 h-2 rounded-full shrink-0 {{ $isErrorState ? 'bg-orange-500 animate-pulse' : 'bg-[#8B1538]' }}"></div>
+                        @endif
                     </li>
                     @endforeach
                 </ol>
@@ -268,7 +294,7 @@
                 {{-- Proposal --}}
                 @if(!$submission || in_array($submission?->status->value, ['PROPOSAL_DRAFT','PROPOSAL_REJECTED']))
                 @php $rejected = $submission?->status->value === 'PROPOSAL_REJECTED'; @endphp
-                <a href="{{ route('mahasiswa.thesis.proposal') }}"
+                <a href="{{ route('mahasiswa.skripsi.proposal') }}"
                     class="group block bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl hover:shadow-red-900/5 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100 hover:border-red-100 relative overflow-hidden">
                     <div class="absolute top-0 right-0 -mt-6 -mr-6 w-28 h-28 bg-gradient-to-br from-[#8B1538]/5 to-transparent rounded-full blur-xl"></div>
                     <div class="flex items-start gap-4 relative z-10">
@@ -299,27 +325,35 @@
                 </a>
                 @endif
 
-                {{-- Bimbingan --}}
+                {{-- Logbook Bimbingan --}}
                 @if($submission && in_array($submission->status->value, ['BIMBINGAN_ACTIVE','ELIGIBLE_SIDANG','SIDANG_REG_DRAFT','SIDANG_REG_REJECTED']))
-                @php $bimbPct = min(100, round(($summary['total_bimbingan'] / max(1,$summary['min_bimbingan'])) * 100)); @endphp
-                <a href="{{ route('mahasiswa.thesis.bimbingan') }}"
+                @php $hasLogbook = !empty($submission->logbook_file_path); @endphp
+                <a href="{{ route('mahasiswa.skripsi.bimbingan') }}"
                     class="group block bg-white rounded-2xl p-5 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100 hover:border-blue-100 relative overflow-hidden">
                     <div class="absolute top-0 right-0 -mt-6 -mr-6 w-20 h-20 bg-gradient-to-br from-blue-500/5 to-transparent rounded-full blur-xl"></div>
                     <div class="flex items-start gap-3 relative z-10">
                         <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 text-white flex items-center justify-center shadow-sm shrink-0">
-                            <span class="material-symbols-outlined text-xl">forum</span>
+                            <span class="material-symbols-outlined text-xl">menu_book</span>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h3 class="font-bold text-gray-900 group-hover:text-blue-800 transition-colors text-sm mb-1">Log Bimbingan</h3>
-                            <p class="text-xs text-gray-500">{{ $summary['total_bimbingan'] }}/{{ $summary['min_bimbingan'] }} sesi tercatat</p>
-                            <div class="mt-2 bg-gray-100 rounded-full h-1.5">
-                                <div class="bg-blue-500 rounded-full h-1.5 transition-all" style="width:{{ $bimbPct }}%"></div>
+                            <h3 class="font-bold text-gray-900 group-hover:text-blue-800 transition-colors text-sm mb-1">Logbook Bimbingan</h3>
+                            @if($hasLogbook)
+                            <div class="flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                <p class="text-xs text-emerald-600 font-medium truncate">{{ $submission->logbook_original_name }}</p>
                             </div>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Upload: {{ $submission->logbook_uploaded_at?->format('d M Y') }}</p>
+                            @else
+                            <p class="text-xs text-amber-600 font-medium flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px]">warning</span>
+                                Belum upload logbook
+                            </p>
+                            @endif
                         </div>
                     </div>
                     <div class="mt-4 pt-3.5 border-t border-gray-50 flex items-center justify-between">
                         <span class="text-xs font-bold text-blue-700 flex items-center gap-1 group-hover:gap-2 transition-all">
-                            Lihat Log <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+                            {{ $hasLogbook ? 'Lihat Detail' : 'Upload Sekarang' }} <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
                         </span>
                         <span class="text-[10px] text-gray-300 font-medium">Langkah 3</span>
                     </div>
@@ -329,7 +363,7 @@
                 {{-- Daftar Sidang --}}
                 @if($submission && in_array($submission->status->value, ['ELIGIBLE_SIDANG','SIDANG_REG_DRAFT','SIDANG_REG_REJECTED']))
                 @php $regRej = $submission->status->value === 'SIDANG_REG_REJECTED'; @endphp
-                <a href="{{ route('mahasiswa.thesis.sidang.registration') }}"
+                <a href="{{ route('mahasiswa.skripsi.sidang.registration') }}"
                     class="group block bg-white rounded-2xl p-5 shadow-sm hover:shadow-xl hover:shadow-teal-900/5 hover:-translate-y-0.5 transition-all duration-200 border border-gray-100 hover:border-teal-100 relative overflow-hidden">
                     <div class="absolute top-0 right-0 -mt-6 -mr-6 w-20 h-20 bg-gradient-to-br from-teal-500/5 to-transparent rounded-full blur-xl"></div>
                     <div class="flex items-start gap-3 relative z-10">
@@ -368,7 +402,7 @@
                             <p class="text-xs text-gray-400 mt-0.5">Format: PDF, DOC, DOCX</p>
                         </div>
                     </div>
-                    <form action="{{ route('mahasiswa.thesis.revision.upload') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-3">
+                    <form action="{{ route('mahasiswa.skripsi.revision.upload') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-3">
                         @csrf
                         <div class="flex-1 space-y-2">
                             <input type="file" name="revision_file" accept=".pdf,.doc,.docx"
@@ -386,7 +420,7 @@
                 {{-- Detail Sidang --}}
                 @if($submission?->sidangSchedule)
                 @php $sch = $submission->sidangSchedule; @endphp
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-indigo-100 md:col-span-2">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-indigo-100 flex flex-col justify-between">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center shadow-sm shrink-0">
                             <span class="material-symbols-outlined text-xl">event_available</span>
@@ -396,9 +430,9 @@
                             <p class="text-xs text-indigo-500 mt-0.5 font-medium">{{ $sch->tanggal->format('d F Y') }}</p>
                         </div>
                     </div>
-                    <dl class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-auto">
                         @foreach([
-                            ['label' => 'Waktu',      'value' => substr($sch->waktu_mulai,0,5).($sch->waktu_selesai?' – '.substr($sch->waktu_selesai,0,5):'').' WIB', 'icon' => 'schedule',    'color' => 'text-indigo-400'],
+                            ['label' => 'Waktu',      'value' => \Carbon\Carbon::parse($sch->waktu_mulai)->format('H:i').($sch->waktu_selesai ? ' - '.\Carbon\Carbon::parse($sch->waktu_selesai)->format('H:i') : '').' WIB', 'icon' => 'schedule',    'color' => 'text-indigo-400'],
                             ['label' => 'Ruangan',    'value' => $sch->ruangan_label,            'icon' => 'meeting_room', 'color' => 'text-purple-400'],
                             ['label' => 'Pembimbing', 'value' => $sch->pembimbing?->nama ?? '-', 'icon' => 'person',       'color' => 'text-blue-400'],
                             ['label' => 'Penguji 1',  'value' => $sch->penguji1?->nama ?? '-',  'icon' => 'person_check', 'color' => 'text-teal-400'],
@@ -423,7 +457,7 @@
                             <span class="material-symbols-outlined text-2xl {{ $guide['color'] }}">{{ $guide['icon'] }}</span>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h3 class="font-bold text-gray-800 mb-1.5">{{ $guide['title'] }}</h3>
+                            <h3 class="font-bold text-gray-800 mb-1.5 flex items-center">{!! $guide['title'] !!}</h3>
                             <p class="text-sm text-gray-500 leading-relaxed">{{ $guide['body'] }}</p>
                         </div>
                     </div>

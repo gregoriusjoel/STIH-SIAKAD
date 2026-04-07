@@ -244,7 +244,7 @@ class KRSController extends Controller
                 $filename = 'KRS_' . $nimOrId . '_' . $s->semester_number . '.pdf';
                 $path = 'krs/' . $mahasiswa->id . '/' . $filename;
 
-                if (Storage::disk('public')->exists($path)) {
+                if (Storage::disk('s3')->exists($path)) {
                     $downloadable[] = $s->semester_number;
                     continue;
                 }
@@ -308,8 +308,8 @@ class KRSController extends Controller
         $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
         $filename = 'KRS_' . $nimOrId . '_' . ($krsSemester->id ?? 'sem') . '.pdf';
         $path = 'krs/' . $mahasiswa->id . '/' . $filename;
-        if (Storage::disk('public')->exists($path)) {
-            return Storage::disk('public')->download($path, $filename);
+        if (Storage::disk('s3')->exists($path)) {
+            return Storage::disk('s3')->download($path, $filename);
         }
 
         // Only allow printing if student has submitted KRS (status != draft) for that semester
@@ -340,8 +340,8 @@ class KRSController extends Controller
         $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
         $filename = 'KRS_' . $nimOrId . '_' . ($krsSemester->id ?? 'sem') . '.pdf';
         $path = 'krs/' . $mahasiswa->id . '/' . $filename;
-        if (Storage::disk('public')->exists($path)) {
-            return Storage::disk('public')->download($path, $filename);
+        if (Storage::disk('s3')->exists($path)) {
+            return Storage::disk('s3')->download($path, $filename);
         }
 
         return view('page.mahasiswa.krs.print', [
@@ -553,7 +553,7 @@ class KRSController extends Controller
             $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
             $filename = 'KRS_' . $nimOrId . '_' . ($krsSemesterForPdf->id ?? 'sem') . '.pdf';
             $path = 'krs/' . $mahasiswa->id . '/' . $filename;
-            Storage::disk('public')->put($path, $pdf->output());
+            Storage::disk('s3')->put($path, $pdf->output());
 
             if ($status === 'approved') {
                 \App\Models\AuditLog::log('krs.submitted', $mahasiswa, [
@@ -650,7 +650,7 @@ class KRSController extends Controller
             $filename = 'KRS_' . $nimOrId . '_' . $s->semester_number . '.pdf';
             $path = 'krs/' . $mahasiswa->id . '/' . $filename;
 
-            if (Storage::disk('public')->exists($path)) {
+            if (Storage::disk('s3')->exists($path)) {
                 $downloadable[] = $s->semester_number;
                 continue;
             }

@@ -1796,14 +1796,14 @@ class LecturerController extends Controller
                 ->first();
 
             // Generate new filename & store file terlebih dahulu
-            $fileName = $tipeDokumen . '_' . $kelas->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('dokumen', $fileName, 'public');
+            $fileName = \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $path     = $file->storeAs('documents/dokumen-kelas', $fileName, 's3');
 
             if ($existingDoc) {
                 // Hapus file lama secara aman (abaikan jika gagal, jangan gagalkan upload baru)
                 if (!empty($existingDoc->path_file)) {
                     try {
-                        Storage::disk('public')->delete($existingDoc->path_file);
+                        Storage::disk('s3')->delete($existingDoc->path_file);
                     } catch (\Throwable $deleteError) {
                         Log::warning('Gagal menghapus file dokumen lama', [
                             'kelas_id' => $kelas->id,
@@ -1859,26 +1859,21 @@ class LecturerController extends Controller
             ->where('tipe_dokumen', $tipe)
             ->firstOrFail();
 
-        $filePath = storage_path('app/public/' . $dokumen->path_file);
-
-        if (!file_exists($filePath)) {
-            Log::error('Document file not found', [
+        if (!Storage::disk('s3')->exists($dokumen->path_file)) {
+            Log::error('Document file not found on S3', [
                 'kelas_id' => $id,
-                'tipe' => $tipe,
-                'path' => $filePath
+                'tipe'     => $tipe,
+                'path'     => $dokumen->path_file,
             ]);
-            return back()->with('error', 'File dokumen tidak ditemukan (file fisik hilang). Silakan hubungi admin atau upload ulang.');
+            return back()->with('error', 'File dokumen tidak ditemukan di cloud storage. Silakan upload ulang.');
         }
 
+        // Serve from S3
         if (request()->has('view')) {
-            return response()->file($filePath, [
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-            ]);
+            return Storage::disk('s3')->response($dokumen->path_file, $dokumen->nama_file);
         }
 
-        return response()->download($filePath, $dokumen->nama_file);
+        return Storage::disk('s3')->download($dokumen->path_file, $dokumen->nama_file);
     }
 
     /**
@@ -1906,7 +1901,7 @@ class LecturerController extends Controller
 
         if ($dokumen) {
             // Delete file from storage
-            Storage::disk('public')->delete($dokumen->path_file);
+            Storage::disk('s3')->delete($dokumen->path_file);
             // Delete database record
             $dokumen->delete();
 

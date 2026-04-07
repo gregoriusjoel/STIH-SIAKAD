@@ -13,7 +13,7 @@ class JamPerkuliahanController extends Controller
      */
     public function index()
     {
-        $jamPerkuliahan = JamPerkuliahan::orderBy('jam_ke')->get();
+        $jamPerkuliahan = JamPerkuliahan::orderBy('jam_ke')->paginate(10);
         return view('admin.jam-perkuliahan.index', compact('jamPerkuliahan'));
     }
 

@@ -17,19 +17,19 @@
                 </div>
                 <div>
                     <nav class="flex items-center gap-2 mb-1.5 px-0.5">
-                        <a href="{{ route('dosen.thesis.index') }}" class="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-[#8B1538] transition-colors">Bimbingan Skripsi</a>
+                        <a href="{{ route('dosen.skripsi.index') }}" class="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-[#8B1538] transition-colors">Bimbingan Skripsi</a>
                         <span class="material-symbols-outlined text-[14px] text-gray-300">chevron_right</span>
                         <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Detail Skripsi</span>
                     </nav>
-                    <h1 class="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">{{ $thesis->mahasiswa?->user?->name }}</h1>
+                    <h1 class="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">{{ $skripsi->mahasiswa?->user?->name }}</h1>
                     <div class="flex flex-wrap items-center gap-3">
                         <div class="flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 rounded-full border border-gray-100">
                             <span class="material-symbols-outlined text-[16px] text-gray-400 font-light">badge</span>
-                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-tight">{{ $thesis->mahasiswa?->nim }}</span>
+                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-tight">{{ $skripsi->mahasiswa?->nim }}</span>
                         </div>
                         <div class="flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 rounded-full border border-gray-100">
                             <span class="material-symbols-outlined text-[16px] text-gray-400 font-light">account_balance</span>
-                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-tight">{{ $thesis->mahasiswa?->prodi }}</span>
+                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-tight">{{ $skripsi->mahasiswa?->prodi }}</span>
                         </div>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
 
             <div class="flex flex-wrap items-center gap-3 md:self-end">
                 @php 
-                    $color = $thesis->status->color(); 
+                    $color = $skripsi->status->color(); 
                     $colorMap = [
                         'yellow' => 'amber',
                         'green' => 'emerald',
@@ -49,16 +49,16 @@
                         'orange' => 'orange'
                     ];
                     $tColor = $colorMap[$color] ?? $color;
-                    $isPendingAdmin = $thesis->status === \App\Domain\Thesis\Enums\ThesisStatus::PROPOSAL_SUBMITTED;
+                    $isPendingAdmin = $skripsi->status === \App\Domain\Thesis\Enums\ThesisStatus::PROPOSAL_SUBMITTED;
                 @endphp
                 <div class="flex flex-col items-end">
                     <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 pr-1">Status Progres</span>
                     <div class="px-4 py-2 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-{{ $tColor }}-50 text-{{ $tColor }}-700 border border-{{ $tColor }}-100/50 shadow-sm flex items-center gap-2 {{ $isPendingAdmin ? 'animate-pulse' : '' }}">
                         <div class="w-1.5 h-1.5 rounded-full bg-{{ $tColor }}-500"></div>
-                        {{ $thesis->status->label() }}
+                        {{ $skripsi->status->label() }}
                     </div>
                 </div>
-                <a href="{{ route('dosen.thesis.index') }}" class="h-10 px-4 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl flex items-center gap-2 transition-all border border-gray-100 text-xs font-bold mt-4 shadow-sm">
+                <a href="{{ route('dosen.skripsi.index') }}" class="h-10 px-4 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl flex items-center gap-2 transition-all border border-gray-100 text-xs font-bold mt-4 shadow-sm">
                     <span class="material-symbols-outlined text-lg">arrow_back</span>
                     Kembali
                 </a>
@@ -74,8 +74,8 @@
                 <div class="flex items-center gap-4 mb-6">
                     <div class="w-16 h-16 rounded-3xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:scale-105 group-hover:text-[#8B1538]/20 transition-all duration-500 overflow-hidden relative border border-gray-50 shadow-inner">
                         <span class="material-symbols-outlined text-4xl font-light">account_circle</span>
-                        @if($thesis->mahasiswa?->user?->avatar)
-                        <img src="{{ Storage::url($thesis->mahasiswa->user->avatar) }}" class="absolute inset-0 w-full h-full object-cover">
+                        @if($skripsi->mahasiswa?->user?->avatar)
+                        <img src="{{ Storage::url($skripsi->mahasiswa->user->avatar) }}" class="absolute inset-0 w-full h-full object-cover">
                         @endif
                     </div>
                     <div>
@@ -87,15 +87,15 @@
                 <div class="space-y-4">
                     <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100/50 hover:bg-white transition-colors duration-300">
                         <p class="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1.5 ml-1">Nama Lengkap</p>
-                        <p class="text-sm font-bold text-gray-900 leading-tight">{{ $thesis->mahasiswa?->user?->name }}</p>
+                        <p class="text-sm font-bold text-gray-900 leading-tight">{{ $skripsi->mahasiswa?->user?->name }}</p>
                     </div>
                     <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100/50 hover:bg-white transition-colors duration-300">
                         <p class="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1.5 ml-1">NIM / ID Mahasiswa</p>
-                        <p class="text-sm font-black text-[#8B1538] leading-tight">{{ $thesis->mahasiswa?->nim }}</p>
+                        <p class="text-sm font-black text-[#8B1538] leading-tight">{{ $skripsi->mahasiswa?->nim }}</p>
                     </div>
                     <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100/50 hover:bg-white transition-colors duration-300">
                         <p class="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1.5 ml-1">Program Studi</p>
-                        <p class="text-sm font-bold text-gray-900 leading-tight">{{ $thesis->mahasiswa?->prodi }}</p>
+                        <p class="text-sm font-bold text-gray-900 leading-tight">{{ $skripsi->mahasiswa?->prodi }}</p>
                     </div>
                 </div>
 
@@ -105,12 +105,12 @@
                         <p class="text-[11px] font-black uppercase tracking-widest">Hubungi Mahasiswa</p>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $thesis->mahasiswa?->user?->phone ?? '') }}" target="_blank"
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $skripsi->mahasiswa?->user?->phone ?? '') }}" target="_blank"
                             class="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors gap-1 shadow-sm border border-emerald-100/50">
                             <span class="material-symbols-outlined text-[20px]">chat</span>
                             <span class="text-[10px] font-black uppercase">WhatsApp</span>
                         </a>
-                        <a href="mailto:{{ $thesis->mahasiswa?->user?->email }}"
+                        <a href="mailto:{{ $skripsi->mahasiswa?->user?->email }}"
                             class="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors gap-1 shadow-sm border border-blue-100/50">
                             <span class="material-symbols-outlined text-[20px]">mail</span>
                             <span class="text-[10px] font-black uppercase">Email</span>
@@ -131,7 +131,7 @@
                     </div>
 
                     @php
-                        $step = $thesis->status->step();
+                        $step = $skripsi->status->step();
                         $totalSteps = 7;
                         $progress = ($step / $totalSteps) * 100;
                     @endphp
@@ -146,7 +146,7 @@
                         </div>
                     </div>
                     
-                    <p class="text-sm font-black tracking-tight leading-snug mb-2">{{ $thesis->status->label() }}</p>
+                    <p class="text-sm font-black tracking-tight leading-snug mb-2">{{ $skripsi->status->label() }}</p>
                     <p class="text-[11px] text-red-100/70 leading-relaxed font-medium">Bantu mahasiswa melalui bimbingan rutin untuk mencapai target penyelesaian skripsi tepat waktu.</p>
                 </div>
             </div>
@@ -164,12 +164,58 @@
                         <span class="material-symbols-outlined text-amber-500 text-[22px]">auto_stories</span>
                         <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mt-0.5">Judul Skripsi Yang Diajukan</h2>
                     </div>
-                    <h2 class="text-xl font-black text-gray-900 tracking-tight leading-normal italic"> "{{ $thesis->judul }}" </h2>
+                    <h2 class="text-xl font-black text-gray-900 tracking-tight leading-normal italic"> "{{ $skripsi->judul }}" </h2>
                 </div>
             </div>
 
             {{-- Bimbingan Section (Supervisor Only) --}}
             @if($isSupervisor)
+
+            {{-- Logbook PDF Upload Card --}}
+            <div class="bg-gradient-to-br from-white to-blue-50/30 border border-blue-100/50 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-6 text-blue-500/5 group-hover:text-blue-500/10 transition-all">
+                    <span class="material-symbols-outlined text-6xl font-light">menu_book</span>
+                </div>
+                <div class="relative">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100">
+                            <span class="material-symbols-outlined text-[24px]">picture_as_pdf</span>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-black text-blue-900 tracking-tight leading-none mb-1 uppercase tracking-widest">Logbook Bimbingan (PDF)</h2>
+                            <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Dokumen logbook bimbingan yang diupload mahasiswa</p>
+                        </div>
+                    </div>
+
+                    @if($skripsi->logbook_file_path)
+                    <div class="flex items-center justify-between bg-white/60 backdrop-blur-sm border border-blue-100/30 rounded-2xl px-5 py-4 hover:bg-white transition-all group/doc">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-red-500 group-hover/doc:bg-[#8B1538]/5 group-hover/doc:text-[#8B1538] transition-colors shrink-0">
+                                <span class="material-symbols-outlined text-[28px]">picture_as_pdf</span>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-black text-gray-700 leading-tight group-hover/doc:text-[#8B1538] transition-colors truncate">{{ $skripsi->logbook_original_name }}</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Diupload pada {{ $skripsi->logbook_uploaded_at?->format('d M Y, H:i') }} WIB</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('dosen.skripsi.download', base64_encode($skripsi->logbook_file_path)) }}"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-[#8B1538] text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-[#6D1029] transition-all shadow-sm shrink-0 ml-4">
+                            <span class="material-symbols-outlined text-[18px]">download</span>
+                            Download
+                        </a>
+                    </div>
+                    @else
+                    <div class="bg-amber-50/50 border border-amber-100 rounded-2xl p-5 text-center">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center mx-auto mb-3 text-amber-500">
+                            <span class="material-symbols-outlined text-2xl">upload_file</span>
+                        </div>
+                        <p class="text-sm font-bold text-amber-800 mb-1">Logbook Belum Diupload</p>
+                        <p class="text-xs text-amber-600">Mahasiswa belum mengupload logbook bimbingan dalam bentuk PDF.</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
             <div class="space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
                     <div class="flex items-center gap-3">
@@ -178,18 +224,14 @@
                         </div>
                         <div>
                             <h2 class="text-lg font-black text-gray-900 tracking-tight leading-none mb-1">Riwayat Bimbingan</h2>
-                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Total Sesi: {{ $thesis->total_bimbingan }} / 8 Kali</p>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Catatan bimbingan dari sistem lama</p>
                         </div>
-                    </div>
-                    <div class="relative w-48 h-2 bg-gray-100 rounded-full overflow-hidden self-center sm:self-auto border border-gray-100 shadow-inner">
-                        <div class="h-full bg-[#8B1538] rounded-full transition-all duration-1000"
-                            style="width: {{ min(100, ($thesis->total_bimbingan / 8) * 100) }}%"></div>
                     </div>
                 </div>
 
-                @if($thesis->guidances->count())
+                @if($skripsi->guidances->count())
                 <div class="grid gap-4">
-                    @foreach($thesis->guidances->sortByDesc('tanggal_bimbingan') as $g)
+                    @foreach($skripsi->guidances->sortByDesc('tanggal_bimbingan') as $g)
                     @php 
                         $gc = $g->status->color(); 
                         $gcTheme = $colorMap[$gc] ?? $gc;
@@ -218,7 +260,7 @@
                                 
                                 @if($g->file_path)
                                 <div class="mt-4 flex items-center">
-                                    <a href="{{ route('dosen.thesis.download', base64_encode($g->file_path)) }}"
+                                    <a href="{{ route('dosen.skripsi.download', base64_encode($g->file_path)) }}"
                                         class="inline-flex items-center gap-2 group/file px-3 py-2 bg-[#8B1538]/5 text-[#8B1538] rounded-xl text-xs font-black uppercase tracking-wider hover:bg-[#8B1538] hover:text-white transition-all shadow-sm">
                                         <span class="material-symbols-outlined text-[18px]">cloud_download</span>
                                         File Bimbingan
@@ -229,7 +271,7 @@
 
                             @if($g->status->value === 'pending')
                             <div class="flex sm:flex-col gap-2 shrink-0 sm:pt-1">
-                                <form action="{{ route('dosen.thesis.guidance.approve', $g) }}" method="POST">
+                                <form action="{{ route('dosen.skripsi.guidance.approve', $g) }}" method="POST">
                                     @csrf
                                     <button type="submit" onclick="return confirm('Setujui bimbingan ini?')"
                                         class="w-full sm:min-w-[100px] flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 text-white text-[11px] font-black uppercase tracking-wider rounded-xl hover:bg-emerald-700 shadow-md shadow-emerald-600/10 hover:-translate-y-0.5 transition-all">
@@ -253,7 +295,7 @@
                                             <span class="material-symbols-outlined text-[18px]">rate_review</span>
                                             <p class="text-[11px] font-black uppercase tracking-widest">Berikan Alasan Penolakan</p>
                                         </div>
-                                        <form action="{{ route('dosen.thesis.guidance.reject', $g) }}" method="POST">
+                                        <form action="{{ route('dosen.skripsi.guidance.reject', $g) }}" method="POST">
                                             @csrf
                                             <textarea name="note" rows="3" placeholder="Tulis masukan agar mahasiswa dapat memperbaiki catatan ini..." required
                                                 class="w-full border border-gray-200 rounded-xl px-4 py-3 text-xs font-medium focus:ring-1 focus:ring-[#8B1538] focus:border-[#8B1538] transition-all bg-gray-50 mb-3"></textarea>
@@ -282,7 +324,7 @@
             @endif
 
             {{-- Sidang & Documents Section --}}
-            @if($thesis->sidangSchedule && in_array($thesis->status->value, ['SIDANG_SCHEDULED', 'SIDANG_COMPLETED', 'REVISION_UPLOADED', 'REVISION_APPROVED', 'THESIS_COMPLETED']))
+            @if($skripsi->sidangSchedule && in_array($skripsi->status->value, ['SIDANG_SCHEDULED', 'SIDANG_COMPLETED', 'REVISION_UPLOADED', 'REVISION_APPROVED', 'THESIS_COMPLETED']))
             <div class="bg-gradient-to-br from-white to-indigo-50/30 border border-indigo-100/50 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-6 text-indigo-500/5 group-hover:text-indigo-500/10 transition-all">
                     <span class="material-symbols-outlined text-6xl font-light">assignment</span>
@@ -298,7 +340,7 @@
                         </div>
                     </div>
 
-                    @php $sch = $thesis->sidangSchedule; @endphp
+                    @php $sch = $skripsi->sidangSchedule; @endphp
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
                         <div class="p-4 bg-white rounded-2xl border border-indigo-100/50 flex items-center gap-3 group-hover:shadow-sm transition-all">
                             <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500 shrink-0">
@@ -315,7 +357,7 @@
                             </div>
                             <div>
                                 <p class="text-[9px] font-black text-indigo-300 uppercase tracking-widest leading-none mb-1">Waktu</p>
-                                <p class="text-xs font-black text-indigo-900">{{ substr($sch->waktu_mulai, 0, 5) }}{{ $sch->waktu_selesai ? ' – ' . substr($sch->waktu_selesai, 0, 5) : '' }}</p>
+                                <p class="text-xs font-black text-indigo-900">{{ \Carbon\Carbon::parse($sch->waktu_mulai)->format('H:i') }}{{ $sch->waktu_selesai ? ' – ' . \Carbon\Carbon::parse($sch->waktu_selesai)->format('H:i') : '' }}</p>
                             </div>
                         </div>
                         <div class="p-4 bg-white rounded-2xl border border-indigo-100/50 flex items-center gap-3 group-hover:shadow-sm transition-all text-left">
@@ -329,11 +371,11 @@
                         </div>
                     </div>
 
-                    @if($thesis->sidangRegistration)
+                    @if($skripsi->sidangRegistration)
                     <div class="space-y-3">
                         <p class="text-[10px] font-black text-indigo-300 uppercase tracking-widest ml-1 mb-1">Berkas Sidang Terlampir</p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            @foreach($thesis->sidangRegistration->files->filter(fn($f) => $f->file_type->isSharedWithDosen()) as $file)
+                            @foreach($skripsi->sidangRegistration->files->filter(fn($f) => $f->file_type->isSharedWithDosen()) as $file)
                             <div class="flex items-center justify-between bg-white/60 backdrop-blur-sm border border-indigo-100/30 rounded-2xl px-4 py-3 hover:bg-white transition-all group/doc">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-400 group-hover/doc:bg-[#8B1538]/5 group-hover/doc:text-[#8B1538] transition-colors shrink-0">
@@ -344,7 +386,7 @@
                                         <p class="text-[9px] text-gray-400 truncate mt-0.5">{{ $file->original_name }}</p>
                                     </div>
                                 </div>
-                                <a href="{{ route('dosen.thesis.download', base64_encode($file->file_path)) }}"
+                                <a href="{{ route('dosen.skripsi.download', base64_encode($file->file_path)) }}"
                                     class="w-8 h-8 flex items-center justify-center rounded-full text-indigo-200 hover:text-indigo-600 hover:bg-indigo-50 lg:opacity-0 group-hover:opacity-100 transition-all">
                                     <span class="material-symbols-outlined text-[20px]">file_download</span>
                                 </a>
@@ -358,8 +400,8 @@
             @endif
 
             {{-- Revision Section (Supervisor Only) --}}
-            @if($isSupervisor && in_array($thesis->status->value, ['REVISION_UPLOADED', 'REVISION_APPROVED', 'THESIS_COMPLETED']) && $thesis->latestRevision)
-            @php $rev = $thesis->latestRevision; @endphp
+            @if($isSupervisor && in_array($skripsi->status->value, ['REVISION_UPLOADED', 'REVISION_APPROVED', 'THESIS_COMPLETED']) && $skripsi->latestRevision)
+            @php $rev = $skripsi->latestRevision; @endphp
             <div class="bg-gradient-to-br from-white to-amber-50/30 border border-amber-100/50 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-6 text-amber-500/5 group-hover:text-amber-500/10 transition-all">
                     <span class="material-symbols-outlined text-6xl font-light">task</span>
@@ -381,14 +423,14 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-4">
-                        <a href="{{ route('dosen.thesis.download', base64_encode($rev->revision_file_path)) }}"
+                        <a href="{{ route('dosen.skripsi.download', base64_encode($rev->revision_file_path)) }}"
                             class="flex-1 flex items-center justify-center gap-3 h-12 bg-white text-indigo-600 border border-indigo-100 rounded-2xl shadow-sm hover:bg-indigo-50 hover:-translate-y-0.5 transition-all text-xs font-black uppercase tracking-widest">
                             <span class="material-symbols-outlined text-[20px]">download_for_offline</span>
                             Download Berkas Revisi
                         </a>
                         
-                        @if($thesis->status->value === 'REVISION_UPLOADED')
-                        <form action="{{ route('dosen.thesis.revision.approve', $rev) }}" method="POST" class="flex-[1.5]">
+                        @if($skripsi->status->value === 'REVISION_UPLOADED')
+                        <form action="{{ route('dosen.skripsi.revision.approve', $rev) }}" method="POST" class="flex-[1.5]">
                             @csrf
                             <button type="submit" onclick="return confirm('ACC revisi dan selesaikan skripsi?')"
                                 class="w-full h-12 bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-600/10 hover:bg-emerald-700 hover:-translate-y-0.5 transition-all text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2">
@@ -408,7 +450,7 @@
             @endif
 
             {{-- Empty State (if no content sections active) --}}
-            @if(!$isSupervisor && !$thesis->sidangSchedule)
+            @if(!$isSupervisor && !$skripsi->sidangSchedule)
             <div class="bg-white border border-gray-100 rounded-3xl p-16 text-center group">
                 <div class="w-20 h-20 rounded-3xl bg-gray-50 flex items-center justify-center mx-auto mb-6 text-gray-200 group-hover:scale-110 group-hover:text-[#8B1538]/20 transition-all duration-500">
                     <span class="material-symbols-outlined text-4xl font-light">visibility_off</span>

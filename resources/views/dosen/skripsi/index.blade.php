@@ -55,7 +55,7 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($pendingRequests as $thesis)
+                @foreach($pendingRequests as $skripsi)
                 <div class="bg-white border border-amber-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full -mr-16 -mt-16 opacity-50"></div>
                     
@@ -65,25 +65,25 @@
                                 <span class="material-symbols-outlined text-2xl font-light">account_circle</span>
                             </div>
                             <div class="min-w-0 flex-1">
-                                <h3 class="font-bold text-gray-900 truncate tracking-tight">{{ $thesis->mahasiswa?->user?->name }}</h3>
-                                <p class="text-xs text-gray-400 font-medium truncate mt-0.5">{{ $thesis->mahasiswa?->nim }}</p>
+                                <h3 class="font-bold text-gray-900 truncate tracking-tight">{{ $skripsi->mahasiswa?->user?->name }}</h3>
+                                <p class="text-xs text-gray-400 font-medium truncate mt-0.5">{{ $skripsi->mahasiswa?->nim }}</p>
                             </div>
                         </div>
                         
                         <div class="bg-gray-50/80 rounded-xl p-3 mb-5 border border-gray-100">
                             <h4 class="text-[10px] uppercase tracking-widest font-black text-gray-400 mb-1">Judul yang Diajukan</h4>
-                            <p class="text-xs font-semibold text-gray-700 line-clamp-2 leading-relaxed italic">"{{ $thesis->judul }}"</p>
+                            <p class="text-xs font-semibold text-gray-700 line-clamp-2 leading-relaxed italic">"{{ $skripsi->judul }}"</p>
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <form action="{{ route('dosen.thesis.supervisor.accept', $thesis) }}" method="POST" class="flex-1">
+                            <form action="{{ route('dosen.skripsi.supervisor.accept', $skripsi) }}" method="POST" class="flex-1">
                                 @csrf
                                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
                                     <span class="material-symbols-outlined text-[18px]">check</span>
                                     Terima
                                 </button>
                             </form>
-                            <form action="{{ route('dosen.thesis.supervisor.reject', $thesis) }}" method="POST" onsubmit="return collectRejectNote(this);" class="flex-1">
+                            <form action="{{ route('dosen.skripsi.supervisor.reject', $skripsi) }}" method="POST" onsubmit="return collectRejectNote(this);" class="flex-1">
                                 @csrf
                                 <input type="hidden" name="note" value="" />
                                 <button type="submit" class="w-full bg-white border border-red-100 text-red-600 hover:bg-red-50 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
@@ -111,9 +111,9 @@
 
             @if($bimbingans->count())
             <div class="grid grid-cols-1 gap-3">
-                @foreach($bimbingans as $thesis)
+                @foreach($bimbingans as $skripsi)
                 @php 
-                    $color = $thesis->status->color(); 
+                    $color = $skripsi->status->color(); 
                     $colorMap = [
                         'yellow' => 'amber',
                         'green' => 'emerald',
@@ -125,9 +125,9 @@
                         'orange' => 'orange'
                     ];
                     $tColor = $colorMap[$color] ?? $color;
-                    $isPendingAdmin = $thesis->status === \App\Domain\Thesis\Enums\ThesisStatus::PROPOSAL_SUBMITTED;
+                    $isPendingAdmin = $skripsi->status === \App\Domain\Thesis\Enums\ThesisStatus::PROPOSAL_SUBMITTED;
                 @endphp
-                <a href="{{ route('dosen.thesis.show', $thesis) }}"
+                <a href="{{ route('dosen.skripsi.show', $skripsi) }}"
                     class="group flex flex-col sm:flex-row sm:items-center justify-between bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all relative overflow-hidden">
                     
                     @if($isPendingAdmin)
@@ -140,10 +140,10 @@
                         </div>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2 mb-0.5">
-                                <h3 class="font-bold text-gray-900 truncate tracking-tight group-hover:text-[#8B1538] transition-colors">{{ $thesis->mahasiswa?->user?->name }}</h3>
-                                <span class="text-[10px] font-medium text-gray-400">#{{ $thesis->mahasiswa?->nim }}</span>
+                                <h3 class="font-bold text-gray-900 truncate tracking-tight group-hover:text-[#8B1538] transition-colors">{{ $skripsi->mahasiswa?->user?->name }}</h3>
+                                <span class="text-[10px] font-medium text-gray-400">#{{ $skripsi->mahasiswa?->nim }}</span>
                             </div>
-                            <p class="text-xs text-gray-400 font-medium truncate italic">"{{ $thesis->judul }}"</p>
+                            <p class="text-xs text-gray-400 font-medium truncate italic">"{{ $skripsi->judul }}"</p>
                         </div>
                     </div>
                     
@@ -154,13 +154,13 @@
                                 @if($isPendingAdmin)
                                 <span class="text-xs text-gray-300 italic">Menunggu...</span>
                                 @else
-                                {{ $thesis->total_bimbingan }}<span class="text-gray-300 mx-1">/</span>8
+                                {{ $skripsi->total_bimbingan }}<span class="text-gray-300 mx-1">/</span>8
                                 @endif
                             </p>
                         </div>
                         <div class="min-w-[120px] text-right">
                             <span class="inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-{{ $tColor }}-100 text-{{ $tColor }}-700 {{ $isPendingAdmin ? 'animate-pulse' : '' }}">
-                                {{ $thesis->status->label() }}
+                                {{ $skripsi->status->label() }}
                             </span>
                         </div>
                         <div class="w-8 h-8 rounded-full flex items-center justify-center text-gray-300 group-hover:text-[#8B1538] group-hover:bg-red-50 transition-all">
@@ -194,13 +194,13 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($sidangs as $thesis)
+                @foreach($sidangs as $skripsi)
                 @php 
-                    $color = $thesis->status->color(); 
+                    $color = $skripsi->status->color(); 
                     $colorMap = ['yellow' => 'amber', 'green' => 'emerald', 'blue' => 'blue', 'red' => 'red', 'purple' => 'purple', 'indigo' => 'indigo', 'gray' => 'gray'];
                     $tColor = $colorMap[$color] ?? $color;
                 @endphp
-                <a href="{{ route('dosen.thesis.show', $thesis) }}"
+                <a href="{{ route('dosen.skripsi.show', $skripsi) }}"
                     class="group flex flex-col bg-indigo-50/50 border border-indigo-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all">
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex items-center gap-3">
@@ -208,34 +208,34 @@
                                 <span class="material-symbols-outlined text-[22px]">account_circle</span>
                             </div>
                             <div class="min-w-0">
-                                <h3 class="font-bold text-gray-900 truncate tracking-tight">{{ $thesis->mahasiswa?->user?->name }}</h3>
+                                <h3 class="font-bold text-gray-900 truncate tracking-tight">{{ $skripsi->mahasiswa?->user?->name }}</h3>
                                 <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-indigo-100 text-indigo-700 tracking-wider">PENGUJI</span>
                             </div>
                         </div>
                         <span class="px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-{{ $tColor }}-100 text-{{ $tColor }}-700">
-                            {{ $thesis->status->label() }}
+                            {{ $skripsi->status->label() }}
                         </span>
                     </div>
 
-                    @if($thesis->sidangSchedule)
+                    @if($skripsi->sidangSchedule)
                     <div class="bg-white rounded-xl p-3 border border-indigo-100 space-y-2">
                         <div class="flex items-center gap-2 text-xs font-semibold text-gray-700">
                             <span class="material-symbols-outlined text-[16px] text-indigo-400">calendar_month</span>
-                            {{ $thesis->sidangSchedule->tanggal->format('d M Y') }}
+                            {{ $skripsi->sidangSchedule->tanggal->format('d M Y') }}
                         </div>
                         <div class="flex items-center gap-2 text-xs font-semibold text-gray-700">
                             <span class="material-symbols-outlined text-[16px] text-indigo-400">schedule</span>
-                            {{ substr($thesis->sidangSchedule->waktu_mulai, 0, 5) }} WIB
+                            {{ substr($skripsi->sidangSchedule->waktu_mulai, 0, 5) }} WIB
                         </div>
                         <div class="flex items-center gap-2 text-xs font-semibold text-gray-700">
                             <span class="material-symbols-outlined text-[16px] text-indigo-400">meeting_room</span>
-                            {{ $thesis->sidangSchedule->ruangan_label }}
+                            {{ $skripsi->sidangSchedule->ruangan_label }}
                         </div>
                     </div>
                     @endif
                     
                     <div class="mt-4 flex items-center justify-between">
-                        <p class="text-xs font-medium text-gray-400 truncate flex-1 min-w-0 italic mr-4">"{{ $thesis->judul }}"</p>
+                        <p class="text-xs font-medium text-gray-400 truncate flex-1 min-w-0 italic mr-4">"{{ $skripsi->judul }}"</p>
                         <span class="material-symbols-outlined text-[18px] text-gray-300 group-hover:text-indigo-600 transition-colors">chevron_right</span>
                     </div>
                 </a>

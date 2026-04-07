@@ -249,25 +249,9 @@ class TeachingAssignmentService
      */
     public function validateNoDuplicate(Dosen $dosen, array $mataKuliahIds, int $semesterId): array
     {
-        if (empty($mataKuliahIds)) return [];
-
-        $conflicts = DB::table('dosen_mata_kuliah')
-            ->join('dosens', 'dosens.id', '=', 'dosen_mata_kuliah.dosen_id')
-            ->join('users', 'users.id', '=', 'dosens.user_id')
-            ->join('mata_kuliahs', 'mata_kuliahs.id', '=', 'dosen_mata_kuliah.mata_kuliah_id')
-            ->where('dosen_mata_kuliah.semester_id', $semesterId)
-            ->where('dosen_mata_kuliah.dosen_id', '!=', $dosen->id)
-            ->whereIn('dosen_mata_kuliah.mata_kuliah_id', $mataKuliahIds)
-            ->select(
-                'dosen_mata_kuliah.mata_kuliah_id',
-                'mata_kuliahs.nama_mk as mata_kuliah_nama',
-                'mata_kuliahs.kode_mk',
-                'users.name as dosen_nama'
-            )
-            ->get()
-            ->toArray();
-
-        return array_map(fn($c) => (array) $c, $conflicts);
+        // 1 mata kuliah bisa diajar oleh lebih dari 1 dosen,
+        // sehingga tidak perlu ada validasi duplikat lintas dosen.
+        return [];
     }
 
     /**

@@ -34,7 +34,7 @@
                 </div>
                 <div class="relative group cursor-pointer">
                     @if(Auth::user()->mahasiswa && Auth::user()->mahasiswa->foto)
-                        <img src="{{ asset('storage/' . Auth::user()->mahasiswa->foto) }}" 
+                        <img src="{{ Auth::user()->mahasiswa->foto_url ?? '' }}" 
                              alt="Profile Photo" 
                              class="w-10 h-10 rounded-full object-cover border-2 border-white/20 shadow-md">
                     @else

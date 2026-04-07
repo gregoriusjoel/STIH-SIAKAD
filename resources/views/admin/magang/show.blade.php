@@ -125,7 +125,8 @@
         </div>
     </div>
 
-    {{-- Admin Actions --}}
+    {{-- Admin Actions (Hidden when CLOSED) --}}
+    @if($internship->status !== \App\Models\Internship::STATUS_CLOSED)
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 mb-6">
         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5 flex items-center gap-2">
             <span class="material-symbols-outlined text-[16px]">admin_panel_settings</span> Aksi Admin
@@ -137,14 +138,6 @@
                 <button @click="showPdfPanel = !showPdfPanel" class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-indigo-600/20">
                     <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> Generate / Kelola PDF Resmi
                 </button>
-                @if($internship->admin_signed_pdf_path || $internship->admin_final_pdf_path)
-                    <form method="POST" action="{{ route('admin.magang.send-to-student', $internship) }}" class="inline">
-                        @csrf
-                        <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-sky-600/20">
-                            <span class="material-symbols-outlined text-[16px]">forward_to_inbox</span> Kirim ke Mahasiswa
-                        </button>
-                    </form>
-                @endif
             @endif
 
             @if($internship->status === \App\Models\Internship::STATUS_SENT_TO_STUDENT)
@@ -203,7 +196,7 @@
                 {{-- Surat penerimaan dibuat oleh pihak instansi. Admin mengonfirmasi SETELAH mahasiswa upload. --}}
                 @if($internship->acceptance_letter_path)
                     {{-- Mahasiswa has uploaded – show download + confirm --}}
-                    <a href="{{ asset('storage/' . $internship->acceptance_letter_path) }}"
+                    <a href="{{ \Illuminate\Support\Facades\Storage::disk('s3')->url($internship->acceptance_letter_path) }}"
                        target="_blank"
                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-teal-200 hover:bg-teal-50 text-teal-700 text-sm font-bold rounded-xl transition shadow-sm">
                         <span class="material-symbols-outlined text-[16px]">download</span> Lihat Surat Penerimaan (upload mahasiswa)
@@ -323,7 +316,7 @@
             {{-- Step 2: Upload Signed PDF --}}
             <div class="p-4 bg-white rounded-xl border border-indigo-100">
                 <p class="text-xs font-bold text-gray-500 mb-3">Langkah 2 — Upload PDF Sudah TTD + Cap</p>
-                <p class="text-[11px] text-gray-400 mb-3">Download PDF di atas → cetak → tanda tangan + cap → scan → upload kembali.</p>
+                <p class="text-[11px] text-gray-400 mb-3">Download PDF di atas → cetak → tanda tangan + cap → scan → upload kembali. <br/> <strong class="text-indigo-600">Surat akan otomatis dikirim ke mahasiswa setelah diupload.</strong></p>
                 <form method="POST" action="{{ route('admin.magang.upload-signed-pdf', $internship) }}"
                       enctype="multipart/form-data" class="flex flex-wrap items-end gap-3">
                     @csrf
@@ -332,8 +325,10 @@
                         <input type="file" name="signed_pdf" accept=".pdf" required
                                class="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
                     </div>
-                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-teal-600/20">
-                        <span class="material-symbols-outlined text-[15px]">upload_file</span> Upload Signed PDF
+                    <button type="submit" 
+                            onclick="return confirm('Upload file ini dan langsung kirimkan ke mahasiswa?')"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-teal-600/20">
+                        <span class="material-symbols-outlined text-[15px]">upload_file</span> Upload & Kirimkan ke Mahasiswa
                     </button>
                     @if($internship->admin_signed_pdf_path)
                         <a href="{{ route('admin.magang.download-signed-pdf', $internship) }}"
@@ -350,25 +345,7 @@
                 @endif
             </div>
 
-            {{-- Step 3: Send to Student --}}
-            <div class="p-4 bg-white rounded-xl border border-sky-100">
-                <p class="text-xs font-bold text-gray-500 mb-3">Langkah 3 — Kirim Surat ke Mahasiswa</p>
-                @if($internship->admin_signed_pdf_path || $internship->admin_final_pdf_path)
-                    <form method="POST" action="{{ route('admin.magang.send-to-student', $internship) }}" class="inline">
-                        @csrf
-                        <button type="submit"
-                                onclick="return confirm('Kirim surat resmi ke mahasiswa? Status akan berubah menjadi Surat Terkirim.')"
-                                class="inline-flex items-center gap-2 px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-sky-600/20">
-                            <span class="material-symbols-outlined text-[15px]">forward_to_inbox</span> Kirim ke Mahasiswa
-                        </button>
-                    </form>
-                @else
-                    <p class="text-[11px] text-amber-600 font-semibold flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[13px]">warning</span>
-                        Selesaikan Langkah 1 & 2 terlebih dahulu.
-                    </p>
-                @endif
-            </div>
+
 
             {{-- SENT info if already sent --}}
             @if($internship->sent_to_student_at)
@@ -424,8 +401,10 @@
             </form>
         </div>
     </div>
+    @endif
 
-    {{-- MK Mapping Form --}}
+    {{-- MK Mapping Form (Hidden when CLOSED) --}}
+    @if($internship->status !== \App\Models\Internship::STATUS_CLOSED)
     <div x-show="showMappingForm" x-cloak x-data="courseMappingForm()" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 mb-6">
         <form method="POST" action="{{ route('admin.magang.course-mappings', $internship) }}" class="space-y-4">
             @csrf
@@ -556,6 +535,7 @@
                 </div>
         </div>
     </div>
+    @endif
 
     {{-- Existing MK Konversi --}}
 
@@ -594,7 +574,8 @@
     </div>
     @endif
 
-    {{-- Grade Input Form with Realtime Calculator --}}
+    {{-- Grade Input Form with Realtime Calculator (Hidden when CLOSED) --}}
+    @if($internship->status !== \App\Models\Internship::STATUS_CLOSED)
     <div x-show="showGradeForm" x-cloak class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 mb-6">
         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
             <span class="material-symbols-outlined text-[16px]">grade</span> Input Nilai Konversi
@@ -682,6 +663,7 @@
             </div>
         @endif
     </div>
+    @endif
 
     {{-- Logbooks --}}
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mt-6 mb-6">
@@ -921,6 +903,17 @@ function courseMappingForm() {
     };
 }
 </script>
+
+@if(session('auto_download_official'))
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(() => {
+            window.location.href = "{{ route('admin.magang.download-official-pdf', $internship) }}";
+        }, 500); // Small delay to let the page render properly
+    });
+</script>
+@endif
+
 @endpush
 @endsection
 

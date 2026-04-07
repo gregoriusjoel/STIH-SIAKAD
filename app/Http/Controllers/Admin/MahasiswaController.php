@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Krs;
 use App\Models\Mahasiswa;
 use App\Models\Prodi;
+use App\Services\FileStorageService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class MahasiswaController extends Controller
 {
+    public function __construct(private FileStorageService $storage) {}
     /**
      * Display a listing of the resource.
      */
@@ -141,27 +142,24 @@ class MahasiswaController extends Controller
     public function destroy(Mahasiswa $mahasiswa)
     {
         try {
-            // Delete personal files
+            // Delete personal files from S3
             if ($mahasiswa->foto) {
-                Storage::disk('public')->delete($mahasiswa->foto);
+                $this->storage->delete($mahasiswa->foto);
             }
 
-            // Delete documents
+            // Delete documents from S3
             $documentTypes = ['file_ijazah', 'file_transkrip', 'file_kk', 'file_ktp'];
             foreach ($documentTypes as $docType) {
                 $files = $mahasiswa->$docType;
                 if (!empty($files) && is_array($files)) {
                     foreach ($files as $file) {
-                        Storage::disk('public')->delete($file);
+                        $this->storage->delete($file);
                     }
                 }
             }
 
-            // Delete specific directory for student documents if it exists
-            $docDirectory = 'mahasiswa/dokumen/' . $mahasiswa->nim;
-            if (Storage::disk('public')->exists($docDirectory)) {
-                Storage::disk('public')->deleteDirectory($docDirectory);
-            }
+            // Delete student document directory from S3
+            $this->storage->deleteDirectory('documents/mahasiswa/' . $mahasiswa->nim);
 
             // Delete associated user record (which will cascade delete the mahasiswa and parent records)
             if ($mahasiswa->user) {

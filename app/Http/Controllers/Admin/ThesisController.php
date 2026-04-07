@@ -175,4 +175,12 @@ class ThesisController extends Controller
 
         return $this->fileService->downloadResponse($decoded, basename($decoded));
     }
+
+    public function previewFile(string $path)
+    {
+        $decoded = base64_decode($path);
+        abort_unless($decoded && str_starts_with($decoded, 'skripsi/'), 403);
+
+        return $this->fileService->previewResponse($decoded);
+    }
 }

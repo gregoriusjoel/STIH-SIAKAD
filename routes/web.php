@@ -12,6 +12,7 @@ use App\Http\Controllers\Mahasiswa\JadwalController as MahasiswaJadwalController
 use App\Http\Controllers\Mahasiswa\PembayaranController;
 use App\Http\Controllers\Mahasiswa\ProfilController;
 use App\Http\Controllers\Mahasiswa\PengajuanController;
+use Illuminate\Support\Facades\Storage;
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -148,16 +149,21 @@ Route::prefix('dosen')->name('dosen.')->where(['pertemuan' => '[a-z0-9:]+'])->gr
     });
 
     // ── Skripsi / Sidang (Dosen) ──────────────────────────────────
-    Route::prefix('thesis')->name('thesis.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Dosen\ThesisController::class, 'index'])->name('index');
-        Route::get('/{thesis}', [App\Http\Controllers\Dosen\ThesisController::class, 'show'])->name('show');
-        Route::post('/guidance/{guidance}/approve', [App\Http\Controllers\Dosen\ThesisController::class, 'approveGuidance'])->name('guidance.approve');
-        Route::post('/guidance/{guidance}/reject', [App\Http\Controllers\Dosen\ThesisController::class, 'rejectGuidance'])->name('guidance.reject');
-        Route::post('/revision/{revision}/approve', [App\Http\Controllers\Dosen\ThesisController::class, 'approveRevision'])->name('revision.approve');
+    Route::prefix('skripsi')->name('skripsi.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Dosen\SkripsiController::class, 'index'])->name('index');
+        Route::get('/{skripsi}', [App\Http\Controllers\Dosen\SkripsiController::class, 'show'])->name('show');
+        Route::post('/guidance/{guidance}/approve', [App\Http\Controllers\Dosen\SkripsiController::class, 'approveGuidance'])->name('guidance.approve');
+        Route::post('/guidance/{guidance}/reject', [App\Http\Controllers\Dosen\SkripsiController::class, 'rejectGuidance'])->name('guidance.reject');
+        Route::post('/revision/{revision}/approve', [App\Http\Controllers\Dosen\SkripsiController::class, 'approveRevision'])->name('revision.approve');
         // Supervisor request actions
-        Route::post('/{thesis}/supervisor/accept', [App\Http\Controllers\Dosen\ThesisController::class, 'acceptSupervisor'])->name('supervisor.accept');
-        Route::post('/{thesis}/supervisor/reject', [App\Http\Controllers\Dosen\ThesisController::class, 'rejectSupervisor'])->name('supervisor.reject');
-        Route::get('/download/{encodedPath}', [App\Http\Controllers\Dosen\ThesisController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
+        Route::post('/{skripsi}/supervisor/accept', [App\Http\Controllers\Dosen\SkripsiController::class, 'acceptSupervisor'])->name('supervisor.accept');
+        Route::post('/{skripsi}/supervisor/reject', [App\Http\Controllers\Dosen\SkripsiController::class, 'rejectSupervisor'])->name('supervisor.reject');
+        Route::get('/download/{encodedPath}', [App\Http\Controllers\Dosen\SkripsiController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
+    });
+
+    // Fallback thesis to skripsi
+    Route::prefix('thesis')->group(function () {
+        Route::any('/{any?}', fn(string $any = '') => redirect('/dosen/skripsi/'.$any))->where('any', '.*');
     });
 });
 
@@ -268,16 +274,23 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
     });
 
     // ── Skripsi / Sidang (Mahasiswa) ──────────────────────────────────
-    Route::prefix('thesis')->name('thesis.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'index'])->name('index');
-        Route::get('/proposal', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'proposalForm'])->name('proposal');
-        Route::post('/proposal', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'submitProposal'])->name('proposal.submit');
-        Route::get('/bimbingan', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'bimbingan'])->name('bimbingan');
-        Route::post('/bimbingan', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'storeGuidance'])->name('bimbingan.store');
-        Route::get('/sidang/daftar', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'sidangRegistration'])->name('sidang.registration');
-        Route::post('/sidang/{reg}/upload', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'uploadSidangFile'])->name('sidang.upload');
-        Route::post('/sidang/{reg}/submit', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'submitSidangRegistration'])->name('sidang.submit');
-        Route::post('/revisi/upload', [App\Http\Controllers\Mahasiswa\ThesisController::class, 'uploadRevision'])->name('revision.upload');
+    Route::prefix('skripsi')->name('skripsi.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'index'])->name('index');
+        Route::get('/proposal', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'proposalForm'])->name('proposal');
+        Route::post('/proposal', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'submitProposal'])->name('proposal.submit');
+        Route::get('/bimbingan', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'bimbingan'])->name('bimbingan');
+        Route::post('/bimbingan', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'storeGuidance'])->name('bimbingan.store');
+        // Logbook template download & upload
+        Route::get('/logbook/template', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'downloadLogbookTemplate'])->name('logbook.template');
+        Route::post('/logbook/upload', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'uploadLogbook'])->name('logbook.upload');
+        Route::get('/sidang/daftar', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'sidangRegistration'])->name('sidang.registration');
+        Route::post('/sidang/{reg}/upload', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'uploadSidangFile'])->name('sidang.upload');
+        Route::post('/sidang/{reg}/submit', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'submitSidangRegistration'])->name('sidang.submit');
+        Route::post('/revisi/upload', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'uploadRevision'])->name('revision.upload');
+    });
+
+    Route::prefix('thesis')->group(function () {
+        Route::any('/{any?}', fn(string $any = '') => redirect('/mahasiswa/skripsi/'.$any))->where('any', '.*');
     });
 
 });
@@ -516,19 +529,33 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     });
 
     // ── Skripsi / Sidang (Admin) ──────────────────────────────────
-    Route::prefix('thesis')->name('thesis.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Admin\ThesisController::class, 'index'])->name('index');
-        Route::get('/{thesis}', [App\Http\Controllers\Admin\ThesisController::class, 'show'])->name('show');
-        Route::post('/{thesis}/proposal/approve', [App\Http\Controllers\Admin\ThesisController::class, 'approveProposal'])->name('proposal.approve');
-        Route::post('/{thesis}/proposal/reject', [App\Http\Controllers\Admin\ThesisController::class, 'rejectProposal'])->name('proposal.reject');
-        Route::post('/registration/{reg}/verify', [App\Http\Controllers\Admin\ThesisController::class, 'verifySidangRegistration'])->name('sidang.verify');
-        Route::post('/registration/{reg}/reject', [App\Http\Controllers\Admin\ThesisController::class, 'rejectSidangRegistration'])->name('sidang.reject');
-        Route::get('/{thesis}/schedule', [App\Http\Controllers\Admin\ThesisController::class, 'scheduleForm'])->name('schedule.form');
-        Route::post('/{thesis}/schedule', [App\Http\Controllers\Admin\ThesisController::class, 'storeSidangSchedule'])->name('schedule.store');
-        Route::post('/{thesis}/complete', [App\Http\Controllers\Admin\ThesisController::class, 'completeSidang'])->name('complete');
-        Route::get('/download/{encodedPath}', [App\Http\Controllers\Admin\ThesisController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
+    Route::prefix('skripsi')->name('skripsi.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\SkripsiController::class, 'index'])->name('index');
+        Route::get('/{skripsi}', [App\Http\Controllers\Admin\SkripsiController::class, 'show'])->name('show');
+        Route::post('/{skripsi}/proposal/approve', [App\Http\Controllers\Admin\SkripsiController::class, 'approveProposal'])->name('proposal.approve');
+        Route::post('/{skripsi}/proposal/reject', [App\Http\Controllers\Admin\SkripsiController::class, 'rejectProposal'])->name('proposal.reject');
+        Route::post('/registration/{reg}/verify', [App\Http\Controllers\Admin\SkripsiController::class, 'verifySidangRegistration'])->name('sidang.verify');
+        Route::post('/registration/{reg}/reject', [App\Http\Controllers\Admin\SkripsiController::class, 'rejectSidangRegistration'])->name('sidang.reject');
+        Route::get('/{skripsi}/schedule', [App\Http\Controllers\Admin\SkripsiController::class, 'scheduleForm'])->name('schedule.form');
+        Route::post('/{skripsi}/schedule', [App\Http\Controllers\Admin\SkripsiController::class, 'storeSidangSchedule'])->name('schedule.store');
+        Route::post('/{skripsi}/complete', [App\Http\Controllers\Admin\SkripsiController::class, 'completeSidang'])->name('complete');
+        Route::get('/download/{encodedPath}', [App\Http\Controllers\Admin\SkripsiController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
+        Route::get('/preview/{encodedPath}', [App\Http\Controllers\Admin\SkripsiController::class, 'previewFile'])->name('preview')->where('encodedPath', '.*');
+    });
+
+    Route::prefix('thesis')->group(function () {
+        Route::any('/{any?}', fn(string $any = '') => redirect('/admin/skripsi/'.$any))->where('any', '.*');
     });
 });
 
 // Payment System Routes (Finance & Mahasiswa)
 require __DIR__.'/payment_routes.php';
+
+// Generic File Upload (S3)
+Route::middleware('auth')->group(function () {
+    Route::get('/uploads', [App\Http\Controllers\UploadController::class, 'index'])->name('uploads.index');
+    Route::post('/uploads', [App\Http\Controllers\UploadController::class, 'store'])->name('uploads.store');
+    Route::get('/uploads/{upload}', [App\Http\Controllers\UploadController::class, 'show'])->name('uploads.show');
+    Route::delete('/uploads/{upload}', [App\Http\Controllers\UploadController::class, 'destroy'])->name('uploads.destroy');
+});
+

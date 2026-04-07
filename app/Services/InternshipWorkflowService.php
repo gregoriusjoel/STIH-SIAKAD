@@ -69,7 +69,7 @@ class InternshipWorkflowService
     {
         $fileName = 'internship_request_signed_' . $internship->id . '_' . time()
                     . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('internship/signed', $fileName, 'public');
+        $path = $file->storeAs('internship/signed', $fileName, 's3');
 
         $internship->update([
             'request_letter_signed_path' => $path,
@@ -167,7 +167,7 @@ class InternshipWorkflowService
     {
         $ext  = $file->getClientOriginalExtension();
         $name = 'acceptance_' . $internship->id . '_' . time() . '.' . $ext;
-        $path = $file->storeAs('internship/acceptance', $name, 'public');
+        $path = $file->storeAs('internship/acceptance', $name, 's3');
         $internship->update(['acceptance_letter_path' => $path]);
     }
 
@@ -184,7 +184,7 @@ class InternshipWorkflowService
         if ($file) {
             $ext  = $file->getClientOriginalExtension();
             $name = 'acceptance_' . $internship->id . '_' . time() . '.' . $ext;
-            $path = $file->storeAs('internship/acceptance', $name, 'public');
+            $path = $file->storeAs('internship/acceptance', $name, 's3');
             $internship->update(['acceptance_letter_path' => $path]);
         }
 
@@ -217,7 +217,7 @@ class InternshipWorkflowService
     {
         $ext      = $file->getClientOriginalExtension();
         $fileName = 'official_signed_' . $internship->id . '_' . time() . '.' . $ext;
-        $path     = $file->storeAs('internship/admin_signed', $fileName, 'public');
+        $path     = $file->storeAs('internship/admin_signed', $fileName, 's3');
 
         $internship->update(['admin_signed_pdf_path' => $path]);
     }
@@ -361,7 +361,7 @@ class InternshipWorkflowService
         // Delete files
         foreach (['request_letter_generated_path', 'request_letter_signed_path', 'acceptance_letter_path', 'dokumen_pendukung_path'] as $field) {
             if ($internship->$field) {
-                Storage::disk('public')->delete($internship->$field);
+                Storage::disk('s3')->delete($internship->$field);
             }
         }
 

@@ -44,16 +44,12 @@ class InternshipController extends Controller
                 ->with('error', 'Pendaftaran magang hanya dapat dilakukan mulai Semester 5. Semester Anda saat ini adalah Semester ' . ($mahasiswa->semester ?? 1) . '.');
         }
 
-        // Cek apakah mahasiswa sudah memiliki magang yang sedang berjalan/disetujui
         $blockedStatuses = [
             Internship::STATUS_APPROVED,
             Internship::STATUS_SENT_TO_STUDENT,
             Internship::STATUS_SUPERVISOR_ASSIGNED,
             Internship::STATUS_ACCEPTANCE_LETTER_READY,
             Internship::STATUS_ONGOING,
-            Internship::STATUS_COMPLETED,
-            Internship::STATUS_GRADED,
-            Internship::STATUS_CLOSED,
         ];
         $hasApprovedInternship = Internship::where('mahasiswa_id', $mahasiswa->id)
             ->whereIn('status', $blockedStatuses)
@@ -79,8 +75,10 @@ class InternshipController extends Controller
             'periode_selesai'        => 'required|date|after:periode_mulai',
             'deskripsi'              => 'nullable|string|max:2000',
             'pembimbing_lapangan_nama'  => 'nullable|string|max:255',
-            'pembimbing_lapangan_telp'  => 'nullable|string|max:50',
+            'pembimbing_lapangan_telp'  => ['nullable', 'string', 'regex:/^[0-9]{12,13}$/'],
             'dokumen_pendukung'      => 'nullable|file|mimes:pdf,jpg,png|max:5120',
+        ], [
+            'pembimbing_lapangan_telp.regex' => 'No. Telp Pembimbing harus terdiri dari 12 hingga 13 angka.',
         ]);
 
         $mahasiswa = Auth::user()->mahasiswa;
@@ -93,16 +91,12 @@ class InternshipController extends Controller
                 ->with('error', 'Pendaftaran magang hanya dapat dilakukan mulai Semester 5. Semester Anda saat ini adalah Semester ' . ($mahasiswa->semester ?? 1) . '.');
         }
 
-        // Cek magang yang sudah disetujui
         $blockedStatuses = [
             Internship::STATUS_APPROVED,
             Internship::STATUS_SENT_TO_STUDENT,
             Internship::STATUS_SUPERVISOR_ASSIGNED,
             Internship::STATUS_ACCEPTANCE_LETTER_READY,
             Internship::STATUS_ONGOING,
-            Internship::STATUS_COMPLETED,
-            Internship::STATUS_GRADED,
-            Internship::STATUS_CLOSED,
         ];
         $hasApprovedInternship = Internship::where('mahasiswa_id', $mahasiswa->id)
             ->whereIn('status', $blockedStatuses)
@@ -128,7 +122,7 @@ class InternshipController extends Controller
 
         if ($request->hasFile('dokumen_pendukung')) {
             $data['dokumen_pendukung_path'] = $request->file('dokumen_pendukung')
-                ->store('internship/dokumen', 'public');
+                ->store('documents/internship/dokumen', 's3');
         }
 
         $internship = $this->workflow->createDraft($mahasiswa->id, $activeSemester->id, $data);
@@ -178,7 +172,9 @@ class InternshipController extends Controller
             'periode_selesai'        => 'required|date|after:periode_mulai',
             'deskripsi'              => 'nullable|string|max:2000',
             'pembimbing_lapangan_nama'  => 'nullable|string|max:255',
-            'pembimbing_lapangan_telp'  => 'nullable|string|max:50',
+            'pembimbing_lapangan_telp'  => ['nullable', 'string', 'regex:/^[0-9]{12,13}$/'],
+        ], [
+            'pembimbing_lapangan_telp.regex' => 'No. Telp Pembimbing harus terdiri dari 12 hingga 13 angka.',
         ]);
 
         $this->workflow->updateData($internship, $request->only([
@@ -212,7 +208,7 @@ class InternshipController extends Controller
 
         try {
             $path = $this->workflow->generateRequestLetter($internship);
-            return Storage::disk('public')->download($path, 'Surat_Pengantar_Magang.docx');
+            return Storage::disk('s3')->download($path, 'Surat_Pengantar_Magang.docx');
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', 'Gagal generate surat: ' . $e->getMessage());
         }
@@ -301,14 +297,14 @@ class InternshipController extends Controller
 
         $path = $internship->admin_signed_pdf_path ?? $internship->admin_final_pdf_path;
 
-        if (!$path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('s3')->exists($path)) {
             return redirect()->back()->with('error', 'Surat resmi belum tersedia.');
         }
 
         $ext = pathinfo($path, PATHINFO_EXTENSION);
         $nim = $internship->mahasiswa?->nim ?? $internship->id;
 
-        return \Illuminate\Support\Facades\Storage::disk('public')->download(
+        return \Illuminate\Support\Facades\Storage::disk('s3')->download(
             $path,
             "Surat_Pengantar_Resmi_{$nim}.{$ext}"
         );
@@ -325,7 +321,7 @@ class InternshipController extends Controller
             return redirect()->back()->with('error', 'Surat penerimaan belum tersedia.');
         }
 
-        return Storage::disk('public')->download(
+        return Storage::disk('s3')->download(
             $internship->acceptance_letter_path,
             'Surat_Penerimaan_Magang.docx'
         );

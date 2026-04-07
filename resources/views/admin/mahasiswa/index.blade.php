@@ -70,7 +70,7 @@
                                 'prodi' => $mahasiswa->prodi,
                                 'angkatan' => $mahasiswa->angkatan,
                                 'status' => ucfirst($mahasiswa->status),
-                                'foto' => $mahasiswa->foto ? asset('storage/' . $mahasiswa->foto) : null,
+                                'foto' => $mahasiswa->foto ? \Illuminate\Support\Facades\Storage::disk('s3')->url($mahasiswa->foto) : null,
                             ]) }}"
                             :class="{ 'bg-blue-50 dark:bg-blue-900/30': selectedMahasiswa && selectedMahasiswa.nim === '{{ $mahasiswa->nim }}' }">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">

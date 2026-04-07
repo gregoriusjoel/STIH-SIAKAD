@@ -202,7 +202,7 @@
                             class="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:text-maroon dark:hover:text-red-400 transition-colors">
                             {{ $dosen->user->name }}
                         </a>
-                        <div class="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[150px]">{{ $dosen->user->email }}</div>
+                        <div class="text-xs text-gray-400 dark:text-gray-500">{{ $dosen->user->email }}</div>
                     </div>
                 </div>
             </td>

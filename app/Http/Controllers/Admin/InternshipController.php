@@ -124,12 +124,14 @@ class InternshipController extends Controller
             $path = $this->workflow->generateOfficialPdf($internship, $request->nomor_surat);
             $ext  = pathinfo($path, PATHINFO_EXTENSION);
             if ($ext === 'pdf') {
-                $msg = 'Surat resmi berhasil digenerate sebagai PDF.';
+                $msg = 'Surat resmi berhasil digenerate sebagai PDF dan sedang diunduh otomatis...';
             } else {
                 $msg = 'Surat resmi berhasil digenerate sebagai DOCX dan disimpan. Gunakan tombol "Download Surat Resmi" untuk mengunduh. Jika diinginkan PDF otomatis, pasang LibreOffice di server.';
             }
 
-            return redirect()->back()->with('success', $msg)->with('generated_path', $path);
+            return redirect()->back()->with('success', $msg)
+                             ->with('generated_path', $path)
+                             ->with('auto_download_official', true);
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', 'Gagal generate PDF: ' . $e->getMessage());
         }
@@ -145,7 +147,7 @@ class InternshipController extends Controller
         }
 
         $ext = pathinfo($internship->admin_final_pdf_path, PATHINFO_EXTENSION);
-        return Storage::disk('public')->download(
+        return Storage::disk('s3')->download(
             $internship->admin_final_pdf_path,
             'Surat_Permohonan_Resmi_' . ($internship->mahasiswa?->nim ?? $internship->id) . '.' . $ext
         );
@@ -162,7 +164,9 @@ class InternshipController extends Controller
 
         try {
             $this->workflow->uploadAdminSignedPdf($internship, $request->file('signed_pdf'));
-            return redirect()->back()->with('success', 'PDF yang sudah ditandatangani berhasil diupload.');
+            // Auto send to student
+            $this->workflow->sendToStudent($internship, Auth::id());
+            return redirect()->back()->with('success', 'PDF bertandatangan berhasil diupload dan otomatis dikirim ke mahasiswa.');
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', 'Gagal upload: ' . $e->getMessage());
         }
@@ -178,7 +182,7 @@ class InternshipController extends Controller
             return redirect()->back()->with('error', 'PDF belum tersedia.');
         }
 
-        return Storage::disk('public')->download(
+        return Storage::disk('s3')->download(
             $path,
             'Surat_Permohonan_Resmi_Signed_' . ($internship->mahasiswa?->nim ?? $internship->id) . '.pdf'
         );

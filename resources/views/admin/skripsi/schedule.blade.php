@@ -4,7 +4,7 @@
 @section('page-title', 'Penjadwalan Sidang')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="space-y-6">
     {{-- Header Section --}}
     <div class="relative bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm overflow-hidden group">
         {{-- Background Accents --}}
@@ -12,7 +12,7 @@
         
         <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-                <a href="{{ route('admin.thesis.show', $thesis) }}" class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-indigo-50 hover:text-indigo-900 transition-all group/back">
+                <a href="{{ route('admin.skripsi.show', $skripsi) }}" class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-indigo-50 hover:text-indigo-900 transition-all group/back">
                     <span class="material-symbols-outlined text-[20px] group-hover/back:-translate-x-1 transition-transform">arrow_back</span>
                 </a>
                 <div>
@@ -41,8 +41,8 @@
                 <span class="material-symbols-outlined text-2xl">person_pin</span>
             </div>
             <div>
-                <h3 class="font-black text-gray-900 tracking-tight leading-none mb-2">{{ $thesis->mahasiswa?->user?->name }}</h3>
-                <p class="text-sm text-gray-500 font-medium italic leading-none">"{{ $thesis->judul }}"</p>
+                <h3 class="font-black text-gray-900 tracking-tight leading-none mb-2">{{ $skripsi->mahasiswa?->user?->name }}</h3>
+                <p class="text-sm text-gray-500 font-medium italic leading-none">"{{ $skripsi->judul }}"</p>
             </div>
         </div>
 
@@ -58,7 +58,7 @@
         </div>
         @endif
 
-        <form action="{{ route('admin.thesis.schedule.store', $thesis) }}" method="POST" class="space-y-8">
+        <form action="{{ route('admin.skripsi.schedule.store', $skripsi) }}" method="POST" class="space-y-8">
             @csrf
 
             {{-- Date & Time Section --}}
@@ -127,7 +127,7 @@
                         <select name="pembimbing_id" required class="w-full bg-white border-2 border-indigo-100 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 focus:outline-none focus:border-indigo-400 transition-all appearance-none shadow-sm">
                             <option value="">Pilih dosen pembimbing...</option>
                             @foreach($dosens as $d)
-                            <option value="{{ $d->id }}" {{ old('pembimbing_id', $thesis->approved_supervisor_id) == $d->id ? 'selected' : '' }}>{{ $d->nama }}</option>
+                            <option value="{{ $d->id }}" {{ old('pembimbing_id', $skripsi->approved_supervisor_id) == $d->id ? 'selected' : '' }}>{{ $d->nama }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -167,7 +167,7 @@
 
             {{-- Form Actions --}}
             <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-50">
-                <a href="{{ route('admin.thesis.show', $thesis) }}"
+                <a href="{{ route('admin.skripsi.show', $skripsi) }}"
                     class="h-14 px-8 flex items-center justify-center rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all">
                     Batalkan
                 </a>

@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Materi;
 use App\Services\ActiveMeetingResolver;
+use App\Services\FileStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class MateriController extends Controller
 {
+    public function __construct(private FileStorageService $storage) {}
+
     /**
      * Resolve slot number from pertemuan route param (supports "kuliah:3", "uts:1", or plain int).
      */
@@ -25,14 +27,13 @@ class MateriController extends Controller
     }
 
     /**
-     * Display materials for a specific meeting
+     * Display materials for a specific meeting.
      */
     public function index($id, $pertemuan)
     {
         $pertemuan = $this->resolveSlotNumber($pertemuan);
         $kelas = Kelas::with('mataKuliah')->findOrFail($id);
-        
-        // Get all materials for this mata kuliah and pertemuan
+
         // Materials are shared across all classes of the same mata kuliah
         $materis = Materi::where('mata_kuliah_id', $kelas->mata_kuliah_id)
             ->where('pertemuan', $pertemuan)
@@ -47,49 +48,45 @@ class MateriController extends Controller
     }
 
     /**
-     * Store a new material
+     * Upload a new material to S3.
      */
     public function store(Request $request, $id, $pertemuan)
     {
         $pertemuan = $this->resolveSlotNumber($pertemuan);
         $kelas = Kelas::with('mataKuliah')->findOrFail($id);
-        
+
         $validated = $request->validate([
-            'judul' => 'required|string|max:255',
+            'judul'     => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'file' => 'required|file|mimes:pdf,docx,pptx,xls,xlsx,zip,rar|max:51200', // 50MB max
+            'file'      => 'required|file|mimes:pdf,docx,pptx,xls,xlsx,zip,rar|max:51200', // 50MB max
         ]);
 
-        $file = $request->file('file');
-        $fileName = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('materi', $fileName, 'public');
+        $file     = $request->file('file');
+        $filePath = $this->storage->upload($file, 'documents/materi');
 
-        $materi = Materi::create([
+        Materi::create([
             'mata_kuliah_id' => $kelas->mata_kuliah_id,
-            'dosen_id' => Auth::user()->dosen->id ?? null,
-            'pertemuan' => $pertemuan,
-            'judul' => $validated['judul'],
-            'deskripsi' => $validated['deskripsi'] ?? null,
-            'file_path' => $filePath,
-            'file_name' => $file->getClientOriginalName(),
-            'file_type' => $file->getClientOriginalExtension(),
-            'file_size' => $file->getSize(),
+            'dosen_id'       => Auth::user()->dosen->id ?? null,
+            'pertemuan'      => $pertemuan,
+            'judul'          => $validated['judul'],
+            'deskripsi'      => $validated['deskripsi'] ?? null,
+            'file_path'      => $filePath,
+            'file_name'      => $file->getClientOriginalName(),
+            'file_type'      => $file->getClientOriginalExtension(),
+            'file_size'      => $file->getSize(),
         ]);
 
         return redirect()->back()->with('success', 'Materi berhasil diunggah dan tersedia untuk semua kelas mata kuliah ini.');
     }
 
     /**
-     * Delete a material
+     * Delete a material and its S3 file.
      */
     public function destroy($id, $pertemuan, $materiId)
     {
         $materi = Materi::findOrFail($materiId);
-        
-        // Delete file from storage
-        if ($materi->file_path && Storage::disk('public')->exists($materi->file_path)) {
-            Storage::disk('public')->delete($materi->file_path);
-        }
+
+        $this->storage->delete($materi->file_path);
 
         $materi->delete();
 
@@ -97,16 +94,16 @@ class MateriController extends Controller
     }
 
     /**
-     * Download a material
+     * Download a material from S3.
      */
     public function download($materiId)
     {
         $materi = Materi::findOrFail($materiId);
-        
-        if (!$materi->file_path || !Storage::disk('public')->exists($materi->file_path)) {
+
+        if (!$materi->file_path || !$this->storage->exists($materi->file_path)) {
             abort(404, 'File tidak ditemukan');
         }
 
-        return Storage::disk('public')->download($materi->file_path, $materi->file_name);
+        return $this->storage->download($materi->file_path, $materi->file_name);
     }
 }

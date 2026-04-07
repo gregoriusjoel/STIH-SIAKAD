@@ -23,6 +23,9 @@ class ThesisSubmission extends Model
         'approved_supervisor_id',
         'status',
         'total_bimbingan',
+        'logbook_file_path',
+        'logbook_original_name',
+        'logbook_uploaded_at',
         'eligible_for_sidang_at',
         'revision_approved_at',
         'admin_note',
@@ -33,6 +36,7 @@ class ThesisSubmission extends Model
         'status'                => ThesisStatus::class,
         'eligible_for_sidang_at'=> 'datetime',
         'revision_approved_at'  => 'datetime',
+        'logbook_uploaded_at'   => 'datetime',
     ];
 
     // ── Relations ────────────────────────────────────────────────
@@ -107,5 +111,10 @@ class ThesisSubmission extends Model
     public function getProgressStepAttribute(): int
     {
         return $this->status->step();
+    }
+
+    public function getHasLogbookAttribute(): bool
+    {
+        return !empty($this->logbook_file_path);
     }
 }

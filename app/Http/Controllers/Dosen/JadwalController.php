@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\MataKuliah;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\JadwalException;
 use Carbon\Carbon;
+use App\Models\JadwalException;
 use App\Models\JadwalReschedule;
 use App\Models\Ruangan;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class JadwalController extends Controller
 {
@@ -380,10 +381,10 @@ class JadwalController extends Controller
         // Handle asynchronous file upload
         $asyncFilePath = null;
         if ($metode === 'asynchronous' && $request->hasFile('asynchronous_file')) {
-            $file = $request->file('asynchronous_file');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('asynchronous_files'), $filename);
-            $asyncFilePath = 'asynchronous_files/' . $filename;
+            $file           = $request->file('asynchronous_file');
+            $filename       = \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
+            Storage::disk('s3')->putFileAs('documents/asynchronous', $file, $filename, 'public');
+            $asyncFilePath  = 'documents/asynchronous/' . $filename;
         }
 
         // Delete any existing reschedule for this kelas + week (replace it)

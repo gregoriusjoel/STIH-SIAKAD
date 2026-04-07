@@ -67,7 +67,7 @@
                 <div class="relative group">
                     <div class="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 bg-white/20 backdrop-blur-sm shadow-inner">
                          @if(!empty($mahasiswa->foto))
-                            <img src="{{ asset('storage/' . $mahasiswa->foto) }}" alt="Foto Profil"
+                            <img src="{{ $mahasiswa->foto_url ?? '' }}" alt="Foto Profil"
                                 class="w-full h-full rounded-full object-cover border-2 border-white/50 shadow-lg">
                         @else
                             <div class="w-full h-full rounded-full bg-white/10 flex items-center justify-center border-2 border-white/30 text-3xl font-bold">

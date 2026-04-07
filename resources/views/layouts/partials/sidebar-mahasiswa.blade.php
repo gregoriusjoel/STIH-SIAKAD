@@ -136,9 +136,9 @@
             </a>
 
             {{-- Skripsi --}}
-            @if(Route::has('mahasiswa.thesis.index'))
-            <a href="{{ route('mahasiswa.thesis.index') }}"
-               class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.thesis*') ? $activeClass : $inactiveClass }}">
+            @if(Route::has('mahasiswa.skripsi.index'))
+            <a href="{{ route('mahasiswa.skripsi.index') }}"
+               class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.skripsi*') ? $activeClass : $inactiveClass }}">
                 <i class="fas fa-graduation-cap w-5 text-center transition-transform group-hover:scale-110"></i>
                 <span class="tracking-wide">Skripsi</span>
             </a>
@@ -166,7 +166,7 @@
         <a href="{{ route('mahasiswa.profil.index') }}" class="flex items-center gap-3 mb-3 px-3 py-2 rounded-xl hover:bg-white dark:hover:bg-white/5 transition border border-transparent hover:border-gray-200 dark:hover:border-gray-700 group">
             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B1538] to-[#6D1029] text-white flex items-center justify-center font-bold shadow-sm shrink-0">
                 @if(Auth::user()->mahasiswa && Auth::user()->mahasiswa->foto)
-                    <img src="{{ asset('storage/' . Auth::user()->mahasiswa->foto) }}" alt="Foto" class="w-full h-full rounded-full object-cover">
+                    <img src="{{ Auth::user()->mahasiswa->foto_url ?? '' }}" alt="Foto" class="w-full h-full rounded-full object-cover">
                 @else
                     {{ substr(Auth::user()->mahasiswa->nama ?? Auth::user()->name, 0, 1) }}
                 @endif

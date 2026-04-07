@@ -104,6 +104,23 @@ class ThesisWorkflowService
         $submission->update($updates);
     }
 
+    // ── Logbook Upload ────────────────────────────────────────────────────
+
+    /**
+     * Called when mahasiswa uploads their logbook PDF.
+     * Transitions from BIMBINGAN_ACTIVE → ELIGIBLE_SIDANG.
+     */
+    public function uploadLogbook(ThesisSubmission $submission): void
+    {
+        if ($submission->status === ThesisStatus::BIMBINGAN_ACTIVE) {
+            $submission->update([
+                'status'                => ThesisStatus::ELIGIBLE_SIDANG,
+                'eligible_for_sidang_at'=> now(),
+            ]);
+        }
+        // If already ELIGIBLE_SIDANG or later, no status change needed (re-upload)
+    }
+
     // ── Sidang Registration ───────────────────────────────────────────────
 
     public function submitSidangRegistration(\App\Models\ThesisSidangRegistration $reg): void

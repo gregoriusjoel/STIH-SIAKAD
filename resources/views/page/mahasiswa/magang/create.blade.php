@@ -181,6 +181,7 @@
                 <div>
                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">No. Telp Pembimbing</label>
                     <input type="text" name="pembimbing_lapangan_telp" value="{{ old('pembimbing_lapangan_telp') }}" placeholder="08xxxxxxxx"
+                           minlength="12" maxlength="13" pattern="^[0-9]+$" title="Harus terdiri dari 12 hingga 13 angka"
                            class="w-full rounded-2xl border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-5 py-3.5 text-sm focus:bg-white transition-colors focus:ring-4 focus:ring-red-900/10 focus:border-[#8B1538]">
                 </div>
             </div>

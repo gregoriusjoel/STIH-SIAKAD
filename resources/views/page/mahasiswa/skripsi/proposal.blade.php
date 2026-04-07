@@ -13,7 +13,7 @@
                         <span class="material-symbols-outlined text-white text-3xl">upload_file</span>
                     </div>
                     <div>
-                        <a href="{{ route('mahasiswa.thesis.index') }}" class="inline-flex items-center gap-1.5 text-sm font-bold text-[#8B1538] hover:gap-2 transition-all mb-1">
+                        <a href="{{ route('mahasiswa.skripsi.index') }}" class="inline-flex items-center gap-1.5 text-sm font-bold text-[#8B1538] hover:gap-2 transition-all mb-1">
                             <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                             Kembali ke Progress
                         </a>
@@ -93,7 +93,7 @@
                     <h2 class="font-bold text-gray-800 text-sm">Formulir Proposal</h2>
                 </div>
                 
-                <form action="{{ route('mahasiswa.thesis.proposal.submit') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
+                <form action="{{ route('mahasiswa.skripsi.proposal.submit') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
                     @csrf
 
                     {{-- Judul --}}
@@ -160,7 +160,7 @@
                     </div>
 
                     <div class="pt-4 flex flex-col sm:flex-row gap-3">
-                        <a href="{{ route('mahasiswa.thesis.index') }}"
+                        <a href="{{ route('mahasiswa.skripsi.index') }}"
                             class="flex-1 bg-gray-50 text-gray-600 font-bold py-3.5 rounded-xl border border-gray-100 hover:bg-gray-100 text-center transition-all text-sm">
                             Batal
                         </a>

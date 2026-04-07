@@ -92,37 +92,37 @@
             {{-- Unified List Container --}}
             <div class="grid gap-4">
                 @if($tab === 'proposal')
-                    @forelse($proposals as $thesis)
+                    @forelse($proposals as $skripsi)
                     @php 
-                        $color = $thesis->status->color(); 
+                        $color = $skripsi->status->color(); 
                         $tColor = ['yellow' => 'amber', 'green' => 'emerald', 'blue' => 'blue', 'red' => 'red', 'purple' => 'purple', 'indigo' => 'indigo', 'gray' => 'gray', 'orange' => 'orange'][$color] ?? $color;
                     @endphp
                     <div class="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 hover:border-red-100 hover:shadow-md hover:shadow-red-900/5 transition-all group flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-red-50 group-hover:text-red-900 transition-colors shrink-0 overflow-hidden relative border border-gray-100 group-hover:border-red-100">
                                 <span class="material-symbols-outlined text-2xl font-light">account_circle</span>
-                                @if($thesis->mahasiswa?->user?->avatar)
-                                <img src="{{ Storage::url($thesis->mahasiswa->user->avatar) }}" class="absolute inset-0 w-full h-full object-cover">
+                                @if($skripsi->mahasiswa?->user?->avatar)
+                                <img src="{{ Storage::url($skripsi->mahasiswa->user->avatar) }}" class="absolute inset-0 w-full h-full object-cover">
                                 @endif
                             </div>
                             <div class="min-w-0">
                                 <div class="flex flex-wrap items-center gap-2 mb-1 leading-none">
-                                    <h3 class="font-black text-gray-900 tracking-tight group-hover:text-red-900 transition-colors">{{ $thesis->mahasiswa?->user?->name ?? '-' }}</h3>
-                                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">{{ $thesis->mahasiswa?->nim ?? '' }}</span>
+                                    <h3 class="font-black text-gray-900 tracking-tight group-hover:text-red-900 transition-colors">{{ $skripsi->mahasiswa?->user?->name ?? '-' }}</h3>
+                                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">{{ $skripsi->mahasiswa?->nim ?? '' }}</span>
                                 </div>
-                                <p class="text-sm text-gray-500 font-medium truncate italic leading-snug">"{{ $thesis->judul }}"</p>
+                                <p class="text-sm text-gray-500 font-medium truncate italic leading-snug">"{{ $skripsi->judul }}"</p>
                                 <div class="flex items-center gap-3 mt-2">
                                     <div class="flex items-center gap-1.5 px-2 py-0.5 bg-gray-50 rounded-lg border border-gray-100">
                                         <span class="material-symbols-outlined text-[14px] text-gray-400">person</span>
-                                        <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">{{ $thesis->requestedSupervisor?->nama ?? '-' }}</span>
+                                        <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">{{ $skripsi->requestedSupervisor?->nama ?? '-' }}</span>
                                     </div>
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-{{ $tColor }}-50 text-{{ $tColor }}-700 border border-{{ $tColor }}-100/50">
-                                        {{ $thesis->status->label() }}
+                                        {{ $skripsi->status->label() }}
                                     </span>
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('admin.thesis.show', $thesis) }}"
+                        <a href="{{ route('admin.skripsi.show', $skripsi) }}"
                             class="shrink-0 flex items-center justify-center gap-2 h-10 px-6 bg-red-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-800 shadow-lg shadow-red-900/10 hover:-translate-y-0.5 transition-all">
                             Review Proposal
                             <span class="material-symbols-outlined text-sm">chevron_right</span>
@@ -138,41 +138,41 @@
                     @endforelse
                 
                 @elseif($tab === 'bimbingan')
-                    @forelse($activeBimbingan as $thesis)
+                    @forelse($activeBimbingan as $skripsi)
                     @php 
-                        $color = $thesis->status->color(); 
+                        $color = $skripsi->status->color(); 
                         $tColor = ['yellow' => 'amber', 'green' => 'emerald', 'blue' => 'blue', 'red' => 'red', 'purple' => 'purple', 'indigo' => 'indigo', 'gray' => 'gray', 'orange' => 'orange'][$color] ?? $color;
                     @endphp
                     <div class="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 hover:border-blue-100 hover:shadow-md hover:shadow-blue-900/5 transition-all group flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-900 transition-colors shrink-0 overflow-hidden relative border border-gray-100 group-hover:border-blue-100">
                                 <span class="material-symbols-outlined text-2xl font-light">account_circle</span>
-                                @if($thesis->mahasiswa?->user?->avatar)
-                                <img src="{{ Storage::url($thesis->mahasiswa->user->avatar) }}" class="absolute inset-0 w-full h-full object-cover">
+                                @if($skripsi->mahasiswa?->user?->avatar)
+                                <img src="{{ Storage::url($skripsi->mahasiswa->user->avatar) }}" class="absolute inset-0 w-full h-full object-cover">
                                 @endif
                             </div>
                             <div class="min-w-0">
                                 <div class="flex flex-wrap items-center gap-2 mb-1 leading-none">
-                                    <h3 class="font-black text-gray-900 tracking-tight group-hover:text-blue-900 transition-colors">{{ $thesis->mahasiswa?->user?->name ?? '-' }}</h3>
-                                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">{{ $thesis->mahasiswa?->nim ?? '' }}</span>
+                                    <h3 class="font-black text-gray-900 tracking-tight group-hover:text-blue-900 transition-colors">{{ $skripsi->mahasiswa?->user?->name ?? '-' }}</h3>
+                                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">{{ $skripsi->mahasiswa?->nim ?? '' }}</span>
                                 </div>
-                                <p class="text-sm text-gray-500 font-medium truncate italic leading-snug">"{{ $thesis->judul }}"</p>
+                                <p class="text-sm text-gray-500 font-medium truncate italic leading-snug">"{{ $skripsi->judul }}"</p>
                                 <div class="flex items-center gap-3 mt-2">
                                     <div class="flex items-center gap-1.5 px-2 py-0.5 bg-gray-50 rounded-lg border border-gray-100">
                                         <span class="material-symbols-outlined text-[14px] text-gray-400">psychology</span>
-                                        <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">{{ $thesis->approvedSupervisor?->nama ?? '-' }}</span>
+                                        <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">{{ $skripsi->approvedSupervisor?->nama ?? '-' }}</span>
                                     </div>
                                     <div class="flex items-center gap-1.5 px-2 py-0.5 bg-gray-50 rounded-lg border border-gray-100">
                                         <span class="material-symbols-outlined text-[14px] text-gray-400">forum</span>
-                                        <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">{{ $thesis->total_bimbingan ?? 0 }} Sesi</span>
+                                        <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">{{ $skripsi->total_bimbingan ?? 0 }} Sesi</span>
                                     </div>
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-{{ $tColor }}-50 text-{{ $tColor }}-700 border border-{{ $tColor }}-100/50">
-                                        {{ $thesis->status->label() }}
+                                        {{ $skripsi->status->label() }}
                                     </span>
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('admin.thesis.show', $thesis) }}"
+                        <a href="{{ route('admin.skripsi.show', $skripsi) }}"
                             class="shrink-0 flex items-center justify-center gap-2 h-10 px-6 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-600/10 hover:-translate-y-0.5 transition-all">
                             Monitoring Bimbingan
                             <span class="material-symbols-outlined text-sm">visibility</span>
@@ -203,7 +203,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('admin.thesis.show', $reg->submission) }}"
+                        <a href="{{ route('admin.skripsi.show', $reg->submission) }}"
                             class="shrink-0 flex items-center justify-center gap-2 h-10 px-6 bg-orange-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-700 shadow-lg shadow-orange-600/10 hover:-translate-y-0.5 transition-all">
                             Verifikasi Sidang
                             <span class="material-symbols-outlined text-sm">verified</span>
@@ -219,38 +219,38 @@
                     @endforelse
 
                 @elseif($tab === 'scheduled')
-                    @forelse($scheduled as $thesis)
+                    @forelse($scheduled as $skripsi)
                     <div class="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 hover:border-indigo-100 hover:shadow-md hover:shadow-indigo-900/5 transition-all group flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div class="flex items-center gap-4 leading-none">
                             <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 shrink-0 border border-indigo-100/50">
                                 <span class="material-symbols-outlined text-2xl font-light">event_available</span>
                             </div>
                             <div class="min-w-0">
-                                <h3 class="font-black text-gray-900 tracking-tight group-hover:text-indigo-600 transition-colors mb-2 leading-none">{{ $thesis->mahasiswa?->user?->name ?? '-' }}</h3>
-                                @if($thesis->sidangSchedule)
+                                <h3 class="font-black text-gray-900 tracking-tight group-hover:text-indigo-600 transition-colors mb-2 leading-none">{{ $skripsi->mahasiswa?->user?->name ?? '-' }}</h3>
+                                @if($skripsi->sidangSchedule)
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div class="flex items-center gap-1.5 px-2 py-1 bg-indigo-50/50 rounded-lg border border-indigo-100/50 leading-none">
                                         <span class="material-symbols-outlined text-[16px] text-indigo-400">calendar_month</span>
-                                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{{ $thesis->sidangSchedule->tanggal->format('d M Y') }}</span>
+                                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{{ $skripsi->sidangSchedule->tanggal->format('d M Y') }}</span>
                                     </div>
                                     <div class="flex items-center gap-1.5 px-2 py-1 bg-indigo-50/50 rounded-lg border border-indigo-100/50 leading-none">
                                         <span class="material-symbols-outlined text-[16px] text-indigo-400">schedule</span>
-                                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{{ substr($thesis->sidangSchedule->waktu_mulai, 0, 5) }}</span>
+                                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{{ substr($skripsi->sidangSchedule->waktu_mulai, 0, 5) }}</span>
                                     </div>
                                     <div class="flex items-center gap-1.5 px-2 py-1 bg-indigo-50/50 rounded-lg border border-indigo-100/50 leading-none">
                                         <span class="material-symbols-outlined text-[16px] text-indigo-400">meeting_room</span>
-                                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{{ $thesis->sidangSchedule->ruangan_label }}</span>
+                                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{{ $skripsi->sidangSchedule->ruangan_label }}</span>
                                     </div>
                                 </div>
                                 @endif
                             </div>
                         </div>
                         <div class="flex gap-2 shrink-0">
-                            <a href="{{ route('admin.thesis.show', $thesis) }}"
+                            <a href="{{ route('admin.skripsi.show', $skripsi) }}"
                                 class="flex items-center justify-center h-10 px-4 bg-gray-50 text-gray-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 border border-gray-100 transition-all">
                                 Detail
                             </a>
-                            <form action="{{ route('admin.thesis.complete', $thesis) }}" method="POST">
+                            <form action="{{ route('admin.skripsi.complete', $skripsi) }}" method="POST">
                                 @csrf
                                 <button type="submit" onclick="return confirm('Tandai sidang sebagai selesai?')"
                                     class="flex items-center justify-center gap-2 h-10 px-5 bg-purple-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-purple-700 shadow-lg shadow-purple-600/10 hover:-translate-y-0.5 transition-all">
@@ -270,20 +270,20 @@
                     @endforelse
 
                 @elseif($tab === 'revision')
-                    @forelse($revisions as $thesis)
+                    @forelse($revisions as $skripsi)
                     <div class="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 hover:border-amber-100 hover:shadow-md hover:shadow-amber-900/5 transition-all group flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 shrink-0 border border-amber-100/50 leading-none">
                                 <span class="material-symbols-outlined text-2xl font-light">rate_review</span>
                             </div>
                             <div class="min-w-0">
-                                <h3 class="font-black text-gray-900 tracking-tight group-hover:text-amber-600 transition-colors mb-1 leading-none">{{ $thesis->mahasiswa?->user?->name ?? '-' }}</h3>
+                                <h3 class="font-black text-gray-900 tracking-tight group-hover:text-amber-600 transition-colors mb-1 leading-none">{{ $skripsi->mahasiswa?->user?->name ?? '-' }}</h3>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Revisi diupload: {{ $thesis->latestRevision?->uploaded_at?->format('d M Y') ?? '-' }}</span>
+                                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Revisi diupload: {{ $skripsi->latestRevision?->uploaded_at?->format('d M Y') ?? '-' }}</span>
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('admin.thesis.show', $thesis) }}"
+                        <a href="{{ route('admin.skripsi.show', $skripsi) }}"
                             class="shrink-0 flex items-center justify-center gap-2 h-10 px-6 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-600/10 hover:-translate-y-0.5 transition-all">
                             Review Revisi
                             <span class="material-symbols-outlined text-sm">history_edu</span>
@@ -299,21 +299,21 @@
                     @endforelse
 
                 @elseif($tab === 'completed')
-                    @forelse($completed as $thesis)
+                    @forelse($completed as $skripsi)
                     <div class="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 hover:border-emerald-100 hover:shadow-md hover:shadow-emerald-900/5 transition-all group flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0 border border-emerald-100/50 leading-none">
                                 <span class="material-symbols-outlined text-2xl font-light">verified</span>
                             </div>
                             <div class="min-w-0">
-                                <h3 class="font-black text-gray-900 tracking-tight group-hover:text-emerald-600 transition-colors mb-1 leading-none">{{ $thesis->mahasiswa?->user?->name ?? '-' }}</h3>
-                                <p class="text-sm text-gray-500 font-medium truncate italic leading-snug mb-2">"{{ $thesis->judul }}"</p>
+                                <h3 class="font-black text-gray-900 tracking-tight group-hover:text-emerald-600 transition-colors mb-1 leading-none">{{ $skripsi->mahasiswa?->user?->name ?? '-' }}</h3>
+                                <p class="text-sm text-gray-500 font-medium truncate italic leading-snug mb-2">"{{ $skripsi->judul }}"</p>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">✓ Selesai {{ $thesis->revision_approved_at?->format('d M Y') ?? '' }}</span>
+                                    <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">✓ Selesai {{ $skripsi->revision_approved_at?->format('d M Y') ?? '' }}</span>
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('admin.thesis.show', $thesis) }}"
+                        <a href="{{ route('admin.skripsi.show', $skripsi) }}"
                             class="shrink-0 flex items-center justify-center h-10 px-6 bg-gray-50 text-gray-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 border border-gray-100 transition-all">
                             Lihat Arsip
                         </a>

@@ -8,16 +8,12 @@
     $mahasiswaSemester = (int) (Auth::user()->mahasiswa->semester ?? 0);
     $canApplyMagang = $mahasiswaSemester >= 5;
 
-    // Cek magang yang sudah disetujui/berjalan
     $blockedStatuses = [
         \App\Models\Internship::STATUS_APPROVED,
         \App\Models\Internship::STATUS_SENT_TO_STUDENT,
         \App\Models\Internship::STATUS_SUPERVISOR_ASSIGNED,
         \App\Models\Internship::STATUS_ACCEPTANCE_LETTER_READY,
         \App\Models\Internship::STATUS_ONGOING,
-        \App\Models\Internship::STATUS_COMPLETED,
-        \App\Models\Internship::STATUS_GRADED,
-        \App\Models\Internship::STATUS_CLOSED,
     ];
     $hasApprovedInternship = \App\Models\Internship::where('mahasiswa_id', Auth::user()->mahasiswa->id)
         ->whereIn('status', $blockedStatuses)

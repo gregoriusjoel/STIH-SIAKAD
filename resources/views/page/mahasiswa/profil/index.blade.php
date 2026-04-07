@@ -11,9 +11,9 @@
         <div class="space-y-6">
             <div class="bg-white dark:bg-[#1a1d2e] rounded-xl shadow-lg p-6 text-center h-full" x-data="photoCropper()">
                 <div class="relative w-40 h-40 mx-auto mb-6 {{ $mahasiswa->foto ? 'group cursor-pointer' : '' }}"
-                    @click="{{ $mahasiswa->foto ? "openPreview('" . asset('storage/' . $mahasiswa->foto) . "')" : '' }}">
+                    @click="{{ $mahasiswa->foto ? "openPreview('" . $mahasiswa->foto_url . "')" : '' }}">
                     <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-gray-100 dark:border-slate-700 shadow-sm relative flex items-center justify-center bg-gray-100 dark:bg-slate-700 {{ $mahasiswa->foto ? 'group-hover:border-maroon' : '' }} transition-colors duration-300">
-                        <img id="profile-preview" src="{{ $mahasiswa->foto ? asset('storage/' . $mahasiswa->foto) : '' }}"
+                        <img id="profile-preview" src="{{ $mahasiswa->foto_url ?? '' }}"
                             alt="Foto Profil" class="w-full h-full object-cover {{ $mahasiswa->foto ? '' : 'hidden' }}">
                         <div id="profile-icon" class="{{ $mahasiswa->foto ? 'hidden' : '' }}">
                             <i class="fas fa-user text-6xl text-gray-400 dark:text-slate-500"></i>

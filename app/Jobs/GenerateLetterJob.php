@@ -98,7 +98,8 @@ class GenerateLetterJob implements ShouldQueue
         $tmpPath = sys_get_temp_dir() . '/' . $fileName;
         $templateProcessor->saveAs($tmpPath);
 
-        Storage::disk('public')->put($storagePath, file_get_contents($tmpPath));
+        Storage::disk('s3')->put($storagePath, file_get_contents($tmpPath));
+
         @unlink($tmpPath);
 
         // ── 5. Update status pengajuan ────────────────────────────

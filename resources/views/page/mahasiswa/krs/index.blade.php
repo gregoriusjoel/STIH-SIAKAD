@@ -33,7 +33,7 @@
             <div class="flex items-center gap-4">
                 <div class="w-20 h-20 rounded-full bg-gray-100 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
                     @if(!empty($mahasiswa->foto))
-                        <img src="{{ asset('storage/' . $mahasiswa->foto) }}" alt="Foto Mahasiswa" class="w-full h-full object-cover">
+                        <img src="{{ $mahasiswa->foto_url ?? '' }}" alt="Foto Mahasiswa" class="w-full h-full object-cover">
                     @else
                         <i class="fas fa-user text-3xl text-gray-400 dark:text-slate-500"></i>
                     @endif

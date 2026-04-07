@@ -72,7 +72,7 @@ class InternshipLetterService
         if ($pdfPath) {
             // Berhasil konversi ke PDF
             $storageName = 'internship/admin_official/official_' . $internship->id . '_' . time() . '.pdf';
-            Storage::disk('public')->put($storageName, file_get_contents($pdfPath));
+            Storage::disk('s3')->put($storageName, file_get_contents($pdfPath));
             @unlink($tmpDocx);
             @unlink($pdfPath);
             return $storageName;
@@ -80,7 +80,7 @@ class InternshipLetterService
 
         // Fallback: simpan DOCX
         $storageName = 'internship/admin_official/official_' . $internship->id . '_' . time() . '.docx';
-        Storage::disk('public')->put($storageName, file_get_contents($tmpDocx));
+        Storage::disk('s3')->put($storageName, file_get_contents($tmpDocx));
         @unlink($tmpDocx);
 
         Log::warning("InternshipLetterService: LibreOffice tidak tersedia. File disimpan sebagai DOCX: {$storageName}");
@@ -167,7 +167,7 @@ class InternshipLetterService
         $tmpPath     = sys_get_temp_dir() . '/' . $fileName;
 
         $processor->saveAs($tmpPath);
-        Storage::disk('public')->put($storagePath, file_get_contents($tmpPath));
+        Storage::disk('s3')->put($storagePath, file_get_contents($tmpPath));
         @unlink($tmpPath);
 
         return $storagePath;

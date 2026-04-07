@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Mahasiswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\ParentModel;
+use App\Services\FileStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ProfilController extends Controller
 {
+    public function __construct(private FileStorageService $storage) {}
     public function index()
     {
         $mahasiswa = Auth::user()->mahasiswa;
@@ -302,12 +302,12 @@ class ProfilController extends Controller
 
         // Handle foto upload
         if ($request->hasFile('foto')) {
-            // Delete old foto if exists
+            // Delete old foto from S3 if exists
             if ($mahasiswa->foto) {
-                Storage::disk('public')->delete($mahasiswa->foto);
+                $this->storage->delete($mahasiswa->foto);
             }
 
-            $fotoPath = $request->file('foto')->store('mahasiswa/foto', 'public');
+            $fotoPath = $this->storage->upload($request->file('foto'), 'images/mahasiswa/foto');
             $mahasiswaData['foto'] = $fotoPath;
         }
 
@@ -315,16 +315,16 @@ class ProfilController extends Controller
         $documentTypes = ['file_ijazah', 'file_transkrip', 'file_kk', 'file_ktp'];
         foreach ($documentTypes as $docType) {
             if ($request->hasFile($docType)) {
-                // Delete existing files first
+                // Delete existing files from S3 first
                 $existingFiles = $mahasiswa->$docType ?? [];
                 foreach ($existingFiles as $existingFile) {
-                    Storage::disk('public')->delete($existingFile);
+                    $this->storage->delete($existingFile);
                 }
 
-                // Upload new files
+                // Upload new files to S3
                 $uploadedFiles = [];
                 foreach ($request->file($docType) as $file) {
-                    $path = $file->store('mahasiswa/dokumen/' . $mahasiswa->nim, 'public');
+                    $path = $this->storage->upload($file, 'documents/mahasiswa/' . $mahasiswa->nim);
                     $uploadedFiles[] = $path;
                 }
 
@@ -420,13 +420,13 @@ class ProfilController extends Controller
         $mahasiswa = $user->mahasiswa;
 
         if ($request->hasFile('foto')) {
-            // Delete old foto if exists
+            // Delete old foto from S3 if exists
             if ($mahasiswa->foto) {
-                Storage::disk('public')->delete($mahasiswa->foto);
+                $this->storage->delete($mahasiswa->foto);
             }
 
-            $fotoPath = $request->file('foto')->store('mahasiswa/foto', 'public');
-            
+            $fotoPath = $this->storage->upload($request->file('foto'), 'images/mahasiswa/foto');
+
             $mahasiswa->update([
                 'foto' => $fotoPath
             ]);

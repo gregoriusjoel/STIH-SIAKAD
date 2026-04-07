@@ -27,12 +27,12 @@ class Ruangan extends Model
 
     public function jadwals(): HasMany
     {
-        return $this->hasMany(Jadwal::class);
+        return $this->hasMany(Jadwal::class, 'ruangan', 'kode_ruangan');
     }
 
     public function jadwalProposals(): HasMany
     {
-        return $this->hasMany(JadwalProposal::class);
+        return $this->hasMany(JadwalProposal::class, 'ruangan', 'kode_ruangan');
     }
 
     public function kelasMataKuliahs(): HasMany

@@ -39,11 +39,12 @@ class ThesisEligibilityService
     }
 
     /**
-     * Check apakah mahasiswa sudah memenuhi syarat bimbingan untuk daftar sidang.
+     * Check apakah mahasiswa sudah memenuhi syarat untuk daftar sidang.
+     * Sekarang berdasarkan upload logbook PDF (bukan lagi 8x bimbingan online).
      */
     public function isSidangEligible(ThesisSubmission $submission): bool
     {
-        return $submission->total_bimbingan >= self::MIN_BIMBINGAN;
+        return !empty($submission->logbook_file_path);
     }
 
     /**
@@ -56,14 +57,17 @@ class ThesisEligibilityService
         $submission   = ThesisSubmission::where('mahasiswa_id', $mahasiswa->id)->latest()->first();
 
         return [
-            'total_sks'       => $totalSks,
-            'min_sks'         => self::MIN_SKS,
-            'sks_eligible'    => $isEligible,
-            'sks_shortage'    => max(0, self::MIN_SKS - $totalSks),
-            'submission'      => $submission,
-            'total_bimbingan' => $submission?->total_bimbingan ?? 0,
-            'min_bimbingan'   => self::MIN_BIMBINGAN,
-            'sidang_eligible' => $submission ? $this->isSidangEligible($submission) : false,
+            'total_sks'        => $totalSks,
+            'min_sks'          => self::MIN_SKS,
+            'sks_eligible'     => $isEligible,
+            'sks_shortage'     => max(0, self::MIN_SKS - $totalSks),
+            'submission'       => $submission,
+            'total_bimbingan'  => $submission?->total_bimbingan ?? 0,
+            'min_bimbingan'    => self::MIN_BIMBINGAN,
+            'has_logbook'      => !empty($submission?->logbook_file_path),
+            'logbook_name'     => $submission?->logbook_original_name,
+            'logbook_date'     => $submission?->logbook_uploaded_at,
+            'sidang_eligible'  => $submission ? $this->isSidangEligible($submission) : false,
         ];
     }
 }

@@ -59,7 +59,7 @@ class JadwalProposal extends Model
 
     public function ruangan(): BelongsTo
     {
-        return $this->belongsTo(Ruangan::class);
+        return $this->belongsTo(Ruangan::class, 'ruangan', 'kode_ruangan');
     }
 
     // Helper methods untuk status
