@@ -4,19 +4,45 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ruangan;
+use App\Models\KategoriRuangan;
 use Illuminate\Http\Request;
 
 class RuanganController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $ruangans = Ruangan::orderBy('kode_ruangan')->paginate(20);
-        return view('admin.master-data.ruangan.index', compact('ruangans'));
+        $query = Ruangan::with('kategori');
+
+        // Filter berdasarkan kategori
+        if ($request->filled('kategori')) {
+            $query->where('kategori_id', $request->kategori);
+        }
+
+        // Filter berdasarkan status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Search berdasarkan kode atau nama
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('kode_ruangan', 'like', "%$search%")
+                  ->orWhere('nama_ruangan', 'like', "%$search%")
+                  ->orWhere('gedung', 'like', "%$search%");
+            });
+        }
+
+        $ruangans = $query->orderBy('kode_ruangan')->paginate(20);
+        $kategoris = KategoriRuangan::aktif()->ordered()->get();
+
+        return view('admin.master-data.ruangan.index', compact('ruangans', 'kategoris'));
     }
 
     public function create()
     {
-        return view('admin.master-data.ruangan.create');
+        $kategoris = KategoriRuangan::aktif()->ordered()->get();
+        return view('admin.master-data.ruangan.create', compact('kategoris'));
     }
 
     public function store(Request $request)
@@ -28,6 +54,7 @@ class RuanganController extends Controller
             'lantai' => 'nullable|integer|min:1|max:20',
             'kapasitas' => 'required|integer|min:1|max:500',
             'status' => 'required|in:aktif,nonaktif',
+            'kategori_id' => 'nullable|exists:kategori_ruangans,id',
         ]);
 
         Ruangan::create($request->all());
@@ -38,13 +65,14 @@ class RuanganController extends Controller
 
     public function show(Ruangan $ruangan)
     {
-        $ruangan->load(['jadwals.kelas.mataKuliah', 'jadwalProposals.mataKuliah']);
+        $ruangan->load(['kategori', 'jadwals.kelas.mataKuliah', 'jadwalProposals.mataKuliah']);
         return view('admin.master-data.ruangan.show', compact('ruangan'));
     }
 
     public function edit(Ruangan $ruangan)
     {
-        return view('admin.master-data.ruangan.edit', compact('ruangan'));
+        $kategoris = KategoriRuangan::aktif()->ordered()->get();
+        return view('admin.master-data.ruangan.edit', compact('ruangan', 'kategoris'));
     }
 
     public function update(Request $request, Ruangan $ruangan)
@@ -56,6 +84,7 @@ class RuanganController extends Controller
             'lantai' => 'nullable|integer|min:1|max:20',
             'kapasitas' => 'required|integer|min:1|max:500',
             'status' => 'required|in:aktif,nonaktif',
+            'kategori_id' => 'nullable|exists:kategori_ruangans,id',
         ]);
 
         $ruangan->update($request->all());

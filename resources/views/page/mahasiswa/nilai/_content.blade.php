@@ -1,5 +1,28 @@
 <div class="space-y-8">
 
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+            <div>
+                <h4 class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">Cetak Nilai</h4>
+                <p class="text-xs text-slate-400 font-semibold">Pilih semester untuk cetak rangkuman nilai</p>
+            </div>
+            <form action="{{ route('mahasiswa.nilai.print.rangkuman') }}" method="GET" target="_blank" data-no-loader class="flex items-center gap-2">
+                <select name="semester"
+                    class="h-10 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-maroon/20">
+                    <option value="">Semua Semester</option>
+                    @foreach(($semesterOptions ?? []) as $opt)
+                        <option value="{{ $opt['value'] }}">{{ $opt['label'] }}</option>
+                    @endforeach
+                </select>
+                <button type="submit"
+                    class="inline-flex items-center gap-2 h-10 px-4 bg-maroon text-white rounded-lg hover:bg-maroon-hover transition-colors font-semibold shadow-sm">
+                    <span class="material-symbols-outlined text-[18px]">print</span>
+                    <span>Cetak</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     @php 
         // Helper function untuk mendapatkan warna badge berdasarkan grade (Versi Soft)
         function getGradeStyle($grade) {

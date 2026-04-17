@@ -4,37 +4,218 @@
 @section('page-title', 'Edit Dosen')
 
 @push('styles')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<style>
-.select2-container--default .select2-selection--single {
-    height: 48px;
-    padding: 8px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-}
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 32px;
-}
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 46px;
-}
-.select2-container--default.select2-container--focus .select2-selection--single {
-    border-color: #800020;
-    box-shadow: 0 0 0 2px rgba(128, 0, 32, 0.1);
-}
-.select2-dropdown {
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-}
-.select2-search--dropdown .select2-search__field {
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    padding: 8px 12px;
-}
-.select2-results__option--highlighted {
-    background-color: #800020 !important;
-}
-</style>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #800020;
+            --border: #d1d5db;
+        }
+
+        .two-column-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;            
+            margin-bottom: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .two-column-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-column:first-child .form-card:last-child #mata-kuliah-list {
+            max-height: clamp(280px, 56vh, 560px);
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            .form-column:first-child .form-card:last-child #mata-kuliah-list {
+                max-height: none;
+                overflow-y: visible;
+                padding-right: 0;
+            }
+        }
+
+        .form-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: 0 4px 12px rgba(128, 0, 32, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3e8e8;
+        }
+
+        .form-card-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f3e8e8;
+            border-radius: 0.5rem;
+            color: var(--primary);
+        }
+
+        .form-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.375rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.9375rem;
+            color: #1f2937;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .form-input::placeholder, .form-select::placeholder, .form-textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
+            background-color: #fafafa;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23800020' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            padding-right: 2.5rem;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .input-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .input-list-item {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+        }
+
+        .input-list-item-input {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .input-list-btn {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background: #f9fafb;
+            color: #6b7280;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            min-width: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-list-btn:hover {
+            background: #f3f4f6;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .input-list-btn.remove {
+            background: #fecaca;
+            color: #dc2626;
+            border-color: #fca5a5;
+        }
+
+        .input-list-btn.remove:hover {
+            background: #fda29b;
+            border-color: #f87171;
+        }
+
+        .help-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.375rem;
+        }
+
+        .select2-container--default .select2-selection--single {
+            height: 44px;
+            padding: 0 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 42px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 42px;
+        }
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
+        }
+        .select2-dropdown {
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+        }
+        .select2-search--dropdown .select2-search__field {
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+        }
+        .select2-results__option--highlighted {
+            background-color: #f3e8e8 !important;
+            color: var(--primary) !important;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -52,338 +233,336 @@
                 @csrf
                 @method('PUT')
 
-                <div class="space-y-6">
-                    <!-- Data User -->
-                    <div class="border-b pb-6">
-                        <h4 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-                            <i class="fas fa-id-badge text-maroon mr-2"></i>
-                            Data Akun Login
-                        </h4>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-user text-gray-400 mr-1"></i>
-                                    Nama Lengkap *
-                                </label>
-                                <input type="text" name="name" value="{{ old('name', $dosen->user->name) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="Masukkan nama lengkap" required>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-envelope text-gray-400 mr-1"></i>
-                                    Email *
-                                </label>
-                                <input type="email" name="email" value="{{ old('email', $dosen->user->email) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="email@stih.ac.id" required>
-                            </div>
-
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-lock text-gray-400 mr-1"></i>
-                                    Password (kosongkan jika tidak ingin mengubah)
-                                </label>
-                                <div class="relative">
-                                    <input id="dosen_password" type="password" name="password"
-                                        class="w-full pr-10 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                        placeholder="Minimal 6 karakter">
-                                    <button type="button" id="toggleDosenPw" aria-pressed="false"
-                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 inline-flex items-center px-2 text-sm text-gray-500 hover:text-gray-700 bg-transparent border-0"><i
-                                            class="fas fa-eye"></i></button>
+                <div class="two-column-form">
+                    <!-- LEFT COLUMN: Login & Profile -->
+                    <div class="form-column">
+                        <!-- Data Akun Login Card -->
+                        <div class="form-card">
+                            <div class="form-card-header">
+                                <div class="form-card-icon">
+                                    <i class="fas fa-sign-in-alt"></i>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    <i class="fas fa-info-circle mr-1"></i>
-                                    Biarkan kosong jika tidak ingin mengubah password
-                                </p>
+                                <h3 class="form-card-title">Data Akun Login</h3>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-user mr-2" style="color: #6b7280;"></i>Nama Lengkap *
+                                    </label>
+                                    <input type="text" name="name" value="{{ old('name', $dosen->user->name) }}"
+                                        class="form-input"
+                                        placeholder="Contoh: Dr. Ahmad Solihin, M.H." required>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-envelope mr-2" style="color: #6b7280;"></i>Email *
+                                    </label>
+                                    <input type="email" name="email" value="{{ old('email', $dosen->user->email) }}"
+                                        class="form-input"
+                                        placeholder="nama@stih.ac.id" required>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-lock mr-2" style="color: #6b7280;"></i>Password
+                                    </label>
+                                    <div class="relative">
+                                        <input id="dosen_password" type="password" name="password"
+                                            class="form-input" style="padding-right: 2.75rem;"
+                                            placeholder="Kosongkan jika tidak ingin mengubah">
+                                        <button type="button" id="toggleDosenPw" aria-pressed="false"
+                                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 bg-transparent border-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <p class="help-text">Biarkan kosong untuk tidak mengubah password</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Data Dosen -->
-                    <div>
-                        <h4 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-                            <i class="fas fa-graduation-cap text-maroon mr-2"></i>
-                            Data Dosen
-                        </h4>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-id-card text-gray-400 mr-1"></i>
-                                    NIDN *
-                                </label>
-                                <input type="text" name="nidn" value="{{ old('nidn', $dosen->nidn) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="Contoh: 0123456789012345" inputmode="numeric" pattern="\d{1,16}" maxlength="16"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,16)" required>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-graduation-cap text-gray-400 mr-1"></i>
-                                    Pendidikan Terakhir *
-                                </label>
-                                <div id="pendidikan-list" class="space-y-2">
-                                    @php
-                                        $pendidikanValues = old('pendidikan_terakhir', $dosen->pendidikan_terakhir ?? []);
-                                        $universitasValues = old('universitas', $dosen->universitas ?? []);
-                                        if (!is_array($pendidikanValues)) $pendidikanValues = [];
-                                        if (!is_array($universitasValues)) $universitasValues = [];
-                                    @endphp
-                                    @if(count($pendidikanValues) > 0)
-                                        @foreach($pendidikanValues as $idx => $p)
-                                            <div class="pendidikan-item flex items-center gap-3">
-                                                <div class="flex-1 grid grid-cols-2 gap-3">
-                                                    <select name="pendidikan_terakhir[]"
-                                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                                        required>
-                                                        <option value="">Pilih Pendidikan</option>
-                                                        <option value="S1" {{ $p == 'S1' ? 'selected' : '' }}>S1</option>
-                                                        <option value="S2" {{ $p == 'S2' ? 'selected' : '' }}>S2</option>
-                                                        <option value="S3" {{ $p == 'S3' ? 'selected' : '' }}>S3</option>
-                                                    </select>
-                                                    <input type="text" name="universitas[]" 
-                                                        placeholder="Nama Universitas"
-                                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                                        value="{{ $universitasValues[$idx] ?? '' }}"
-                                                        required>
-                                                </div>
-                                                    @if($idx == 0)
-                                                    <button type="button" id="add-pendidikan"
-                                                        class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200 mt-1">+</button>
-                                                @else
-                                                    <button type="button"
-                                                        class="remove-pendidikan px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200 mt-1">-</button>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                        @else
-                                        <div class="pendidikan-item flex items-center gap-3">
-                                            <div class="flex-1 grid grid-cols-2 gap-3">
-                                                <select name="pendidikan_terakhir[]"
-                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                                    required>
-                                                    <option value="">Pilih Pendidikan</option>
-                                                    <option value="S1">S1</option>
-                                                    <option value="S2">S2</option>
-                                                    <option value="S3">S3</option>
-                                                </select>
-                                                   <input type="text" name="universitas[]" 
-                                                    placeholder="Nama Universitas"
-                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                                    required>
-                                            </div>
-                                            <button type="button" id="add-pendidikan"
-                                                class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
-                                        </div>
-                                    @endif
+                        <!-- Mata Kuliah Card -->
+                        <div class="form-card">
+                            <div class="form-card-header">
+                                <div class="form-card-icon">
+                                    <i class="fas fa-book-open"></i>
                                 </div>
-                                <p class="text-xs text-gray-400 mt-2">Tambahkan satu atau lebih pendidikan. Klik + untuk
-                                    menambah.</p>
+                                <h3 class="form-card-title">Mata Kuliah Pengajaran</h3>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-id-card text-gray-400 mr-1"></i>
-                                    Dosen Tetap *
-                                </label>
-                                <select name="dosen_tetap"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    required>
-                                    <option value="">Pilih Status</option>
-                                    <option value="ya" {{ old('dosen_tetap', $dosen->dosen_tetap ? 'ya' : 'tidak') == 'ya' ? 'selected' : '' }}>Dosen Tetap</option>
-                                    <option value="tidak" {{ old('dosen_tetap', $dosen->dosen_tetap ? 'ya' : 'tidak') == 'tidak' ? 'selected' : '' }}>Dosen Tidak Tetap</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-university text-gray-400 mr-1"></i>
-                                    Program Studi *
+                                <label class="form-label">
+                                    <i class="fas fa-list mr-2" style="color: #6b7280;"></i>Pilih Mata Kuliah
                                 </label>
                                 @php
-                                    $selectedProdi = old('prodi', $dosen->prodi ?? []);
-                                    if (!is_array($selectedProdi))
-                                        $selectedProdi = [$selectedProdi];
+                                    $dosenMkIds = old('mata_kuliah_ids', $dosen->mata_kuliah_ids ?? []);
+                                    if (!is_array($dosenMkIds)) {
+                                        $dosenMkIds = json_decode($dosenMkIds, true) ?: [];
+                                    }
                                 @endphp
-
-                                <div id="prodi-list" class="space-y-2">
-                                    @if(count($selectedProdi) > 0)
-                                        @foreach($selectedProdi as $idx => $p)
-                                            <div class="flex items-center gap-3">
-                                                <select name="prodi[]"
-                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                                    required>
-                                                    <option value="">Pilih Program Studi</option>
-                                                    @foreach($prodis as $prodi)
-                                                        <option value="{{ $prodi->kode_prodi }}" {{ $p == $prodi->kode_prodi ? 'selected' : '' }}>
-                                                            {{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}
-                                                        </option>
+                                <div id="mata-kuliah-list" class="input-list">
+                                    @if(count($dosenMkIds) > 0)
+                                        @foreach($dosenMkIds as $idx => $mkId)
+                                            <div class="input-list-item mk-row">
+                                                <select name="mata_kuliah_ids[]" class="mk-select form-select flex-1">
+                                                    <option value="">-- Pilih Mata Kuliah --</option>
+                                                    @foreach($mataKuliahs as $mk)
+                                                        <option value="{{ $mk->id }}" {{ $mkId == $mk->id ? 'selected' : '' }}>
+                                                            {{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
                                                     @endforeach
                                                 </select>
                                                 @if($idx == 0)
-                                                    <button type="button" id="add-prodi"
-                                                        class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                                    <button type="button" id="add-mk" class="input-list-btn">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
                                                 @else
-                                                    <button type="button"
-                                                        class="remove-prodi px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+                                                    <button type="button" class="remove-mk input-list-btn remove">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
                                                 @endif
                                             </div>
                                         @endforeach
                                     @else
-                                        <div class="flex items-center gap-3">
-                                            <select name="prodi[]"
-                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                                required>
-                                                <option value="">Pilih Program Studi</option>
-                                                @foreach($prodis as $prodi)
-                                                    <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
+                                        <div class="input-list-item mk-row">
+                                            <select name="mata_kuliah_ids[]" class="mk-select form-select flex-1">
+                                                <option value="">-- Pilih Mata Kuliah --</option>
+                                                @foreach($mataKuliahs as $mk)
+                                                    <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
                                                 @endforeach
                                             </select>
-                                            <button type="button" id="add-prodi"
-                                                class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                            <button type="button" id="add-mk" class="input-list-btn">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
                                         </div>
                                     @endif
                                 </div>
-                                <p class="text-xs text-gray-400 mt-2">Pilih satu atau lebih Program Studi. Klik + untuk
-                                    menambah.</p>
+                                <span class="help-text">Klik tombol + untuk menambah mata kuliah</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: Data Profil Dosen -->
+                    <div class="form-column">
+                        <!-- Data Profil Dosen Card -->
+                        <div class="form-card">
+                            <div class="form-card-header">
+                                <div class="form-card-icon">
+                                    <i class="fas fa-id-card"></i>
+                                </div>
+                                <h3 class="form-card-title">Data Profil Dosen</h3>
                             </div>
 
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-briefcase text-gray-400 mr-1"></i>
-                                    Jabatan Fungsional
-                                </label>
-                                @php
-                                    $currentJabatan = old('jabatan_fungsional', ($dosen->jabatan_fungsional[0] ?? ''));
-                                    $standardJabatans = ['Lektor', 'Lektor Kepala', 'Profesor', 'Asisten Ahli', 'Tenaga Pengajar'];
-                                    $isCustomJabatan = !empty($currentJabatan) && !in_array($currentJabatan, $standardJabatans);
-                                @endphp
-                                <div class="flex gap-3">
-                                    <select id="jabatan-dropdown" name="jabatan_fungsional"
-                                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
-                                        <option value="">Pilih Jabatan Fungsional</option>
-                                        @foreach($standardJabatans as $sj)
-                                            <option value="{{ $sj }}" {{ $currentJabatan == $sj ? 'selected' : '' }}>{{ $sj }}
+                            <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-id-card mr-2" style="color: #6b7280;"></i>NIDN *
+                                    </label>
+                                    <input type="text" name="nidn" value="{{ old('nidn', $dosen->nidn) }}"
+                                        class="form-input"
+                                        placeholder="0123456789012345" inputmode="numeric" pattern="\d{1,16}" maxlength="16"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,16)" required>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-phone mr-2" style="color: #6b7280;"></i>No. Telepon
+                                    </label>
+                                    <input type="text" name="phone" value="{{ old('phone', $dosen->phone) }}"
+                                        class="form-input"
+                                        placeholder="08xxxxxxxxxx" inputmode="numeric" pattern="\d{1,13}" maxlength="13"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)">
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-building-columns mr-2" style="color: #6b7280;"></i>Fakultas *
+                                    </label>
+                                    <select name="fakultas_id" class="form-select" required>
+                                        <option value="">-- Pilih Fakultas --</option>
+                                        @foreach($fakultas as $fk)
+                                            <option value="{{ $fk->id }}" {{ old('fakultas_id', $dosen->fakultas_id) == $fk->id ? 'selected' : '' }}>
+                                                {{ $fk->kode_fakultas }} - {{ $fk->nama_fakultas }}
                                             </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-business-card mr-2" style="color: #6b7280;"></i>Status Dosen *
+                                    </label>
+                                    <select name="dosen_tetap" class="form-select" required>
+                                        <option value="">-- Pilih Status --</option>
+                                        <option value="ya" {{ old('dosen_tetap', $dosen->dosen_tetap ? 'ya' : 'tidak') == 'ya' ? 'selected' : '' }}>Dosen Tetap</option>
+                                        <option value="tidak" {{ old('dosen_tetap', $dosen->dosen_tetap ? 'ya' : 'tidak') == 'tidak' ? 'selected' : '' }}>Dosen Tidak Tetap</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-graduation-cap mr-2" style="color: #6b7280;"></i>Pendidikan Terakhir *
+                                    </label>
+                                    <div id="pendidikan-list" class="input-list">
+                                        @php
+                                            $pendidikanValues = old('pendidikan_terakhir', $dosen->pendidikan_terakhir ?? []);
+                                            $universitasValues = old('universitas', $dosen->universitas ?? []);
+                                            if (!is_array($pendidikanValues)) $pendidikanValues = [];
+                                            if (!is_array($universitasValues)) $universitasValues = [];
+                                        @endphp
+                                        @if(count($pendidikanValues) > 0)
+                                            @foreach($pendidikanValues as $idx => $p)
+                                                <div class="pendidikan-item input-list-item">
+                                                    <div class="input-list-item-input">
+                                                        <select name="pendidikan_terakhir[]" class="form-select" required>
+                                                            <option value="">-- Pilih --</option>
+                                                            <option value="S1" {{ $p == 'S1' ? 'selected' : '' }}>S1</option>
+                                                            <option value="S2" {{ $p == 'S2' ? 'selected' : '' }}>S2</option>
+                                                            <option value="S3" {{ $p == 'S3' ? 'selected' : '' }}>S3</option>
+                                                        </select>
+                                                        <input type="text" name="universitas[]" 
+                                                            placeholder="Nama Universitas"
+                                                            class="form-input"
+                                                            value="{{ $universitasValues[$idx] ?? '' }}" required>
+                                                    </div>
+                                                    @if($idx == 0)
+                                                        <button type="button" id="add-pendidikan" class="input-list-btn">
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
+                                                    @else
+                                                        <button type="button" class="remove-pendidikan input-list-btn remove">
+                                                            <i class="fas fa-minus"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <div class="pendidikan-item input-list-item">
+                                                <div class="input-list-item-input">
+                                                    <select name="pendidikan_terakhir[]" class="form-select" required>
+                                                        <option value="">-- Pilih --</option>
+                                                        <option value="S1">S1</option>
+                                                        <option value="S2">S2</option>
+                                                        <option value="S3">S3</option>
+                                                    </select>
+                                                    <input type="text" name="universitas[]" 
+                                                        placeholder="Nama Universitas"
+                                                        class="form-input" required>
+                                                </div>
+                                                <button type="button" id="add-pendidikan" class="input-list-btn">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <span class="help-text">Klik tombol + untuk menambah pendidikan</span>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-university mr-2" style="color: #6b7280;"></i>Program Studi *
+                                    </label>
+                                    @php
+                                        $selectedProdi = old('prodi', $dosen->prodi ?? []);
+                                        if (!is_array($selectedProdi))
+                                            $selectedProdi = [$selectedProdi];
+                                    @endphp
+                                    <div id="prodi-list" class="input-list">
+                                        @if(count($selectedProdi) > 0)
+                                            @foreach($selectedProdi as $idx => $p)
+                                                <div class="input-list-item">
+                                                    <select name="prodi[]" class="form-select flex-1" required>
+                                                        <option value="">-- Pilih Program Studi --</option>
+                                                        @foreach($prodis as $prodi)
+                                                            <option value="{{ $prodi->kode_prodi }}" {{ $p == $prodi->kode_prodi ? 'selected' : '' }}>
+                                                                {{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @if($idx == 0)
+                                                        <button type="button" id="add-prodi" class="input-list-btn">
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
+                                                    @else
+                                                        <button type="button" class="remove-prodi input-list-btn remove">
+                                                            <i class="fas fa-minus"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <div class="input-list-item">
+                                                <select name="prodi[]" class="form-select flex-1" required>
+                                                    <option value="">-- Pilih Program Studi --</option>
+                                                    @foreach($prodis as $prodi)
+                                                        <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <button type="button" id="add-prodi" class="input-list-btn">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <span class="help-text">Klik tombol + untuk menambah program studi</span>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-briefcase mr-2" style="color: #6b7280;"></i>Jabatan Fungsional
+                                    </label>
+                                    @php
+                                        $currentJabatan = old('jabatan_fungsional', ($dosen->jabatan_fungsional[0] ?? ''));
+                                        $standardJabatans = ['Lektor', 'Lektor Kepala', 'Profesor', 'Asisten Ahli', 'Tenaga Pengajar'];
+                                        $isCustomJabatan = !empty($currentJabatan) && !in_array($currentJabatan, $standardJabatans);
+                                    @endphp
+                                    <select id="jabatan-dropdown" name="jabatan_fungsional" class="form-select">
+                                        <option value="">-- Pilih Jabatan --</option>
+                                        @foreach($standardJabatans as $sj)
+                                            <option value="{{ $sj }}" {{ $currentJabatan == $sj ? 'selected' : '' }}>{{ $sj }}</option>
                                         @endforeach
                                         <option value="lainnya" {{ $isCustomJabatan ? 'selected' : '' }}>Lainnya</option>
                                     </select>
-                                </div>
-                                <div id="jabatan-custom-container" class="{{ $isCustomJabatan ? '' : 'hidden' }} mt-3">
-                                    <input type="text" id="jabatan-custom" name="jabatan_fungsional_custom"
-                                        value="{{ $isCustomJabatan ? $currentJabatan : '' }}"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                        placeholder="Masukkan jabatan fungsional lainnya">
-                                </div>
-                                <p class="text-xs text-gray-400 mt-2">Pilih satu jabatan fungsional. Jika tidak ada di
-                                    daftar, pilih "Lainnya" dan isi di kolom bawah.</p>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-toggle-on text-gray-400 mr-1"></i>
-                                    Status Akun *
-                                </label>
-                                <select name="status"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    required>
-                                    <option value="aktif" {{ old('status', $dosen->status) == 'aktif' ? 'selected' : '' }}>
-                                        Aktif</option>
-                                    <option value="non-aktif" {{ old('status', $dosen->status) == 'non-aktif' ? 'selected' : '' }}>Non-Aktif</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-phone text-gray-400 mr-1"></i>
-                                    No. Telepon
-                                </label>
-                                <input type="text" name="phone" value="{{ old('phone', $dosen->phone) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="08xxxxxxxxxx" inputmode="numeric" pattern="\d{1,13}" maxlength="13"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)">
-                            </div>
-
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
-                                    Alamat
-                                </label>
-                                <textarea name="address" rows="3"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="Alamat lengkap dosen">{{ old('address', $dosen->address) }}</textarea>
-                            </div>
-                        </div>
-
-                        <!-- Mata Kuliah yang diajar -->
-                        <div class="mt-8">
-                            <h4 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-                                <i class="fas fa-book text-maroon mr-2"></i>
-                                Mata Kuliah Pengajaran
-                            </h4>
-
-                            @php
-                                $dosenMkIds = old('mata_kuliah_ids', $dosen->mata_kuliah_ids ?? []);
-                                if (!is_array($dosenMkIds)) {
-                                    $dosenMkIds = json_decode($dosenMkIds, true) ?: [];
-                                }
-                            @endphp
-
-                            <div id="mata-kuliah-list" class="space-y-3">
-                                @if(count($dosenMkIds) > 0)
-                                    @foreach($dosenMkIds as $idx => $mkId)
-                                        <div class="flex items-center gap-3 mk-row">
-                                            <select name="mata_kuliah_ids[]"
-                                                class="mk-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
-                                                <option value="">Pilih Mata Kuliah</option>
-                                                @foreach($mataKuliahs as $mk)
-                                                    <option value="{{ $mk->id }}" {{ $mkId == $mk->id ? 'selected' : '' }}>
-                                                        {{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
-                                                @endforeach
-                                            </select>
-                                            @if($idx == 0)
-                                                <button type="button" id="add-mk"
-                                                    class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
-                                            @else
-                                                <button type="button"
-                                                    class="remove-mk px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <div class="flex items-center gap-3 mk-row">
-                                        <select name="mata_kuliah_ids[]"
-                                            class="mk-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
-                                            <option value="">Pilih Mata Kuliah</option>
-                                            @foreach($mataKuliahs as $mk)
-                                                <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
-                                            @endforeach
-                                        </select>
-                                        <button type="button" id="add-mk"
-                                            class="px-3 py-2 bg-gray-100 rounded-lg border hover:bg-gray-200">+</button>
+                                    <div id="jabatan-custom-container" class="{{ $isCustomJabatan ? '' : 'hidden' }} mt-3">
+                                        <input type="text" id="jabatan-custom" name="jabatan_fungsional_custom"
+                                            value="{{ $isCustomJabatan ? $currentJabatan : '' }}"
+                                            class="form-input"
+                                            placeholder="Masukkan jabatan fungsional lainnya">
                                     </div>
-                                @endif
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-toggle-on mr-2" style="color: #6b7280;"></i>Status Akun *
+                                    </label>
+                                    <select name="status" class="form-select" required>
+                                        <option value="aktif" {{ old('status', $dosen->status) == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                        <option value="non-aktif" {{ old('status', $dosen->status) == 'non-aktif' ? 'selected' : '' }}>Non-Aktif</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-map-marker-alt mr-2" style="color: #6b7280;"></i>Alamat
+                                    </label>
+                                    <textarea name="address" rows="2" class="form-textarea"
+                                        placeholder="Alamat lengkap dosen">{{ old('address', $dosen->address) }}</textarea>
+                                </div>
                             </div>
-                            <p class="text-xs text-gray-400 mt-2">Tambahkan mata kuliah yang diampu oleh dosen. Klik + untuk
-                                menambah baris.</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex justify-end space-x-3 mt-8 pt-6 border-t">
+                <div class="flex justify-end gap-3 mt-8 pt-6">
                     <a href="{{ route('admin.dosen.index') }}"
-                        class="px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition flex items-center">
+                        class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition flex items-center">
                         <i class="fas fa-times mr-2"></i>
                         Batal
                     </a>
                     <button type="submit"
-                        class="bg-maroon text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition flex items-center shadow-md transform hover:scale-105">
+                        class="px-6 py-3 rounded-lg bg-maroon text-white hover:bg-opacity-90 transition font-600 flex items-center shadow-md hover:shadow-lg">
                         <i class="fas fa-save mr-2"></i>
-                        Update Data
+                        Simpan Perubahan
                     </button>
                 </div>
             </form>
@@ -554,37 +733,41 @@
         }
 
         if (addMkBtn) {
-            addMkBtn.addEventListener('click', function () {
+            addMkBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 const currentRowCount = mkList?.querySelectorAll('.mk-row').length || 0;
                 if (currentRowCount >= totalMk) return;
 
                 const allOptions = getAllMkOptions();
                 const selectedValues = getSelectedMkValues();
 
-                let optionsHtml = '<option value="">Pilih Mata Kuliah</option>';
+                let optionsHtml = '<option value="">-- Pilih Mata Kuliah --</option>';
                 allOptions.forEach(opt => {
                     const isDisabled = selectedValues.includes(opt.value) ? 'disabled' : '';
                     optionsHtml += `<option value="${opt.value}" ${isDisabled}>${opt.text}</option>`;
                 });
 
                 const row = document.createElement('div');
-                row.className = 'flex items-center gap-3 mk-row';
+                row.className = 'input-list-item mk-row';
                 row.innerHTML = `
-                <select name="mata_kuliah_ids[]" class="mk-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                <select name="mata_kuliah_ids[]" class="mk-select form-select flex-1">
                     ${optionsHtml}
                 </select>
-                <button type="button" class="remove-mk px-3 py-2 bg-red-100 text-red-700 rounded-lg border hover:bg-red-200">-</button>
+                <button type="button" class="remove-mk input-list-btn remove">
+                    <i class="fas fa-minus"></i>
+                </button>
             `;
                 mkList.appendChild(row);
 
                 // Initialize Select2 for the new dropdown
                 $(row).find('.mk-select').select2({
                     placeholder: 'Cari Mata Kuliah...',
-                    allowClear: true,
+                    allowClear: false,
                     width: '100%'
                 });
 
-                row.querySelector('.remove-mk')?.addEventListener('click', function () {
+                row.querySelector('.remove-mk')?.addEventListener('click', function(e) {
+                    e.preventDefault();
                     $(row).find('.mk-select').select2('destroy');
                     row.remove();
                     syncMkOptions();
@@ -597,13 +780,28 @@
             });
         }
 
+        // Jabatan Custom handler
+        const jabatanDropdown = document.getElementById('jabatan-dropdown');
+        const jabatanCustomContainer = document.getElementById('jabatan-custom-container');
+        const jabatanCustomInput = document.getElementById('jabatan-custom');
+
+        jabatanDropdown?.addEventListener('change', function () {
+            if (this.value === 'lainnya') {
+                jabatanCustomContainer.classList.remove('hidden');
+                jabatanCustomInput.focus();
+            } else {
+                jabatanCustomContainer.classList.add('hidden');
+                jabatanCustomInput.value = '';
+            }
+        });
+
         // Form submit handler
         const form = document.getElementById('dosenForm');
         form?.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            // Merge Jabatan
-            if (jabatanDropdown.value === 'lainnya' && jabatanCustomInput.value.trim()) {
+            // Merge Jabatan if custom
+            if (jabatanDropdown && jabatanDropdown.value === 'lainnya' && jabatanCustomInput && jabatanCustomInput.value.trim()) {
                 jabatanDropdown.value = jabatanCustomInput.value.trim();
             }
 
@@ -622,8 +820,8 @@
                     title: 'Peringatan!',
                     text: 'Mata kuliah belum dipilih! Silakan pilih minimal 1 mata kuliah atau hapus field yang kosong.',
                     icon: 'warning',
-                    iconColor: '#7a1621',
-                    confirmButtonColor: '#7a1621',
+                    iconColor: '#800020',
+                    confirmButtonColor: '#800020',
                     confirmButtonText: 'OK',
                     background: '#ffffff',
                     customClass: {
@@ -637,9 +835,9 @@
                 title: 'Apakah Anda yakin?',
                 text: "Perubahan data dosen akan disimpan ke sistem.",
                 icon: 'question',
-                iconColor: '#7a1621',
+                iconColor: '#800020',
                 showCancelButton: true,
-                confirmButtonColor: '#7a1621',
+                confirmButtonColor: '#800020',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Ya, Perbarui!',
                 cancelButtonText: 'Batal',
@@ -655,18 +853,5 @@
                 }
             });
         });
-
-        // Initial MK setup
-        document.querySelectorAll('.mk-row').forEach(row => {
-            row.querySelector('.remove-mk')?.addEventListener('click', function () {
-                row.remove();
-                syncMkOptions();
-                updateMkRemoveButtons();
-            });
-            row.querySelector('.mk-select')?.addEventListener('change', syncMkOptions);
-        });
-        syncMkOptions();
-        updateMkRemoveButtons();
-    });
-</script>
+    </script>
 @endpush

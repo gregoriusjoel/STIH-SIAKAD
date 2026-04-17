@@ -63,9 +63,9 @@
             @foreach($navItems as $item)
                 <a href="{{ route($item['route']) }}" 
                    @click="if(window.innerWidth < 1024) sidebarOpen = false" 
-                   class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs($item['route']) ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
+                   class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs($item['route']) ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill hover:shadow-lg hover:-translate-y-0.5' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
                     @if(Request::routeIs($item['route']))
-                        <div class="absolute left-0 w-1.5 h-6 bg-primary rounded-r-full shadow-[2px_0_12px_rgba(139,21,56,0.2)]"></div>
+                        <div class="absolute left-2 w-1 h-5 bg-primary rounded-full shadow-[0_0_10px_rgba(139,21,56,0.3)]"></div>
                     @endif
                     <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 {{ Request::routeIs($item['route']) ? 'fill-current' : 'text-slate-400 group-hover:text-primary' }}">
                         {{ $item['icon'] }}
@@ -77,9 +77,9 @@
             @if($pendingApprovalCount > 0)
                 <a href="{{ route('dosen.jadwal_approval.index') }}" 
                    @click="if(window.innerWidth < 1024) sidebarOpen = false" 
-                   class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.jadwal_approval.*') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
+                   class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.jadwal_approval.*') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill hover:shadow-lg hover:-translate-y-0.5' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
                     @if(Request::routeIs('dosen.jadwal_approval.*'))
-                        <div class="absolute left-0 w-1.5 h-6 bg-primary rounded-r-full shadow-[2px_0_12px_rgba(139,21,56,0.2)]"></div>
+                        <div class="absolute left-2 w-1 h-5 bg-primary rounded-full shadow-[0_0_10px_rgba(139,21,56,0.3)]"></div>
                     @endif
                     <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 {{ Request::routeIs('dosen.jadwal_approval.*') ? 'fill-current' : 'text-slate-400 group-hover:text-primary' }}">
                         assignment
@@ -93,9 +93,9 @@
 
             <a href="{{ route('dosen.jadwal') }}" 
                @click="if(window.innerWidth < 1024) sidebarOpen = false" 
-               class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.jadwal') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
+               class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.jadwal') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill hover:shadow-lg hover:-translate-y-0.5' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
                 @if(Request::routeIs('dosen.jadwal'))
-                    <div class="absolute left-0 w-1.5 h-6 bg-primary rounded-r-full shadow-[2px_0_12px_rgba(139,21,56,0.2)]"></div>
+                    <div class="absolute left-2 w-1 h-5 bg-primary rounded-full shadow-[0_0_10px_rgba(139,21,56,0.3)]"></div>
                 @endif
                 <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 {{ Request::routeIs('dosen.jadwal') ? 'fill-current' : 'text-slate-400 group-hover:text-primary' }}">
                     calendar_today
@@ -105,9 +105,9 @@
 
             <a href="{{ route('dosen.magang.index') }}" 
                @click="if(window.innerWidth < 1024) sidebarOpen = false" 
-               class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.magang.*') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
+               class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.magang.*') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill hover:shadow-lg hover:-translate-y-0.5' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
                 @if(Request::routeIs('dosen.magang.*'))
-                    <div class="absolute left-0 w-1.5 h-6 bg-primary rounded-r-full shadow-[2px_0_12px_rgba(139,21,56,0.2)]"></div>
+                    <div class="absolute left-2 w-1 h-5 bg-primary rounded-full shadow-[0_0_10px_rgba(139,21,56,0.3)]"></div>
                 @endif
                 <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 {{ Request::routeIs('dosen.magang.*') ? 'fill-current' : 'text-slate-400 group-hover:text-primary' }}">
                     work
@@ -118,9 +118,9 @@
             @if(Route::has('dosen.skripsi.index'))
             <a href="{{ route('dosen.skripsi.index') }}" 
                @click="if(window.innerWidth < 1024) sidebarOpen = false" 
-               class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.skripsi.*') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
+               class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.skripsi.*') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill hover:shadow-lg hover:-translate-y-0.5' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
                 @if(Request::routeIs('dosen.skripsi.*'))
-                    <div class="absolute left-0 w-1.5 h-6 bg-primary rounded-r-full shadow-[2px_0_12px_rgba(139,21,56,0.2)]"></div>
+                    <div class="absolute left-2 w-1 h-5 bg-primary rounded-full shadow-[0_0_10px_rgba(139,21,56,0.3)]"></div>
                 @endif
                 <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 {{ Request::routeIs('dosen.skripsi.*') ? 'fill-current' : 'text-slate-400 group-hover:text-primary' }}">
                     school
@@ -133,12 +133,21 @@
             <div class="mt-auto pt-8 pb-4 flex flex-col gap-2">
                 <div class="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent mb-4 opacity-60"></div>
                 
-                <a href="#" class="group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-slate-500 hover:bg-primary/5 hover:text-primary transition-all duration-300">
-                    <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 text-slate-400 group-hover:text-primary">
-                        account_circle
-                    </span>
-                    <p class="text-sm font-semibold tracking-tight">Profil Saya</p>
-                </a>
+                @if(auth()->user() && auth()->user()->role === 'dosen')
+                    <a href="{{ route('dosen.profil.index') }}" class="group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-slate-500 hover:bg-primary/5 hover:text-primary transition-all duration-300">
+                        <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 text-slate-400 group-hover:text-primary">
+                            account_circle
+                        </span>
+                        <p class="text-sm font-semibold tracking-tight">Profil Saya</p>
+                    </a>
+                @else
+                    <a href="#" class="group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-slate-500 hover:bg-primary/5 hover:text-primary transition-all duration-300">
+                        <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 text-slate-400 group-hover:text-primary">
+                            account_circle
+                        </span>
+                        <p class="text-sm font-semibold tracking-tight">Profil Saya</p>
+                    </a>
+                @endif
 
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf

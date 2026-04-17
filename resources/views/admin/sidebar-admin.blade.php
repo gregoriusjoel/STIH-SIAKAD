@@ -3,7 +3,7 @@
     <style>
         .sidebar { background-color: #ffffff; }
         .dark .sidebar { background-color: #1f1616; border-right-color: #1e293b; }
-        .sidebar .title { padding: 0 1rem; background-color: #7a1621; color: #fff; height: 4.1rem; display: flex; align-items: center; }
+        .sidebar .title { padding: 0 1rem; background-color: #7a1621; color: #fff; height: 4.25rem; display: flex; align-items: center; }
 
         /* Logo size to match navbar avatar */
         .sidebar .title .logo { width: 40px; height: 40px; padding: 0.25rem; }

@@ -52,7 +52,15 @@ class SkripsiController extends Controller
             ->latest()
             ->get();
 
-        $pendingSidang = SkripsiSidangRegistration::where('status', 'submitted')
+        $pendingSidang = SkripsiSidangRegistration::whereIn('status', [
+                'submitted',
+                'verified',
+                'SUBMITTED',
+                'VERIFIED',
+            ])
+            ->whereHas('submission', function ($q) {
+                $q->where('status', SkripsiStatus::SIDANG_REG_SUBMITTED);
+            })
             ->with('submission.mahasiswa.user')
             ->latest()
             ->get();
@@ -104,7 +112,7 @@ class SkripsiController extends Controller
         $request->validate(['note' => ['nullable', 'string', 'max:1000']]);
         $this->workflow->approveProposal($skripsi, $this->admin(), $request->note);
 
-        return back()->with('success', 'Proposal disetujui. Bimbingan aktif.');
+        return back()->with('success', 'Skripsi disetujui. Bimbingan aktif.');
     }
 
     public function rejectProposal(Request $request, SkripsiSubmission $skripsi)
@@ -112,7 +120,7 @@ class SkripsiController extends Controller
         $request->validate(['reason' => ['required', 'string', 'max:1000']]);
         $this->workflow->rejectProposal($skripsi, $this->admin(), $request->reason);
 
-        return back()->with('success', 'Proposal ditolak. Mahasiswa dapat mengajukan ulang.');
+        return back()->with('success', 'Skripsi ditolak. Mahasiswa dapat mengajukan ulang.');
     }
 
     // ── Sidang Registration Actions ───────────────────────────────────────

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dosen\LecturerController;
 use App\Http\Controllers\Dosen\JadwalController;
+use App\Http\Controllers\Dosen\ProfilController as DosenProfilController;
 use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
 use App\Http\Controllers\Mahasiswa\AktivasiController;
 use App\Http\Controllers\Mahasiswa\KRSController;
@@ -66,6 +67,12 @@ Route::get('/absen/thank-you', [App\Http\Controllers\Absen\LoginController::clas
 // Dosen / Lecturer Portal Routes
 Route::prefix('dosen')->name('dosen.')->where(['pertemuan' => '[a-z0-9:]+'])->group(function () {
     Route::get('/dashboard', [LecturerController::class, 'dashboard'])->name('dashboard');
+    
+    // Profil Dosen Routes
+    Route::get('/profil', [DosenProfilController::class, 'index'])->name('profil.index');
+    Route::get('/profil/edit', [DosenProfilController::class, 'edit'])->name('profil.edit');
+    Route::put('/profil', [DosenProfilController::class, 'update'])->name('profil.update');
+    
     Route::get('/kelas', [LecturerController::class, 'classes'])->name('kelas');
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal')->middleware('auth');
     Route::post('/jadwal/{jadwal}/reschedule', [JadwalController::class, 'reschedule'])->name('jadwal.reschedule')->middleware('auth');
@@ -158,7 +165,7 @@ Route::prefix('dosen')->name('dosen.')->where(['pertemuan' => '[a-z0-9:]+'])->gr
         // Supervisor request actions
         Route::post('/{skripsi}/supervisor/accept', [App\Http\Controllers\Dosen\SkripsiController::class, 'acceptSupervisor'])->name('supervisor.accept');
         Route::post('/{skripsi}/supervisor/reject', [App\Http\Controllers\Dosen\SkripsiController::class, 'rejectSupervisor'])->name('supervisor.reject');
-        Route::get('/download/{encodedPath}', [App\Http\Controllers\Dosen\SkripsiController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
+        Route::get('/{skripsi}/download/{encodedPath}', [App\Http\Controllers\Dosen\SkripsiController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
     });
 
     // Fallback thesis to skripsi
@@ -197,6 +204,7 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         Route::get('/nilai', [NilaiController::class, 'index'])->name('nilai.index');
         Route::get('/khs', [NilaiController::class, 'khs'])->name('khs.index');
         Route::get('/nilai/print', [NilaiController::class, 'print'])->name('nilai.print');
+        Route::get('/nilai/print-rangkuman', [NilaiController::class, 'printRangkuman'])->name('nilai.print.rangkuman');
 
         // Jadwal Kuliah
         Route::get('/jadwal', [MahasiswaJadwalController::class, 'index'])->name('jadwal.index');
@@ -389,9 +397,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Kelas Mata Kuliah Management
     Route::resource('kelas-mata-kuliah', App\Http\Controllers\Admin\KelasMataKuliahController::class);
     Route::get('kelas-mata-kuliah/{kelasId}/attendance', [App\Http\Controllers\Admin\KelasMataKuliahController::class, 'getAttendanceData'])->name('kelas-mata-kuliah.attendance');
+    Route::post('kelas-mata-kuliah/{kelasId}/update-online-meeting-link', [App\Http\Controllers\Admin\KelasMataKuliahController::class, 'updateOnlineMeetingLink'])->name('kelas-mata-kuliah.update-online-meeting-link');
+    Route::post('kelas-mata-kuliah/{kelasId}/update-general-meeting-link', [App\Http\Controllers\Admin\KelasMataKuliahController::class, 'updateGeneralMeetingLink'])->name('kelas-mata-kuliah.update-general-meeting-link');
+    Route::get('kelas-mata-kuliah/{kelasId}/all-pertemuan-links', [App\Http\Controllers\Admin\KelasMataKuliahController::class, 'getAllPertemuanLinks'])->name('kelas-mata-kuliah.all-pertemuan-links');
 
     // Jadwal Management
     Route::resource('jadwal', App\Http\Controllers\Admin\JadwalController::class);
+    Route::get('jadwal/get-dosens/{mataKuliahId}', [App\Http\Controllers\Admin\JadwalController::class, 'getDosensForMataKuliah'])->name('jadwal.get-dosens');
+    Route::get('jadwal/check-room', [App\Http\Controllers\Admin\JadwalController::class, 'checkRoomAvailability'])->name('jadwal.check-room');
     Route::post('jadwal/{jadwal}/approve', [App\Http\Controllers\Admin\JadwalController::class, 'approve'])->name('jadwal.approve');
     Route::post('jadwal/{jadwal}/reject', [App\Http\Controllers\Admin\JadwalController::class, 'reject'])->name('jadwal.reject');
     Route::post('jadwal/{jadwal}/assign-room', [App\Http\Controllers\Admin\JadwalController::class, 'assignRoom'])->name('jadwal.assignRoom');

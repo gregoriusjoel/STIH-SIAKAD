@@ -23,6 +23,8 @@ class JadwalController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $semesterService = app(\App\Services\SemesterService::class);
+        $activeSemester = $semesterService->getActiveSemester();
         
         // Get dosen record from user
         $dosen = \App\Models\Dosen::where('user_id', $user->id)->first();
@@ -44,11 +46,54 @@ class JadwalController extends Controller
         $pendingReschedules = collect();
         
         if ($dosen) {
+            // Source-of-truth schedules: active jadwal entries for this dosen.
+            $activeJadwalQuery = Jadwal::where('status', 'active')
+                ->whereNotNull('kelas_id')
+                ->whereHas('kelas', function ($q) use ($dosen) {
+                    $q->where('dosen_id', $dosen->id);
+                })
+                ->with('kelas');
+
+            $activeJadwals = $activeJadwalQuery->get();
+            $activeCombinations = $activeJadwals
+                ->pluck('kelas')
+                ->filter()
+                ->map(function ($k) {
+                    return $k->mata_kuliah_id . '-' . strtolower(trim((string) $k->section));
+                })
+                ->unique()
+                ->toArray();
+
             $kelasMataKuliahs = \App\Models\KelasMataKuliah::where('dosen_id', $dosen->id)
-                ->activeClasses() // Filter by active semester + grace period
                 ->with(['mataKuliah', 'semester'])
-                ->whereNotNull('hari')
                 ->get();
+
+            // Keep only classes that are present in active jadwal and backfill display fields from jadwal.
+            $kelasMataKuliahs = $kelasMataKuliahs->map(function ($kelas) use ($activeCombinations, $activeJadwals) {
+                $combo = $kelas->mata_kuliah_id . '-' . strtolower(trim((string) $kelas->kode_kelas));
+                if (!in_array($combo, $activeCombinations, true)) {
+                    return null;
+                }
+
+                $matched = $activeJadwals->first(function ($jadwal) use ($kelas) {
+                    if (!$jadwal->kelas) {
+                        return false;
+                    }
+
+                    return (int) $jadwal->kelas->mata_kuliah_id === (int) $kelas->mata_kuliah_id
+                        && strtolower(trim((string) $jadwal->kelas->section)) === strtolower(trim((string) $kelas->kode_kelas));
+                });
+
+                if ($matched) {
+                    $kelas->hari = $kelas->hari ?: $matched->hari;
+                    $kelas->jam_mulai = $kelas->jam_mulai ?: $matched->jam_mulai;
+                    $kelas->jam_selesai = $kelas->jam_selesai ?: $matched->jam_selesai;
+                    $kelas->ruang = $kelas->ruang ?: $matched->ruangan;
+                    $kelas->kode_kelas = $kelas->kode_kelas ?: ($matched->kelas->section ?? $kelas->kode_kelas);
+                }
+
+                return $kelas;
+            })->filter()->values();
             
             // Get approved reschedules for selected week (status: approved or room_assigned)
             $approvedReschedules = \App\Models\KelasReschedule::where('dosen_id', $dosen->id)
@@ -119,26 +164,56 @@ class JadwalController extends Controller
         }
 
         // Get all schedules for room availability checking
-        // Start with base schedules from KelasMataKuliah
-        $allSchedules = \App\Models\KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'ruangan'])
-            ->activeClasses() // Filter by active semester + grace period
-            ->where(function($q) {
-                $q->whereNotNull('ruang')->orWhereNotNull('ruangan_id');
-            })
-            ->whereNotNull('hari')
-            ->get()
-            ->map(function($s) {
-                return [
-                    'id' => $s->id,
-                    'hari' => $s->hari,
-                    'ruang' => $s->ruangan ? $s->ruangan->kode_ruangan : $s->ruang,
-                    'ruangan_id' => $s->ruangan_id,
-                    'jam_mulai' => substr($s->jam_mulai, 0, 5),
-                    'jam_selesai' => substr($s->jam_selesai, 0, 5),
-                    'mk' => $s->mataKuliah->nama_mk ?? '',
-                    'dosen' => $s->dosen->user->name ?? ''
-                ];
+        // Source-of-truth is jadwal with status active.
+        $ruanganById = Ruangan::pluck('kode_ruangan', 'id');
+        $kelasMataKuliahIdByCombo = \App\Models\KelasMataKuliah::query()
+            ->get(['id', 'mata_kuliah_id', 'kode_kelas'])
+            ->mapWithKeys(function ($kmk) {
+                $combo = $kmk->mata_kuliah_id . '-' . strtolower(trim((string) $kmk->kode_kelas));
+                return [$combo => $kmk->id];
             });
+
+        $allSchedules = Jadwal::query()
+            ->where('status', 'active')
+            ->whereNotNull('kelas_id')
+            ->whereNotNull('hari')
+            ->whereNotNull('jam_mulai')
+            ->whereNotNull('jam_selesai')
+            ->where(function ($q) {
+                $q->whereNotNull('ruangan')->orWhereNotNull('ruangan_id');
+            })
+            ->with(['kelas.mataKuliah', 'kelas.dosen.user'])
+            ->get()
+            ->map(function ($jadwal) use ($ruanganById, $kelasMataKuliahIdByCombo) {
+                $roomCode = trim((string) ($jadwal->ruangan ?? ''));
+
+                if ($roomCode === '' && $jadwal->ruangan_id) {
+                    $roomCode = (string) ($ruanganById->get($jadwal->ruangan_id) ?? '');
+                }
+
+                if ($roomCode === '') {
+                    return null;
+                }
+
+                $kelas = $jadwal->kelas;
+                $combo = null;
+                if ($kelas) {
+                    $combo = $kelas->mata_kuliah_id . '-' . strtolower(trim((string) $kelas->section));
+                }
+
+                return [
+                    'id' => $combo ? $kelasMataKuliahIdByCombo->get($combo) : null,
+                    'hari' => trim((string) $jadwal->hari),
+                    'ruang' => $roomCode,
+                    'ruangan_id' => $jadwal->ruangan_id,
+                    'jam_mulai' => substr((string) $jadwal->jam_mulai, 0, 5),
+                    'jam_selesai' => substr((string) $jadwal->jam_selesai, 0, 5),
+                    'mk' => $kelas?->mataKuliah?->nama_mk ?? '',
+                    'dosen' => $kelas?->dosen?->user?->name ?? '',
+                ];
+            })
+            ->filter()
+            ->values();
 
         // Overlay approved reschedules for this week onto allSchedules
         // so room availability reflects actual usage for this specific week
@@ -150,7 +225,7 @@ class JadwalController extends Controller
             ->keyBy('kelas_mata_kuliah_id');
 
         $allSchedules = $allSchedules->map(function($schedule) use ($allWeekReschedules) {
-            if ($allWeekReschedules->has($schedule['id'])) {
+            if (!empty($schedule['id']) && $allWeekReschedules->has($schedule['id'])) {
                 $rs = $allWeekReschedules->get($schedule['id']);
                 $schedule['hari'] = $rs->new_hari;
                 $schedule['jam_mulai'] = substr($rs->new_jam_mulai, 0, 5);
@@ -170,6 +245,7 @@ class JadwalController extends Controller
         return view('page.dosen.jadwal.index', compact(
             'schedulesByDay', 
             'activeJadwals', 
+            'activeSemester',
             'weekStart', 
             'weekEnd',
             'weekOffset',
@@ -189,9 +265,14 @@ class JadwalController extends Controller
     public function reschedule(Request $request, Jadwal $jadwal)
     {
         $user = Auth::user();
+        $dosen = \App\Models\Dosen::where('user_id', $user->id)->first();
+
+        if (!$dosen) {
+            return redirect()->back()->withErrors('Dosen tidak ditemukan.');
+        }
 
         // ensure the jadwal belongs to this dosen
-        if ($jadwal->kelas->dosen_id !== $user->id) {
+        if (!$jadwal->kelas || (int) $jadwal->kelas->dosen_id !== (int) $dosen->id) {
             return redirect()->back()->withErrors('Anda tidak memiliki izin untuk mereschedule jadwal ini.');
         }
 
@@ -206,7 +287,7 @@ class JadwalController extends Controller
 
         JadwalReschedule::create([
             'jadwal_id' => $jadwal->id,
-            'dosen_id' => $user->id,
+            'dosen_id' => $dosen->id,
             'old_hari' => $jadwal->hari,
             'old_jam_mulai' => $jadwal->jam_mulai,
             'old_jam_selesai' => $jadwal->jam_selesai,
@@ -239,14 +320,19 @@ class JadwalController extends Controller
 
         $jadwal = Jadwal::findOrFail($request->jadwal_id);
         $user = Auth::user();
+        $dosen = \App\Models\Dosen::where('user_id', $user->id)->first();
 
-        if ($jadwal->kelas->dosen_id !== $user->id) {
+        if (!$dosen) {
+            return redirect()->back()->withErrors('Dosen tidak ditemukan.');
+        }
+
+        if (!$jadwal->kelas || (int) $jadwal->kelas->dosen_id !== (int) $dosen->id) {
             return redirect()->back()->withErrors('Anda tidak memiliki izin untuk mereschedule jadwal ini.');
         }
 
         JadwalReschedule::create([
             'jadwal_id' => $jadwal->id,
-            'dosen_id' => $user->id,
+            'dosen_id' => $dosen->id,
             'old_hari' => $jadwal->hari,
             'old_jam_mulai' => $jadwal->jam_mulai,
             'old_jam_selesai' => $jadwal->jam_selesai,

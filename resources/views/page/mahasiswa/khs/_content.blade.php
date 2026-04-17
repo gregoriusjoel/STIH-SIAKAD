@@ -6,9 +6,9 @@
         </div>
         <div class="ml-auto">
             <a href="{{ route('mahasiswa.nilai.print') }}" target="_blank"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-maroon text-white rounded-lg hover:bg-maroon-hover transition-colors font-medium shadow-sm">
-                <i class="fas fa-print text-sm"></i>
-                <span>Cetak Rangkuman Nilai</span>
+                class="inline-flex items-center gap-2 px-4 py-2 h-10 bg-maroon text-white rounded-lg hover:bg-maroon-hover transition-colors font-medium shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">print</span>
+                <span>Cetak</span>
             </a>
         </div>
     </div>

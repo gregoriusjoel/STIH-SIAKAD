@@ -135,10 +135,10 @@
                         <i class="fas fa-circle text-[8px] mr-1"></i>{{ ucfirst($dosen->status) }}
                     </span>
                     <div class="flex gap-2">
-                        <a href="{{ route('admin.dosen.edit', $dosen) }}"
+                        <button @click="showEditModal = true"
                            class="px-4 py-2 bg-maroon text-white text-xs font-bold rounded-xl hover:bg-red-900 transition shadow-sm">
                             <i class="fas fa-edit mr-1"></i>Edit
-                        </a>
+                        </button>
                         <a href="{{ route('admin.dosen.index') }}"
                            class="px-4 py-2 border border-gray-200 text-gray-600 text-xs font-bold rounded-xl hover:bg-gray-50 transition">
                             <i class="fas fa-arrow-left mr-1"></i>Kembali
@@ -557,6 +557,239 @@
             @endif
         </div>
     </div>
+
+    {{-- ═══════════════════════════════════════════ --}}
+    {{-- MODAL: EDIT DOSEN                          --}}
+    {{-- ═══════════════════════════════════════════ --}}
+    <template x-teleport="body">
+        <div x-show="showEditModal" 
+             @click.self="showEditModal = false"
+             x-transition 
+             class="fixed inset-0 z-[40] bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
+            
+            <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                {{-- Modal Header --}}
+                <div class="sticky top-0 bg-maroon text-white px-6 py-5 border-b border-red-800 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold flex items-center gap-2">
+                        <i class="fas fa-user-edit"></i>
+                        Edit Profil Dosen
+                    </h3>
+                    <p class="text-sm mt-1 text-white/80">{{ $dosen->user->name }}</p>
+                </div>
+                <button @click="showEditModal = false" class="p-2 hover:bg-red-800 rounded-lg transition">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+
+            {{-- Modal Body --}}
+            <form action="{{ route('admin.dosen.update', $dosen) }}" method="POST" class="p-6 space-y-5">
+                @csrf
+                @method('PUT')
+
+                {{-- Data Akun Login --}}
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-4 flex items-center gap-2">
+                        <i class="fas fa-sign-in-alt text-maroon"></i>
+                        Data Akun Login
+                    </h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Nama Lengkap *
+                            </label>
+                            <input type="text" name="name" value="{{ old('name', $dosen->user->name) }}"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                placeholder="Dr. Ahmad Solihin, M.H." required>
+                            @error('name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Email *
+                            </label>
+                            <input type="email" name="email" value="{{ old('email', $dosen->user->email) }}"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                placeholder="nama@stih.ac.id" required>
+                            @error('email')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Password
+                            </label>
+                            <input type="password" name="password"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                placeholder="Kosongkan jika tidak ingin mengubah">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Biarkan kosong untuk tidak mengubah password</p>
+                            @error('password')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="dark:border-gray-700">
+
+                {{-- Data Pribadi --}}
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-4 flex items-center gap-2">
+                        <i class="fas fa-id-card text-maroon"></i>
+                        Data Pribadi
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    NIDN *
+                                </label>
+                                <input type="text" name="nidn" value="{{ old('nidn', $dosen->nidn) }}"
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                    placeholder="123456789" required>
+                                @error('nidn')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    Telepon
+                                </label>
+                                <input type="text" name="phone" value="{{ old('phone', $dosen->phone) }}"
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                    placeholder="+62812345678">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Alamat
+                            </label>
+                            <textarea name="address" rows="2"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition">{{ old('address', $dosen->address) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="dark:border-gray-700">
+
+                {{-- Pendidikan & Jabatan --}}
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-4 flex items-center gap-2">
+                        <i class="fas fa-graduation-cap text-maroon"></i>
+                        Pendidikan & Jabatan
+                    </h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Pendidikan Terakhir
+                            </label>
+                            <input type="text" name="pendidikan_terakhir[]" 
+                                value="{{ old('pendidikan_terakhir.0', is_array($dosen->pendidikan_terakhir) && count($dosen->pendidikan_terakhir) ? $dosen->pendidikan_terakhir[0] : '') }}"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                placeholder="S3, S2, S1, etc">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Universitas
+                            </label>
+                            <input type="text" name="universitas[]"
+                                value="{{ old('universitas.0', is_array($dosen->universitas) && count($dosen->universitas) ? $dosen->universitas[0] : '') }}"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                placeholder="Nama Universitas">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Jabatan Fungsional *
+                            </label>
+                            <input type="text" name="jabatan_fungsional"
+                                value="{{ old('jabatan_fungsional', is_array($dosen->jabatan_fungsional) && count($dosen->jabatan_fungsional) ? $dosen->jabatan_fungsional[0] : '') }}"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                placeholder="Lektor, Asisten Ahli, etc" required>
+                            @error('jabatan_fungsional')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="dark:border-gray-700">
+
+                {{-- Program Studi & Status --}}
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-4 flex items-center gap-2">
+                        <i class="fas fa-university text-maroon"></i>
+                        Program Studi & Status
+                    </h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Fakultas *
+                            </label>
+                            <select name="fakultas_id" 
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition" required>
+                                <option value="">-- Pilih Fakultas --</option>
+                                @foreach(\App\Models\Fakultas::where('status', 'aktif')->get() as $f)
+                                    <option value="{{ $f->id }}" {{ old('fakultas_id', $dosen->fakultas_id) == $f->id ? 'selected' : '' }}>
+                                        {{ $f->nama_fakultas }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('fakultas_id')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Program Studi *
+                            </label>
+                            <input type="text" name="prodi[]"
+                                value="{{ old('prodi.0', is_array($dosen->prodi) && count($dosen->prodi) ? $dosen->prodi[0] : '') }}"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                placeholder="Ilmu Hukum" required>
+                            @error('prodi')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    Dosen Tetap *
+                                </label>
+                                <select name="dosen_tetap" 
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition" required>
+                                    <option value="ya" {{ old('dosen_tetap', $dosen->dosen_tetap ? 'ya' : 'tidak') == 'ya' ? 'selected' : '' }}>Ya</option>
+                                    <option value="tidak" {{ old('dosen_tetap', $dosen->dosen_tetap ? 'ya' : 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    Status *
+                                </label>
+                                <select name="status" 
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition" required>
+                                    <option value="aktif" {{ old('status', $dosen->status) == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="non-aktif" {{ old('status', $dosen->status) == 'non-aktif' ? 'selected' : '' }}>Non-Aktif</option>
+                                </select>
+                                @error('status')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="dark:border-gray-700">
+
+                {{-- Modal Footer --}}
+                <div class="flex justify-end gap-3">
+                    <button type="button" @click="showEditModal = false"
+                        class="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition font-medium">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 transition font-bold flex items-center gap-2 shadow-lg shadow-maroon/20">
+                        <i class="fas fa-save"></i>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </template>
 </div>
 @endsection
 
@@ -570,6 +803,7 @@ function dosenDetail() {
         selectedHistorySemester: '',
         historyData: null,
         historyLoading: false,
+        showEditModal: false,
 
         allMataKuliah: {!! json_encode($availableMataKuliah->map(function($mk) {
             return [

@@ -13,7 +13,7 @@ class JamPerkuliahanController extends Controller
      */
     public function index()
     {
-        $jamPerkuliahan = JamPerkuliahan::orderBy('jam_ke')->paginate(10);
+        $jamPerkuliahan = JamPerkuliahan::orderBy('is_active', 'desc')->orderBy('jam_ke')->paginate(10);
         return view('admin.jam-perkuliahan.index', compact('jamPerkuliahan'));
     }
 
@@ -55,7 +55,7 @@ class JamPerkuliahanController extends Controller
             'jam_ke' => $request->jam_ke,
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
-            'is_active' => $request->has('is_active') ? true : false,
+            'is_active' => (bool) $request->input('is_active'),
         ]);
 
         return redirect()->route('admin.jam-perkuliahan.index')
@@ -106,7 +106,7 @@ class JamPerkuliahanController extends Controller
             'jam_ke' => $request->jam_ke,
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
-            'is_active' => $request->has('is_active') ? true : false,
+            'is_active' => (bool) $request->input('is_active'),
         ]);
 
         return redirect()->route('admin.jam-perkuliahan.index')

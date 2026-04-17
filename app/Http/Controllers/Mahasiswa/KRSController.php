@@ -190,7 +190,22 @@ class KRSController extends Controller
         }
 
         $statusKrs = $existingKrs->first()->status ?? null;
-        $isLocked = in_array($statusKrs, ['diajukan', 'approved']);
+        
+        // Determine if form is locked based on actual KRS status
+        $isLocked = in_array($statusKrs, ['approved', 'sudah submit']);
+
+        // Map status to display status for view
+        if ($statusKrs === 'sudah submit' || $statusKrs === 'approved' || $statusKrs === 'disetujui') {
+            $displayStatusKrs = 'Sudah Mengisi KRS';
+        } elseif ($statusKrs === 'draft') {
+            $displayStatusKrs = 'Draft';
+        } elseif ($statusKrs === 'diajukan') {
+            $displayStatusKrs = 'Draft'; // Legacy status treated as draft
+        } elseif ($statusKrs === null) {
+            $displayStatusKrs = null; // Will display "Belum Mengisi KRS" in view
+        } else {
+            $displayStatusKrs = $statusKrs;
+        }
 
         // If student has not yet started filling KRS and has no existing KRS, show confirmation page first
         if ($existingKrs->isEmpty() && !$request->has('start')) {
@@ -277,7 +292,7 @@ class KRSController extends Controller
             'additionalMataKuliah' => $additionalMataKuliah,
             'existingKrs' => $existingKrs,
             'totalSks' => $totalSks,
-            'statusKrs' => $statusKrs,
+            'statusKrs' => $displayStatusKrs ?? null,
             'isLocked' => $isLocked,
             'semesterAktif' => $semesterAktif,
             'mahasiswaSemester' => $mahasiswaSemester,
@@ -293,61 +308,80 @@ class KRSController extends Controller
         $user = Auth::user();
         $mahasiswa = Mahasiswa::where('user_id', $user->id)->firstOrFail();
 
-        // determine which semester to print: optional query param semester_id, otherwise krsSemester
-        $krsSemester = null;
-        if ($request->has('semester_id')) {
-            $krsSemester = Semester::find($request->get('semester_id'));
-        }
-        $krsSemester = $krsSemester ?? $this->getCurrentSemester();
-
-        if (!$krsSemester) {
-            return back()->with('error', 'Semester tidak ditemukan.');
+        // Prefer explicit semester_number from download links.
+        // Keep backward compatibility with old semester_id query param.
+        $requestedSemester = (int) ($request->get('semester_number') ?? $request->get('semester_id') ?? 0);
+        if ($requestedSemester <= 0) {
+            $requestedSemester = (int) $mahasiswa->getCurrentSemester();
         }
 
-        // If a saved PDF exists in storage for this mahasiswa+semester, serve it immediately
-        $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
-        $filename = 'KRS_' . $nimOrId . '_' . ($krsSemester->id ?? 'sem') . '.pdf';
-        $path = 'krs/' . $mahasiswa->id . '/' . $filename;
-        if (Storage::disk('s3')->exists($path)) {
-            return Storage::disk('s3')->download($path, $filename);
-        }
+        $semesterKodeId = 'sms' . $requestedSemester;
 
-        // Only allow printing if student has submitted KRS (status != draft) for that semester
+        // Only allow download if student has submitted KRS (status != draft) for that semester number.
         $hasSubmitted = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->where('status', '!=', 'draft')
-            ->whereHas('kelasMataKuliah', function ($q) use ($krsSemester) {
-                $q->where('semester_id', $krsSemester->id);
+            ->whereHas('mataKuliah', function ($q) use ($semesterKodeId) {
+                $q->where('kode_id', $semesterKodeId);
             })->exists();
 
         if (!$hasSubmitted) {
             return back()->with('error', 'KRS belum diajukan/selesai untuk semester ini. Anda hanya bisa mengunduh setelah pengisian selesai.');
         }
 
+        // Use semester_number-based filename (aligned with confirm page history table).
+        $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
+        $filename = 'KRS_' . $nimOrId . '_' . $requestedSemester . '.pdf';
+        $path = 'krs/' . $mahasiswa->id . '/' . $filename;
+
         $existingKrs = Krs::where('mahasiswa_id', $mahasiswa->id)
-            ->whereHas('kelas', function ($q) use ($krsSemester) {
-                $q->where('tahun_ajaran', $krsSemester->tahun_ajaran ?? null)
-                    ->where('semester_type', $krsSemester->nama_semester ?? null);
+            ->whereHas('mataKuliah', function ($q) use ($semesterKodeId) {
+                $q->where('kode_id', $semesterKodeId);
             })
-            ->with(['kelas.mataKuliah', 'kelas.dosen', 'kelas.jadwals'])
+            ->with([
+                'mataKuliah',
+                'kelasMataKuliah.mataKuliah',
+                'kelasMataKuliah.dosen.user',
+                'kelas.mataKuliah',
+                'kelas.dosen.user',
+                'kelas.jadwals',
+            ])
             ->get();
 
-        // display semester should still use admin-selected semester for header/card
-        $displaySemester = Semester::where('status', 'aktif')->first()
-            ?? Semester::where('is_active', true)->first()
-            ?? Semester::latest()->first();
+        // Build semester info for PDF header based on requested semester number.
+        $semesterInfo = $mahasiswa->getPastSemesters()->firstWhere('semester_number', $requestedSemester);
+        if (!$semesterInfo) {
+            $baseYear = (int) $mahasiswa->angkatan;
+            $yearOffset = floor(($requestedSemester - 1) / 2);
+            $academicStartYear = $baseYear + $yearOffset;
+            $academicEndYear = $academicStartYear + 1;
 
-        // If a saved PDF exists in storage for this mahasiswa+semester, serve it
-        $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
-        $filename = 'KRS_' . $nimOrId . '_' . ($krsSemester->id ?? 'sem') . '.pdf';
-        $path = 'krs/' . $mahasiswa->id . '/' . $filename;
-        if (Storage::disk('s3')->exists($path)) {
-            return Storage::disk('s3')->download($path, $filename);
+            $semesterInfo = (object) [
+                'semester_number' => $requestedSemester,
+                'semester_display' => 'Semester ' . $requestedSemester,
+                'tahun_ajaran' => $academicStartYear . '/' . $academicEndYear,
+                'nama_semester' => ($requestedSemester % 2 === 1) ? 'Ganjil' : 'Genap',
+            ];
         }
 
-        return view('page.mahasiswa.krs.print', [
+        $pdf = PDF::loadView('page.mahasiswa.krs.pdf', [
             'mahasiswa' => $mahasiswa,
             'existingKrs' => $existingKrs,
-            'semesterAktif' => $displaySemester,
+            'semesterAktif' => $semesterInfo,
+        ])->setPaper('a4', 'landscape');
+
+        $pdfBinary = $pdf->output();
+
+        Storage::disk('s3')->put($path, $pdfBinary, [
+            'ContentType' => 'application/pdf',
+            'CacheControl' => 'no-store, no-cache, must-revalidate, max-age=0',
+        ]);
+
+        return response($pdfBinary, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
         ]);
     }
 
@@ -499,7 +533,7 @@ class KRSController extends Controller
 
             // Determine status based on user action
             $action = $request->input('action', 'draft');
-            $status = ($action === 'submit') ? 'approved' : 'draft';
+            $status = ($action === 'submit') ? 'sudah submit' : 'draft';
 
             // Create new KRS entries for selected mata kuliah
             foreach ($request->mata_kuliah as $mkId => $ambil) {
@@ -555,13 +589,13 @@ class KRSController extends Controller
             $path = 'krs/' . $mahasiswa->id . '/' . $filename;
             Storage::disk('s3')->put($path, $pdf->output());
 
-            if ($status === 'approved') {
+            if ($status === 'sudah submit') {
                 \App\Models\AuditLog::log('krs.submitted', $mahasiswa, [
                     'semester_id' => $krsSemester->id,
                     'total_mk' => count($selectedMkIds),
                     'total_sks' => $totalSks
                 ]);
-                return redirect()->route('mahasiswa.krs.confirm')->with('success', 'KRS berhasil diajukan dan difinalisasi. Anda tidak dapat mengubahnya kembali.');
+                return redirect()->route('mahasiswa.krs.confirm')->with('success', 'KRS sudah di isi. Anda tidak dapat mengubahnya kembali.');
             } else {
                 \App\Models\AuditLog::log('krs.draft_saved', $mahasiswa, [
                     'semester_id' => $krsSemester->id,

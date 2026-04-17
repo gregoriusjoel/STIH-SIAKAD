@@ -26,6 +26,7 @@ class KelasMataKuliah extends Model
         'jam_selesai',
         'metode_pengajaran',
         'online_link',
+        'online_meeting_link',
         'asynchronous_tugas',
         'asynchronous_file',
         'qr_token',

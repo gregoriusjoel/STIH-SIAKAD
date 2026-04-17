@@ -43,7 +43,7 @@
                 ['route' => 'finance.invoices.index', 'active' => 'finance.invoices.*', 'icon' => 'fa-file-invoice-dollar', 'label' => 'Daftar Tagihan'],
                 ['route' => 'finance.installment-requests.index', 'active' => 'finance.installment-requests.*', 'icon' => 'fa-hand-holding-usd', 'label' => 'Pengajuan Cicilan'],
                 ['route' => 'finance.payment-proofs.index', 'active' => 'finance.payment-proofs.*', 'icon' => 'fa-check-double', 'label' => 'Konfirmasi Bukti'],
-                ['route' => '#', 'active' => '#', 'icon' => 'fa-chart-line', 'label' => 'Laporan'],
+                ['route' => 'finance.laporan.index', 'active' => 'finance.laporan.*', 'icon' => 'fa-chart-line', 'label' => 'Laporan'],
             ];
         @endphp
 

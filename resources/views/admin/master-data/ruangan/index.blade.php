@@ -23,6 +23,56 @@
         </div>
     </div>
 
+    <!-- Filter & Search -->
+    <div class="mb-6 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+        <form method="GET" action="{{ route('admin.ruangan.index') }}" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Search -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cari Ruangan</label>
+                    <input type="text" name="search" placeholder="Kode / Nama / Gedung..." 
+                        value="{{ request('search') }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent">
+                </div>
+
+                <!-- Filter Kategori -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                    <select name="kategori" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent">
+                        <option value="">Semua Kategori</option>
+                        @foreach($kategoris as $kat)
+                            <option value="{{ $kat->id }}" {{ request('kategori') == $kat->id ? 'selected' : '' }}>
+                                {{ $kat->nama_kategori }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Filter Status -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent">
+                        <option value="">Semua Status</option>
+                        <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                        <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="px-4 py-2 bg-maroon text-white rounded-lg hover:bg-red-900 transition flex items-center">
+                        <i class="fas fa-search mr-2"></i>
+                        Cari
+                    </button>
+                    <a href="{{ route('admin.ruangan.index') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
+                        <i class="fas fa-redo mr-2"></i>
+                        Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <!-- Data Table -->
     <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
 
@@ -36,6 +86,9 @@
                             </th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                                 Nama Ruangan
+                            </th>
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                                Kategori
                             </th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                                 Gedung/Lantai
@@ -59,6 +112,16 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">{{ $ruangan->nama_ruangan }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($ruangan->kategori)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $ruangan->kategori->badge_color }}">
+                                            <i class="fas {{ $ruangan->kategori->icon }} mr-1"></i>
+                                            {{ $ruangan->kategori->nama_kategori }}
+                                        </span>
+                                    @else
+                                        <span class="text-xs text-gray-500">Tidak dikategorisasi</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">

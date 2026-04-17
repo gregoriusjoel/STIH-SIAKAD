@@ -356,7 +356,7 @@
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row items-center gap-3 w-full 2xl:w-auto">
-                <form action="" method="GET" class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <form action="{{ route('dosen.jadwal_approval.index') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                     <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                         <select name="status" onchange="this.form.submit()" class="bg-white border border-gray-200 text-gray-800 text-sm rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all cursor-pointer w-full sm:w-auto min-w-[150px] shadow-sm">
                             <option value="">Semua Status</option>

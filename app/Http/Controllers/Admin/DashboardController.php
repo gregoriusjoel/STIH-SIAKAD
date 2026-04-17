@@ -38,7 +38,12 @@ class DashboardController extends Controller
                 ->orderBy('start_date', 'asc')
                 ->get()
                 ->unique('title')
-                ->take(5)
+                ->values(),
+            'calendar_active_periods' => AcademicEvent::currentlyActive()
+                ->orderBy('end_date', 'asc')
+                ->get()
+                ->unique('title')
+                ->take(2)
                 ->values(),
             // ── Active period badges from calendar ──
             'active_periods' => $periodService->currentActiveTypes($activeSemester?->id),

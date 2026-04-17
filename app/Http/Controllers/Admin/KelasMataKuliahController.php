@@ -25,31 +25,34 @@ class KelasMataKuliahController extends Controller
             
         $activeKelas = $activeJadwals->pluck('kelas')->filter();
 
-        // Get unique combinations of mata_kuliah_id and section from active jadwals
+        // Build normalized combination keys: mata_kuliah_id + section (lowercase, trimmed)
         $activeCombinations = $activeKelas->map(function ($k) {
-            return $k->mata_kuliah_id . '-' . $k->section;
+            $section = strtolower(trim((string) $k->section));
+            return $k->mata_kuliah_id . '-' . $section;
         })->unique()->toArray();
 
-        // Show classes from active semester (and grace period)
+        // Show classes that have active jadwal mapping OR own schedule fields.
+        // Do not hard-filter by active semester to avoid hiding valid classes.
         $kelasMatKul = KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])
-            ->activeClasses()
             ->get()
             ->map(function ($kmk) use ($activeJadwals, $activeCombinations) {
+                $kmkClassCode = strtolower(trim((string) $kmk->kode_kelas));
+
                 // Check if there is a matching Jadwal for this MK
-                $hasActiveJadwal = in_array($kmk->mata_kuliah_id . '-' . $kmk->kode_kelas, $activeCombinations);
-                
-                // Also consider KMK that have their own schedule (hari + jam) even without Jadwal
-                $hasOwnSchedule = !empty($kmk->hari) && !empty($kmk->jam_mulai) && !empty($kmk->jam_selesai);
-                
-                if (!$hasActiveJadwal && !$hasOwnSchedule) {
+                $hasActiveJadwal = in_array($kmk->mata_kuliah_id . '-' . $kmkClassCode, $activeCombinations, true);
+
+                if (!$hasActiveJadwal) {
                     return null; // Skip if no schedule at all
                 }
 
                 // Find matching Jadwal for this MK and Class code mapping back via Kelas
                 $matchingJadwal = $activeJadwals->first(function ($jadwal) use ($kmk) {
+                      $jadwalSection = strtolower(trim((string) ($jadwal->kelas->section ?? '')));
+                      $kmkClassCode = strtolower(trim((string) $kmk->kode_kelas));
+
                     return $jadwal->kelas && 
                            $jadwal->kelas->mata_kuliah_id == $kmk->mata_kuliah_id && 
-                           $jadwal->kelas->section == $kmk->kode_kelas;
+                          $jadwalSection === $kmkClassCode;
                 });
                 
                 $kmk->jadwal = $matchingJadwal;
@@ -553,10 +556,12 @@ class KelasMataKuliahController extends Controller
 
         return response()->json([
             'pertemuan' => [
+                'id' => $pertemuan?->id,
                 'tanggal' => $tanggal,
                 'tipe' => $tipe,
                 'nomor' => $nomor,
                 'label' => $meetingLabel,
+                'online_meeting_link' => $pertemuan?->online_meeting_link ?? null,
             ],
             'jadwal' => [
                 'jam_mulai' => $kelasMataKuliah->jam_mulai ? substr($kelasMataKuliah->jam_mulai, 0, 5) : '-',
@@ -569,5 +574,98 @@ class KelasMataKuliahController extends Controller
             'total_hadir' => $formattedStudents->where('status', 'hadir')->count(),
             'total_tidak_hadir' => $formattedStudents->where('status', 'tidak hadir')->count(),
         ]);
+    }
+
+    /**
+     * Update online meeting link for a pertemuan
+     */
+    public function updateOnlineMeetingLink($id)
+    {
+        $validated = request()->validate([
+            'pertemuan_id' => 'required|integer',
+            'online_meeting_link' => 'nullable|url',
+        ]);
+
+        $pertemuan = \App\Models\Pertemuan::where('id', $validated['pertemuan_id'])
+            ->where('kelas_mata_kuliah_id', $id)
+            ->first();
+
+        if (!$pertemuan) {
+            return response()->json(['error' => 'Pertemuan tidak ditemukan'], 404);
+        }
+
+        $pertemuan->update([
+            'online_meeting_link' => $validated['online_meeting_link'] ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Link zoom berhasil diperbarui',
+            'online_meeting_link' => $pertemuan->online_meeting_link,
+        ]);
+    }
+
+    /**
+     * Get all pertemuan links for a kelas_mata_kuliah
+     */
+    public function getAllPertemuanLinks($id)
+    {
+        $kelasMataKuliah = KelasMataKuliah::findOrFail($id);
+
+        $pertemuans = \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $id)
+            ->orderBy('tipe_pertemuan')
+            ->orderBy('nomor_pertemuan')
+            ->get()
+            ->map(function ($pertemuan) {
+                return [
+                    'id' => $pertemuan->id,
+                    'tipe' => $pertemuan->tipe_pertemuan ?? 'kuliah',
+                    'nomor' => $pertemuan->nomor_pertemuan,
+                    'label' => $this->getMeetingLabel($pertemuan->tipe_pertemuan ?? 'kuliah', $pertemuan->nomor_pertemuan),
+                    'tanggal' => $pertemuan->tanggal ? $pertemuan->tanggal->format('d M Y') : '-',
+                    'topik' => $pertemuan->topik ?? '-',
+                    'online_meeting_link' => $pertemuan->online_meeting_link,
+                ];
+            });
+
+        return response()->json([
+            'kelas' => [
+                'id' => $kelasMataKuliah->id,
+                'nama' => $kelasMataKuliah->nama_kelas,
+                'mata_kuliah' => $kelasMataKuliah->mataKuliah->nama_mk,
+                'online_meeting_link' => $kelasMataKuliah->online_meeting_link,
+            ],
+            'pertemuans' => $pertemuans,
+        ]);
+    }
+
+    /**
+     * Update general online meeting link for all pertemuans in a kelas
+     */
+    public function updateGeneralMeetingLink($id)
+    {
+        $validated = request()->validate([
+            'online_meeting_link' => 'nullable|url',
+        ]);
+
+        $kelasMataKuliah = KelasMataKuliah::findOrFail($id);
+        $kelasMataKuliah->update([
+            'online_meeting_link' => $validated['online_meeting_link'] ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Link zoom umum berhasil disimpan',
+            'online_meeting_link' => $kelasMataKuliah->online_meeting_link,
+        ]);
+    }
+
+    /**
+     * Helper: Get meeting label
+     */
+    private function getMeetingLabel($tipe, $nomor)
+    {
+        $resolver = app(\App\Services\ActiveMeetingResolver::class);
+        return $resolver->labelFor($tipe, $nomor);
     }
 }

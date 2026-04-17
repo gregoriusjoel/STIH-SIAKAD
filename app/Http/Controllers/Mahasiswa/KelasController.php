@@ -24,9 +24,10 @@ class KelasController extends Controller
         // Fetch approved KRS records for the student
         // Using 'with' to eager load relationships and avoid N+1 problem
         $krsRecords = Krs::where('mahasiswa_id', $mahasiswa->id)
-            ->whereIn('status', ['approved', 'disetujui'])
+            ->whereIn('status', ['approved', 'disetujui', 'sudah submit'])
             ->with([
                 'kelas',
+                'kelas.dosen',
                 'mataKuliah',
                 'kelasMataKuliah',
                 'kelasMataKuliah.dosen',
@@ -43,7 +44,10 @@ class KelasController extends Controller
 
             $kelas = $krs->kelas;
             $jadwal = $kelas ? $kelas->jadwals->first() : null;
-            $dosen = $krs->kelasMataKuliah ? $krs->kelasMataKuliah->dosen : null;
+            // Get dosen from kelasMataKuliah first, fallback to kelas.dosen if not available
+            $dosen = $krs->kelasMataKuliah && $krs->kelasMataKuliah->dosen 
+                ? $krs->kelasMataKuliah->dosen 
+                : ($kelas ? $kelas->dosen : null);
 
             return [
                 'id' => $kelas ? $kelas->id : null,
@@ -75,7 +79,7 @@ class KelasController extends Controller
         // Verify student has APPROVED KRS for this class
         $krs = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->where('kelas_id', $id)
-            ->whereIn('status', ['approved', 'disetujui'])
+            ->whereIn('status', ['approved', 'disetujui', 'sudah submit'])
             ->firstOrFail();
 
         $kelas = $krs->kelas()->with([

@@ -102,7 +102,7 @@ class SkripsiController extends Controller
         ]);
 
         return redirect()->route('mahasiswa.skripsi.index')
-            ->with('success', 'Proposal berhasil diajukan. Menunggu konfirmasi dosen pembimbing.');
+            ->with('success', 'Skripsi berhasil diajukan. Menunggu konfirmasi dosen pembimbing.');
     }
 
     // ── Bimbingan ─────────────────────────────────────────────────────────

@@ -828,8 +828,8 @@ $missingByTab[$info['tab']]++;
 
                         {{-- Jenis Kelamin --}}
                         <div>
-                            <label class="block text-sm text-gray-600 font-medium mb-2">Jenis Kelamin</label>
-                            <select name="jenis_kelamin"
+                            <label class="block text-sm text-gray-600 font-medium mb-2">Jenis Kelamin <span class="text-red-500">*</span></label>
+                            <select name="jenis_kelamin" required
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                 <option value="">Pilih Jenis Kelamin</option>
                                 <option value="Laki-Laki" {{ $mahasiswa->jenis_kelamin === 'Laki-Laki' ? 'selected' : '' }}>Laki-Laki</option>

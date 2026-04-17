@@ -13,36 +13,23 @@
             <p class="text-gray-600 text-sm mt-1">Kelola data fakultas yang tersedia di sistem</p>
         </div>
         <div class="flex-shrink-0">
-            @if($prodiCount > 0)
-                <a href="{{ route('admin.fakultas.create') }}"
-                    class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
-                    <i class="fas fa-plus mr-2"></i>
-                    Tambah Fakultas
-                </a>
-            @else
-                <div class="bg-gray-400 text-white px-6 py-3 rounded-lg cursor-not-allowed flex items-center shadow-md">
-                    <i class="fas fa-plus mr-2"></i>
-                    Tambah Fakultas
-                </div>
-            @endif
+            <a href="{{ route('admin.fakultas.create') }}"
+                class="bg-maroon text-white hover:bg-red-900 px-6 py-3 rounded-lg transition flex items-center shadow-md transform hover:scale-105">
+                <i class="fas fa-plus mr-2"></i>
+                Tambah Fakultas
+            </a>
         </div>
     </div>
 
-    @if($prodiCount == 0)
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+    @if($fakultas->isEmpty())
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
             <div class="flex items-start">
-                <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+                <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
                 <div>
-                    <h3 class="text-yellow-800 font-semibold">Prodi Belum Tersedia</h3>
-                    <p class="text-yellow-700 text-sm mt-1">
-                        Silakan tambahkan Prodi terlebih dahulu sebelum menambah Fakultas. 
-                        Fakultas harus terkait dengan Program Studi.
+                    <h3 class="text-blue-800 font-semibold">Belum Ada Data Fakultas</h3>
+                    <p class="text-blue-700 text-sm mt-1">
+                        Silakan tambahkan Fakultas baru untuk melanjutkan setup Program Studi.
                     </p>
-                    <a href="{{ route('admin.prodi.create') }}" 
-                        class="inline-flex items-center mt-3 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition text-sm">
-                        <i class="fas fa-plus mr-2"></i>
-                        Tambah Prodi
-                    </a>
                 </div>
             </div>
         </div>
@@ -61,9 +48,6 @@
                         </th>
                         <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                             <i class="fas fa-university mr-2"></i>Nama Fakultas
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-graduation-cap mr-2"></i>Prodi
                         </th>
                         <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
                             <i class="fas fa-toggle-on mr-2"></i>Status
@@ -84,25 +68,6 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ $item->nama_fakultas }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @php $prodi = $item->prodis->first(); @endphp
-                                @if($prodi)
-                                    <div class="flex items-center">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                                            {{ $prodi->jenjang == 'S1' ? 'bg-blue-100 text-blue-800' : 
-                                               ($prodi->jenjang == 'S2' ? 'bg-green-100 text-green-800' : 
-                                               ($prodi->jenjang == 'S3' ? 'bg-purple-100 text-purple-800' : 'bg-yellow-100 text-yellow-800')) }}">
-                                            {{ $prodi->jenjang }}
-                                        </span>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">{{ $prodi->nama_prodi }}</div>
-                                            <div class="text-sm text-gray-500">{{ $prodi->kode_prodi }}</div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="text-sm text-gray-500">-</div>
-                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium

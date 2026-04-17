@@ -47,28 +47,6 @@
                         @enderror
                     </div>
 
-                    <!-- Prodi -->
-                    <div>
-                        <label for="prodi_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-graduation-cap mr-1"></i>
-                            Prodi
-                        </label>
-                        <select name="prodi_id" id="prodi_id"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('prodi_id') border-red-500 @enderror"
-                            required>
-                            <option value="">Pilih Prodi</option>
-                            @foreach($prodis as $prodi)
-                                <option value="{{ $prodi->id }}" {{ old('prodi_id') == $prodi->id ? 'selected' : '' }}>
-                                    {{ $prodi->nama_prodi }} ({{ $prodi->jenjang }}) - {{ $prodi->kode_prodi }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('prodi_id')
-                            <p class="mt-1 text-sm text-red-600"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                            </p>
-                        @enderror
-                    </div>
-
                     <!-- Status -->
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
@@ -96,7 +74,7 @@
                         <div>
                             <h4 class="text-sm font-semibold text-blue-800">Informasi Penting</h4>
                             <ul class="text-sm text-blue-700 mt-1 list-disc list-inside space-y-1">
-                                <li>Fakultas harus terkait dengan Program Studi (Prodi) yang sudah ada</li>
+                                <li>Fakultas bisa dibuat tanpa mengaitkan Program Studi (Prodi)</li>
                                 <li>Status aktif berarti fakultas dapat digunakan dalam sistem</li>
                             </ul>
                         </div>

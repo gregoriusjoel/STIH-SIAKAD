@@ -64,28 +64,6 @@
                     @enderror
                 </div>
 
-                <!-- Prodi -->
-                <div>
-                    <label for="prodi_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-graduation-cap mr-1"></i>
-                        Prodi
-                    </label>
-                    <select name="prodi_id" 
-                        id="prodi_id"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-maroon transition @error('prodi_id') border-red-500 @enderror"
-                        required>
-                        <option value="">Pilih Prodi</option>
-                        @foreach($prodis as $prodi)
-                            <option value="{{ $prodi->id }}" {{ old('prodi_id', $fakultas->prodis->first()?->id) == $prodi->id ? 'selected' : '' }}>
-                                {{ $prodi->nama_prodi }} ({{ $prodi->jenjang }}) - {{ $prodi->kode_prodi }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('prodi_id')
-                        <p class="mt-1 text-sm text-red-600"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
-                    @enderror
-                </div>
-
                 <!-- Status -->
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
@@ -111,12 +89,12 @@
                 <div class="flex items-start">
                     <i class="fas fa-info-circle text-blue-500 mt-1 mr-2"></i>
                     <div>
-                        <h4 class="text-sm font-semibold text-blue-800">Informasi Relasi</h4>
+                        <h4 class="text-sm font-semibold text-blue-800">Informasi</h4>
                         <p class="text-sm text-blue-700 mt-1">
-                            Fakultas ini terkait dengan Prodi: <strong>{{ $fakultas->prodis->first()->nama_prodi ?? '-' }}</strong> ({{ $fakultas->prodis->first()->jenjang ?? '-' }})
+                            Edit data Fakultas: <strong>{{ $fakultas->nama_fakultas }}</strong>
                         </p>
                         <p class="text-sm text-blue-700 mt-1">
-                            Pastikan perubahan tidak mengganggu data yang sudah ada.
+                            Program Studi akan memilih Fakultas saat membuat atau mengubah data Prodi.
                         </p>
                     </div>
                 </div>

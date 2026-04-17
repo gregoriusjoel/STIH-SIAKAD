@@ -167,8 +167,8 @@
                 </div>
                 <div class="mt-2">
                     <div class="flex items-center gap-2">
-                        @if($krsStatus == 'Disetujui')
-                             <span class="text-lg md:text-xl font-bold text-green-600 dark:text-green-400">Disetujui</span>
+                        @if($krsStatus == 'KRS sudah di isi')
+                             <span class="text-lg md:text-xl font-bold text-green-600 dark:text-green-400">KRS Sudah Di Isi</span>
                              <i class="fas fa-check-circle text-green-500 text-sm md:text-base"></i>
                         @elseif($krsStatus == 'Belum Di Isi')
                              <span class="text-lg md:text-xl font-bold text-red-600 dark:text-red-400">Belum Diisi</span>
@@ -263,7 +263,7 @@
                     </div>
                     
                     {{-- Assignments List --}}
-                    <div class="space-y-3">
+                    <div class="flex-1 flex flex-col space-y-3">
                         @forelse($tugasKuliah as $tugas)
                             @php
                                 $dueDate = \Carbon\Carbon::parse($tugas->due_date);
@@ -302,14 +302,16 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="flex flex-col items-center justify-center py-8 text-center bg-gray-50 dark:bg-white/5 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
-                                <div class="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-2">
-                                    <i class="fas fa-check text-xl text-green-500"></i>
+                            <div class="flex-1 flex flex-col items-center justify-center text-center bg-gray-50 dark:bg-white/5 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                                <div class="w-14 h-14 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-3">
+                                    <i class="fas fa-check text-2xl text-green-500"></i>
                                 </div>
-                                <p class="text-xs text-gray-500 font-medium">Tidak ada tugas aktif saat ini</p>
+                                <p class="text-sm font-semibold text-gray-600 dark:text-gray-400">Tidak ada tugas aktif</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 flex items-center gap-1"><i class="fas fa-star text-yellow-400 text-[10px]"></i> Semua tugas sudah selesai</p>
                             </div>
                         @endforelse
                     </div>
+
                     
                     {{-- Modal --}}
                     <template x-teleport="body">
@@ -390,7 +392,7 @@
                 <div class="bg-white dark:bg-[#1a1c23] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5">
                     <div class="flex items-center gap-3 mb-4">
                         <span class="w-1 h-6 bg-green-500 rounded-full"></span>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Periode Aktif</h3>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Periode yang Akan Datang</h3>
                     </div>
                     <div class="space-y-2">
                         @foreach($activePeriods as $period)

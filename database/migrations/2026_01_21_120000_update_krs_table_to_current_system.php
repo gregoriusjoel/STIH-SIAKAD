@@ -47,7 +47,7 @@ return new class extends Migration {
             // leave values like 'diajukan','draft','approved','rejected' untouched
 
             // Step 3: enforce new enum type
-            DB::statement("ALTER TABLE `krs` MODIFY `status` ENUM('draft','diajukan','approved','rejected') NOT NULL DEFAULT 'draft'");
+            DB::statement("ALTER TABLE `krs` MODIFY `status` ENUM('draft','sudah submit','approved','rejected') NOT NULL DEFAULT 'draft'");
         } else {
             // For other DBs, attempt a safe fallback: add column if missing
             if (!Schema::hasColumn('krs', 'status')) {

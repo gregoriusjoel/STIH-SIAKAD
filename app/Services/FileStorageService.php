@@ -151,6 +151,17 @@ class FileStorageService
     }
 
     /**
+     * Get a temporary (signed) URL for a private file.
+     * Default expiry is 5 minutes.
+     */
+    public function temporaryUrl(string $path, int $minutes = 5): string
+    {
+        return Storage::disk(self::DISK)->temporaryUrl(
+            $path, now()->addMinutes($minutes)
+        );
+    }
+
+    /**
      * Check whether a file exists on S3.
      */
     public function exists(?string $path): bool

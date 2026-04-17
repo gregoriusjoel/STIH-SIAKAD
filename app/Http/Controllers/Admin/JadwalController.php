@@ -16,9 +16,24 @@ class JadwalController extends Controller
 {
     public function index()
     {
-        // Load all active jadwals directly from jadwals table
-        $activeJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
+        $semesterService = app(\App\Services\SemesterService::class);
+        $activeSemester = $semesterService->getActiveSemester();
+        $activeSemesterYear = $activeSemester?->tahun_ajaran;
+        $activeSemesterType = strtolower(trim((string) ($activeSemester?->nama_semester ?? '')));
+
+        // Load active jadwals and align with currently active semester context.
+        $activeJadwalsQuery = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
             ->where('status', 'active')
+            ->whereNotNull('kelas_id');
+
+        if (!empty($activeSemesterYear) && !empty($activeSemesterType)) {
+            $activeJadwalsQuery->whereHas('kelas', function ($q) use ($activeSemesterYear, $activeSemesterType) {
+                $q->where('tahun_ajaran', $activeSemesterYear)
+                    ->whereRaw('LOWER(COALESCE(semester_type, "")) LIKE ?', ['%' . $activeSemesterType . '%']);
+            });
+        }
+
+        $activeJadwals = $activeJadwalsQuery
             ->get()
             ->map(function ($j) {
                 return (object)[
@@ -673,5 +688,20 @@ class JadwalController extends Controller
             'available' => true,
             'message' => 'Ruangan tersedia'
         ]);
+    }
+
+    /**
+     * Get dosens for a specific mata kuliah
+     */
+    public function getDosensForMataKuliah($mataKuliahId)
+    {
+        $dosens = \App\Models\Dosen::whereHas('mataKuliahs', function ($q) use ($mataKuliahId) {
+            $q->where('mata_kuliah_id', $mataKuliahId);
+        })->with('user')->get()->map(fn($d) => [
+            'id' => $d->id,
+            'name' => $d->user->name ?? $d->nama
+        ]);
+
+        return response()->json(['dosens' => $dosens]);
     }
 }

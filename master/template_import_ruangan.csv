@@ -1,5 +1,5 @@
-kode_ruangan,nama_ruangan,gedung,lantai,kapasitas,status
-R101,Ruang 101,Gedung A,1,40,aktif
-R102,Ruang 102,Gedung A,1,40,aktif
-R201,Ruang 201,Gedung A,2,50,aktif
-LAB01,Laboratorium Hukum,Gedung B,1,30,aktif
+kode_ruangan,nama_ruangan,gedung,lantai,kapasitas,kategori_nama,status
+R101,Ruang 101,Gedung A,1,40,Kelas,aktif
+R102,Ruang 102,Gedung A,1,40,Kelas,aktif
+R201,Ruang 201,Gedung A,2,50,Kelas,aktif
+LAB01,Laboratorium Hukum,Gedung B,1,30,Laboratorium,aktif

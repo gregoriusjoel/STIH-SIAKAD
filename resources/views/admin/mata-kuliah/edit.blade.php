@@ -59,10 +59,10 @@
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                 required>
                                 <option value="">Pilih Jenis</option>
-                                <option value="wajib" {{ old('jenis', $mataKuliah->jenis) == 'wajib' ? 'selected' : '' }}>
-                                    Wajib</option>
-                                <option value="pilihan" {{ old('jenis', $mataKuliah->jenis) == 'pilihan' ? 'selected' : '' }}>
-                                    Pilihan</option>
+                                <option value="wajib_nasional" {{ old('jenis', $mataKuliah->jenis) == 'wajib_nasional' ? 'selected' : '' }}>Wajib Nasional</option>
+                                <option value="wajib_prodi" {{ old('jenis', $mataKuliah->jenis) == 'wajib_prodi' ? 'selected' : '' }}>Wajib Prodi</option>
+                                <option value="pilihan" {{ old('jenis', $mataKuliah->jenis) == 'pilihan' ? 'selected' : '' }}>Pilihan</option>
+                                <option value="peminatan" {{ old('jenis', $mataKuliah->jenis) == 'peminatan' ? 'selected' : '' }}>Peminatan</option>
                             </select>
                         </div>
 
@@ -82,18 +82,30 @@
                             </select>
                         </div>
 
+                        <div>
+                            <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                <input type="checkbox" name="praktikum" value="1" {{ old('praktikum', $mataKuliah->praktikum) ? 'checked' : '' }}
+                                    class="w-4 h-4 text-maroon border-gray-300 rounded focus:ring-maroon transition">
+                                <span class="ml-2 flex items-center">
+                                    <i class="fas fa-flask text-gray-400 mr-1"></i>
+                                    Mata Kuliah Ini Memiliki Praktikum / Lab
+                                </span>
+                            </label>
+                            <p class="text-xs text-gray-500 mt-1">Centang jika mata kuliah ini memiliki komponen praktikum/lab. Jadwal praktikumnya akan ditentukan oleh dosen.</p>
+                        </div>
+
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-university text-gray-400 mr-1"></i>
                                 Program Studi *
                             </label>
-                            <select name="prodi"
+                            <select name="prodi_id"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                 required>
                                 <option value="">Pilih Program Studi</option>
-                                <option value="Hukum Tata Kabupaten" {{ old('prodi', $mataKuliah->prodi) == 'Hukum Tata Kabupaten' ? 'selected' : '' }}>Hukum Tata Kabupaten</option>
-                                <option value="Hukum Bisnis" {{ old('prodi', $mataKuliah->prodi) == 'Hukum Bisnis' ? 'selected' : '' }}>Hukum Bisnis</option>
-                                <option value="Hukum Pidana" {{ old('prodi', $mataKuliah->prodi) == 'Hukum Pidana' ? 'selected' : '' }}>Hukum Pidana</option>
+                                @foreach($prodis as $prodi)
+                                    <option value="{{ $prodi->id }}" {{ old('prodi_id', $mataKuliah->prodi_id) == $prodi->id ? 'selected' : '' }}>{{ $prodi->nama_prodi }}</option>
+                                @endforeach
                             </select>
                         </div>
 

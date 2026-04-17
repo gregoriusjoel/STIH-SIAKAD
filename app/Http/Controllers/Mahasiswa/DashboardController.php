@@ -18,7 +18,7 @@ class DashboardController extends Controller
         
         // Get active KRS for current semester
         $activeKrs = Krs::where('mahasiswa_id', $mahasiswa->id)
-            ->where('status', 'approved')
+            ->whereIn('status', ['approved', 'disetujui', 'sudah submit'])
             ->with(['kelasMataKuliah.mataKuliah'])
             ->get();
         
@@ -60,8 +60,9 @@ class DashboardController extends Controller
         
         $statusPembayaran = $pembayaran ? $pembayaran->status : 'belum_bayar';
         
-        // Get KRS status
-        $krsStatus = $activeKrs->isEmpty() ? 'Belum Di Isi' : 'Disetujui';
+        // Get KRS status - if student has any KRS, mark as "KRS Sudah Di Isi"
+        // (regardless of legacy status values like 'approved' or 'disetujui')
+        $krsStatus = $activeKrs->isEmpty() ? 'Belum Di Isi' : 'KRS sudah di isi';
 
         // ── Active academic periods for dashboard display ──
         $periodService = app(\App\Services\AcademicPeriodService::class);

@@ -25,12 +25,6 @@ class DosenAttendanceController extends Controller
             'metode_pengajaran' => 'required|in:offline,online,asynchronous',
         ]);
 
-        if ($request->metode_pengajaran === 'online') {
-            $request->validate([
-                'online_meeting_link' => 'required|url',
-            ]);
-        }
-
         $kelas = Kelas::findOrFail($id);
 
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
@@ -40,6 +34,19 @@ class DosenAttendanceController extends Controller
 
         if (!$kelasMataKuliah) {
             return back()->with('error', 'Data kelas mata kuliah tidak ditemukan.');
+        }
+
+        if ($request->metode_pengajaran === 'online') {
+            $request->validate([
+                'online_meeting_link' => 'nullable|url',
+            ]);
+            
+            // Check if both custom and class general link are empty
+            if (empty($request->online_meeting_link) && empty($kelasMataKuliah->online_meeting_link)) {
+                return back()->withErrors([
+                    'online_meeting_link' => 'Link meeting harus diisi jika kelas tidak memiliki link umum.',
+                ])->withInput();
+            }
         }
 
         // Resolve tipe_pertemuan from route parameter (supports "kuliah:3", "uts:1", or plain int)

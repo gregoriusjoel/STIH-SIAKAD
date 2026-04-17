@@ -132,10 +132,10 @@
 
                 {{-- Allow Partial --}}
                 <div class="md:col-span-2 flex items-center gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100/50 group cursor-pointer hover:bg-slate-100/50 transition-colors">
-                    <div class="relative flex items-center">
+                    <div class="relative flex items-center justify-center size-6 shrink-0">
                         <input type="checkbox" name="allow_partial" id="allow_partial" value="1" {{ old('allow_partial') ? 'checked' : '' }}
-                               class="peer size-6 border-2 border-slate-200 rounded-lg bg-white text-[#8B1538] focus:ring-[#8B1538] transition-all cursor-pointer appearance-none checked:bg-[#8B1538] checked:border-[#8B1538]">
-                        <i class="fas fa-check absolute inset-0 m-auto text-white scale-0 peer-checked:scale-100 transition-transform pointer-events-none text-xs"></i>
+                               class="peer absolute inset-0 border-2 border-slate-200 rounded-lg bg-white text-[#8B1538] focus:ring-[#8B1538] transition-all cursor-pointer appearance-none checked:bg-[#8B1538] checked:border-[#8B1538]">
+                        <i class="fas fa-check text-white scale-0 peer-checked:scale-100 transition-transform pointer-events-none text-[10px] z-10"></i>
                     </div>
                     <label for="allow_partial" class="flex-1 cursor-pointer">
                         <span class="block text-sm font-black text-slate-800 uppercase tracking-widest">Izinkan Cicilan</span>
@@ -192,6 +192,53 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const studentSelect = document.getElementById('student_id');
+        const semesterInput = document.getElementById('semester');
+        const tahunAjaranInput = document.getElementById('tahun_ajaran');
+        const sksAmbilInput = document.getElementById('sks_ambil');
+        const paketSksBayarInput = document.getElementById('paket_sks_bayar');
+        const defaultsNode = document.getElementById('student-defaults-json');
+
+        let studentDefaults = {};
+        try {
+            studentDefaults = defaultsNode ? JSON.parse(defaultsNode.textContent || '{}') : {};
+        } catch (e) {
+            studentDefaults = {};
+        }
+
+        const applyStudentDefaults = (studentId) => {
+            if (!studentId) return;
+
+            const cfg = studentDefaults[String(studentId)] || studentDefaults[Number(studentId)] || null;
+            if (!cfg) return;
+
+            if (semesterInput && cfg.semester !== undefined && cfg.semester !== null) {
+                semesterInput.value = String(cfg.semester);
+            }
+            if (tahunAjaranInput && cfg.tahun_ajaran !== undefined) {
+                tahunAjaranInput.value = cfg.tahun_ajaran || '';
+            }
+            if (sksAmbilInput && cfg.sks_ambil !== undefined && cfg.sks_ambil !== null) {
+                sksAmbilInput.value = String(cfg.sks_ambil);
+            }
+            if (paketSksBayarInput && cfg.paket_sks_bayar !== undefined && cfg.paket_sks_bayar !== null) {
+                paketSksBayarInput.value = String(cfg.paket_sks_bayar);
+            }
+        };
+
+        if (studentSelect) {
+            studentSelect.addEventListener('change', function() {
+                applyStudentDefaults(this.value);
+            });
+
+            // Apply once when page loads if mahasiswa already selected and fields are still empty.
+            const shouldAutofillInitially = studentSelect.value
+                && (!semesterInput?.value || !tahunAjaranInput?.value || !sksAmbilInput?.value || !paketSksBayarInput?.value);
+            if (shouldAutofillInitially) {
+                applyStudentDefaults(studentSelect.value);
+            }
+        }
+
         const totalInput = document.getElementById('total_tagihan');
         
         const formatRupiah = (val) => {
@@ -222,4 +269,6 @@
         });
     });
 </script>
+
+<script id="student-defaults-json" type="application/json">@json($studentDefaults ?? [])</script>
 @endsection

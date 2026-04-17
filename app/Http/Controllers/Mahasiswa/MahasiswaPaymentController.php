@@ -63,7 +63,13 @@ class MahasiswaPaymentController extends Controller
             'student',
         ]);
 
-        return view('page.mahasiswa.pembayaran.invoices.show', compact('invoice'));
+        $pendingFullProof = $invoice->paymentProofs()
+            ->whereNull('installment_id')
+            ->where('status', 'UPLOADED')
+            ->latest()
+            ->first();
+
+        return view('page.mahasiswa.pembayaran.invoices.show', compact('invoice', 'pendingFullProof'));
     }
 
     /**
@@ -139,22 +145,100 @@ class MahasiswaPaymentController extends Controller
     }
 
     /**
+     * Show form to upload full payment proof (without installment)
+     */
+    public function createFullPaymentProof(Invoice $invoice)
+    {
+        $this->authorize('view', $invoice);
+
+        $student = auth()->user()->student;
+
+        if (!$student || $invoice->student_id !== $student->id) {
+            abort(403);
+        }
+
+        if ($invoice->status === 'LUNAS' || $invoice->isFullyPaid()) {
+            return redirect()->back()->with('error', 'Tagihan ini sudah lunas');
+        }
+
+        if ($invoice->status !== 'PUBLISHED') {
+            return redirect()->back()->with('error', 'Bayar penuh hanya tersedia untuk tagihan baru');
+        }
+
+        if ($invoice->installmentRequest()->whereIn('status', ['SUBMITTED', 'APPROVED'])->exists()) {
+            return redirect()->back()->with('error', 'Tagihan ini sedang/ sudah diproses sebagai cicilan');
+        }
+
+        if ($invoice->paymentProofs()->whereNull('installment_id')->where('status', 'UPLOADED')->exists()) {
+            return redirect()->back()->with('error', 'Bukti bayar penuh sudah diupload dan sedang diverifikasi');
+        }
+
+        $dueAmount = max(0, (int) $invoice->total_tagihan - (int) $invoice->total_paid);
+        if ($dueAmount <= 0) {
+            return redirect()->back()->with('error', 'Tagihan ini sudah lunas');
+        }
+
+        return view('page.mahasiswa.pembayaran.payment-proofs.create-full', compact('invoice', 'dueAmount'));
+    }
+
+    /**
      * Store payment proof
      */
     public function storePaymentProof(StorePaymentProofRequest $request)
     {
         $student = auth()->user()->student;
-        $installment = Installment::findOrFail($request->installment_id);
-        $invoice = $installment->invoice;
+        $installment = null;
+        $invoice = null;
 
-        // Double check ownership
-        if ($invoice->student_id !== $student->id) {
-            abort(403);
-        }
+        if ($request->filled('installment_id')) {
+            $installment = Installment::findOrFail($request->installment_id);
+            $invoice = $installment->invoice;
 
-        // Check if can be paid
-        if (!$installment->canBePaid()) {
-            return redirect()->back()->with('error', 'Cicilan sebelumnya harus dibayar terlebih dahulu');
+            // Double check ownership
+            if ($invoice->student_id !== $student->id) {
+                abort(403);
+            }
+
+            // Check if can be paid
+            if (!$installment->canBePaid()) {
+                return redirect()->back()->with('error', 'Cicilan sebelumnya harus dibayar terlebih dahulu');
+            }
+
+            // Guard from bypassing create form checks
+            if ($installment->status === 'WAITING_VERIFICATION') {
+                return redirect()->back()->with('error', 'Bukti bayar sudah diupload dan sedang diverifikasi');
+            }
+
+            if ($installment->status === 'PAID') {
+                return redirect()->back()->with('error', 'Cicilan sudah dibayar');
+            }
+        } else {
+            $invoice = Invoice::findOrFail($request->invoice_id);
+
+            if ($invoice->student_id !== $student->id) {
+                abort(403);
+            }
+
+            if ($invoice->status === 'LUNAS' || $invoice->isFullyPaid()) {
+                return redirect()->back()->with('error', 'Tagihan ini sudah lunas');
+            }
+
+            if ($invoice->status !== 'PUBLISHED') {
+                return redirect()->back()->with('error', 'Bayar penuh hanya tersedia untuk tagihan baru');
+            }
+
+            if ($invoice->installmentRequest()->whereIn('status', ['SUBMITTED', 'APPROVED'])->exists()) {
+                return redirect()->back()->with('error', 'Tagihan ini sedang/ sudah diproses sebagai cicilan');
+            }
+
+            if ($invoice->paymentProofs()->whereNull('installment_id')->where('status', 'UPLOADED')->exists()) {
+                return redirect()->back()->with('error', 'Bukti bayar penuh sudah diupload dan sedang diverifikasi');
+            }
+
+            $dueAmount = max(0, (int) $invoice->total_tagihan - (int) $invoice->total_paid);
+            if ((int) $request->amount_submitted !== $dueAmount) {
+                return redirect()->back()->with('error', 'Nominal bayar penuh harus sama dengan sisa tagihan');
+            }
         }
 
         // Store file on S3
@@ -164,7 +248,7 @@ class MahasiswaPaymentController extends Controller
         // Create proof
         PaymentProof::create([
             'invoice_id' => $invoice->id,
-            'installment_id' => $installment->id,
+            'installment_id' => $installment?->id,
             'uploaded_by' => auth()->id(),
             'transfer_date' => $request->transfer_date,
             'amount_submitted' => $request->amount_submitted,
@@ -175,9 +259,11 @@ class MahasiswaPaymentController extends Controller
         ]);
 
         // Update installment status
-        $installment->update([
-            'status' => 'WAITING_VERIFICATION',
-        ]);
+        if ($installment) {
+            $installment->update([
+                'status' => 'WAITING_VERIFICATION',
+            ]);
+        }
 
         return redirect()
             ->route('mahasiswa.invoices.show', $invoice)

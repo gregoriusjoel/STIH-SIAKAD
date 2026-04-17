@@ -139,25 +139,98 @@
                 </div>
             </div>
 
+        </div>
+
+        {{-- Right Column: Payment History, Installment Info & Timeline --}}
+        <div class="lg:col-span-1 space-y-8">
             {{-- Payment History --}}
             @if($invoice->payments->isNotEmpty())
                 <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden pb-8">
                     <div class="px-8 py-6 border-b border-slate-50">
                         <h3 class="text-lg font-black text-slate-800 tracking-tight">Riwayat Pembayaran</h3>
                     </div>
-                    <div class="px-8 mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="px-8 mt-6 space-y-4">
                         @foreach($invoice->payments as $payment)
-                            <div class="p-6 rounded-2xl border border-slate-50 bg-slate-50/20 group hover:border-[#8B1538]/20 hover:bg-[#8B1538]/5 transition-all">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div class="size-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-[#8B1538] shadow-sm">
-                                        <i class="fas fa-receipt"></i>
+                            <div x-data="{ proofOpen: false }" class="p-5 rounded-2xl border border-slate-50 bg-slate-50/20 group hover:border-[#8B1538]/20 hover:bg-[#8B1538]/5 transition-all">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="size-9 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-[#8B1538] shadow-sm">
+                                        <i class="fas fa-receipt text-xs"></i>
                                     </div>
                                     <span class="text-[10px] font-black uppercase px-2 py-1 bg-emerald-100 text-emerald-600 rounded">Verified</span>
                                 </div>
-                                <p class="text-xl font-black text-slate-800 tracking-tighter">Rp {{ number_format($payment->amount_approved, 0, ',', '.') }}</p>
-                                <p class="text-[10px] font-black uppercase text-slate-400 mt-1">{{ $payment->paid_date->format('d M Y H:m') }}</p>
+                                <p class="text-lg font-black text-slate-800 tracking-tighter">Rp {{ number_format($payment->amount_approved, 0, ',', '.') }}</p>
+                                <p class="text-[10px] font-black uppercase text-slate-400 mt-1">{{ $payment->paid_date->format('d M Y H:i') }}</p>
+
+                                {{-- Tombol Lihat Bukti --}}
+                                @if($payment->proof && $payment->proof->file_path)
+                                    <button @click="proofOpen = true"
+                                        class="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-[#8B1538]/20 text-[#8B1538] bg-[#8B1538]/5 hover:bg-[#8B1538]/10 transition text-[11px] font-black uppercase tracking-wider">
+                                        <i class="fas {{ $payment->proof->is_pdf ? 'fa-file-pdf' : 'fa-image' }} text-xs"></i>
+                                        Lihat Bukti Bayar
+                                    </button>
+
+                                    {{-- Modal Bukti --}}
+                                    <template x-teleport="body">
+                                        <div x-show="proofOpen" x-cloak
+                                            class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-md p-4"
+                                            @click="proofOpen = false"
+                                            @keydown.escape.window="proofOpen = false"
+                                            x-transition:enter="transition ease-out duration-200"
+                                            x-transition:enter-start="opacity-0"
+                                            x-transition:enter-end="opacity-100">
+                                            <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+                                                @click.stop>
+                                            {{-- Header --}}
+                                            <div class="flex items-center justify-between px-6 py-4 bg-[#8B1538] text-white rounded-t-3xl flex-shrink-0">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="size-9 rounded-xl bg-white/10 flex items-center justify-center">
+                                                        <i class="fas {{ $payment->proof->is_pdf ? 'fa-file-pdf' : 'fa-image' }} text-sm"></i>
+                                                    </div>
+                                                    <div>
+                                                        <p class="font-black text-sm">Bukti Pembayaran</p>
+                                                        <p class="text-[10px] text-white/70 font-bold">Rp {{ number_format($payment->amount_approved, 0, ',', '.') }} &bull; {{ $payment->paid_date->format('d M Y') }}</p>
+                                                    </div>
+                                                </div>
+                                                <button @click="proofOpen = false" class="size-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition">
+                                                    <i class="fas fa-times text-sm"></i>
+                                                </button>
+                                            </div>
+                                            {{-- Body --}}
+                                            <div class="flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-50">
+                                                @if($payment->proof->is_pdf)
+                                                    <div class="text-center py-10">
+                                                        <i class="fas fa-file-pdf text-6xl text-red-400 mb-4 block"></i>
+                                                        <p class="text-sm font-bold text-slate-600 mb-4">File PDF tidak dapat ditampilkan langsung.</p>
+                                                        <a href="{{ $payment->proof->file_url }}" target="_blank"
+                                                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8B1538] text-white rounded-xl font-black text-xs uppercase tracking-wider hover:bg-[#6D1029] transition">
+                                                            <i class="fas fa-external-link-alt"></i> Buka / Download PDF
+                                                        </a>
+                                                    </div>
+                                                @else
+                                                    <img src="{{ $payment->proof->file_url }}" alt="Bukti Bayar"
+                                                        class="max-w-full max-h-[65vh] rounded-2xl shadow-lg object-contain">
+                                                @endif
+                                            </div>
+                                            {{-- Footer --}}
+                                            <div class="px-6 py-3 border-t border-slate-100 flex justify-between items-center flex-shrink-0">
+                                                <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                                                    {{ $payment->proof->is_pdf ? 'Dokumen PDF' : 'Gambar' }} &bull; Upload: {{ $payment->proof->created_at->format('d M Y') }}
+                                                </span>
+                                                <a href="{{ $payment->proof->file_url }}" target="_blank"
+                                                    class="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 rounded-xl text-[10px] font-black text-slate-600 hover:bg-slate-50 transition uppercase tracking-wider">
+                                                    <i class="fas fa-download text-[10px]"></i> Unduh
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </template>
+                                @else
+                                    <div class="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-slate-100 text-slate-300 text-[11px] font-black uppercase tracking-wider cursor-not-allowed">
+                                        <i class="fas fa-image text-xs"></i> Tidak ada bukti
+                                    </div>
+                                @endif
+
                                 @if($payment->installment)
-                                    <div class="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2">
+                                    <div class="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2">
                                         <i class="fas fa-list-ol text-[10px] text-slate-300"></i>
                                         <span class="text-[10px] font-black uppercase tracking-widest text-[#8B1538]">Cicilan Ke-{{ $payment->installment->installment_no ?? '-' }}</span>
                                     </div>
@@ -167,10 +240,7 @@
                     </div>
                 </div>
             @endif
-        </div>
 
-        {{-- Right Column: Installment Info & Timeline --}}
-        <div class="lg:col-span-1 space-y-8">
             {{-- Installment Request Status Card --}}
             @if($invoice->installmentRequest)
                 <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden p-8">

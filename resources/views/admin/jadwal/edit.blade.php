@@ -3,7 +3,7 @@
 @section('page-title', 'Edit Jadwal')
 @section('content')
     <div class="w-full">
-        <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+        <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" x-data="jadwalEditor()" x-init="initialize()">
             <div class="p-6 border-b border-gray-200 bg-maroon text-white rounded-t-xl">
                 <h3 class="text-xl font-bold flex items-center"><i class="fas fa-edit mr-3 text-2xl"></i>Edit Jadwal</h3>
             </div>
@@ -162,3 +162,78 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+function jadwalEditor() {
+    return {
+        mataKuliahId: '{{ $kelasMataKuliah->mata_kuliah_id ?? '' }}',
+        selectedDosenId: '{{ $jadwal->kelas->dosen_id ?? '' }}',
+        dosens: [],
+        loading: false,
+        ruangan: '{{ $kelasMataKuliah->ruangan_id ?? '' }}',
+        hari: '{{ $kelasMataKuliah->hari ?? '' }}',
+        jamMulai: '{{ $kelasMataKuliah->jam_mulai ?? '' }}',
+        jamSelesai: '{{ $kelasMataKuliah->jam_selesai ?? '' }}',
+        checkingRoom: false,
+        roomStatus: { available: true, message: '' },
+
+        initialize() {
+            // Load dosens jika mata kuliah sudah ada saat edit
+            if (this.mataKuliahId) {
+                this.fetchDosens();
+            }
+        },
+
+        fetchDosens() {
+            if (!this.mataKuliahId) {
+                this.dosens = [];
+                this.selectedDosenId = '';
+                return;
+            }
+
+            this.loading = true;
+            fetch(`/admin/jadwal/get-dosens/${this.mataKuliahId}`)
+                .then(r => r.json())
+                .then(data => {
+                    this.dosens = data.dosens || [];
+                    // Keep current dosen selected, don't auto-change
+                    this.loading = false;
+                })
+                .catch(err => {
+                    console.error('Error fetching dosens:', err);
+                    this.dosens = [];
+                    this.loading = false;
+                });
+        },
+
+        checkRoom() {
+            if (!this.ruangan || !this.hari || !this.jamMulai || !this.jamSelesai) {
+                return;
+            }
+
+            this.checkingRoom = true;
+            const params = new URLSearchParams({
+                ruangan_id: this.ruangan,
+                hari: this.hari,
+                jam_mulai: this.jamMulai,
+                jam_selesai: this.jamSelesai,
+                jadwal_id: '{{ $jadwal->id }}'
+            });
+
+            fetch(`/admin/jadwal/check-room?${params}`)
+                .then(r => r.json())
+                .then(data => {
+                    this.roomStatus = data;
+                    this.checkingRoom = false;
+                })
+                .catch(err => {
+                    console.error('Error checking room:', err);
+                    this.roomStatus = { available: true, message: '' };
+                    this.checkingRoom = false;
+                });
+        }
+    };
+}
+</script>
+@endpush

@@ -15,6 +15,7 @@ class Dosen extends Model
 
     protected $fillable = [
         'user_id',
+        'fakultas_id',
         'nidn',
         'pendidikan',
         'pendidikan_terakhir',
@@ -42,6 +43,11 @@ class Dosen extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function fakultas(): BelongsTo
+    {
+        return $this->belongsTo(Fakultas::class);
     }
 
     public function getNamaAttribute()

@@ -36,12 +36,32 @@ class SemesterService
      */
     public function getActiveSemester(): ?Semester
     {
-        return Cache::remember('active_semester', self::CACHE_DURATION, function () {
-            return Semester::where('is_active', true)
-                ->orWhere('status', 'aktif')
-                ->orderBy('tanggal_mulai', 'desc')
-                ->first();
+        $cacheKey = 'active_semester';
+        $cached = Cache::get($cacheKey);
+
+        if ($cached instanceof Semester) {
+            return $cached;
+        }
+
+        if ($cached !== null) {
+            Cache::forget($cacheKey);
+            Log::warning('SemesterService: invalid active_semester cache payload, rebuilding', [
+                'cache_key' => $cacheKey,
+                'payload_type' => is_object($cached) ? get_class($cached) : gettype($cached),
+            ]);
+        }
+
+        return Cache::remember($cacheKey, self::CACHE_DURATION, function () {
+            return $this->queryActiveSemester();
         });
+    }
+
+    private function queryActiveSemester(): ?Semester
+    {
+        return Semester::where('is_active', true)
+            ->orWhere('status', 'aktif')
+            ->orderBy('tanggal_mulai', 'desc')
+            ->first();
     }
 
     /**

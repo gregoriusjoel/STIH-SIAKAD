@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateDosenRequest;
 use App\Models\Dosen;
 use App\Models\Semester;
 use App\Models\User;
@@ -270,7 +271,8 @@ class DosenController extends Controller
             $mataKuliahs = \App\Models\MataKuliah::orderBy('nama_mk')->get();
         }
         $prodis = \App\Models\Prodi::where('status', 'aktif')->orderBy('nama_prodi')->get();
-        return view('admin.dosen.create', compact('mataKuliahs', 'prodis'));
+        $fakultas = \App\Models\Fakultas::where('status', 'aktif')->orderBy('nama_fakultas')->get();
+        return view('admin.dosen.create', compact('mataKuliahs', 'prodis', 'fakultas'));
     }
 
     public function store(Request $request)
@@ -279,6 +281,7 @@ class DosenController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'nullable|min:6',
+            'fakultas_id' => 'required|exists:fakultas,id',
             'nidn' => 'required|digits_between:1,16|unique:dosens,nidn',
             'pendidikan_terakhir' => 'required|array|min:1',
             'pendidikan_terakhir.*' => 'string',
@@ -295,6 +298,8 @@ class DosenController extends Controller
             'mata_kuliah_ids.*' => 'exists:mata_kuliahs,id',
         ], [
             'mata_kuliah_ids.*.exists' => 'Mata kuliah yang dipilih tidak valid. Silakan pilih mata kuliah yang tersedia.',
+            'fakultas_id.required' => 'Fakultas wajib dipilih.',
+            'fakultas_id.exists' => 'Fakultas yang dipilih tidak valid.',
             'prodi.required' => 'Program studi harus dipilih minimal 1.',
             'prodi.min' => 'Program studi harus dipilih minimal 1.',
         ]);
@@ -315,6 +320,7 @@ class DosenController extends Controller
 
             $dosen = Dosen::create([
                 'user_id' => $user->id,
+                'fakultas_id' => $request->fakultas_id,
                 'nidn' => $request->nidn,
                 'pendidikan' => $pendidikanString,
                 'pendidikan_terakhir' => $pendidikanArray,
@@ -390,44 +396,15 @@ class DosenController extends Controller
 
     public function edit(Dosen $dosen)
     {
-        // Prefer mata kuliah that are active in the current active semester
-        $semesterService = app(\App\Services\SemesterService::class);
-        $activeSemester = $semesterService->getActiveSemester();
-        if ($activeSemester) {
-            $mataKuliahs = \App\Models\MataKuliah::activeBySemester($activeSemester->id)->orderBy('nama_mk')->get();
-        } else {
-            $mataKuliahs = \App\Models\MataKuliah::orderBy('nama_mk')->get();
-        }
+        // This method is kept for backward compatibility
+        // Edit form is now displayed as modal in show() view
         $prodis = \App\Models\Prodi::where('status', 'aktif')->orderBy('nama_prodi')->get();
-        return view('admin.dosen.edit', compact('dosen', 'mataKuliahs', 'prodis'));
+        $fakultas = \App\Models\Fakultas::where('status', 'aktif')->orderBy('nama_fakultas')->get();
+        return view('admin.dosen.edit', compact('dosen', 'prodis', 'fakultas'));
     }
 
-    public function update(Request $request, Dosen $dosen)
+    public function update(\App\Http\Requests\UpdateDosenRequest $request, Dosen $dosen)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $dosen->user_id,
-            'nidn' => 'required|digits_between:1,16|unique:dosens,nidn,' . $dosen->id,
-            'pendidikan_terakhir' => 'nullable|array',
-            'pendidikan_terakhir.*' => 'string',
-            'universitas' => 'nullable|array',
-            'universitas.*' => 'string',
-            'dosen_tetap' => 'required|in:ya,tidak',
-            'jabatan_fungsional' => 'required|string|max:255',
-            'jabatan_fungsional_custom' => 'nullable|string|max:255',
-            'prodi' => 'required|array|min:1',
-            'prodi.*' => 'string',
-            'phone' => 'nullable|string',
-            'address' => 'nullable|string',
-            'status' => 'required|in:aktif,non-aktif',
-            'mata_kuliah_ids' => 'nullable|array',
-            'mata_kuliah_ids.*' => 'exists:mata_kuliahs,id',
-        ], [
-            'mata_kuliah_ids.*.exists' => 'Mata kuliah yang dipilih tidak valid. Silakan pilih mata kuliah yang tersedia.',
-            'prodi.required' => 'Program studi harus dipilih minimal 1.',
-            'prodi.min' => 'Program studi harus dipilih minimal 1.',
-        ]);
-
         DB::beginTransaction();
         try {
             $dosen->user->update([
@@ -450,6 +427,7 @@ class DosenController extends Controller
             $pendidikanString = !empty($pendidikanArray) ? end($pendidikanArray) : null;
 
             $dosen->update([
+                'fakultas_id' => $request->fakultas_id,
                 'nidn' => $request->nidn,
                 'pendidikan' => $pendidikanString,
                 'pendidikan_terakhir' => $pendidikanArray,
@@ -462,14 +440,9 @@ class DosenController extends Controller
                 'status' => $request->status,
             ]);
 
-            // update mata_kuliah_ids JSON column if provided
-            if ($request->has('mata_kuliah_ids')) {
-                $dosen->update(['mata_kuliah_ids' => array_values($request->mata_kuliah_ids ?? [])]);
-            }
-
             DB::commit();
-            return redirect()->route('admin.dosen.index')
-                ->with('success', 'Data dosen berhasil diupdate');
+            return redirect()->route('admin.dosen.show', $dosen)
+                ->with('success', 'Data dosen berhasil diperbarui');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

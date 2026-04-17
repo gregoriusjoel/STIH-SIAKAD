@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Finance;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Models\Invoice;
+use App\Models\Krs;
 use App\Models\Mahasiswa;
+use App\Models\Semester;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class InvoiceController extends Controller
@@ -47,12 +49,47 @@ class InvoiceController extends Controller
     {
         $this->authorize('create', Invoice::class);
 
+        $activeSemester = Semester::where('status', 'aktif')
+            ->orderByDesc('tanggal_mulai')
+            ->first()
+            ?? Semester::where('is_active', true)->orderByDesc('tanggal_mulai')->first()
+            ?? Semester::orderByDesc('tanggal_mulai')->first();
+
         $students = Mahasiswa::with('user')
             ->whereHas('user')
             ->get()
-            ->sortBy(fn($s) => $s->user->name);
+            ->sortBy(fn($s) => $s->user->name)
+            ->values();
 
-        return view('finance.invoices.create', compact('students'));
+        // Build SKS map by student + kode_id in one query, then derive defaults per student.
+        $krsSksMap = [];
+        $krsSksRows = Krs::query()
+            ->selectRaw('krs.mahasiswa_id, mata_kuliahs.kode_id, SUM(COALESCE(mata_kuliahs.sks, 0)) as total_sks')
+            ->join('mata_kuliahs', 'mata_kuliahs.id', '=', 'krs.mata_kuliah_id')
+            ->where('krs.status', '!=', 'draft')
+            ->whereNotNull('mata_kuliahs.kode_id')
+            ->groupBy('krs.mahasiswa_id', 'mata_kuliahs.kode_id')
+            ->get();
+
+        foreach ($krsSksRows as $row) {
+            $krsSksMap[$row->mahasiswa_id][$row->kode_id] = (int) $row->total_sks;
+        }
+
+        $studentDefaults = [];
+        foreach ($students as $student) {
+            $currentSemester = (int) $student->getCurrentSemester();
+            $kodeId = 'sms' . $currentSemester;
+            $defaultSks = (int) ($krsSksMap[$student->id][$kodeId] ?? 0);
+
+            $studentDefaults[$student->id] = [
+                'semester' => $currentSemester,
+                'tahun_ajaran' => $activeSemester?->tahun_ajaran ?? '',
+                'sks_ambil' => $defaultSks,
+                'paket_sks_bayar' => $defaultSks,
+            ];
+        }
+
+        return view('finance.invoices.create', compact('students', 'studentDefaults', 'activeSemester'));
     }
 
     /**
@@ -83,7 +120,7 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice)
     {
-        $invoice->load(['student.user', 'installments', 'installmentRequest', 'payments']);
+        $invoice->load(['student.user', 'installments', 'installmentRequest', 'payments.proof']);
 
         return view('finance.invoices.show', compact('invoice'));
     }

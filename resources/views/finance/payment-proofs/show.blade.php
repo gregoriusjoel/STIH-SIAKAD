@@ -122,17 +122,31 @@
                 </div>
 
                 @if($paymentProof->file_path)
-                    <img src="{{ Storage::url($paymentProof->file_path) }}" 
-                         class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" 
-                         alt="Bukti Pembayaran"
-                         id="proof-image">
-                    
-                    {{-- Zoom Hint --}}
-                    <div class="absolute bottom-8 right-8 animate-bounce opacity-50 group-hover:opacity-100 transition-opacity">
-                        <div class="size-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30">
-                            <i class="fas fa-search-plus"></i>
+                    @if($paymentProof->is_pdf)
+                        <div class="w-full h-full min-h-[850px] flex flex-col">
+                            <iframe src="{{ $paymentProof->file_url }}" 
+                                    class="w-full h-[850px] rounded-2xl border-none shadow-2xl"
+                                    allow="autoplay"></iframe>
+                            <div class="p-4 flex justify-center bg-slate-800/50">
+                                <a href="{{ $paymentProof->file_url }}" target="_blank" class="text-xs font-black text-white/70 hover:text-white uppercase tracking-[0.2em] flex items-center gap-2 transition-colors">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Open Document in New Tab
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <img src="{{ $paymentProof->file_url }}" 
+                             class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" 
+                             alt="Bukti Pembayaran"
+                             id="proof-image">
+                        
+                        {{-- Zoom Hint --}}
+                        <div class="absolute bottom-8 right-8 animate-bounce opacity-50 group-hover:opacity-100 transition-opacity">
+                            <div class="size-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30">
+                                <i class="fas fa-search-plus"></i>
+                            </div>
+                        </div>
+                    @endif
                 @else
                     <div class="text-center py-20 px-8">
                         <i class="fas fa-file-excel text-6xl text-slate-700 mb-6 block"></i>
@@ -143,15 +157,16 @@
 
             {{-- Metadata / Info Card --}}
             <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white rounded-3xl p-6 border border-slate-100 flex items-center gap-4">
-                    <div class="size-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shadow-inner">
-                        <i class="fas fa-file-signature text-sm"></i>
+                <a href="{{ $paymentProof->file_url }}" target="_blank" 
+                   class="bg-white rounded-3xl p-6 border border-slate-100 flex items-center gap-4 hover:border-[#8B1538] transition-all group">
+                    <div class="size-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shadow-inner group-hover:bg-[#8B1538] group-hover:text-white transition-colors">
+                        <i class="fas fa-file-download text-sm"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Nama File</p>
+                        <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Download Dokumen</p>
                         <p class="text-xs font-black text-slate-700 break-all">{{ basename($paymentProof->file_path) }}</p>
                     </div>
-                </div>
+                </a>
                 <div class="bg-white rounded-3xl p-6 border border-slate-100 flex items-center gap-4">
                     <div class="size-10 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center shadow-inner">
                         <i class="fas fa-cloud-upload-alt text-sm"></i>

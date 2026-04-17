@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Prodi;
 
 class Fakultas extends Model
 {
@@ -13,6 +12,11 @@ class Fakultas extends Model
         'nama_fakultas',
         'status',
     ];
+
+    public function mataKuliahs(): HasMany
+    {
+        return $this->hasMany(MataKuliah::class);
+    }
 
     public function prodis(): HasMany
     {

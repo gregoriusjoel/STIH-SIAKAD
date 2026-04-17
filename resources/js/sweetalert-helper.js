@@ -33,6 +33,86 @@ const defaultConfig = {
 };
 
 /**
+ * Internal: decode simple escaped characters from inline handler message.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+function decodeInlineDialogMessage(value) {
+    return String(value || '')
+        .replace(/\\n/g, '\n')
+        .replace(/\\r/g, '\r')
+        .replace(/\\t/g, '\t')
+        .replace(/\\"/g, '"')
+        .replace(/\\'/g, "'");
+}
+
+/**
+ * Internal: extract confirm message from inline handler code.
+ * Supports formats like:
+ * - return confirm('text')
+ * - confirm("text")
+ * - return confirm(`text`)
+ *
+ * @param {string} handlerCode
+ * @returns {string|null}
+ */
+function extractInlineConfirmMessage(handlerCode) {
+    if (!handlerCode) return null;
+
+    const match = String(handlerCode).match(/confirm\s*\(\s*(["'`])([\s\S]*?)\1\s*\)/i);
+    if (!match || typeof match[2] !== 'string') return null;
+
+    return decodeInlineDialogMessage(match[2]).trim();
+}
+
+/**
+ * Internal: submit form once, bypassing SweetAlert interception to prevent loops.
+ *
+ * @param {HTMLFormElement} form
+ * @param {HTMLElement|null} submitter
+ */
+function submitFormWithSwalBypass(form, submitter = null) {
+    if (!form) return;
+
+    form.dataset.swalBypassSubmit = '1';
+    // Mark that form was submitted from confirmation dialog, so don't show success message
+    form.dataset.skipSuccessMessage = '1';
+    
+    // Add hidden input to form to signal to backend that this was submitted from confirmation
+    // This will prevent backend from sending success message
+    if (!form.querySelector('input[name="_from_confirmation"]')) {
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = '_from_confirmation';
+        hiddenInput.value = '1';
+        form.appendChild(hiddenInput);
+    }
+    
+    // Hide any existing success alerts before submitting
+    // Success alert has role="alert" and bg-gradient-to-r class with green colors
+    const successAlert = document.querySelector('div[role="alert"].bg-gradient-to-r.from-green-50');
+    if (successAlert && successAlert.closest('.mb-4')) {
+        successAlert.closest('.mb-4').style.display = 'none';
+    }
+
+    if (typeof form.requestSubmit === 'function') {
+        if (submitter) {
+            try {
+                form.requestSubmit(submitter);
+                return;
+            } catch (_err) {
+                // Fallback to generic submit below.
+            }
+        }
+        form.requestSubmit();
+        return;
+    }
+
+    form.submit();
+}
+
+/**
  * Show success notification
  * 
  * @param {string} message - Success message
@@ -155,6 +235,55 @@ window.showConfirm = function(
             }
         }
     });
+};
+
+/**
+ * Promise-based confirmation helper.
+ *
+ * @param {string} message
+ * @param {object} options
+ * @returns {Promise<boolean>}
+ */
+window.swalConfirmAsync = function(message, options = {}) {
+    return Swal.fire({
+        icon: options.icon || 'question',
+        title: options.title || 'Konfirmasi',
+        text: message,
+        showCancelButton: true,
+        confirmButtonText: options.confirmButtonText || 'Ya, Lanjutkan',
+        cancelButtonText: options.cancelButtonText || 'Batal',
+        confirmButtonColor: options.confirmButtonColor || defaultConfig.confirmButtonColor,
+        cancelButtonColor: options.cancelButtonColor || defaultConfig.cancelButtonColor,
+        reverseButtons: defaultConfig.reverseButtons,
+        customClass: defaultConfig.customClass
+    }).then(result => result.isConfirmed);
+};
+
+/**
+ * Promise-based prompt helper.
+ *
+ * @param {string} title
+ * @param {object} options
+ * @returns {Promise<{isConfirmed: boolean, value: string}>}
+ */
+window.swalPromptAsync = function(title, options = {}) {
+    return Swal.fire({
+        title: title || 'Masukkan Nilai',
+        input: options.input || 'text',
+        inputPlaceholder: options.inputPlaceholder || '',
+        inputValue: options.inputValue || '',
+        inputAttributes: options.inputAttributes || {},
+        showCancelButton: true,
+        confirmButtonText: options.confirmButtonText || 'Simpan',
+        cancelButtonText: options.cancelButtonText || 'Batal',
+        confirmButtonColor: options.confirmButtonColor || defaultConfig.confirmButtonColor,
+        cancelButtonColor: options.cancelButtonColor || defaultConfig.cancelButtonColor,
+        reverseButtons: defaultConfig.reverseButtons,
+        customClass: defaultConfig.customClass
+    }).then(result => ({
+        isConfirmed: result.isConfirmed,
+        value: result.value
+    }));
 };
 
 /**
@@ -320,7 +449,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const warningMsg = document.querySelector('[data-flash-warning]');
     const infoMsg = document.querySelector('[data-flash-info]');
     
-    if (successMsg) {
+    // Check if form submitted from confirmation dialog (skip success message in that case)
+    const skipSuccessMsg = document.querySelector('form[data-skip-success-message="1"]') !== null;
+    
+    if (successMsg && !skipSuccessMsg) {
         showSuccess(successMsg.getAttribute('data-flash-success'));
         successMsg.remove();
     }
@@ -338,6 +470,82 @@ document.addEventListener('DOMContentLoaded', function() {
     if (infoMsg) {
         showInfo('Informasi', infoMsg.getAttribute('data-flash-info'));
         infoMsg.remove();
+    }
+
+    // Auto-upgrade inline native confirm dialogs (onsubmit/onclick) to SweetAlert.
+    document.querySelectorAll('form[onsubmit*="confirm("]').forEach(form => {
+        const inlineHandler = form.getAttribute('onsubmit') || '';
+        const message = extractInlineConfirmMessage(inlineHandler);
+        if (!message) return;
+
+        form.removeAttribute('onsubmit');
+        form.addEventListener('submit', function(e) {
+            if (form.dataset.swalBypassSubmit === '1') {
+                form.dataset.swalBypassSubmit = '0';
+                return;
+            }
+
+            e.preventDefault();
+            swalConfirmAsync(message).then(isConfirmed => {
+                if (isConfirmed) {
+                    submitFormWithSwalBypass(form);
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('[onclick*="confirm("]').forEach(el => {
+        const inlineHandler = el.getAttribute('onclick') || '';
+        const message = extractInlineConfirmMessage(inlineHandler);
+        if (!message) return;
+
+        el.removeAttribute('onclick');
+        el.addEventListener('click', function(e) {
+            if (el.dataset.swalBypassClick === '1') {
+                el.dataset.swalBypassClick = '0';
+                return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            swalConfirmAsync(message).then(isConfirmed => {
+                if (!isConfirmed) return;
+
+                const form = el.form || el.closest('form');
+                if (form) {
+                    submitFormWithSwalBypass(form, el);
+                    return;
+                }
+
+                const href = el.getAttribute('href');
+                if (href && href !== '#') {
+                    window.location.assign(href);
+                }
+            });
+        });
+    });
+
+    // Global replacement for native alert to keep UI consistent with SweetAlert.
+    if (window.Swal && typeof window.alert === 'function' && !window.__nativeAlertPatched) {
+        window.__nativeAlertPatched = true;
+        const originalAlert = window.alert.bind(window);
+        window.__originalAlert = originalAlert;
+
+        window.alert = function(message) {
+            if (!window.Swal) {
+                return originalAlert(message);
+            }
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Informasi',
+                text: String(message || ''),
+                showConfirmButton: true,
+                confirmButtonColor: defaultConfig.confirmButtonColor,
+                customClass: defaultConfig.customClass
+            });
+        };
     }
 });
 

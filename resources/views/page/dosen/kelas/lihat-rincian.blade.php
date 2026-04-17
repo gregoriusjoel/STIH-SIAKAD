@@ -67,48 +67,63 @@
                     </div>
                 </div>
 
-                {{-- Meeting Type Dropdown Navigator --}}
-                @if(isset($meetingSlots) && $meetingSlots->count())
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" @click.away="open = false"
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('dosen.kelas.detail', $kelas->id) }}"
                         class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
-                        <span class="material-symbols-outlined text-[18px]">swap_horiz</span>
-                        Pindah Pertemuan
-                        <span class="material-symbols-outlined text-[16px] transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
-                    </button>
-                    <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                         class="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 py-2 max-h-80 overflow-y-auto">
-                        @foreach($meetingSlots as $slot)
-                            @php
-                                $isCurrentSlot = ($slot['tipe'] === ($meeting['tipe_pertemuan'] ?? 'kuliah')) && ($slot['nomor'] === ($meeting['nomor_pertemuan'] ?? 1));
-                                $slotIcon = match($slot['tipe']) {
-                                    'uts' => 'edit_note',
-                                    'uas' => 'assignment',
-                                    default => 'school',
-                                };
-                                $slotColor = match($slot['tipe']) {
-                                    'uts' => 'text-amber-600',
-                                    'uas' => 'text-red-600',
-                                    default => 'text-gray-600',
-                                };
-                                $slotBgActive = match($slot['tipe']) {
-                                    'uts' => 'bg-amber-50 border-l-amber-500',
-                                    'uas' => 'bg-red-50 border-l-red-500',
-                                    default => 'bg-blue-50 border-l-blue-500',
-                                };
-                            @endphp
-                            <a href="{{ route('dosen.kelas.pertemuan.detail', ['id' => $id, 'pertemuan' => $slot['tipe'] . ':' . $slot['nomor']]) }}"
-                               class="flex items-center gap-3 px-4 py-2.5 text-sm transition-all border-l-2 {{ $isCurrentSlot ? $slotBgActive . ' font-bold' : 'border-l-transparent hover:bg-gray-50' }}">
-                                <span class="material-symbols-outlined text-[16px] {{ $slotColor }}">{{ $slotIcon }}</span>
-                                <span class="{{ $isCurrentSlot ? 'text-gray-900' : 'text-gray-700' }}">{{ $slot['label'] }}</span>
-                                @if($isCurrentSlot)
-                                    <span class="material-symbols-outlined text-[14px] text-green-500 ml-auto">check_circle</span>
-                                @endif
-                            </a>
-                        @endforeach
-                    </div>
+                        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                        Kembali
+                    </a>
+
+                    {{-- Meeting Type Dropdown Navigator --}}
+                    @if(isset($meetingSlots) && $meetingSlots->count())
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open" @click.away="open = false"
+                                class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                                <span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+                                Pindah Pertemuan
+                                <span class="material-symbols-outlined text-[16px] transition-transform"
+                                    :class="open ? 'rotate-180' : ''">expand_more</span>
+                            </button>
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                                class="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 py-2 max-h-80 overflow-y-auto">
+                                @foreach($meetingSlots as $slot)
+                                    @php
+                                        $isCurrentSlot =
+                                            ($slot['tipe'] === ($meeting['tipe_pertemuan'] ?? 'kuliah')) &&
+                                            ($slot['nomor'] === ($meeting['nomor_pertemuan'] ?? 1));
+                                        $slotIcon = match ($slot['tipe']) {
+                                            'uts' => 'edit_note',
+                                            'uas' => 'assignment',
+                                            default => 'school',
+                                        };
+                                        $slotColor = match ($slot['tipe']) {
+                                            'uts' => 'text-amber-600',
+                                            'uas' => 'text-red-600',
+                                            default => 'text-gray-600',
+                                        };
+                                        $slotBgActive = match ($slot['tipe']) {
+                                            'uts' => 'bg-amber-50 border-l-amber-500',
+                                            'uas' => 'bg-red-50 border-l-red-500',
+                                            default => 'bg-blue-50 border-l-blue-500',
+                                        };
+                                    @endphp
+                                    <a href="{{ route('dosen.kelas.pertemuan.detail', ['id' => $id, 'pertemuan' => $slot['tipe'] . ':' . $slot['nomor']]) }}"
+                                        class="flex items-center gap-3 px-4 py-2.5 text-sm transition-all border-l-2 {{ $isCurrentSlot ? $slotBgActive . ' font-bold' : 'border-l-transparent hover:bg-gray-50' }}">
+                                        <span
+                                            class="material-symbols-outlined text-[16px] {{ $slotColor }}">{{ $slotIcon }}</span>
+                                        <span
+                                            class="{{ $isCurrentSlot ? 'text-gray-900' : 'text-gray-700' }}">{{ $slot['label'] }}</span>
+                                        @if ($isCurrentSlot)
+                                            <span
+                                                class="material-symbols-outlined text-[14px] text-green-500 ml-auto">check_circle</span>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
-                @endif
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6 pt-6 border-t border-gray-100">
@@ -869,7 +884,16 @@
     </div>
 
     {{-- MODAL RESCHEDULE METODE PENGAJARAN --}}
-    <div x-data="{ open: false, selectedMetode: '{{ $pertemuanRecord?->metode_pengajaran ?? 'offline' }}' }"
+    <div x-data="{ 
+        open: @if($errors->any()) true @else false @endif, 
+        selectedMetode: @if($errors->has('metode_pengajaran')) '{{ old('metode_pengajaran') }}' @else '{{ $pertemuanRecord?->metode_pengajaran ?? 'offline' }}' @endif,
+        generalMeetingLink: '{{ $kelasMataKuliah?->online_meeting_link ?? '' }}',
+        customMeetingLink: '{{ $pertemuanRecord?->online_meeting_link ?? '' }}',
+        debugInfo: {
+            kelasMataKuliahId: '{{ $kelasMataKuliah?->id ?? 'NULL' }}',
+            generalLinkValue: '{{ $kelasMataKuliah?->online_meeting_link ?? 'KOSONG' }}'
+        }
+    }"
          @open-reschedule-metode.window="open = true"
          @keydown.escape.window="open = false"
          x-show="open"
@@ -904,9 +928,33 @@
                         <span class="material-symbols-outlined text-2xl">close</span>
                     </button>
                 </div>
+                
+                <script>
+                    console.log('Modal Debug Info:', { 
+                        kelasMataKuliahId: '{{ $kelasMataKuliah?->id ?? 'NULL' }}',
+                        generalMeetingLink: '{{ $kelasMataKuliah?->online_meeting_link ?? 'KOSONG' }}',
+                        customMeetingLink: '{{ $pertemuanRecord?->online_meeting_link ?? 'KOSONG' }}',
+                        pertemuanRecordId: '{{ $pertemuanRecord?->id ?? 'NULL' }}'
+                    });
+                </script>
 
                 <form action="{{ route('dosen.kelas.pertemuan.metode.update', ['id' => $id, 'pertemuan' => ($meeting['tipe_pertemuan'] ?? 'kuliah') . ':' . ($meeting['nomor_pertemuan'] ?? $meeting['no'])]) }}" method="POST" class="p-6">
                     @csrf @method('PATCH')
+
+                    {{-- Error Alert --}}
+                    @if ($errors->any())
+                        <div class="mb-4 p-4 rounded-xl bg-red-50 border border-red-200">
+                            <div class="flex items-start gap-2 mb-2">
+                                <span class="material-symbols-outlined text-red-700 text-[18px] mt-0.5">warning</span>
+                                <p class="text-sm font-bold text-red-700">Ada kesalahan:</p>
+                            </div>
+                            <ul class="text-xs text-red-600 space-y-1 ml-6">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
                     <fieldset class="space-y-3 mb-6">
                         <legend class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pilih Metode Pengajaran</legend>
@@ -931,10 +979,28 @@
 
                     <div x-show="selectedMetode === 'online'" x-transition class="mb-6">
                         <label for="online_meeting_link" class="block text-sm font-bold text-gray-700 mb-2">Link Meeting (Zoom/Meet/dll)</label>
+                        
+                        {{-- Show general link if exists --}}
+                        <template x-if="generalMeetingLink">
+                            <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-blue-600 text-[18px]">broadcast_on_home</span>
+                                    <p class="text-xs font-semibold text-blue-700">Link Umum dari Kelas:</p>
+                                </div>
+                                <a :href="generalMeetingLink" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 break-all underline" x-text="generalMeetingLink"></a>
+                            </div>
+                        </template>
+                        
                         <input type="url" name="online_meeting_link" id="online_meeting_link"
-                               value="{{ $pertemuanRecord?->online_meeting_link }}"
-                                class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:border-maroon focus:ring-maroon transition-colors"
+                               :value="@if($errors->has('online_meeting_link')) '{{ old('online_meeting_link') }}' @else customMeetingLink || generalMeetingLink @endif"
+                               class="w-full px-4 py-3 rounded-xl border transition-colors @if($errors->has('online_meeting_link')) border-red-500 bg-red-50 focus:border-red-600 focus:ring-red-500 @else border-gray-300 bg-gray-50 focus:border-maroon focus:ring-maroon @endif"
                                placeholder="https://zoom.us/j/1234567890">
+                        
+                        @if($errors->has('online_meeting_link'))
+                            <p class="text-xs text-red-600 mt-2 flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">error</span> {{ $errors->first('online_meeting_link') }}</p>
+                        @else
+                            <p class="text-xs text-gray-500 mt-2">Biarkan kosong untuk menggunakan link umum kelas (jika ada). Atau isi untuk custom link untuk pertemuan ini.</p>
+                        @endif
                     </div>
 
                     <div class="flex gap-3">
@@ -951,8 +1017,6 @@
             </div>
         </div>
     </div>
-
-    {{-- MODAL PASSWORD AKTIVASI QR --}}
     <div x-data="{
              open: false,
              loading: false,

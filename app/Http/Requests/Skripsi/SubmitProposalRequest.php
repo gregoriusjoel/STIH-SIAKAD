@@ -25,8 +25,8 @@ class SubmitProposalRequest extends FormRequest
     {
         return [
             'judul'                   => 'Judul Skripsi',
-            'deskripsi_proposal'      => 'Deskripsi Proposal',
-            'proposal_file'           => 'File Proposal',
+            'deskripsi_proposal'      => 'Deskripsi Skripsi',
+            'proposal_file'           => 'File Skripsi',
             'requested_supervisor_id' => 'Dosen Pembimbing',
         ];
     }

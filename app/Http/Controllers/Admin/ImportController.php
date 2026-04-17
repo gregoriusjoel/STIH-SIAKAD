@@ -45,7 +45,7 @@ class ImportController extends Controller
             'title' => 'Import Data Ruangan',
             'description' => 'Import data ruangan kelas dari file CSV atau XLSX',
             'icon' => 'fa-door-open',
-            'template_columns' => ['kode_ruangan', 'nama_ruangan', 'gedung', 'lantai', 'kapasitas', 'status'],
+            'template_columns' => ['kode_ruangan', 'nama_ruangan', 'gedung', 'lantai', 'kapasitas', 'kategori_nama', 'status'],
         ],
         'orang_tua' => [
             'title' => 'Import Data Orang Tua',
@@ -318,6 +318,7 @@ class ImportController extends Controller
                 'gedung' => 'Gedung A',
                 'lantai' => '1',
                 'kapasitas' => '40',
+                'kategori_nama' => 'Kelas',
                 'status' => 'aktif',
             ],
             'orang_tua' => [

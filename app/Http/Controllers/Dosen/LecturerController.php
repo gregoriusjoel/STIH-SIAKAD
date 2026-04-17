@@ -744,6 +744,13 @@ class LecturerController extends Controller
             ->where('kode_kelas', $kelas->section)
             ->where('dosen_id', $kelas->dosen_id)
             ->first();
+        
+        // Fallback: if not found by all criteria, try with just mata_kuliah_id and dosen_id
+        if (!$kelasMataKuliah) {
+            $kelasMataKuliah = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
+                ->where('dosen_id', $kelas->dosen_id)
+                ->first();
+        }
 
         $krsCollection = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
             ->where(function ($q) use ($kelasMataKuliah, $kelas) {

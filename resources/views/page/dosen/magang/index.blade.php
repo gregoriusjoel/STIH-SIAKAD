@@ -38,9 +38,7 @@
         <div class="space-y-4">
             @foreach($internships as $i)
                 <a href="{{ route('dosen.magang.show', $i) }}"
-                   class="block bg-white rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 p-6 sm:p-8 border border-gray-100 relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent to-gray-50/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#8B1538] rounded-l-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                   class="block bg-white rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-[#8B1538]/20 transition-all duration-300 p-6 sm:p-8 border border-gray-100 relative overflow-hidden group">
                     
                     <div class="relative flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div class="flex-1 min-w-0 flex gap-4 sm:gap-6 items-start sm:items-center">

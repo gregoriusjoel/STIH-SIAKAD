@@ -21,10 +21,30 @@ class MataKuliah extends Model
         'sks',
         'semester',
         'jenis',
+        'tipe',
         'prodi_id',
         'fakultas_id',
         'deskripsi',
     ];
+
+    /**
+     * Type enumeration for mata kuliah
+     * Used for automatic jadwal generation room category matching
+     */
+    public const TIPE_TEORI = 'teori';
+    public const TIPE_PRAKTIKUM = 'praktikum';
+    public const TIPE_SIDANG = 'sidang';
+    public const TIPE_LAB = 'lab';
+
+    public static function getTipeOptions(): array
+    {
+        return [
+            self::TIPE_TEORI => 'Teori',
+            self::TIPE_PRAKTIKUM => 'Praktikum',
+            self::TIPE_SIDANG => 'Sidang',
+            self::TIPE_LAB => 'Laboratorium',
+        ];
+    }
 
     public function kelasMataKuliahs(): HasMany
     {
@@ -70,6 +90,46 @@ class MataKuliah extends Model
         return $query->whereHas('mataKuliahSemesters', function ($q) use ($semesterId) {
             $q->where('semester_id', $semesterId)->where('status', 'history');
         });
+    }
+
+    /**
+     * Scope: filter by tipe
+     */
+    public function scopeByTipe($query, string $tipe)
+    {
+        return $query->where('tipe', $tipe);
+    }
+
+    /**
+     * Scope: get teori courses
+     */
+    public function scopeTeori($query)
+    {
+        return $query->where('tipe', self::TIPE_TEORI);
+    }
+
+    /**
+     * Scope: get praktikum courses
+     */
+    public function scopePraktikum($query)
+    {
+        return $query->where('tipe', self::TIPE_PRAKTIKUM);
+    }
+
+    /**
+     * Scope: get sidang courses
+     */
+    public function scopeSidang($query)
+    {
+        return $query->where('tipe', self::TIPE_SIDANG);
+    }
+
+    /**
+     * Scope: get lab courses
+     */
+    public function scopeLab($query)
+    {
+        return $query->where('tipe', self::TIPE_LAB);
     }
 
     public function prodi(): BelongsTo

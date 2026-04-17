@@ -14,6 +14,15 @@
             background-color: var(--color-primary);
             color: white !important;
         }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 @endpush
 
@@ -35,7 +44,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 class="text-3xl font-black text-[#111218] dark:text-white tracking-tight">Jadwal Mengajar</h1>
-                    <p class="text-[#616889] dark:text-slate-400 mt-1 text-sm">Jadwal perkuliahan Semester Ganjil 2023/2024.</p>
+                    <p class="text-[#616889] dark:text-slate-400 mt-1 text-sm">Jadwal perkuliahan Semester {{ $activeSemester?->nama_semester ?? '-' }} {{ $activeSemester?->tahun_ajaran ?? '-' }}.</p>
                 </div>
 
                 <div class="flex items-center gap-3">
@@ -265,7 +274,7 @@
                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
                     x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-95"
-                    class="relative bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-2xl max-w-2xl w-full mx-4 p-6 z-50 max-h-[90vh] overflow-y-auto">
+                    class="relative bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-2xl max-w-2xl w-full mx-4 p-6 z-50 max-h-[90vh] overflow-y-auto hide-scrollbar">
 
                     <!-- Header -->
                     <div class="mb-5">
@@ -317,40 +326,44 @@
                             </div>
                         </div>
 
-                        <!-- Hari -->
-                        <div>
-                            <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
-                                Hari <span class="text-red-500">*</span>
-                            </label>
-                            <select name="new_hari" x-model="rescheduleData.hari" @change="checkRoomAvailability()" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
-                        rounded-lg bg-white dark:bg-slate-800 text-sm
-                        focus:outline-none focus:ring-1 focus:ring-[#8B1538]">
-                                <template x-for="h in ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu']" :key="h">
-                                    <option :value="h" x-text="h"></option>
-                                </template>
-                            </select>
-                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Hari -->
+                            <div>
+                                <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
+                                    Hari <span class="text-red-500">*</span>
+                                </label>
+                                <select name="new_hari" x-model="rescheduleData.hari" @change="checkRoomAvailability()" class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
+                            rounded-lg bg-white dark:bg-slate-800 text-sm
+                            focus:outline-none focus:ring-1 focus:ring-[#8B1538]">
+                                    <template x-for="h in ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu']" :key="h">
+                                        <option :value="h" x-text="h"></option>
+                                    </template>
+                                </select>
+                            </div>
 
-                        <!-- Jam Perkuliahan Dropdown -->
-                        <div>
-                            <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
-                                Jam Perkuliahan <span class="text-red-500">*</span>
-                            </label>
-                            <select name="jam_perkuliahan_start_id" x-model="rescheduleData.jam_perkuliahan_start_id" 
-                                @change="updateCalculatedTime(); checkRoomAvailability()" 
-                                class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
-                                rounded-lg bg-white dark:bg-slate-800 text-sm
-                                focus:outline-none focus:ring-1 focus:ring-[#8B1538]" required>
-                                <option value="">Pilih Jam Mulai</option>
-                                @foreach($jamPerkuliahans as $jam)
-                                    <option value="{{ $jam->id }}" 
-                                        data-jam-ke="{{ $jam->jam_ke }}"
-                                        data-jam-mulai="{{ $jam->jam_mulai }}"
-                                        data-jam-selesai="{{ $jam->jam_selesai }}">
-                                        Jam {{ $jam->jam_ke }} ({{ substr($jam->jam_mulai, 0, 5) }} - {{ substr($jam->jam_selesai, 0, 5) }})
-                                    </option>
-                                @endforeach
-                            </select>
+                            <!-- Jam Perkuliahan Dropdown -->
+                            <div>
+                                <label class="block text-sm font-semibold mb-2 text-[#111218] dark:text-white">
+                                    Jam Perkuliahan <span class="text-red-500">*</span>
+                                </label>
+                                <select name="jam_perkuliahan_start_id" x-model="rescheduleData.jam_perkuliahan_start_id" 
+                                    @change="updateCalculatedTime(); checkRoomAvailability()" 
+                                    class="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 
+                                    rounded-lg bg-white dark:bg-slate-800 text-sm
+                                    focus:outline-none focus:ring-1 focus:ring-[#8B1538]" required>
+                                    <option value="">Pilih Jam Mulai</option>
+                                    @foreach($jamPerkuliahans as $jam)
+                                        <option value="{{ $jam->id }}" 
+                                            data-jam-ke="{{ $jam->jam_ke }}"
+                                            data-jam-mulai="{{ $jam->jam_mulai }}"
+                                            data-jam-selesai="{{ $jam->jam_selesai }}">
+                                            Jam {{ $jam->jam_ke }} ({{ substr($jam->jam_mulai, 0, 5) }} - {{ substr($jam->jam_selesai, 0, 5) }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-2 text-xs text-[#616889] dark:text-slate-400"
+                                   x-text="getRoomPanelHint()"></p>
+                            </div>
                         </div>
 
                         <!-- Calculated Time Display -->
@@ -436,14 +449,16 @@
 
                         <!-- Room Availability Card (visible only for Offline metode) -->
                         <div x-show="rescheduleData.metode_pengajaran === 'offline'" x-cloak
-                            class="border rounded-lg p-3 bg-gray-50 dark:bg-slate-800 max-h-64 overflow-y-auto">
-                            <div class="flex items-center justify-between mb-2">
+                            class="border border-gray-200 dark:border-slate-700 rounded-xl p-3 bg-linear-to-b from-gray-50 to-white dark:from-slate-800 dark:to-slate-800/80 max-h-72 overflow-y-auto">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                                 <div class="text-xs font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-1">
                                     <span class="material-symbols-outlined text-sm">meeting_room</span>
                                     Ketersediaan Ruangan
                                     <span class="text-gray-400 ml-1"
                                         x-text="rescheduleData.hari ? '(' + rescheduleData.hari + ')' : ''"></span>
                                 </div>
+                                <div class="text-[11px] px-2 py-1 rounded-md bg-white/80 dark:bg-slate-700/50 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300"
+                                     x-text="getRoomPanelHint()"></div>
                                 <!-- Filter Buttons -->
                                 <div class="flex items-center gap-1">
                                     <button type="button" @click="roomFilter = 'all'"
@@ -463,20 +478,29 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="max-h-64 overflow-y-auto">
+                            <div class="max-h-64 overflow-y-auto hide-scrollbar">
                                 <div class="grid auto-rows-fr gap-2"
                                     style="grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));">
                                     @foreach($daftarRuangan as $room)
                                         <div x-show="roomFilter === 'all' || (roomFilter === 'available' && isRoomAvailable('{{ $room->kode_ruangan }}')) || (roomFilter === 'occupied' && !isRoomAvailable('{{ $room->kode_ruangan }}'))"
-                                            class="p-2 rounded-md text-sm font-semibold cursor-pointer transition-all text-center flex items-center justify-center"
+                                            class="p-2 rounded-lg text-sm font-semibold transition-all text-center flex items-center justify-center"
                                             :class="{
                                                   'bg-green-50 text-green-800 border border-green-200 hover:bg-green-100': isRoomAvailable('{{ $room->kode_ruangan }}') && rescheduleData.ruang !== '{{ $room->kode_ruangan }}',
                                                   'bg-red-50 text-red-800 border border-red-200 opacity-90': !isRoomAvailable('{{ $room->kode_ruangan }}') && rescheduleData.ruang !== '{{ $room->kode_ruangan }}',
-                                                  'bg-blue-600 text-white ring-2 ring-blue-400': rescheduleData.ruang === '{{ $room->kode_ruangan }}'
+                                                  'bg-blue-600 text-white ring-2 ring-blue-400': rescheduleData.ruang === '{{ $room->kode_ruangan }}',
+                                                  'cursor-pointer': isRoomAvailable('{{ $room->kode_ruangan }}'),
+                                                  'cursor-not-allowed': !isRoomAvailable('{{ $room->kode_ruangan }}')
                                               }"
                                             @click="if(isRoomAvailable('{{ $room->kode_ruangan }}')) { rescheduleData.ruang = '{{ $room->kode_ruangan }}' }"
                                             :title="isRoomAvailable('{{ $room->kode_ruangan }}') ? 'Tersedia - Klik untuk memilih' : getRoomConflict('{{ $room->kode_ruangan }}')">
-                                            <span>{{ $room->kode_ruangan }}</span>
+                                            <div class="flex flex-col items-center leading-tight">
+                                                <span>{{ $room->kode_ruangan }}</span>
+                                                <span
+                                                    x-show="rescheduleData.hari && !rescheduleData.calculated_jam_mulai && !rescheduleData.calculated_jam_selesai && !isRoomAvailable('{{ $room->kode_ruangan }}')"
+                                                    class="mt-1 px-1.5 py-0.5 rounded bg-red-100/70 text-[10px] font-semibold opacity-90"
+                                                    x-text="getRoomJamKeInfo('{{ $room->kode_ruangan }}')">
+                                                </span>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -732,14 +756,28 @@
 
                     // Check if a room is available for the selected day and time
                     isRoomAvailable(room) {
-                        if (!this.rescheduleData.hari || !this.rescheduleData.calculated_jam_mulai || !this.rescheduleData.calculated_jam_selesai) {
-                            return true; // Show all as available if time not selected yet
+                        if (!this.rescheduleData.hari) {
+                            return true;
+                        }
+
+                        const selectedRoom = this.normalizeRoomCode(room);
+                        const selectedDay = this.normalizeDay(this.rescheduleData.hari);
+
+                        if (!this.rescheduleData.calculated_jam_mulai || !this.rescheduleData.calculated_jam_selesai) {
+                            const dayConflict = this.allSchedules.find(s => {
+                                if (String(s.id) === String(this.rescheduleData.id)) return false;
+                                if (this.normalizeRoomCode(s.ruang) !== selectedRoom) return false;
+                                if (this.normalizeDay(s.hari) !== selectedDay) return false;
+                                return true;
+                            });
+
+                            return !dayConflict;
                         }
 
                         const conflict = this.allSchedules.find(s => {
-                            if (s.id === this.rescheduleData.id) return false; // Exclude current class
-                            if (s.ruang !== room) return false;
-                            if (s.hari !== this.rescheduleData.hari) return false;
+                            if (String(s.id) === String(this.rescheduleData.id)) return false; // Exclude current class
+                            if (this.normalizeRoomCode(s.ruang) !== selectedRoom) return false;
+                            if (this.normalizeDay(s.hari) !== selectedDay) return false;
 
                             // Check time overlap: (StartA < EndB) && (EndA > StartB)
                             return s.jam_mulai < this.rescheduleData.calculated_jam_selesai &&
@@ -751,14 +789,33 @@
 
                     // Get conflict info for tooltip
                     getRoomConflict(room) {
-                        if (!this.rescheduleData.hari || !this.rescheduleData.calculated_jam_mulai || !this.rescheduleData.calculated_jam_selesai) {
+                        if (!this.rescheduleData.hari) {
+                            return '';
+                        }
+
+                        const selectedRoom = this.normalizeRoomCode(room);
+                        const selectedDay = this.normalizeDay(this.rescheduleData.hari);
+
+                        if (!this.rescheduleData.calculated_jam_mulai || !this.rescheduleData.calculated_jam_selesai) {
+                            const dayConflict = this.allSchedules.find(s => {
+                                if (String(s.id) === String(this.rescheduleData.id)) return false;
+                                if (this.normalizeRoomCode(s.ruang) !== selectedRoom) return false;
+                                if (this.normalizeDay(s.hari) !== selectedDay) return false;
+                                return true;
+                            });
+
+                            if (dayConflict) {
+                                const jamKeLabel = this.getJamKeLabel(dayConflict.jam_mulai, dayConflict.jam_selesai);
+                                const jamInfo = jamKeLabel ? `${jamKeLabel} ` : '';
+                                return `Terpakai di ${dayConflict.hari}: ${jamInfo}${dayConflict.dosen} (${dayConflict.mk}) ${dayConflict.jam_mulai}-${dayConflict.jam_selesai}`;
+                            }
                             return '';
                         }
 
                         const conflict = this.allSchedules.find(s => {
-                            if (s.id === this.rescheduleData.id) return false;
-                            if (s.ruang !== room) return false;
-                            if (s.hari !== this.rescheduleData.hari) return false;
+                            if (String(s.id) === String(this.rescheduleData.id)) return false;
+                            if (this.normalizeRoomCode(s.ruang) !== selectedRoom) return false;
+                            if (this.normalizeDay(s.hari) !== selectedDay) return false;
                             return s.jam_mulai < this.rescheduleData.calculated_jam_selesai &&
                                 s.jam_selesai > this.rescheduleData.calculated_jam_mulai;
                         });
@@ -769,9 +826,100 @@
                         return '';
                     },
 
+                    getRoomJamKeInfo(room) {
+                        if (!this.rescheduleData.hari) {
+                            return '';
+                        }
+
+                        if (this.rescheduleData.calculated_jam_mulai && this.rescheduleData.calculated_jam_selesai) {
+                            return '';
+                        }
+
+                        const selectedRoom = this.normalizeRoomCode(room);
+                        const selectedDay = this.normalizeDay(this.rescheduleData.hari);
+
+                        const dayConflict = this.allSchedules.find(s => {
+                            if (String(s.id) === String(this.rescheduleData.id)) return false;
+                            if (this.normalizeRoomCode(s.ruang) !== selectedRoom) return false;
+                            if (this.normalizeDay(s.hari) !== selectedDay) return false;
+                            return true;
+                        });
+
+                        if (!dayConflict) {
+                            return '';
+                        }
+
+                        const jamKeLabel = this.getJamKeLabel(dayConflict.jam_mulai, dayConflict.jam_selesai);
+                        return jamKeLabel || `${dayConflict.jam_mulai}-${dayConflict.jam_selesai}`;
+                    },
+
+                    getRoomPanelHint() {
+                        if (!this.rescheduleData.hari) {
+                            return 'Pilih hari untuk melihat ketersediaan ruangan.';
+                        }
+
+                        if (!this.rescheduleData.calculated_jam_mulai || !this.rescheduleData.calculated_jam_selesai) {
+                            return 'Mode harian: bentrok ditampilkan untuk seluruh jam di hari ini.';
+                        }
+
+                        return `Mode spesifik: bentrok jam ${this.rescheduleData.calculated_jam_mulai}-${this.rescheduleData.calculated_jam_selesai}.`;
+                    },
+
                     checkRoomAvailability() {
                         // Reset room selection when time changes to force re-evaluation
                         // This is handled reactively by Alpine.js
+                    },
+
+                    normalizeRoomCode(value) {
+                        return String(value || '')
+                            .replace(/[^a-zA-Z0-9]/g, '')
+                            .toUpperCase();
+                    },
+
+                    normalizeDay(value) {
+                        return String(value || '').trim().toLowerCase();
+                    },
+
+                    parseTimeToMinutes(value) {
+                        const parts = String(value || '').split(':');
+                        if (parts.length < 2) return null;
+
+                        const h = parseInt(parts[0], 10);
+                        const m = parseInt(parts[1], 10);
+
+                        if (Number.isNaN(h) || Number.isNaN(m)) return null;
+                        return (h * 60) + m;
+                    },
+
+                    getJamKeLabel(startTime, endTime) {
+                        const select = document.querySelector('select[name=jam_perkuliahan_start_id]');
+                        if (!select) return '';
+
+                        const start = this.parseTimeToMinutes(startTime);
+                        const end = this.parseTimeToMinutes(endTime);
+                        if (start === null || end === null) return '';
+
+                        const jamKeList = Array.from(select.options)
+                            .filter(opt => opt.value && opt.getAttribute('data-jam-ke'))
+                            .map(opt => {
+                                const jamMulai = this.parseTimeToMinutes((opt.getAttribute('data-jam-mulai') || '').substring(0, 5));
+                                const jamSelesai = this.parseTimeToMinutes((opt.getAttribute('data-jam-selesai') || '').substring(0, 5));
+                                const jamKe = parseInt(opt.getAttribute('data-jam-ke'), 10);
+
+                                if (jamMulai === null || jamSelesai === null || Number.isNaN(jamKe)) {
+                                    return null;
+                                }
+
+                                const overlap = jamMulai < end && jamSelesai > start;
+                                return overlap ? jamKe : null;
+                            })
+                            .filter(v => v !== null)
+                            .sort((a, b) => a - b);
+
+                        if (!jamKeList.length) return '';
+                        if (jamKeList.length === 1) return `Jam ke-${jamKeList[0]}`;
+
+                        return `Jam ke-${jamKeList[0]}-${jamKeList[jamKeList.length - 1]}`;
                     },
 
                     init() {

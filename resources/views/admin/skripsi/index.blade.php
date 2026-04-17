@@ -24,7 +24,10 @@
             
             <div class="flex flex-wrap items-center gap-3">
                 <div class="px-4 py-2 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[18px] text-red-900">radio_button_checked</span>
+                    <span class="relative inline-flex items-center justify-center w-5 h-5">
+                        <span class="absolute inline-flex h-4 w-4 rounded-full bg-red-700/30 animate-ping"></span>
+                        <span class="material-symbols-outlined text-[18px] text-red-900 animate-pulse">radio_button_checked</span>
+                    </span>
                     <span class="text-[11px] font-black text-gray-600 uppercase tracking-wider">Live Monitoring</span>
                 </div>
             </div>
@@ -35,7 +38,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         @php
             $metrics = [
-                ['label' => 'Proposal Masuk', 'count' => $proposals->where('status.value', 'PROPOSAL_SUBMITTED')->count(), 'color' => 'red', 'icon' => 'pending_actions'],
+                ['label' => 'Skripsi Masuk', 'count' => $proposals->where('status.value', 'PROPOSAL_SUBMITTED')->count(), 'color' => 'red', 'icon' => 'pending_actions'],
                 ['label' => 'Aktif Bimbingan', 'count' => $activeBimbingan->count(), 'color' => 'blue', 'icon' => 'forum'],
                 ['label' => 'Antrean Sidang', 'count' => $pendingSidang->count(), 'color' => 'orange', 'icon' => 'assignment_turned_in'],
                 ['label' => 'Sidang Terjadwal', 'count' => $scheduled->count(), 'color' => 'indigo', 'icon' => 'calendar_month'],
@@ -64,7 +67,7 @@
         {{-- Custom Tabs --}}
         <div class="flex border-b border-gray-50 px-6 sm:px-8 bg-gray-50/50 backdrop-blur-sm overflow-x-auto">
             @foreach([
-                ['tab'=>'proposal',  'label'=>'Proposal Masuk', 'count'=>$proposals->count(), 'icon' => 'article'],
+                ['tab'=>'proposal',  'label'=>'Skripsi Masuk', 'count'=>$proposals->count(), 'icon' => 'article'],
                 ['tab'=>'bimbingan', 'label'=>'Bimbingan Aktif', 'count'=>$activeBimbingan->count(), 'icon' => 'forum'],
                 ['tab'=>'sidang',    'label'=>'Daftar Sidang', 'count'=>$pendingSidang->count(), 'icon' => 'fact_check'],
                 ['tab'=>'scheduled', 'label'=>'Terjadwal', 'count'=>$scheduled->count(), 'icon' => 'event'],
@@ -124,7 +127,7 @@
                         </div>
                         <a href="{{ route('admin.skripsi.show', $skripsi) }}"
                             class="shrink-0 flex items-center justify-center gap-2 h-10 px-6 bg-red-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-800 shadow-lg shadow-red-900/10 hover:-translate-y-0.5 transition-all">
-                            Review Proposal
+                            Review Skripsi
                             <span class="material-symbols-outlined text-sm">chevron_right</span>
                         </a>
                     </div>
@@ -133,7 +136,7 @@
                         <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-4 text-gray-200 group-hover:scale-110 group-hover:text-red-900/20 transition-all duration-500">
                             <span class="material-symbols-outlined text-3xl font-light">inventory_2</span>
                         </div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Tidak ada proposal dalam antrean.</p>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Tidak ada skripsi dalam antrean.</p>
                     </div>
                     @endforelse
                 

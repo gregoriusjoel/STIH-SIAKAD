@@ -189,13 +189,27 @@
         {{-- Action Buttons --}}
         @if($invoice->status === 'PUBLISHED' && !$invoice->installmentRequest)
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-                <h2 class="text-lg font-bold text-slate-800 mb-2">Belum ada pengajuan cicilan</h2>
-                <p class="text-slate-500 mb-6 max-w-lg mx-auto">Anda dapat mengajukan pembayaran bertahap (cicilan) untuk tagihan ini. Silakan klik tombol di bawah untuk memulai pengajuan.</p>
+                <h2 class="text-lg font-bold text-slate-800 mb-2">Pilih Metode Pembayaran</h2>
+                <p class="text-slate-500 mb-6 max-w-lg mx-auto">Anda dapat membayar penuh sekaligus, atau mengajukan pembayaran bertahap (cicilan) untuk tagihan ini.</p>
+
+                @if($pendingFullProof)
+                    <div class="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-700 text-sm font-medium">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Bukti bayar penuh sudah diupload dan sedang diverifikasi.
+                    </div>
+                @endif
+
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="{{ route('mahasiswa.installment-requests.create', $invoice) }}" class="inline-flex items-center justify-center px-6 py-3 bg-amber-500 text-white font-bold rounded-xl hover:bg-amber-600 transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all">
                         <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                         Ajukan Cicilan
                     </a>
+                    @if(!$pendingFullProof)
+                        <a href="{{ route('mahasiswa.payment-proofs.full.create', $invoice) }}" class="inline-flex items-center justify-center px-6 py-3 bg-[#8B1538] text-white font-bold rounded-xl hover:bg-[#6A102B] transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all">
+                            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a5 5 0 00-10 0v2m-2 0h14l-1 10H6L5 9z" /></svg>
+                            Bayar Full
+                        </a>
+                    @endif
                 </div>
             </div>
         @endif

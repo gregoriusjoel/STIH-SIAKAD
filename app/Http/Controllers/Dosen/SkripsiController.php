@@ -164,7 +164,7 @@ class SkripsiController extends Controller
         ]);
 
         return redirect()->route('dosen.skripsi.show', $skripsi->id)
-            ->with('success', 'Permintaan pembimbing diterima. Proposal dikirim ke admin untuk direview.');
+            ->with('success', 'Permintaan pembimbing diterima. Skripsi dikirim ke admin untuk direview.');
     }
 
     public function rejectSupervisor(Request $request, SkripsiSubmission $skripsi)
@@ -187,7 +187,7 @@ class SkripsiController extends Controller
 
     // ── Download file skripsi / PPT ───────────────────────────────────────
 
-    public function downloadFile(string $encodedPath, SkripsiSubmission $skripsi)
+    public function downloadFile(SkripsiSubmission $skripsi, string $encodedPath)
     {
         $dosen = $this->getDosen();
 

@@ -7,7 +7,7 @@
 <div class="max-w-7xl mx-auto space-y-6 bg-white p-6 rounded-lg">
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h2 class="text-xl font-bold">Rangkuman Nilai - {{ $mahasiswa->nama ?? $mahasiswa->user->name }}</h2>
+            <h2 class="text-xl font-bold">Kartu Hasil Studi - {{ $mahasiswa->nama ?? $mahasiswa->user->name }}</h2>
             <p class="text-sm text-gray-600">NIM: {{ $mahasiswa->nim }}</p>
         </div>
         <div>

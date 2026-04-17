@@ -93,6 +93,30 @@
                         @enderror
                     </div>
 
+                    <!-- Kategori Ruangan -->
+                    <div>
+                        <label for="kategori_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-tag text-gray-400 mr-1"></i>
+                            Kategori Ruangan
+                        </label>
+                        <select name="kategori_id" id="kategori_id"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition @error('kategori_id') border-red-500 @enderror">
+                            <option value="">Pilih Kategori</option>
+                            @foreach($kategoris as $kat)
+                                <option value="{{ $kat->id }}" {{ old('kategori_id') == $kat->id ? 'selected' : '' }}>
+                                    {{ $kat->nama_kategori }}{{ $kat->deskripsi ? ' - ' . $kat->deskripsi : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('kategori_id')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                        <p class="text-xs text-gray-500 mt-1">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Pilih kategori untuk mengelompokkan ruangan
+                        </p>
+                    </div>
+
                     <!-- Status -->
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700 mb-2">

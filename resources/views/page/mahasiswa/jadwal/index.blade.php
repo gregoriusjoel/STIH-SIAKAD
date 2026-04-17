@@ -63,7 +63,7 @@
                 <div class="text-center">
                     <i class="fas fa-calendar-times text-6xl text-gray-300 dark:text-slate-700 mb-4"></i>
                     <h3 class="text-xl font-bold text-gray-700 dark:text-white mb-2">Tidak Ada Jadwal</h3>
-                    <p class="text-gray-500 dark:text-slate-500 mb-4">KRS Anda belum disetujui atau belum ada mata kuliah yang diambil.</p>
+                    <p class="text-gray-500 dark:text-slate-500 mb-4">Belum ada mata kuliah yang diambil. Silakan isi KRS terlebih dahulu.</p>
                     <a href="{{ route('mahasiswa.krs.index') }}"
                         class="inline-flex items-center gap-2 px-6 py-3 bg-maroon text-white rounded-lg hover:bg-maroon-hover transition">
                         <i class="fas fa-file-alt"></i>

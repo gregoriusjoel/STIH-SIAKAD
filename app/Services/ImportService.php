@@ -94,6 +94,9 @@ class ImportService
                 'gedung' => 'gedung',
                 'lantai' => 'lantai',
                 'kapasitas' => 'kapasitas',
+                'kategori' => 'kategori',
+                'kategori_nama' => 'kategori_nama',
+                'kategori_id' => 'kategori_id',
                 'status' => 'status',
             ],
             'unique_column' => 'kode_ruangan',
@@ -777,12 +780,34 @@ class ImportService
      */
     protected function importRuangan(array $data, array $row): array
     {
+        $kategoriId = null;
+
+        // Resolve kategori_id if provided
+        if (!empty($data['kategori_id'])) {
+            $kategoriId = (int) $data['kategori_id'];
+        } elseif (!empty($data['kategori_nama'])) {
+            // Try to find kategori by name
+            $kategori = \App\Models\KategoriRuangan::where('nama_kategori', $data['kategori_nama'])
+                ->first();
+            if ($kategori) {
+                $kategoriId = $kategori->id;
+            }
+        } elseif (!empty($data['kategori'])) {
+            // Try to find kategori by name (alias)
+            $kategori = \App\Models\KategoriRuangan::where('nama_kategori', $data['kategori'])
+                ->first();
+            if ($kategori) {
+                $kategoriId = $kategori->id;
+            }
+        }
+
         \App\Models\Ruangan::create([
             'kode_ruangan' => $data['kode_ruangan'],
             'nama_ruangan' => $data['nama_ruangan'],
             'gedung' => $data['gedung'] ?? null,
             'lantai' => (int) ($data['lantai'] ?? 1),
             'kapasitas' => (int) $data['kapasitas'],
+            'kategori_id' => $kategoriId,
             'status' => $data['status'] ?? 'aktif',
         ]);
 

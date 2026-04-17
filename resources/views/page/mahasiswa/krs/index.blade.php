@@ -18,11 +18,15 @@
                 <div class="text-left sm:text-right">
                     <p class="text-sm text-gray-600 dark:text-slate-400 mb-1">Status KRS:</p>
                     <span class="inline-block px-4 py-2 rounded-lg font-bold text-sm
-                        @if($statusKrs === 'approved') bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400
-                        @elseif($statusKrs === 'diajukan') bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400
-                        @else bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300
+                        @if(isset($statusKrs) && $statusKrs === 'Sudah Mengisi KRS') bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400
+                        @elseif(isset($statusKrs) && $statusKrs === 'Draft') bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400
+                        @else bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400
                         @endif">
-                        {{ strtoupper($statusKrs) }}
+                        @if(isset($statusKrs) && !empty($statusKrs))
+                            {{ $statusKrs }}
+                        @else
+                            Belum Mengisi KRS
+                        @endif
                     </span>
                 </div>
             </div>
@@ -66,45 +70,51 @@
         @endif
 
         @php
-            $isEditable = ($statusKrs === 'draft' || $statusKrs === null);
+            $isEditable = (empty($statusKrs) || $statusKrs === 'Draft');
         @endphp
 
         {{-- Info Box --}}
-        @if($statusKrs === 'draft' || $statusKrs === null)
-            <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-5 mb-6">
-                <div class="flex items-start gap-3">
-                    <i class="fas fa-info-circle text-blue-600 text-2xl"></i>
-                    <div>
-                        <h4 class="font-bold text-blue-900 mb-2">Petunjuk Pengisian KRS</h4>
-                        <ul class="text-sm text-blue-800 space-y-1">
-                            <li>• Pilih <strong>Ya</strong> untuk mata kuliah yang akan Anda ambil semester ini</li>
-                            <li>• Pilih <strong>Tidak</strong> untuk mata kuliah yang tidak diambil</li>
-                            <li>• Maksimal beban SKS per semester: <strong>24 SKS</strong></li>
-                            <li>• Klik <strong>Simpan Draft</strong> untuk menyimpan tanpa melakukan submit</li>
-                            <li>• Konsultasi Terlebih dahulu Dengan <strong>Dosen PA</strong> Sebelum Mengajukan KRS</li>
-                        </ul>
+        @if(!isset($statusKrs) || empty($statusKrs))
+            <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-lg p-5 mb-6">
+                <h4 class="font-bold text-blue-900 dark:text-blue-300 mb-3 flex items-center gap-2">
+                    <i class="fas fa-info-circle"></i> Petunjuk Pengisian KRS
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-800 dark:text-blue-200">
+                    <div class="flex gap-2">
+                        <i class="fas fa-check text-blue-600 flex-shrink-0 mt-0.5"></i>
+                        <span>Pilih <strong>Ya</strong> untuk mata kuliah yang diambil</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="fas fa-check text-blue-600 flex-shrink-0 mt-0.5"></i>
+                        <span>Maksimal <strong>24 SKS</strong> per semester</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="fas fa-check text-blue-600 flex-shrink-0 mt-0.5"></i>
+                        <span>Konsultasi <strong>Dosen PA</strong> dulu</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <i class="fas fa-check text-blue-600 flex-shrink-0 mt-0.5"></i>
+                        <span>Klik <strong>Ajukan KRS</strong> untuk submit</span>
                     </div>
                 </div>
             </div>
-        @elseif($statusKrs === 'diajukan')
-            <div class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-5 mb-6">
+        @elseif($statusKrs === 'Draft')
+            <div class="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-5 mb-6">
                 <div class="flex items-start gap-3">
-                    <i class="fas fa-clock text-yellow-600 text-2xl"></i>
+                    <i class="fas fa-file-invoice text-orange-600 text-2xl"></i>
                     <div>
-                        <h4 class="font-bold text-yellow-900 mb-2">KRS Menunggu Persetujuan</h4>
-                        <p class="text-sm text-yellow-800">KRS Anda telah diajukan dan sedang menunggu persetujuan dari dosen
-                            wali. Anda tidak dapat mengubah KRS selama dalam proses persetujuan.</p>
+                        <h4 class="font-bold text-orange-900 mb-2">KRS Masih Draft</h4>
+                        <p class="text-sm text-orange-800">KRS Anda tersimpan sebagai draft. Lanjutkan pengisian dan klik <strong>Ajukan KRS</strong> untuk menyelesaikan.</p>
                     </div>
                 </div>
             </div>
-        @elseif($statusKrs === 'approved')
+        @elseif($statusKrs === 'Sudah Mengisi KRS')
             <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-5 mb-6">
                 <div class="flex items-start gap-3">
                     <i class="fas fa-check-circle text-green-600 text-2xl"></i>
                     <div>
-                        <h4 class="font-bold text-green-900 mb-2">KRS Telah Disetujui</h4>
-                        <p class="text-sm text-green-800">KRS Anda telah disetujui oleh . Anda tidak dapat mengubah KRS yang
-                            sudah disetujui.</p>
+                        <h4 class="font-bold text-green-900 mb-2">KRS Sudah Tercatat</h4>
+                        <p class="text-sm text-green-800">KRS Anda sudah tercatat dalam sistem. Anda tidak dapat mengubah KRS yang sudah di isi.</p>
                     </div>
                 </div>
             </div>

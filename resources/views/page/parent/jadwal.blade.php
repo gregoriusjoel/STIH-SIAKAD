@@ -35,62 +35,91 @@
 
                 @php
                     $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                    // Group KRS by Day — jadwal lives on kelas.jadwals (HasMany via kelas_id)
-                    $groupedJadwal = $activeKrs->filter(function ($item) {
-                        return $item->kelas?->jadwals?->isNotEmpty();
-                    })->groupBy(function ($item) {
-                        return $item->kelas->jadwals->first()->hari;
-                    });
+                    // Grouping logic that supports both legacy 'Kelas' and current 'KelasMataKuliah'
+                    $jadwalItems = collect();
+                    foreach ($activeKrs as $krs) {
+                        // Check if it's a legacy Kelas with multiple jadwals
+                        if ($krs->kelas?->jadwals?->isNotEmpty()) {
+                            foreach ($krs->kelas->jadwals as $j) {
+                                $jadwalItems->push([
+                                    'hari' => $j->hari,
+                                    'jam_mulai' => $j->jam_mulai,
+                                    'jam_selesai' => $j->jam_selesai,
+                                    'ruangan' => $j->ruangan,
+                                    'krs' => $krs,
+                                ]);
+                            }
+                        }
+                        // Check if it's a KelasMataKuliah with direct schedule info
+                        elseif ($krs->kelasMataKuliah?->hari) {
+                            $jadwalItems->push([
+                                'hari' => $krs->kelasMataKuliah->hari,
+                                'jam_mulai' => $krs->kelasMataKuliah->jam_mulai,
+                                'jam_selesai' => $krs->kelasMataKuliah->jam_selesai,
+                                'ruangan' =>
+                                    $krs->kelasMataKuliah->ruang ??
+                                    $krs->kelasMataKuliah->ruangan?->nama_ruangan ??
+                                    'Belum ditentukan',
+                                'krs' => $krs,
+                            ]);
+                        }
+                    }
+                    $groupedJadwal = $jadwalItems->groupBy('hari');
                 @endphp
 
-                @foreach($days as $day)
+                @foreach ($days as $day)
                     <div
                         class="bg-white rounded-xl border border-[#dbdde6] p-5 flex flex-col gap-4 shadow-sm {{ !isset($groupedJadwal[$day]) ? 'min-h-[150px]' : '' }}">
                         <div class="flex justify-between items-center pb-3 border-b border-gray-100">
                             <h3 class="font-bold text-[#111218]">{{ $day }}</h3>
-                            @if(isset($groupedJadwal[$day]))
-                                <span class="text-xs font-medium text-[#616889]">{{ $groupedJadwal[$day]->count() }} Matkul</span>
+                            @if (isset($groupedJadwal[$day]))
+                                <span class="text-xs font-medium text-[#616889]">{{ $groupedJadwal[$day]->count() }}
+                                    Matkul</span>
                             @endif
                         </div>
 
-                        @if(isset($groupedJadwal[$day]) && $groupedJadwal[$day]->count() > 0)
-                            @foreach($groupedJadwal[$day] as $krs)
+                        @if (isset($groupedJadwal[$day]) && $groupedJadwal[$day]->count() > 0)
+                            @foreach ($groupedJadwal[$day]->sortBy('jam_mulai') as $item)
                                 @php
-                                    $jadwal = $krs->kelas?->jadwals?->first();
+                                    $krs = $item['krs'];
                                     $mk = $krs->kelasMataKuliah?->mataKuliah ?? $krs->mataKuliah;
-                                    $dosen = $krs->kelasMataKuliah?->dosen?->user?->name ?? 'Dosen Belum Diatur';
+                                    $dosen =
+                                        $krs->kelasMataKuliah?->dosen?->user?->name ??
+                                        $krs->kelas?->dosen?->user?->name ??
+                                        'Dosen Belum Diatur';
                                     $jenisRaw = $mk?->jenis ?? 'Teori';
                                     $jenisNorm = strtolower($jenisRaw);
                                     $jenisLabel = ucwords(str_replace('_', ' ', $jenisNorm));
                                     $color = $jenisNorm === 'praktikum' ? 'blue' : 'orange';
                                 @endphp
-                                @if(!$jadwal || !$mk) @continue @endif
                                 <!-- Class Item -->
-                                <div class="flex gap-3 relative pl-3 hover:bg-gray-50/50 rounded-r-lg transition-colors p-2 -mx-2">
+                                <div
+                                    class="flex gap-3 relative pl-3 hover:bg-gray-50/50 rounded-r-lg transition-colors p-2 -mx-2">
                                     <div class="absolute left-0 top-1 bottom-1 w-1 bg-red-900 rounded-full"></div>
                                     <div class="flex-1 flex flex-col gap-1">
                                         <div class="flex justify-between items-start gap-2">
-                                            <h4 class="font-bold text-[#111218] text-sm leading-tight">{{ $mk?->nama_mk }}</h4>
+                                            <h4 class="font-bold text-[#111218] text-sm leading-tight">
+                                                {{ $mk?->nama_mk }}</h4>
                                             <span
                                                 class="bg-{{ $color }}-50 text-{{ $color }}-600 px-2 py-0.5 rounded text-[10px] font-bold shrink-0">{{ $jenisLabel }}</span>
                                         </div>
 
                                         <div class="flex flex-wrap items-center gap-2 text-xs text-[#616889]">
                                             <span
-                                                class="bg-red-50 text-red-700 px-1.5 rounded font-bold">{{ $krs->kelasMataKuliah?->section ?? 'A' }}</span>
+                                                class="bg-red-50 text-red-700 px-1.5 rounded font-bold">{{ $krs->kelasMataKuliah?->kode_kelas ?? ($krs->kelas?->section ?? 'A') }}</span>
                                             <span>•</span>
                                             <span class="font-semibold">{{ $mk?->sks ?? 3 }} SKS</span>
                                             <span>•</span>
                                             <div class="flex items-center gap-1">
                                                 <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                                {{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} -
-                                                {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}
+                                                {{ \Carbon\Carbon::parse($item['jam_mulai'])->format('H:i') }} -
+                                                {{ \Carbon\Carbon::parse($item['jam_selesai'])->format('H:i') }}
                                             </div>
                                         </div>
 
                                         <div class="flex items-center gap-1 text-xs text-[#616889] mt-0.5">
                                             <span class="material-symbols-outlined text-[14px]">location_on</span>
-                                            {{ $jadwal->ruangan ?? 'Belum ditentukan' }}
+                                            {{ $item['ruangan'] ?? 'Belum ditentukan' }}
                                         </div>
 
                                         <div class="flex items-center gap-1 text-xs text-[#616889] mt-0.5">
@@ -101,7 +130,8 @@
                                 </div>
                             @endforeach
                         @else
-                            <div class="flex-1 flex flex-col items-center justify-center text-center gap-2 text-[#616889] py-4">
+                            <div
+                                class="flex-1 flex flex-col items-center justify-center text-center gap-2 text-[#616889] py-4">
                                 <span class="material-symbols-outlined text-gray-300 text-3xl">event_busy</span>
                                 <p class="text-sm">Tidak ada jadwal kuliah</p>
                             </div>

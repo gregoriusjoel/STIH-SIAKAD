@@ -89,7 +89,7 @@ class MataKuliahController extends Controller
     public function create()
     {
         $prodis = Prodi::where('status', 'aktif')->get();
-        $fakultas = Fakultas::with('prodis')->where('status', 'aktif')->get();
+        $fakultas = Fakultas::where('status', 'aktif')->get();
         return view('admin.mata-kuliah.create', compact('prodis', 'fakultas'));
     }
 
@@ -100,14 +100,19 @@ class MataKuliahController extends Controller
             'nama_mk' => 'required|string|max:255',
             'sks' => 'required|integer|min:1|max:6',
             'semester' => 'required|integer|min:1|max:8',
-            'praktikum' => 'nullable|integer|min:0|max:10',
+            'praktikum' => 'nullable|boolean',
             'jenis' => 'required|in:wajib_nasional,wajib_prodi,pilihan,peminatan',
             'prodi_id' => 'required|exists:prodis,id',
             'fakultas_id' => 'required|exists:fakultas,id',
             'deskripsi' => 'nullable|string',
         ]);
 
-        MataKuliah::create($request->all());
+        // Always set tipe to 'teori' (praktikum is just a flag)
+        $data = $request->all();
+        $data['tipe'] = 'teori';
+        $data['praktikum'] = $data['praktikum'] ? 1 : 0;
+
+        MataKuliah::create($data);
 
         return redirect()->route('admin.mata-kuliah.index')
             ->with('success', 'Mata kuliah berhasil ditambahkan');
@@ -122,7 +127,7 @@ class MataKuliahController extends Controller
     public function edit(MataKuliah $mataKuliah)
     {
         $prodis = Prodi::where('status', 'aktif')->get();
-        $fakultas = Fakultas::with('prodis')->where('status', 'aktif')->get();
+        $fakultas = Fakultas::where('status', 'aktif')->get();
         return view('admin.mata-kuliah.edit', compact('mataKuliah', 'prodis', 'fakultas'));
     }
 
@@ -133,14 +138,19 @@ class MataKuliahController extends Controller
             'nama_mk' => 'required|string|max:255',
             'sks' => 'required|integer|min:1|max:6',
             'semester' => 'required|integer|min:1|max:8',
-            'praktikum' => 'nullable|integer|min:0|max:10',
+            'praktikum' => 'nullable|boolean',
             'jenis' => 'required|in:wajib_nasional,wajib_prodi,pilihan,peminatan',
             'prodi_id' => 'required|exists:prodis,id',
             'fakultas_id' => 'required|exists:fakultas,id',
             'deskripsi' => 'nullable|string',
         ]);
 
-        $mataKuliah->update($request->all());
+        // Always set tipe to 'teori' (praktikum is just a flag)
+        $data = $request->all();
+        $data['tipe'] = 'teori';
+        $data['praktikum'] = $data['praktikum'] ? 1 : 0;
+
+        $mataKuliah->update($data);
 
         return redirect()->route('admin.mata-kuliah.index')
             ->with('success', 'Mata kuliah berhasil diupdate');

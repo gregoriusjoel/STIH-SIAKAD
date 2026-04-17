@@ -30,13 +30,23 @@
             </thead>
             <tbody>
                 @foreach($existingKrs as $i => $k)
+                @php
+                    $mk = $k->kelasMataKuliah?->mataKuliah ?? $k->kelas?->mataKuliah ?? $k->mataKuliah;
+                    $kelasLabel = $k->kelasMataKuliah?->nama_kelas
+                        ?? $k->kelasMataKuliah?->kode_kelas
+                        ?? $k->kelas?->section
+                        ?? '-';
+                    $dosenName = $k->kelasMataKuliah?->dosen?->user?->name
+                        ?? $k->kelas?->dosen?->user?->name
+                        ?? '-';
+                @endphp
                 <tr>
                     <td class="border px-4 py-2">{{ $i + 1 }}</td>
-                    <td class="border px-4 py-2">{{ $k->kelasMataKuliah->mataKuliah->kode_mk ?? '-' }}</td>
-                    <td class="border px-4 py-2">{{ $k->kelasMataKuliah->mataKuliah->nama_mk ?? '-' }}</td>
-                    <td class="border px-4 py-2 text-center">{{ $k->kelasMataKuliah->mataKuliah->sks ?? 0 }}</td>
-                    <td class="border px-4 py-2">{{ $k->kelasMataKuliah->nama_kelas ?? $k->kelasMataKuliah->kode_kelas }}</td>
-                    <td class="border px-4 py-2">{{ $k->kelasMataKuliah->dosen->user->name ?? '-' }}</td>
+                    <td class="border px-4 py-2">{{ $mk?->kode_mk ?? '-' }}</td>
+                    <td class="border px-4 py-2">{{ $mk?->nama_mk ?? '-' }}</td>
+                    <td class="border px-4 py-2 text-center">{{ $mk?->sks ?? 0 }}</td>
+                    <td class="border px-4 py-2">{{ $kelasLabel }}</td>
+                    <td class="border px-4 py-2">{{ $dosenName }}</td>
                 </tr>
                 @endforeach
             </tbody>

@@ -95,33 +95,56 @@ class AcademicPeriodService
      */
     public function getPeriods(int $semesterId): Collection
     {
-        return Cache::remember(
-            "academic_periods:{$semesterId}",
-            self::CACHE_TTL,
-            function () use ($semesterId) {
-                $semester = Semester::find($semesterId);
+        $cacheKey = "academic_periods:{$semesterId}";
+        $cached = Cache::get($cacheKey);
 
-                $query = AcademicEvent::active();
+        if ($this->isValidPeriodsCachePayload($cached)) {
+            return $cached;
+        }
 
-                if ($semester) {
-                    $start = $semester->tanggal_mulai;
-                    $end   = $semester->tanggal_selesai;
+        if ($cached !== null) {
+            Cache::forget($cacheKey);
+            Log::warning('AcademicPeriodService: invalid academic_periods cache payload, rebuilding', [
+                'cache_key' => $cacheKey,
+                'payload_type' => is_object($cached) ? get_class($cached) : gettype($cached),
+            ]);
+        }
 
-                    $query->where(function ($q) use ($semesterId, $start, $end) {
-                        $q->where('semester_id', $semesterId)
-                          ->orWhere(function ($q2) use ($start, $end) {
-                              $q2->whereNull('semester_id')
-                                 ->where('start_date', '<=', $end)
-                                 ->where('end_date', '>=', $start);
-                          });
-                    });
-                } else {
-                    $query->where('semester_id', $semesterId);
-                }
+        $periods = $this->queryPeriodsForSemester($semesterId);
+        Cache::put($cacheKey, $periods, self::CACHE_TTL);
 
-                return $query->orderBy('start_date')->get();
-            }
-        );
+        return $periods;
+    }
+
+    private function queryPeriodsForSemester(int $semesterId): Collection
+    {
+        $semester = Semester::find($semesterId);
+
+        $query = AcademicEvent::active();
+
+        if ($semester) {
+            $start = $semester->tanggal_mulai;
+            $end   = $semester->tanggal_selesai;
+
+            $query->where(function ($q) use ($semesterId, $start, $end) {
+                $q->where('semester_id', $semesterId)
+                  ->orWhere(function ($q2) use ($start, $end) {
+                      $q2->whereNull('semester_id')
+                         ->where('start_date', '<=', $end)
+                         ->where('end_date', '>=', $start);
+                  });
+            });
+        } else {
+            $query->where('semester_id', $semesterId);
+        }
+
+        return $query->orderBy('start_date')->get();
+    }
+
+    private function isValidPeriodsCachePayload(mixed $payload): bool
+    {
+        return $payload instanceof Collection
+            && $payload->every(fn ($event) => $event instanceof AcademicEvent);
     }
 
     /**
@@ -137,7 +160,11 @@ class AcademicPeriodService
         $now = Carbon::now();
 
         // Prefer currently-active event, fallback to nearest future event of that type
-        $active = $periods->first(function (AcademicEvent $e) use ($type, $now) {
+        $active = $periods->first(function ($e) use ($type, $now) {
+            if (!$e instanceof AcademicEvent) {
+                return false;
+            }
+
             return $e->event_type === $type
                 && $now->between(
                     Carbon::parse($e->start_date)->startOfDay(),
@@ -165,7 +192,11 @@ class AcademicPeriodService
         return Cache::remember($cacheKey, 60, function () use ($type, $date, $semesterId) {
             $periods = $this->getPeriods($semesterId);
 
-            return $periods->contains(function (AcademicEvent $e) use ($type, $date) {
+            return $periods->contains(function ($e) use ($type, $date) {
+                if (!$e instanceof AcademicEvent) {
+                    return false;
+                }
+
                 return $e->event_type === $type
                     && $date->between(
                         Carbon::parse($e->start_date)->startOfDay(),
@@ -202,7 +233,11 @@ class AcademicPeriodService
             $now = Carbon::now();
 
             return $periods
-                ->filter(function (AcademicEvent $e) use ($now) {
+                ->filter(function ($e) use ($now) {
+                    if (!$e instanceof AcademicEvent) {
+                        return false;
+                    }
+
                     return $now->between(
                         Carbon::parse($e->start_date)->startOfDay(),
                         Carbon::parse($e->end_date)->endOfDay()

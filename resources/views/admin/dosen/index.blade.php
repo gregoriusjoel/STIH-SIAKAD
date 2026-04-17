@@ -93,7 +93,7 @@
     {{-- Carry Forward --}}
     @if($previousSemester && $selectedSemester)
     <button type="button" onclick="document.getElementById('modal-carry-forward').classList.remove('hidden')"
-        class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-700 text-maroon dark:text-red-400 border border-maroon/30 rounded-lg hover:bg-maroon hover:text-white text-xs font-semibold transition">
+        class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-700 text-maroon dark:text-red-400 border border-maroon/30 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 hover:border-maroon transition text-xs font-semibold">
         <i class="fas fa-copy"></i> Carry Forward
     </button>
     @endif
@@ -104,20 +104,28 @@
 </div>
 
 {{-- ═══════════════ TABS ═══════════════ --}}
-<div class="flex border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 border-t-0 border-l border-r border-gray-200 dark:border-gray-700">
+<div class="flex items-center border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 border-t-0 border-l border-r border-gray-200 dark:border-gray-700">
     <a href="{{ route('admin.dosen.index', ['tab' => 'master', 'semester_id' => $selectedSemester?->id]) }}"
-        class="px-5 py-3 text-sm font-semibold border-b-2 transition {{ $tab === 'master' ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
+        class="px-5 py-3 text-sm font-semibold border-b-2 transition flex-shrink-0 {{ $tab === 'master' ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
         <i class="fas fa-list mr-1.5"></i> Master Dosen
     </a>
     <a href="{{ route('admin.dosen.index', ['tab' => 'dosen-aktif', 'semester_id' => $selectedSemester?->id]) }}"
-        class="px-5 py-3 text-sm font-semibold border-b-2 transition {{ $tab === 'dosen-aktif' ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
+        class="px-5 py-3 text-sm font-semibold border-b-2 transition flex-shrink-0 {{ $tab === 'dosen-aktif' ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
         <i class="fas fa-users mr-1.5"></i> Dosen Aktif
         <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs {{ $tab === 'dosen-aktif' ? 'bg-maroon text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">{{ $dosenAktifCount }}</span>
     </a>
     <a href="{{ route('admin.dosen.index', ['tab' => 'histori', 'semester_id' => $selectedSemester?->id]) }}"
-        class="px-5 py-3 text-sm font-semibold border-b-2 transition {{ $tab === 'histori' ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
+        class="px-5 py-3 text-sm font-semibold border-b-2 transition flex-shrink-0 {{ $tab === 'histori' ? 'border-maroon text-maroon dark:text-red-400 dark:border-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-maroon' }}">
         <i class="fas fa-archive mr-1.5"></i> Histori Dosen
     </a>
+    {{-- Search di sebelah kanan tab --}}
+    <div class="ml-auto px-4 py-2">
+        <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input type="text" id="searchInput" placeholder="Cari nama / NIDN dosen..."
+                class="pl-9 pr-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon w-56">
+        </div>
+    </div>
 </div>
 
 {{-- ═══════════════ TAB CONTENT WRAPPER ═══════════════ --}}
@@ -128,16 +136,7 @@
 {{-- TAB: MASTER DOSEN                              --}}
 {{-- ─────────────────────────────────────────────── --}}
 
-{{-- Filter bar --}}
-<div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-    <div class="flex flex-wrap gap-3 items-center">
-        <div class="relative flex-1 min-w-[200px] max-w-sm">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input type="text" id="searchInput" placeholder="Cari nama / NIDN dosen..."
-                class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
-        </div>
-    </div>
-</div>
+
 
 @if($dosens->isEmpty())
 <div class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
@@ -250,10 +249,6 @@
                         class="text-blue-600 hover:text-blue-900 transition p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="Detail">
                         <i class="fas fa-eye"></i>
                     </a>
-                    <a href="{{ route('admin.dosen.edit', $dosen) }}"
-                        class="text-amber-600 hover:text-amber-900 transition p-2 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </a>
                     <form action="{{ route('admin.dosen.destroy', $dosen) }}" method="POST" class="inline delete-form">
                         @csrf @method('DELETE')
                         <button type="submit" class="text-red-600 hover:text-red-900 transition p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Hapus">
@@ -278,16 +273,7 @@
 {{-- TAB: DOSEN AKTIF TA                            --}}
 {{-- ─────────────────────────────────────────────── --}}
 
-{{-- Filter bar --}}
-<div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-    <div class="flex flex-wrap gap-3 items-center">
-        <div class="relative flex-1 min-w-[200px] max-w-sm">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input type="text" id="searchInput2" placeholder="Cari nama / NIDN dosen..."
-                class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
-        </div>
-    </div>
-</div>
+
 
 @if($dosenAktif->isEmpty())
 <div class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
@@ -408,10 +394,6 @@
                         class="text-blue-600 hover:text-blue-900 transition p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="Detail">
                         <i class="fas fa-eye"></i>
                     </a>
-                    <a href="{{ route('admin.dosen.edit', $dosen) }}"
-                        class="text-amber-600 hover:text-amber-900 transition p-2 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </a>
                     <form action="{{ route('admin.dosen.destroy', $dosen) }}" method="POST" class="inline delete-form">
                         @csrf @method('DELETE')
                         <button type="submit" class="text-red-600 hover:text-red-900 transition p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Hapus">
@@ -432,17 +414,7 @@
 {{-- TAB: HISTORI DOSEN                             --}}
 {{-- ─────────────────────────────────────────────── --}}
 
-{{-- Filter bar --}}
-<div class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-    <div class="flex flex-wrap gap-3 items-center">
-        <div class="relative flex-1 min-w-[200px] max-w-sm">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input type="text" id="searchInput3" placeholder="Cari nama / NIDN dosen..."
-                class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon">
-        </div>
-        <span class="ml-auto text-xs text-gray-400 dark:text-gray-500">{{ $historiDosen->count() }} dosen ditemukan</span>
-    </div>
-</div>
+
 
 @if($historiDosen->isEmpty())
 <div class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
@@ -1052,32 +1024,30 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 @endif
 
-// Client-Side Search (Instant Filter)
+// Client-Side Search (Instant Filter) — single search input for all tabs
 document.addEventListener('DOMContentLoaded', function() {
-    function setupRealtimeSearch(inputId, rowClass, nameClass, nidnClass) {
-        const searchInput = document.getElementById(inputId);
-        if (searchInput) {
-            searchInput.addEventListener('input', function(e) {
-                const query = e.target.value.toLowerCase();
-                const rows = document.querySelectorAll(rowClass);
-                
-                rows.forEach(row => {
-                    const nama = row.querySelector(nameClass)?.textContent.toLowerCase() || '';
-                    const nidn = row.querySelector(nidnClass)?.textContent.toLowerCase() || '';
-                    
-                    if (nama.includes(query) || nidn.includes(query)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            });
-        }
-    }
+    const activeTab = '{{ $tab }}';
 
-    setupRealtimeSearch('searchInput', '.searchable-row', '.search-nama', '.search-nidn');
-    setupRealtimeSearch('searchInput2', '.searchable-row-2', '.search-nama-2', '.search-nidn-2');
-    setupRealtimeSearch('searchInput3', '.searchable-row-3', '.search-nama-3', '.search-nidn-3');
+    // Map each tab to its row/name/nidn selectors
+    const tabConfig = {
+        'master':      { row: '.searchable-row',   name: '.search-nama',   nidn: '.search-nidn'   },
+        'dosen-aktif': { row: '.searchable-row-2',  name: '.search-nama-2', nidn: '.search-nidn-2' },
+        'histori':     { row: '.searchable-row-3',  name: '.search-nama-3', nidn: '.search-nidn-3' },
+    };
+
+    const cfg = tabConfig[activeTab];
+    const searchInput = document.getElementById('searchInput');
+
+    if (searchInput && cfg) {
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll(cfg.row).forEach(row => {
+                const nama = row.querySelector(cfg.name)?.textContent.toLowerCase() || '';
+                const nidn = row.querySelector(cfg.nidn)?.textContent.toLowerCase() || '';
+                row.style.display = (nama.includes(query) || nidn.includes(query)) ? '' : 'none';
+            });
+        });
+    }
 });
 </script>
 @endpush

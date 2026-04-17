@@ -198,7 +198,7 @@
                                 <p class="text-[10px] text-gray-400 mt-1">Diupload pada {{ $skripsi->logbook_uploaded_at?->format('d M Y, H:i') }} WIB</p>
                             </div>
                         </div>
-                        <a href="{{ route('dosen.skripsi.download', base64_encode($skripsi->logbook_file_path)) }}"
+                        <a href="{{ route('dosen.skripsi.download', ['skripsi' => $skripsi->id, 'encodedPath' => base64_encode($skripsi->logbook_file_path)]) }}"
                             class="flex items-center gap-2 px-4 py-2.5 bg-[#8B1538] text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-[#6D1029] transition-all shadow-sm shrink-0 ml-4">
                             <span class="material-symbols-outlined text-[18px]">download</span>
                             Download
@@ -260,7 +260,7 @@
                                 
                                 @if($g->file_path)
                                 <div class="mt-4 flex items-center">
-                                    <a href="{{ route('dosen.skripsi.download', base64_encode($g->file_path)) }}"
+                                    <a href="{{ route('dosen.skripsi.download', ['skripsi' => $skripsi->id, 'encodedPath' => base64_encode($g->file_path)]) }}"
                                         class="inline-flex items-center gap-2 group/file px-3 py-2 bg-[#8B1538]/5 text-[#8B1538] rounded-xl text-xs font-black uppercase tracking-wider hover:bg-[#8B1538] hover:text-white transition-all shadow-sm">
                                         <span class="material-symbols-outlined text-[18px]">cloud_download</span>
                                         File Bimbingan
@@ -386,7 +386,7 @@
                                         <p class="text-[9px] text-gray-400 truncate mt-0.5">{{ $file->original_name }}</p>
                                     </div>
                                 </div>
-                                <a href="{{ route('dosen.skripsi.download', base64_encode($file->file_path)) }}"
+                                <a href="{{ route('dosen.skripsi.download', ['skripsi' => $skripsi->id, 'encodedPath' => base64_encode($file->file_path)]) }}"
                                     class="w-8 h-8 flex items-center justify-center rounded-full text-indigo-200 hover:text-indigo-600 hover:bg-indigo-50 lg:opacity-0 group-hover:opacity-100 transition-all">
                                     <span class="material-symbols-outlined text-[20px]">file_download</span>
                                 </a>
@@ -423,7 +423,7 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-4">
-                        <a href="{{ route('dosen.skripsi.download', base64_encode($rev->revision_file_path)) }}"
+                        <a href="{{ route('dosen.skripsi.download', ['skripsi' => $skripsi->id, 'encodedPath' => base64_encode($rev->revision_file_path)]) }}"
                             class="flex-1 flex items-center justify-center gap-3 h-12 bg-white text-indigo-600 border border-indigo-100 rounded-2xl shadow-sm hover:bg-indigo-50 hover:-translate-y-0.5 transition-all text-xs font-black uppercase tracking-widest">
                             <span class="material-symbols-outlined text-[20px]">download_for_offline</span>
                             Download Berkas Revisi

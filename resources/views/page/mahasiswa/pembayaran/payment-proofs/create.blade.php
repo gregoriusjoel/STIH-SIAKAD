@@ -101,16 +101,17 @@
                     <!-- Payment Method -->
                     <div class="space-y-2">
                         <label for="method" class="block text-sm font-semibold text-slate-700">
-                            Metode Pembayaran <span class="text-slate-400 font-normal">(Opsional)</span>
+                            Metode Pembayaran <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                                 <i class="far fa-credit-card"></i>
                             </span>
                             <select name="method" id="method" 
-                                    class="block w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] transition-colors appearance-none">
+                                    required
+                                    class="block w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] transition-colors appearance-none @error('method') border-red-500 @enderror">
                                 <option value="">Pilih Metode Pembayaran...</option>
-                                <option value="Transfer Bank" {{ old('method') == 'Transfer Bank' ? 'selected' : '' }}>Transfer Bank (BCA/Mandiri/BNI/BRI)</option>
+                                <option value="Transfer Bank" {{ old('method') == 'Transfer Bank' ? 'selected' : '' }}>Transfer Bank</option>
                                 <option value="VA" {{ old('method') == 'VA' ? 'selected' : '' }}>Virtual Account</option>
                                 <option value="E-Wallet" {{ old('method') == 'E-Wallet' ? 'selected' : '' }}>E-Wallet (OVO/Gopay/ShopeePay)</option>
                                 <option value="Tunai" {{ old('method') == 'Tunai' ? 'selected' : '' }}>Tunai / Teller</option>
@@ -119,6 +120,9 @@
                                 <i class="fas fa-chevron-down text-xs"></i>
                             </span>
                         </div>
+                        @error('method')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- File Upload Area -->

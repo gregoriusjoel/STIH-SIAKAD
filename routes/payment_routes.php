@@ -19,6 +19,8 @@ Route::middleware(['auth', 'verified'])->prefix('mahasiswa')->name('mahasiswa.')
     // Payment Proofs
     Route::get('/installments/{installment}/payment-proof/create', [MahasiswaPaymentController::class, 'createPaymentProof'])
         ->name('payment-proofs.create');
+    Route::get('/invoices/{invoice}/payment-proof-full/create', [MahasiswaPaymentController::class, 'createFullPaymentProof'])
+        ->name('payment-proofs.full.create');
     Route::post('/payment-proofs', [MahasiswaPaymentController::class, 'storePaymentProof'])
         ->name('payment-proofs.store');
 
@@ -51,4 +53,7 @@ Route::middleware(['auth', 'verified'])->prefix('finance')->name('finance.')->gr
     Route::get('/payment-proofs/{paymentProof}', [PaymentProofController::class, 'show'])->name('payment-proofs.show');
     Route::post('/payment-proofs/{paymentProof}/review', [PaymentProofController::class, 'review'])
         ->name('payment-proofs.review');
+
+    // Laporan
+    Route::get('/laporan', [\App\Http\Controllers\Finance\LaporanController::class, 'index'])->name('laporan.index');
 });

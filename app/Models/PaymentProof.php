@@ -70,6 +70,18 @@ class PaymentProof extends Model
      */
     public function getFileUrlAttribute(): string
     {
+        if (!$this->file_path) {
+            return '';
+        }
+
+        // If using S3 and not a local link, use temporary URL for private access
+        if (config('filesystems.default') === 's3' || str_contains($this->file_path, 'uploads/')) {
+            return Storage::disk('s3')->temporaryUrl(
+                $this->file_path,
+                now()->addMinutes(15) // 15 mins is plenty for viewing
+            );
+        }
+
         return Storage::url($this->file_path);
     }
 
@@ -82,10 +94,10 @@ class PaymentProof extends Model
     }
 
     /**
-     * Check if proof is already rejected
+     * Check if the file is a PDF
      */
-    public function isRejected(): bool
+    public function getIsPdfAttribute(): bool
     {
-        return $this->status === 'REJECTED';
+        return strtolower(pathinfo($this->file_path, PATHINFO_EXTENSION)) === 'pdf';
     }
 }

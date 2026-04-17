@@ -14,7 +14,7 @@
      * 
      * Features:
      * - Request counter for multiple parallel requests
-     * - Fail-safe auto-hide after 15s
+     * - Fail-safe auto-hide after 5s
      * - Download-safe (won't trigger on file downloads)
      * - AJAX/Axios interceptor ready
      * - SweetAlert2 compatible
@@ -26,7 +26,7 @@
         // ========== Configuration ==========
         const CONFIG = {
             showDelay: 300,          // Delay before showing loader (ms)
-            failSafeTimeout: 15000,  // Auto-hide after 15s
+            failSafeTimeout: 2000,   // Auto-hide after 2s
             fadeOutDuration: 250,    // Fade out animation duration (ms)
             debugMode: false         // Set true to enable debug logging
         };
@@ -149,7 +149,7 @@
             clearFailSafe();
             
             state.failSafeTimer = setTimeout(() => {
-                console.warn('[Loader] Fail-safe triggered: forcing hide after 15s');
+                console.warn('[Loader] Fail-safe triggered: forcing hide after 5s');
                 resetRequests('fail-safe timeout');
             }, CONFIG.failSafeTimeout);
         }
@@ -200,6 +200,13 @@
         document.addEventListener('submit', function (e) {
             const form = e.target;
             if (!form || !form.matches || !form.matches('form')) return;
+
+            // Skip forms that open a new tab/window (e.g. print/download)
+            const target = (form.getAttribute('target') || '').toLowerCase();
+            if (target === '_blank') {
+                debugLog('Form submit ignored (target _blank)');
+                return;
+            }
             
             // Skip if form has data-no-loader attribute
             if (form.hasAttribute('data-no-loader')) {

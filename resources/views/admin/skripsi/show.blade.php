@@ -100,7 +100,7 @@
                     @php
                         $currentStep = $skripsi->status->step();
                         $steps = [
-                            ['label' => 'Proposal', 'icon' => 'description', 'min_step' => 2],
+                            ['label' => 'Skripsi', 'icon' => 'description', 'min_step' => 2],
                             ['label' => 'Bimbingan', 'icon' => 'forum', 'min_step' => 3],
                             ['label' => 'Pendaftaran', 'icon' => 'assignment_ind', 'min_step' => 4],
                             ['label' => 'Sidang', 'icon' => 'school', 'min_step' => 5],
@@ -201,7 +201,7 @@
                 </div>
             </div>
 
-            {{-- Proposal Actions Card --}}
+            {{-- Skripsi Actions Card --}}
             @if($skripsi->status->value === 'PROPOSAL_SUBMITTED')
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-red-900/[0.01] rounded-full blur-3xl -mr-32 -mt-32"></div>
@@ -213,7 +213,7 @@
                                 <span class="material-symbols-outlined text-2xl">pending_actions</span>
                             </div>
                             <div>
-                                <h3 class="text-lg font-black text-gray-900 tracking-tight leading-none mb-1 group-hover:text-red-900 transition-colors duration-500">Persetujuan Proposal</h3>
+                                <h3 class="text-lg font-black text-gray-900 tracking-tight leading-none mb-1 group-hover:text-red-900 transition-colors duration-500">Persetujuan Skripsi</h3>
                                 <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-none">Menunggu Konfirmasi Admin</p>
                             </div>
                         </div>
@@ -222,7 +222,7 @@
                         <a href="{{ route('admin.skripsi.download', base64_encode($skripsi->proposal_file_path)) }}"
                             class="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-900 rounded-xl border border-gray-100 hover:border-red-100 transition-all text-xs font-black uppercase tracking-widest group/dl">
                             <span class="material-symbols-outlined text-[18px] group-hover/dl:translate-y-0.5 transition-transform">download</span>
-                            Proposal
+                            Skripsi
                         </a>
                         @endif
                     </div>
@@ -233,10 +233,10 @@
                             <form action="{{ route('admin.skripsi.proposal.approve', $skripsi) }}" method="POST" class="w-full">
                                 @csrf
                                 <input type="hidden" name="note" value="">
-                                <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui proposal ini?')"
+                                <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui pengajuan skripsi ini?')"
                                     class="w-full h-14 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3">
                                     <span class="material-symbols-outlined text-xl">check_circle</span>
-                                    Setujui Proposal
+                                    Setujui Skripsi
                                 </button>
                             </form>
                         </div>
@@ -246,14 +246,14 @@
                             <button x-show="mode === null" @click="mode = 'reject'" 
                                 class="w-full h-14 bg-red-50 text-red-600 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-red-100 border border-red-100 transition-all flex items-center justify-center gap-3">
                                 <span class="material-symbols-outlined text-xl">cancel</span>
-                                Tolak Proposal
+                                Tolak Skripsi
                             </button>
 
                             <div x-show="mode === 'reject'" x-cloak class="space-y-3" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2">
                                 <form action="{{ route('admin.skripsi.proposal.reject', $skripsi) }}" method="POST">
                                     @csrf
                                     <div class="relative mb-3">
-                                        <textarea name="reason" rows="3" placeholder="Berikan alasan penolakan agar mahasiswa dapat memperbaiki proposalnya..." required
+                                        <textarea name="reason" rows="3" placeholder="Berikan alasan penolakan agar mahasiswa dapat memperbaiki skripsinya..." required
                                             class="w-full bg-red-50/50 border-2 border-red-100 rounded-2xl px-4 py-3 text-sm text-red-900 placeholder:text-red-300 focus:outline-none focus:border-red-400 focus:ring-4 focus:ring-red-400/5 transition-all resize-none"></textarea>
                                     </div>
                                     <div class="flex gap-2">

@@ -39,11 +39,11 @@ enum SkripsiStatus: string
     {
         return match($this) {
             self::LOCKED              => 'Belum Memenuhi Syarat SKS',
-            self::PROPOSAL_DRAFT      => 'Draft Proposal',
+            self::PROPOSAL_DRAFT      => 'Draft Skripsi',
             self::PROPOSAL_PENDING_SUPERVISOR => 'Menunggu Konfirmasi Dosen',
             self::PROPOSAL_SUBMITTED  => 'Menunggu Review Admin',
-            self::PROPOSAL_REJECTED   => 'Proposal Ditolak',
-            self::PROPOSAL_APPROVED   => 'Proposal Disetujui',
+            self::PROPOSAL_REJECTED   => 'Skripsi Ditolak',
+            self::PROPOSAL_APPROVED   => 'Skripsi Disetujui',
             self::BIMBINGAN_ACTIVE    => 'Bimbingan Aktif',
             self::ELIGIBLE_SIDANG     => 'Siap Daftar Sidang',
             self::SIDANG_REG_DRAFT    => 'Draft Pendaftaran Sidang',

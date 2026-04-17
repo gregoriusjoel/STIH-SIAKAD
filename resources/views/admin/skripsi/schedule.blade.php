@@ -100,7 +100,7 @@
                         <select name="ruangan_id" class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/5 transition-all appearance-none">
                             <option value="">Pilih ruangan...</option>
                             @foreach($ruangans as $r)
-                            <option value="{{ $r->id }}" {{ old('ruangan_id') == $r->id ? 'selected' : '' }}>{{ $r->nama }}</option>
+                            <option value="{{ $r->id }}" {{ old('ruangan_id') == $r->id ? 'selected' : '' }}>{{ $r->kode_ruangan }} - {{ $r->nama_ruangan }}</option>
                             @endforeach
                         </select>
                     </div>

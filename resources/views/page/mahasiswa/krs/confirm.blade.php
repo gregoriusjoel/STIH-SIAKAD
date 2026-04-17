@@ -126,7 +126,7 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
                                 <a href="{{ route('mahasiswa.krs.index') }}?start=1"
-                                    class="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg transition-colors shadow-md">
+                                    class="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-red-900 hover:bg-red-800 md:py-4 md:text-lg transition-colors shadow-md">
                                     Isi KRS Sekarang
                                 </a>
                                 <a href="{{ route('mahasiswa.dashboard') }}"
@@ -177,8 +177,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         @if($canDownload)
-                                            <a href="{{ route('mahasiswa.krs.print', ['semester_id' => $sem->semester_number ?? $sem->id]) }}" 
-                                               target="_blank"
+                                            <a href="{{ route('mahasiswa.krs.print', ['semester_number' => $sem->semester_number ?? $sem->id]) }}"
                                                class="inline-flex items-center px-4 py-2 border border-maroon text-sm font-medium rounded-lg text-maroon bg-white hover:bg-maroon hover:text-white transition-all duration-200 shadow-sm whitespace-nowrap group">
                                                 <i class="fas fa-print mr-2 group-hover:text-white transition-colors"></i> Download KRS
                                             </a>
@@ -227,8 +226,7 @@
                                 
                                 <div>
                                     @if($canDownload)
-                                        <a href="{{ route('mahasiswa.krs.print', ['semester_id' => $sem->semester_number ?? $sem->id]) }}" 
-                                           target="_blank"
+                                        <a href="{{ route('mahasiswa.krs.print', ['semester_number' => $sem->semester_number ?? $sem->id]) }}"
                                            class="flex items-center justify-center w-full px-4 py-2.5 border border-maroon text-sm font-bold rounded-xl text-maroon bg-white hover:bg-maroon hover:text-white transition-all duration-200 shadow-sm group">
                                             <i class="fas fa-print mr-2"></i> Download KRS
                                         </a>

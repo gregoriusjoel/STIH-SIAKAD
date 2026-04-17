@@ -79,6 +79,23 @@
                         </div>
 
                         <div>
+                            <label class="block text-sm font-medium text-gray-500">Kategori</label>
+                            <div class="mt-1">
+                                @if($ruangan->kategori)
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $ruangan->kategori->badge_color }}">
+                                        <i class="fas {{ $ruangan->kategori->icon }} mr-1"></i>
+                                        {{ $ruangan->kategori->nama_kategori }}
+                                    </span>
+                                    @if($ruangan->kategori->deskripsi)
+                                        <p class="text-xs text-gray-500 mt-1">{{ $ruangan->kategori->deskripsi }}</p>
+                                    @endif
+                                @else
+                                    <span class="text-sm text-gray-500">Tidak dikategorisasi</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div>
                             <label class="block text-sm font-medium text-gray-500">Status</label>
                             <div class="mt-1">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium

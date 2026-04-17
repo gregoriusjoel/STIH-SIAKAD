@@ -6,7 +6,7 @@
 @php
     $steps = [
         1 => 'Syarat SKS',
-        2 => 'Pengajuan Proposal',
+        2 => 'Pengajuan Skripsi',
         3 => 'Bimbingan',
         4 => 'Pendaftaran Sidang',
         5 => 'Jadwal Sidang',
@@ -30,17 +30,17 @@
             'icon'  => 'description',
             'color' => 'text-[#8B1538]',
             'bg'    => 'bg-red-50',
-            'title' => 'Langkah: Ajukan Proposal',
-            'body'  => 'Siapkan judul penelitian dan pilih dosen pembimbing. Proposal akan diverifikasi oleh admin sebelum melanjutkan.',
+            'title' => 'Langkah: Ajukan Skripsi',
+            'body'  => 'Siapkan judul penelitian dan pilih dosen pembimbing. Skripsi akan diverifikasi oleh admin sebelum melanjutkan.',
             'tip'   => 'Pilih topik yang relevan dan konsultasikan dengan dosen terlebih dahulu.',
         ],
         2 => [
             'icon'  => 'edit_note',
             'color' => 'text-purple-600',
             'bg'    => 'bg-purple-50',
-            'title' => 'Langkah: Menunggu Review Proposal',
-            'body'  => 'Proposal telah diajukan. Admin akan meninjau dan memberikan keputusan. Harap tunggu notifikasi selanjutnya.',
-            'tip'   => 'Pantau halaman ini secara berkala untuk update status proposal.',
+            'title' => 'Langkah: Menunggu Review Skripsi',
+            'body'  => 'Skripsi telah diajukan. Admin akan meninjau dan memberikan keputusan. Harap tunggu notifikasi selanjutnya.',
+            'tip'   => 'Pantau halaman ini secara berkala untuk update status skripsi.',
         ],
         3 => [
             'icon'  => 'menu_book',
@@ -164,7 +164,7 @@
         <ol class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             @foreach([
                 'Syarat SKS (min. 120 SKS)',
-                'Pengajuan Judul & Proposal',
+                'Pengajuan Judul & Skripsi',
                 'Bimbingan (min. 8x)',
                 'Pendaftaran Sidang',
                 'Jadwal Sidang',
@@ -191,7 +191,7 @@
     @if($submission && in_array($submission->status->value, ['PROPOSAL_SUBMITTED','SIDANG_REG_SUBMITTED','REVISION_UPLOADED']))
     @php
         $alertMsg = match($submission->status->value) {
-            'PROPOSAL_SUBMITTED'   => 'Proposal Anda sedang dalam review admin. Harap tunggu.',
+            'PROPOSAL_SUBMITTED'   => 'Skripsi Anda sedang dalam review admin. Harap tunggu.',
             'SIDANG_REG_SUBMITTED' => 'Berkas pendaftaran sidang sedang diverifikasi admin.',
             'REVISION_UPLOADED'    => 'Revisi sudah dikirim. Menunggu ACC dari dosen pembimbing.',
             default                => '',
@@ -291,7 +291,7 @@
             {{-- Action Cards --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-                {{-- Proposal --}}
+                {{-- Skripsi --}}
                 @if(!$submission || in_array($submission?->status->value, ['PROPOSAL_DRAFT','PROPOSAL_REJECTED']))
                 @php $rejected = $submission?->status->value === 'PROPOSAL_REJECTED'; @endphp
                 <a href="{{ route('mahasiswa.skripsi.proposal') }}"
@@ -304,14 +304,14 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 mb-1.5 flex-wrap">
                                 <h3 class="font-bold text-gray-900 group-hover:text-[#8B1538] transition-colors">
-                                    {{ $rejected ? 'Revisi Proposal' : 'Ajukan Proposal' }}
+                                    {{ $rejected ? 'Revisi Skripsi' : 'Ajukan Skripsi' }}
                                 </h3>
                                 @if($rejected)
                                 <span class="text-[10px] bg-red-50 text-red-600 font-bold px-2 py-0.5 rounded-full border border-red-100">Ditolak</span>
                                 @endif
                             </div>
                             <p class="text-sm text-gray-500 leading-relaxed">
-                                {{ $rejected ? ($submission->admin_note ?? 'Perbaiki dan kirim ulang proposal') : 'Pilih judul penelitian & dosen pembimbing Anda untuk memulai proses skripsi.' }}
+                                {{ $rejected ? ($submission->admin_note ?? 'Perbaiki dan kirim ulang skripsi') : 'Pilih judul penelitian & dosen pembimbing Anda untuk memulai proses skripsi.' }}
                             </p>
                         </div>
                     </div>

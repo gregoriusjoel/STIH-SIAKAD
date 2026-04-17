@@ -75,9 +75,21 @@
                     <tbody class="divide-y divide-gray-100">
                         @forelse($presensiData as $presensi)
                             @php
-                                // Correct path: presensi → krs → kelasMataKuliah → mataKuliah
-                                $mk = $presensi->krs?->kelasMataKuliah?->mataKuliah;
-                                $jadwal = $presensi->krs?->kelasMataKuliah?->jadwal;
+                                // Support both legacy Kelas and current KelasMataKuliah
+                                $krs = $presensi->krs;
+                                $mk = $krs?->kelasMataKuliah?->mataKuliah ?? $krs?->kelas?->mataKuliah ?? $krs?->mataKuliah;
+                                
+                                // Schedule info
+                                $jadwal = null;
+                                if ($krs?->kelasMataKuliah?->hari) {
+                                    $jadwal = (object)[
+                                        'jam_mulai' => $krs->kelasMataKuliah->jam_mulai,
+                                        'jam_selesai' => $krs->kelasMataKuliah->jam_selesai,
+                                    ];
+                                } elseif ($krs?->kelas?->jadwals?->isNotEmpty()) {
+                                    $jadwal = $krs->kelas->jadwals->first();
+                                }
+
                                 $tgl = $presensi->tanggal ?? $presensi->created_at;
                             @endphp
                             <tr class="hover:bg-gray-50/50 transition">

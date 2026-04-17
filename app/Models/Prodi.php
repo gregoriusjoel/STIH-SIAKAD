@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\MataKuliah;
 use App\Models\Fakultas;
-
 use App\Traits\Auditable;
 
 class Prodi extends Model
