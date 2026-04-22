@@ -40,22 +40,31 @@ class MahasiswaController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email_pribadi' => 'nullable|email|unique:mahasiswas,email_pribadi',
+            'email_kampus' => 'required|email|unique:mahasiswas,email_kampus',
             'password' => 'nullable|min:6',
             'nim' => 'required|string|unique:mahasiswas,nim',
             'prodi' => 'required|string|max:255',
             'angkatan' => 'required|string|max:10',
             'semester' => 'required|integer|min:1|max:12',
             'jenis_kelamin' => 'required|string|max:50',
-            'phone' => 'nullable|string|max:30',
+            'phone' => 'nullable|digits_between:11,13',
             'address' => 'nullable|string|max:1000',
         ]);
+
+        // Sanitasi nama: hapus angka dan karakter khusus, hanya boleh huruf dan spasi
+        $cleanName = preg_replace('/[^a-zA-Z\s]/u', '', $request->input('name'));
+        $cleanName = preg_replace('/\s+/', ' ', $cleanName); // Remove multiple spaces
+        $cleanName = trim($cleanName);
+
+        // Always use kampus email for login (primary email)
+        $emailForUser = $request->input('email_kampus');
 
         // create user
         $plainPassword = $request->filled('password') ? $request->input('password') : 'mahasiswa123';
         $user = \App\Models\User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
+            'name' => $cleanName,
+            'email' => $emailForUser,
             'password' => Hash::make($plainPassword),
             'role' => 'mahasiswa',
         ]);
@@ -70,11 +79,14 @@ class MahasiswaController extends Controller
             'jenis_kelamin' => $request->input('jenis_kelamin'),
             'phone' => $request->input('phone'),
             'address' => $request->input('address'),
+            'email_pribadi' => $request->input('email_pribadi'),
+            'email_kampus' => $request->input('email_kampus'),
+            'email_aktif' => 'kampus',  // Always use kampus email as active
             'status' => 'aktif',
             'status_akun' => 'baru',
         ]);
 
-        return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil ditambahkan.');
+        return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil ditambahkan. Login menggunakan Email Kampus.');
     }
 
     /**
@@ -93,22 +105,31 @@ class MahasiswaController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email_pribadi' => 'nullable|email|max:255|unique:mahasiswas,email_pribadi,' . $mahasiswa->id,
+            'email_kampus' => 'required|email|max:255|unique:mahasiswas,email_kampus,' . $mahasiswa->id,
             'password' => 'nullable|string|min:6',
-            'nim' => 'required|string|max:50',
+            'nim' => 'required|string|max:50|unique:mahasiswas,nim,' . $mahasiswa->id,
             'prodi' => 'required|string|max:255',
             'angkatan' => 'required|string|max:10',
             'jenis_kelamin' => 'nullable|string|max:50',
             'semester' => 'required|integer|min:1|max:12',
             'status' => 'required|string|max:50',
-            'phone' => 'nullable|string|max:30',
+            'phone' => 'nullable|digits_between:11,13',
             'address' => 'nullable|string|max:1000',
         ]);
 
+        // Sanitasi nama: hapus angka dan karakter khusus, hanya boleh huruf dan spasi
+        $cleanName = preg_replace('/[^a-zA-Z\s]/u', '', $request->input('name'));
+        $cleanName = preg_replace('/\s+/', ' ', $cleanName); // Remove multiple spaces
+        $cleanName = trim($cleanName);
+
+        // Always use kampus email for login (primary email)
+        $emailForUser = $request->input('email_kampus');
+
         // Update user
         $user = $mahasiswa->user;
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
+        $user->name = $cleanName;
+        $user->email = $emailForUser;
         if ($request->filled('password')) {
             $user->password = Hash::make($request->input('password'));
         }
@@ -123,9 +144,12 @@ class MahasiswaController extends Controller
         $mahasiswa->status = $request->input('status');
         $mahasiswa->phone = $request->input('phone');
         $mahasiswa->address = $request->input('address');
+        $mahasiswa->email_pribadi = $request->input('email_pribadi');
+        $mahasiswa->email_kampus = $request->input('email_kampus');
+        $mahasiswa->email_aktif = 'kampus';  // Always kampus email
         $mahasiswa->save();
 
-        return redirect()->route('admin.mahasiswa.index')->with('success', 'Data mahasiswa berhasil diperbarui.');
+        return redirect()->route('admin.mahasiswa.index')->with('success', 'Data mahasiswa berhasil diperbarui. Login menggunakan Email Kampus.');
     }
 
     /**

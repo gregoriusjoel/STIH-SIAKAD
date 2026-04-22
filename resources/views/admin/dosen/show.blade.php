@@ -653,7 +653,9 @@
                                 </label>
                                 <input type="text" name="phone" value="{{ old('phone', $dosen->phone) }}"
                                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
-                                    placeholder="+62812345678">
+                                    placeholder="08xxxxxxxxxx" inputmode="numeric" minlength="11" maxlength="13" pattern="^[0-9]{11,13}$"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)"
+                                    onblur="if(this.value.length > 0 && this.value.length < 11) { alert('Nomor tidak valid! Minimal 11 angka.'); }">
                             </div>
                         </div>
 

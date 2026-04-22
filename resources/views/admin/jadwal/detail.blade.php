@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Detail Proposal Jadwal - Admin')
+@section('title', 'Detail Pengajuan Jadwal - Admin')
 
 @section('content')
 <div class="px-4 py-6 md:px-8">
@@ -12,11 +12,11 @@
                 <span class="mx-2">/</span>
                 <a href="{{ route('admin.jadwal_admin_approval.index') }}" class="hover:text-maroon">Persetujuan</a>
                 <span class="mx-2">/</span>
-                <span class="text-gray-900">Detail Proposal</span>
+                <span class="text-gray-900">Detail Pengajuan</span>
             </div>
             <h1 class="text-2xl font-bold text-gray-900 flex items-center">
                 <i class="fas fa-file-invoice text-maroon mr-3"></i>
-                Detail Proposal Jadwal
+                Detail Pengajuan Jadwal
             </h1>
         </div>
         <div class="flex items-center space-x-3">
@@ -33,7 +33,7 @@
                 <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                     <h3 class="font-bold text-gray-900">Informasi Mata Kuliah & Kelas</h3>
                     <span class="px-3 py-1 bg-maroon/10 text-maroon text-xs font-bold rounded-full uppercase tracking-wider">
-                        Proposal #{{ $proposal->id }}
+                        Pengajuan #{{ $proposal->id }}
                     </span>
                 </div>
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -161,9 +161,9 @@
                         <label class="block text-sm font-bold text-gray-700 mb-2">Keputusan</label>
                         <select name="status" id="status_select" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-maroon focus:border-transparent transition text-sm font-semibold" required onchange="toggleChangesFields()">
                             @php $defaultStatus = $proposal->status === 'rejected_dosen' ? 'approved_with_changes' : 'approved'; @endphp
-                            <option value="approved" {{ $defaultStatus === 'approved' ? 'selected' : '' }}>Setujui Proposal</option>
+                            <option value="approved" {{ $defaultStatus === 'approved' ? 'selected' : '' }}>Setujui Pengajuan</option>
                             <option value="approved_with_changes" {{ $defaultStatus === 'approved_with_changes' ? 'selected' : '' }}>Setujui dengan Perubahan</option>
-                            <option value="rejected" {{ $defaultStatus === 'rejected' ? 'selected' : '' }}>Tolak Proposal</option>
+                            <option value="rejected" {{ $defaultStatus === 'rejected' ? 'selected' : '' }}>Tolak Pengajuan</option>
                         </select>
                     </div>
 

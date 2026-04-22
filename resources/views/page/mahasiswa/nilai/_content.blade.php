@@ -44,7 +44,7 @@
                 <span class="material-symbols-outlined text-4xl text-slate-300">inventory_2</span>
             </div>
             <h4 class="text-xl font-black text-slate-900 dark:text-white mb-2">Belum Ada Nilai</h4>
-            <p class="text-slate-400 font-bold text-sm uppercase tracking-wider">Nilai akan muncul setelah dosen melakukan input</p>
+            <p class="text-slate-400 font-bold text-sm uppercase tracking-wider">Nilai akan muncul setelah dilakukannya penginputan nilai</p>
         </div>
     @else
         @foreach($nilaiPerSemester as $semesterNama => $nilaiList)

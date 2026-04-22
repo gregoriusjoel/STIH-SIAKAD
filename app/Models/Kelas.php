@@ -20,6 +20,7 @@ class Kelas extends Model
         'kapasitas',
         'tahun_ajaran',
         'semester_type',
+        'kelas_perkuliahan_id',
     ];
 
     /**
@@ -86,5 +87,25 @@ class Kelas extends Model
     public function rps()
     {
         return $this->hasOne(DokumenKelas::class, 'kelas_id')->where('tipe_dokumen', 'rps');
+    }
+
+    /**
+     * Get the Kelas Perkuliahan master data (new dynamic system)
+     */
+    public function kelasPerkuliahan(): BelongsTo
+    {
+        return $this->belongsTo(KelasPerkuliahan::class);
+    }
+
+    /**
+     * Resolve the class name: prefer new relation, fallback to legacy 'section'.
+     */
+    public function getResolvedKelasNameAttribute(): string
+    {
+        if ($this->kelas_perkuliahan_id && $this->kelasPerkuliahan) {
+            return $this->kelasPerkuliahan->nama_kelas;
+        }
+
+        return $this->section ?? '-';
     }
 }

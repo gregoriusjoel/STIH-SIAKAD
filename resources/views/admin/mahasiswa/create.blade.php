@@ -34,17 +34,37 @@
                                 </label>
                                 <input type="text" name="name" value="{{ old('name') }}"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="Masukkan nama lengkap" required>
+                                    placeholder="Masukkan nama lengkap" 
+                                    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '').replace(/\b\w/g, char => char.toUpperCase())"
+                                    required>
+                                <small class="text-gray-500 mt-1 block">Hanya huruf dan spasi (angka & karakter khusus otomatis hilang)</small>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class="fas fa-envelope text-gray-400 mr-1"></i>
-                                    Email *
+                                    Email Pribadi
                                 </label>
-                                <input type="email" name="email" value="{{ old('email') }}"
+                                <input type="email" name="email_pribadi" value="{{ old('email_pribadi') }}"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="email@student.stih.ac.id" required>
+                                    placeholder="email@gmail.com">
+                                <small class="text-gray-500 mt-1 block">Opsional - untuk komunikasi alternatif</small>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-envelope text-blue-500 mr-1"></i>
+                                    Email Kampus (Auto-generate) *
+                                </label>
+                                <input type="text" id="email_kampus_display" readonly
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-maroon focus:border-transparent transition cursor-not-allowed"
+                                    placeholder="otomatis dari Nama">
+                                <input type="hidden" name="email_kampus" id="email_kampus_field">
+                                <small class="text-gray-500 mt-1 block">Dibuat otomatis dari Nama Lengkap untuk login utama</small>
+                            </div>
+
+                            <div style="display: none;">
+                                <input type="hidden" name="email_aktif" value="kampus">
                             </div>
 
                             <div class="md:col-span-2">
@@ -149,8 +169,9 @@
                                 </label>
                                 <input type="text" name="phone" value="{{ old('phone') }}"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="08xxxxxxxxxx" inputmode="numeric" pattern="\d{1,13}" maxlength="13"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)">
+                                    placeholder="08xxxxxxxxxx" inputmode="numeric" minlength="11" maxlength="13" pattern="^[0-9]{11,13}$"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)"
+                                    onblur="if(this.value.length > 0 && this.value.length < 11) { alert('Nomor tidak valid! Minimal 11 angka.'); }">
                             </div>
 
                             <div class="md:col-span-2">
@@ -193,6 +214,30 @@
                     if (pw.type === 'password') { pw.type = 'text'; btn.innerHTML = '<i class="fas fa-eye-slash"></i>'; btn.setAttribute('aria-pressed', 'true'); }
                     else { pw.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; btn.setAttribute('aria-pressed', 'false'); }
                 });
+            }
+
+            // Auto-generate email kampus from Nama Lengkap
+            const namaInput = document.querySelector('input[name="name"]');
+            const emailKampusDisplay = document.getElementById('email_kampus_display');
+            const emailKampusField = document.getElementById('email_kampus_field');
+            
+            if (namaInput && emailKampusDisplay && emailKampusField) {
+                function generateEmailKampus() {
+                    const nama = namaInput.value.trim();
+                    if (nama) {
+                        // Remove spaces and special chars, convert to lowercase
+                        const emailKampus = nama.toLowerCase().replace(/\s+/g, '') + '@student.stih.ac.id';
+                        emailKampusDisplay.value = emailKampus;
+                        emailKampusField.value = emailKampus;
+                    } else {
+                        emailKampusDisplay.value = '';
+                        emailKampusField.value = '';
+                    }
+                }
+                
+                namaInput.addEventListener('input', generateEmailKampus);
+                // Generate on load if Nama is already filled
+                generateEmailKampus();
             }
 
             // SweetAlert Save Confirmation

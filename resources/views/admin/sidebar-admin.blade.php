@@ -144,6 +144,19 @@
                     </a>
                 @endif
             </li>
+            <li>
+                @if(Route::has('admin.kelas-perkuliahan.index'))
+                    <a href="{{ route('admin.kelas-perkuliahan.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.kelas-perkuliahan.*') ? 'active' : '' }}">
+                        <i class="fas fa-layer-group w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Kelas Perkuliahan</span>
+                    </a>
+                @else
+                    <a href="{{ url('/admin/kelas-perkuliahan') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
+                        <i class="fas fa-layer-group w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Kelas Perkuliahan</span>
+                    </a>
+                @endif
+            </li>
         </ul>
     </div>
 
@@ -357,6 +370,29 @@
                     <a href="{{ route('admin.import.history') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.import.history') ? 'active' : '' }}">
                         <i class="fas fa-history w-5 mr-3"></i>
                         <span class="text-sm font-medium">Riwayat Import</span>
+                    </a>
+                @endif
+            </li>
+        </ul>
+    </div>
+
+    <!-- Komunikasi -->
+    <div class="mt-2">
+        <button type="button" data-toggle="sidebar-section" data-section="komunikasi" class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold section-toggle uppercase tracking-wide opacity-80">
+            <span>Komunikasi</span>
+            <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <ul class="mt-1 space-y-1 pb-2 sidebar-section hidden">
+            <li>
+                @if(Route::has('admin.blast-email.index'))
+                    <a href="{{ route('admin.blast-email.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.blast-email.*') ? 'active' : '' }}">
+                        <i class="fas fa-envelope-open-text w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Blast Email</span>
+                    </a>
+                @else
+                    <a href="{{ url('/admin/blast-email') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-800/40">
+                        <i class="fas fa-envelope-open-text w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Blast Email</span>
                     </a>
                 @endif
             </li>

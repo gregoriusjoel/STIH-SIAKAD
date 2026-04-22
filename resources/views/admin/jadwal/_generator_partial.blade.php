@@ -24,11 +24,11 @@
         </div>
     </div>
 
-    {{-- Statistics + Recent Proposals (condensed) --}}
+    {{-- Statistics + Recent Pengajuan (condensed) --}}
     <div class="p-6 bg-white dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 flex-1 flex flex-col min-h-0">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
-                <div class="text-sm text-gray-600 dark:text-gray-400">Total Proposal</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Total Pengajuan</div>
                 <div class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ $statistics['total_proposals'] ?? 0 }}</div>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">

@@ -251,7 +251,7 @@
                                                           jamSelesai: '',
                                                           ruanganId: '',
                                                           jamPerkuliahanId: '',
-                                                          kuota: '',
+                                                          kapasitas: '',
                                                           roomStatus: { available: true, message: '' },
                                                           checkingRoom: false,
 
@@ -322,14 +322,14 @@
                                                               this.checkingRoom = false;
                                                           },
 
-                                                          updateKuota() {
+                                                          updateKapasitas() {
                                                               if (!this.ruanganId) {
-                                                                  this.kuota = '';
+                                                                  this.kapasitas = '';
                                                                   return;
                                                               }
                                                               const select = document.querySelector('select[name=ruangan_id]');
                                                               const option = select.options[select.selectedIndex];
-                                                              this.kuota = option.dataset.kapasitas || '';
+                                                              this.kapasitas = option.dataset.kapasitas || '';
                                                           }
                                                       }">
                 @csrf
@@ -426,7 +426,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
-                                    class="fas fa-user-friends text-gray-400 dark:text-gray-500 mr-1"></i>Kuota <span
+                                    class="fas fa-user-friends text-gray-400 dark:text-gray-500 mr-1"></i>Kapasitas <span
                                     class="text-red-500">*</span></label>
 
                             {{-- No room selected --}}
@@ -438,11 +438,11 @@
                             {{-- Room selected (auto-fill, readonly) --}}
                             <template x-if="ruanganId">
                                 <div>
-                                    <input type="hidden" name="kuota" :value="kuota">
+                                    <input type="hidden" name="kapasitas" :value="kapasitas">
                                     <div
                                         class="w-full px-3 py-2 border border-green-300 dark:border-green-600 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-sm flex items-center justify-between">
                                         <span><i class="fas fa-check-circle mr-1"></i> <span
-                                                x-text="kuota + ' Mahasiswa'"></span></span>
+                                                x-text="kapasitas + ' Mahasiswa'"></span></span>
                                         <i class="fas fa-lock text-green-400 dark:text-green-500 text-xs"></i>
                                     </div>
                                 </div>
@@ -452,7 +452,7 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><i
                                     class="fas fa-door-open text-gray-400 dark:text-gray-500 mr-1"></i>Ruangan <span
                                     class="text-red-500">*</span></label>
-                            <select name="ruangan_id" x-model="ruanganId" @change="updateKuota(); checkRoom();"
+                            <select name="ruangan_id" x-model="ruanganId" @change="updateKapasitas(); checkRoom();"
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition text-sm"
                                 required>
                                 <option value="">Pilih Ruangan</option>

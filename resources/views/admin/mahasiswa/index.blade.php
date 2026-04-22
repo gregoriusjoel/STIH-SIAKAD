@@ -43,7 +43,7 @@
                             <i class="fas fa-user mr-2"></i>Nama
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-envelope mr-2"></i>Email
+                            <i class="fas fa-envelope mr-2"></i>Email (Pribadi / Kampus)
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                             <i class="fas fa-graduation-cap mr-2"></i>Prodi
@@ -88,9 +88,20 @@
                                     <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $mahasiswa->user->name }}</span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                <i class="fas fa-envelope text-gray-400 dark:text-gray-500 mr-1"></i>
-                                {{ $mahasiswa->user->email }}
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                <div class="space-y-1">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-envelope text-blue-400 dark:text-blue-500 mr-1"></i>
+                                        <span class="font-medium">{{ $mahasiswa->email_kampus }}</span>
+                                        <span class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full font-semibold">Login</span>
+                                    </div>
+                                    @if($mahasiswa->email_pribadi)
+                                        <div class="flex items-center">
+                                            <i class="fas fa-envelope text-gray-400 dark:text-gray-500 mr-1"></i>
+                                            <span class="text-sm">{{ $mahasiswa->email_pribadi }}</span>
+                                        </div>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 <span class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-1 rounded-full text-xs font-medium">
@@ -241,12 +252,12 @@
                     </h4>
                     <div class="flex flex-wrap gap-2">
                         @php
-                            $columns = ['nim', 'nama', 'email', 'prodi', 'angkatan', 'semester', 'phone', 'alamat', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'agama'];
-                            $required = ['nim', 'nama', 'prodi', 'angkatan'];
+                            $columns = ['nim' => 'nim', 'nama' => 'nama', 'email' => 'email_pribadi', 'prodi' => 'prodi', 'angkatan' => 'angkatan', 'semester' => 'semester', 'jenis_kelamin' => 'jenis_kelamin', 'telefon' => 'phone', 'alamat' => 'address'];
+                            $required = ['nim', 'nama', 'email_pribadi', 'prodi', 'angkatan'];
                         @endphp
-                        @foreach($columns as $col)
-                            <span class="px-2 py-1 text-xs rounded-lg {{ in_array($col, $required) ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-semibold' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400' }}">
-                                {{ $col }}{{ in_array($col, $required) ? '*' : '' }}
+                        @foreach($columns as $display => $actual)
+                            <span class="px-2 py-1 text-xs rounded-lg {{ in_array($actual, $required) ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-semibold' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400' }}">
+                                {{ $display }}{{ in_array($actual, $required) ? '*' : '' }}
                             </span>
                         @endforeach
                     </div>

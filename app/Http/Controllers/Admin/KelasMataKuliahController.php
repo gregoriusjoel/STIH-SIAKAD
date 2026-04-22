@@ -87,7 +87,7 @@ class KelasMataKuliahController extends Controller
             'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
             'dosen_id' => 'required|exists:dosens,id',
             'nama_kelas' => 'required|string|max:10',
-            'kuota' => 'required|integer|min:1',
+            'kapasitas' => 'required|integer|min:1',
             'ruangan_id' => 'nullable|exists:ruangans,id',
             'hari' => 'nullable|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'nullable',
@@ -219,7 +219,7 @@ class KelasMataKuliahController extends Controller
             ]);
         }
 
-        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kuota', 'ruangan_id', 'hari', 'jam_mulai', 'jam_selesai']);
+        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kapasitas', 'ruangan_id', 'hari', 'jam_mulai', 'jam_selesai']);
         
         // Get ruangan name from ruangan_id for backward compatibility
         $ruanganName = null;
@@ -234,7 +234,7 @@ class KelasMataKuliahController extends Controller
             'dosen_id' => $data['dosen_id'],
             'semester_id' => $semester ? $semester->id : null,
             'kode_kelas' => $data['nama_kelas'],
-            'kapasitas' => $data['kuota'],
+            'kapasitas' => $data['kapasitas'],
             'ruang' => $ruanganName,
             'ruangan_id' => $data['ruangan_id'],
             'hari' => $data['hari'] ?? null,
@@ -298,7 +298,7 @@ class KelasMataKuliahController extends Controller
         // Get actual ruangan data from database
         $daftarRuangan = \App\Models\Ruangan::where('status', 'aktif')->orderBy('kode_ruangan')->get();
         
-        return view('admin.jadwal.edit', compact('kelasMataKuliah', 'mataKuliahs', 'dosens', 'semesters', 'daftarRuangan'));
+        return view('admin.kelas-mata-kuliah.edit', compact('kelasMataKuliah', 'mataKuliahs', 'dosens', 'semesters', 'daftarRuangan'));
     }
 
     public function update(Request $request, KelasMataKuliah $kelasMataKuliah)
@@ -307,7 +307,7 @@ class KelasMataKuliahController extends Controller
             'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
             'dosen_id' => 'required|exists:dosens,id',
             'nama_kelas' => 'required|string|max:10',
-            'kuota' => 'required|integer|min:1',
+            'kapasitas' => 'required|integer|min:1',
             'ruangan_id' => 'nullable|exists:ruangans,id',
             'hari' => 'nullable|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'nullable|date_format:H:i',
@@ -318,7 +318,7 @@ class KelasMataKuliahController extends Controller
         $mataKuliah = MataKuliah::findOrFail($request->mata_kuliah_id);
         $semester = Semester::where('status', 'aktif')->first();
 
-        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kuota', 'ruangan_id', 'hari', 'jam_mulai', 'jam_selesai']);
+        $data = $request->only(['mata_kuliah_id', 'dosen_id', 'nama_kelas', 'kapasitas', 'ruangan_id', 'hari', 'jam_mulai', 'jam_selesai']);
         
         // Get ruangan name from ruangan_id for backward compatibility
         $ruanganName = null;
@@ -332,7 +332,7 @@ class KelasMataKuliahController extends Controller
             'dosen_id' => $data['dosen_id'],
             'semester_id' => $semester ? $semester->id : $kelasMataKuliah->semester_id,
             'kode_kelas' => $data['nama_kelas'],
-            'kapasitas' => $data['kuota'],
+            'kapasitas' => $data['kapasitas'],
             'ruang' => $ruanganName,
             'ruangan_id' => $data['ruangan_id'],
             'hari' => $data['hari'] ?? null,

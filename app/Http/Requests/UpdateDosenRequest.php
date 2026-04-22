@@ -29,7 +29,7 @@ class UpdateDosenRequest extends FormRequest
             'jabatan_fungsional_custom' => 'nullable|string|max:255',
             'prodi' => 'required|array|min:1',
             'prodi.*' => 'string',
-            'phone' => 'nullable|string',
+            'phone' => 'nullable|digits_between:11,13',
             'address' => 'nullable|string',
             'status' => 'required|in:aktif,non-aktif',
             'password' => 'nullable|min:6',

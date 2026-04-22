@@ -15,22 +15,20 @@ class ImportService
     protected array $importTypes = [
         'mahasiswa' => [
             'model' => \App\Models\Mahasiswa::class,
-            'required_columns' => ['nim', 'nama', 'prodi', 'angkatan'],
+            'required_columns' => ['nim', 'nama', 'email_pribadi', 'prodi', 'angkatan'],
             'column_mapping' => [
                 'nim' => 'nim',
-                'nama' => 'name', // will be used for User
-                'email' => 'email',
+                'nama' => 'name',
+                'email' => 'email_pribadi',        // alias untuk email_pribadi
+                'email_pribadi' => 'email_pribadi',
                 'prodi' => 'prodi',
                 'angkatan' => 'angkatan',
                 'semester' => 'semester',
                 'phone' => 'phone',
-                'no_hp' => 'no_hp',
-                'alamat' => 'alamat',
+                'telefon' => 'phone',              // alias untuk phone
                 'address' => 'address',
+                'alamat' => 'address',             // alias untuk address
                 'jenis_kelamin' => 'jenis_kelamin',
-                'tempat_lahir' => 'tempat_lahir',
-                'tanggal_lahir' => 'tanggal_lahir',
-                'agama' => 'agama',
             ],
             'unique_column' => 'nim',
             'has_user' => true,
@@ -582,13 +580,24 @@ class ImportService
      */
     protected function importMahasiswa(array $data, array $row): array
     {
-        $name = $data['name'] ?? $this->getColumnValue($row, 'nama_lengkap') ?? $this->getColumnValue($row, 'nama');
-        $email = $data['email'] ?? strtolower($data['nim']) . '@student.stih.ac.id';
+        $name = $data['name'] ?? $this->getColumnValue($row, 'nama');
         
-        // Create user
+        // Sanitasi nama: hapus angka dan karakter khusus, hanya boleh huruf dan spasi
+        $name = preg_replace('/[^a-zA-Z\s]/u', '', $name);
+        $name = preg_replace('/\s+/', ' ', $name); // Remove multiple spaces
+        $name = trim($name);
+        
+        // Auto-generate email kampus from name (like form create mahasiswa)
+        // Remove spaces and special chars, convert to lowercase
+        $emailKampus = strtolower(str_replace(' ', '', $name)) . '@student.stih.ac.id';
+        
+        // Email pribadi is optional
+        $emailPribadi = $data['email_pribadi'] ?? null;
+        
+        // Create user with kampus email
         $user = \App\Models\User::create([
             'name' => $name,
-            'email' => $email,
+            'email' => $emailKampus,
             'password' => \Illuminate\Support\Facades\Hash::make('mahasiswa123'),
             'role' => 'mahasiswa',
         ]);
@@ -600,16 +609,16 @@ class ImportService
             'prodi' => $data['prodi'] ?? null,
             'angkatan' => $data['angkatan'] ?? date('Y'),
             'semester' => $data['semester'] ?? 1,
-            'phone' => $data['phone'] ?? $data['no_hp'] ?? null,
-            'address' => $data['address'] ?? $data['alamat'] ?? null,
-            'no_hp' => $data['no_hp'] ?? $data['phone'] ?? null,
-            'alamat' => $data['alamat'] ?? $data['address'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'address' => $data['address'] ?? null,
             'jenis_kelamin' => $data['jenis_kelamin'] ?? null,
-            'tempat_lahir' => $data['tempat_lahir'] ?? null,
-            'tanggal_lahir' => $this->parseDate($data['tanggal_lahir'] ?? null),
-            'agama' => $data['agama'] ?? null,
             'status' => 'aktif',
             'status_akun' => 'aktif',
+            // Email automation fields
+            'email_pribadi' => $emailPribadi,
+            'email_kampus' => $emailKampus,
+            'email_aktif' => 'kampus',
+            'is_default_password' => true,
         ]);
 
         return ['status' => 'success'];

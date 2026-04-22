@@ -83,6 +83,15 @@ class Mahasiswa extends Model
         'kecamatan_ktp',
         'desa_ktp',
         'is_dokumen_unlocked',
+        'kelas_perkuliahan_id',
+        // Email automation fields
+        'email_pribadi',
+        'email_kampus',
+        'email_aktif',
+        'email_pribadi_verified_at',
+        'password_reset_token',
+        'is_default_password',
+        'account_automation_at',
     ];
 
     protected $casts = [
@@ -293,6 +302,57 @@ class Mahasiswa extends Model
     public function internships(): HasMany
     {
         return $this->hasMany(Internship::class);
+    }
+
+    /**
+     * Get the Kelas Perkuliahan master data (new dynamic system)
+     */
+    public function kelasPerkuliahan(): BelongsTo
+    {
+        return $this->belongsTo(KelasPerkuliahan::class);
+    }
+
+    /* ─── EMAIL AUTOMATION HELPER METHODS ─── */
+
+    /**
+     * Get email aktif untuk mahasiswa (pribadi atau kampus)
+     * Helper method yang memanggil service
+     * 
+     * @return string|null
+     */
+    public function getActiveEmail(): ?string
+    {
+        return app(\App\Services\EmailService::class)->getActiveEmail($this);
+    }
+
+    /**
+     * Cek apakah email pribadi sudah diverifikasi
+     * 
+     * @return bool
+     */
+    public function isEmailPribadiVerified(): bool
+    {
+        return $this->email_pribadi_verified_at !== null;
+    }
+
+    /**
+     * Cek apakah password masih default (belum diganti)
+     * 
+     * @return bool
+     */
+    public function hasDefaultPassword(): bool
+    {
+        return $this->is_default_password === true;
+    }
+
+    /**
+     * Cek apakah akun sudah ter-automate
+     * 
+     * @return bool
+     */
+    public function isAccountAutomated(): bool
+    {
+        return $this->email_kampus !== null && $this->account_automation_at !== null;
     }
 
     /**

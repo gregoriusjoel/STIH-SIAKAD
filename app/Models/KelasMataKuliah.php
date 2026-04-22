@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+use App\Models\KelasPerkuliahan;
 use App\Traits\Auditable;
 
 class KelasMataKuliah extends Model
@@ -34,6 +35,7 @@ class KelasMataKuliah extends Model
         'qr_expires_at',
         'meeting_count',
         'qr_current_pertemuan',
+        'kelas_perkuliahan_id',
     ];
 
     protected $casts = [
@@ -124,10 +126,32 @@ class KelasMataKuliah extends Model
         $semesterService = app(\App\Services\SemesterService::class);
         return in_array($this->semester_id, $semesterService->getActiveSemesterIds());
     }
-    
-    // Accessor for backward compatibility
+    /**
+     * Get the Kelas Perkuliahan master data (new dynamic system)
+     */
+    public function kelasPerkuliahan(): BelongsTo
+    {
+        return $this->belongsTo(KelasPerkuliahan::class);
+    }
+
+    /**
+     * Accessor for backward compatibility.
+     * Prioritizes the new KelasPerkuliahan relation, falls back to legacy kode_kelas.
+     */
     public function getNamaKelasAttribute()
     {
+        if ($this->kelas_perkuliahan_id && $this->relationLoaded('kelasPerkuliahan') && $this->kelasPerkuliahan) {
+            return $this->kelasPerkuliahan->nama_kelas;
+        }
+
         return $this->kode_kelas;
+    }
+
+    /**
+     * Check if this record uses legacy data (no KelasPerkuliahan relation).
+     */
+    public function getIsLegacyAttribute(): bool
+    {
+        return empty($this->kelas_perkuliahan_id);
     }
 }

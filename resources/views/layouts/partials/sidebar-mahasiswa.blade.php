@@ -12,7 +12,7 @@
                 STIH Adhyaksa
             </h1>
             <p class="text-white/70 text-[10px] font-medium tracking-wider uppercase">
-                Student Portal
+                Student Site
             </p>
         </div>
     </div>
@@ -115,7 +115,6 @@
                 <div x-show="openPengajuan" x-collapse x-cloak
                      class="mt-1 ml-4 pl-4 border-l-2 border-gray-100 dark:border-gray-800 space-y-1">
                     @foreach([
-                        'mahasiswa.pengajuan.sidang.index'=>'Pengajuan Sidang',
                         'mahasiswa.pengajuan.surat.index'=>'Pengajuan Surat',
                         'mahasiswa.pengajuan.yudisium.index'=>'Pengajuan Yudisium',
                     ] as $route=>$label)

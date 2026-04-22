@@ -16,76 +16,107 @@ use Carbon\Carbon;
 
 class KRSController extends Controller
 {
-    /**
-     * Determine the current active semester.
-     * Prefer semester with status='aktif', then is_active flag, then latest.
-     */
-    protected function getCurrentSemester()
-    {
-        $now = Carbon::now();
-
-        // Prefer a semester that currently allows KRS filling and (if period set) is within the period
-        $openSemesters = Semester::where('krs_dapat_diisi', true)->get();
-        foreach ($openSemesters as $s) {
-            if ($s->krs_mulai && $s->krs_selesai) {
-                $mulai = Carbon::parse($s->krs_mulai)->startOfDay();
-                $selesai = Carbon::parse($s->krs_selesai)->endOfDay();
-                if ($now->between($mulai, $selesai)) {
-                    return $s;
-                }
-            } else {
-                return $s;
-            }
-        }
-
-        // Fallback: prefer status='aktif', then is_active, then latest
-        $semester = Semester::where('status', 'aktif')->first();
-        if ($semester)
-            return $semester;
-        $semester = Semester::where('is_active', true)->first();
-        if ($semester)
-            return $semester;
-        return Semester::latest()->first();
-    }
     public function index(\Illuminate\Http\Request $request)
     {
         $user = Auth::user();
         $mahasiswa = Mahasiswa::where('user_id', $user->id)->firstOrFail();
 
-        // Get student's current semester info (auto-calculated from angkatan)
+        // Display the active semester (chosen by admin in prodi settings)
         $semesterAktif = $mahasiswa->getCurrentSemesterInfo();
 
-        // KRS control semester: prefer semester with KRS open (getCurrentSemester)
-        $krsSemester = $this->getCurrentSemester();
+        // Get the currently active semester for KRS gating
+        $krsSemester = Semester::where('status', 'aktif')->first();
 
-        // ── Period check via AcademicPeriodService (Single Source of Truth) ──
-        $periodService = app(\App\Services\AcademicPeriodService::class);
-        $krsStatus = $periodService->getStatus(
-            \App\Services\AcademicPeriodService::TYPE_PERIODE_KRS,
-            $krsSemester?->id
-        );
-
-        // Primary check: is KRS period active in academic calendar?
-        $krsActiveByCalendar = $krsStatus['status'] === 'active';
-
-        // Fallback: also respect legacy krs_dapat_diisi + date range on semester
-        $krsActiveByLegacy = $krsSemester
-            && $krsSemester->krs_dapat_diisi
-            && (!$krsSemester->krs_mulai || !$krsSemester->krs_selesai
-                || Carbon::now()->between(
+        // Check if KRS is open:
+        // 1. Semester must be 'aktif'
+        // 2. krs_dapat_diisi must be true
+        // 3. Must be within the date range (if dates are set)
+        $krsIsOpen = false;
+        if ($krsSemester && $krsSemester->krs_dapat_diisi) {
+            if (!$krsSemester->krs_mulai || !$krsSemester->krs_selesai) {
+                // No dates set, KRS is open
+                $krsIsOpen = true;
+            } else {
+                // Check if today is within the date range
+                $krsIsOpen = Carbon::now()->between(
                     Carbon::parse($krsSemester->krs_mulai)->startOfDay(),
                     Carbon::parse($krsSemester->krs_selesai)->endOfDay()
-                ));
+                );
+            }
+        }
 
-        if (!$krsActiveByCalendar && !$krsActiveByLegacy) {
-            // Build informative message from period service
-            $message = $krsStatus['message'] ?? 'Pengisian KRS belum dibuka atau sudah ditutup. Silakan cek Kalender Akademik.';
+        if (!$krsIsOpen) {
+            // Get semester history for downloads even when KRS is closed
+            $allPastSemesters = $mahasiswa->getPastSemesters();
+            $currentSemester = $mahasiswa->getCurrentSemester();
+            $semesterHistory = $allPastSemesters->filter(function ($semester) use ($currentSemester) {
+                return $semester->semester_number <= $currentSemester;
+            });
+
+            // Check if current semester KRS is already submitted
+            $currentKodeId = 'sms' . $currentSemester;
+            $currentSemesterSubmitted = Krs::where('mahasiswa_id', $mahasiswa->id)
+                ->where('status', '!=', 'draft')
+                ->whereHas('mataKuliah', function ($q) use ($currentKodeId) {
+                    $q->where('kode_id', $currentKodeId);
+                })->exists();
+
+            // If current semester is already submitted, add it to the list
+            if ($currentSemesterSubmitted) {
+                $alreadyExists = $semesterHistory->contains(function ($semester) use ($currentSemester) {
+                    return $semester->semester_number == $currentSemester;
+                });
+
+                if (!$alreadyExists) {
+                    $isGanjil = ($currentSemester % 2 === 1);
+                    $baseYear = (int) $mahasiswa->angkatan;
+                    $yearOffset = floor(($currentSemester - 1) / 2);
+                    $academicStartYear = $baseYear + $yearOffset;
+                    $academicEndYear = $academicStartYear + 1;
+                    $calculatedTahunAjaran = $academicStartYear . '/' . $academicEndYear;
+
+                    $currentSemesterObj = (object) [
+                        'semester_number' => $currentSemester,
+                        'semester_display' => 'Semester ' . $currentSemester,
+                        'tahun_ajaran' => $calculatedTahunAjaran,
+                        'nama_semester' => $isGanjil ? 'Ganjil' : 'Genap',
+                    ];
+                    $semesterHistory = collect([$currentSemesterObj])->merge($semesterHistory);
+                }
+            }
+
+            // Determine which semesters the student can download
+            $downloadable = [];
+            foreach ($semesterHistory as $s) {
+                $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
+                $filename = 'KRS_' . $nimOrId . '_' . $s->semester_number . '.pdf';
+                $path = 'krs/' . $mahasiswa->id . '/' . $filename;
+
+                if (Storage::disk('s3')->exists($path)) {
+                    $downloadable[] = $s->semester_number;
+                    continue;
+                }
+
+                $semesterKodeId = 'sms' . $s->semester_number;
+                $hasSubmittedForSemester = Krs::where('mahasiswa_id', $mahasiswa->id)
+                    ->where('status', '!=', 'draft')
+                    ->whereHas('mataKuliah', function ($q) use ($semesterKodeId) {
+                        $q->where('kode_id', $semesterKodeId);
+                    })->exists();
+
+                if ($hasSubmittedForSemester) {
+                    $downloadable[] = $s->semester_number;
+                }
+            }
 
             return view('page.mahasiswa.krs.closed', [
                 'mahasiswa' => $mahasiswa,
                 'semesterAktif' => $semesterAktif,
-                'krsStatus' => $krsStatus,
-                'message' => $message,
+                'krsSemester' => $krsSemester,
+                'krsStatus' => ['status' => 'closed', 'message' => 'Pengisian KRS belum dibuka atau sudah ditutup. Silakan cek Kalender Akademik.'],
+                'message' => 'Pengisian KRS belum dibuka atau sudah ditutup. Silakan cek Kalender Akademik.',
+                'semesterList' => $semesterHistory,
+                'downloadable' => $downloadable,
             ]);
         }
 
@@ -395,7 +426,7 @@ class KRSController extends Controller
         if ($request->has('semester_id')) {
             $krsSemester = Semester::find($request->get('semester_id'));
         }
-        $krsSemester = $krsSemester ?? $this->getCurrentSemester();
+        $krsSemester = $krsSemester ?? Semester::where('status', 'aktif')->first();
 
         if (!$krsSemester) {
             return back()->with('error', 'Semester tidak ditemukan.');
@@ -434,26 +465,28 @@ class KRSController extends Controller
             ?? Semester::where('is_active', true)->first()
             ?? Semester::latest()->first();
 
-        $krsSemester = $this->getCurrentSemester();
+        // Get the currently active semester
+        $krsSemester = Semester::where('status', 'aktif')->first();
 
-        // ── Period gate via AcademicPeriodService ──
-        $periodService = app(\App\Services\AcademicPeriodService::class);
-        $krsActiveByCalendar = $periodService->isActive(
-            \App\Services\AcademicPeriodService::TYPE_PERIODE_KRS,
-            null,
-            $krsSemester?->id
-        );
-
-        // Fallback: also respect legacy krs_dapat_diisi + date range
-        $krsActiveByLegacy = $krsSemester
-            && $krsSemester->krs_dapat_diisi
-            && (!$krsSemester->krs_mulai || !$krsSemester->krs_selesai
-                || Carbon::now()->between(
+        // Check if KRS is open:
+        // 1. Semester must be 'aktif'
+        // 2. krs_dapat_diisi must be true
+        // 3. Must be within the date range (if dates are set)
+        $krsIsOpen = false;
+        if ($krsSemester && $krsSemester->krs_dapat_diisi) {
+            if (!$krsSemester->krs_mulai || !$krsSemester->krs_selesai) {
+                // No dates set, KRS is open
+                $krsIsOpen = true;
+            } else {
+                // Check if today is within the date range
+                $krsIsOpen = Carbon::now()->between(
                     Carbon::parse($krsSemester->krs_mulai)->startOfDay(),
                     Carbon::parse($krsSemester->krs_selesai)->endOfDay()
-                ));
+                );
+            }
+        }
 
-        if (!$krsActiveByCalendar && !$krsActiveByLegacy) {
+        if (!$krsIsOpen) {
             return back()->with('error', 'Pengisian KRS belum dibuka atau sudah ditutup. Silakan cek Kalender Akademik.');
         }
 

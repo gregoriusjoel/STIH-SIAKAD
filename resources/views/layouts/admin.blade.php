@@ -388,7 +388,7 @@
         }
 
         try {
-            // 5) Proposal jadwal yang menunggu keputusan admin
+            // 5) Pengajuan jadwal yang menunggu keputusan admin
             $jadwalPendingAdmin = \App\Models\JadwalProposal::with(['dosen.user', 'mataKuliah'])
                 ->where('status', 'pending_admin')
                 ->orderByDesc('updated_at')
@@ -403,7 +403,7 @@
                 $pushNotif([
                     'id' => 'jadwal-proposal-' . $proposal->id . '-' . \Carbon\Carbon::parse($when)->timestamp,
                     'title' => 'Persetujuan Jadwal',
-                    'message' => 'Proposal jadwal ' . $mkName . ' dari ' . $dosenName . ' menunggu keputusan admin.',
+                    'message' => 'Pengajuan jadwal ' . $mkName . ' dari ' . $dosenName . ' menunggu keputusan admin.',
                     'icon' => 'event_note',
                     'url' => route('admin.jadwal_admin_approval.index'),
                     'human_time' => $safeHumanTime($when),

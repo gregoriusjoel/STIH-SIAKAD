@@ -21,7 +21,17 @@ class ImportController extends Controller
             'title' => 'Import Data Mahasiswa',
             'description' => 'Import data mahasiswa dari file CSV atau XLSX',
             'icon' => 'fa-user-graduate',
-            'template_columns' => ['nim', 'nama', 'email', 'prodi', 'angkatan', 'semester', 'phone', 'alamat', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'agama'],
+            'template_columns' => [
+                'nim' => 'nim',
+                'nama' => 'nama',
+                'email' => 'email_pribadi',
+                'prodi' => 'prodi',
+                'angkatan' => 'angkatan',
+                'semester' => 'semester',
+                'jenis_kelamin' => 'jenis_kelamin',
+                'telefon' => 'phone',
+                'alamat' => 'address',
+            ],
         ],
         'dosen' => [
             'title' => 'Import Data Dosen',
@@ -248,13 +258,22 @@ class ImportController extends Controller
         }
 
         $config = $this->importTypes[$type];
-        $columns = $config['template_columns'];
+        $templateColumns = $config['template_columns'];
         
-        // Create CSV content
-        $csvContent = implode(',', $columns) . "\n";
+        // Handle both array format (keys=display, values=actual) and simple array
+        if (is_assoc_array($templateColumns)) {
+            $displayColumns = array_keys($templateColumns);
+            $actualColumns = array_values($templateColumns);
+        } else {
+            $displayColumns = $templateColumns;
+            $actualColumns = $templateColumns;
+        }
         
-        // Add sample data row based on type
-        $sampleData = $this->getSampleData($type, $columns);
+        // Create CSV content with display names
+        $csvContent = implode(',', $displayColumns) . "\n";
+        
+        // Add sample data row based on actual column names
+        $sampleData = $this->getSampleData($type, $actualColumns);
         $csvContent .= implode(',', $sampleData) . "\n";
 
         $filename = "template_import_{$type}.csv";
@@ -266,6 +285,14 @@ class ImportController extends Controller
     }
 
     /**
+     * Check if array is associative
+     */
+    private function is_assoc_array($array)
+    {
+        return count(array_filter(array_keys($array), 'is_string')) > 0;
+    }
+
+    /**
      * Get sample data for template
      */
     protected function getSampleData(string $type, array $columns): array
@@ -274,16 +301,13 @@ class ImportController extends Controller
             'mahasiswa' => [
                 'nim' => '2024001001',
                 'nama' => 'John Doe',
-                'email' => '2024001001@student.stih.ac.id',
+                'email_pribadi' => 'john.doe@gmail.com',
                 'prodi' => 'Ilmu Hukum',
                 'angkatan' => '2024',
                 'semester' => '1',
+                'jenis_kelamin' => 'Laki-Laki',
                 'phone' => '081234567890',
-                'alamat' => 'Jl. Contoh No. 123',
-                'jenis_kelamin' => 'L',
-                'tempat_lahir' => 'Jakarta',
-                'tanggal_lahir' => '2000-01-15',
-                'agama' => 'Islam',
+                'address' => 'Jl. Contoh No. 123',
             ],
             'dosen' => [
                 'nidn' => '0123456789',

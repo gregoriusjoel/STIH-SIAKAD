@@ -71,7 +71,7 @@ class JadwalAdminApprovalController extends Controller
             // atau ketika dosen menolak namun memberikan usulan alternatif (rejected_dosen)
             if (!in_array($proposal->status, ['approved_dosen', 'pending_admin', 'rejected_dosen'])) {
                 return response()->json([
-                    'error' => 'Proposal tidak dalam status yang dapat disetujui admin'
+                    'error' => 'Pengajuan tidak dalam status yang dapat disetujui admin'
                 ], 400);
             }
 
@@ -125,19 +125,19 @@ class JadwalAdminApprovalController extends Controller
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Proposal jadwal disetujui dan jadwal telah aktif'
+                        'message' => 'Pengajuan jadwal disetujui dan jadwal telah aktif'
                 ]);
             }
-            return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Proposal jadwal disetujui and jadwal telah aktif');
+                return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Pengajuan jadwal disetujui dan jadwal telah aktif');
             
         } catch (\Exception $e) {
             DB::rollback();
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
-                    'error' => 'Gagal menyetujui proposal: ' . $e->getMessage()
+                    'error' => 'Gagal menyetujui pengajuan: ' . $e->getMessage()
                 ], 500);
             }
-            return back()->with('error', 'Gagal menyetujui proposal: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menyetujui pengajuan: ' . $e->getMessage());
         }
     }
     
@@ -155,7 +155,7 @@ class JadwalAdminApprovalController extends Controller
             // Validasi status
             if (!in_array($proposal->status, ['approved_dosen', 'pending_admin'])) {
                 return response()->json([
-                    'error' => 'Proposal tidak dalam status yang dapat ditolak admin'
+                    'error' => 'Pengajuan tidak dalam status yang dapat ditolak admin'
                 ], 400);
             }
             
@@ -177,19 +177,19 @@ class JadwalAdminApprovalController extends Controller
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Proposal jadwal ditolak'
+                    'message' => 'Pengajuan jadwal ditolak'
                 ]);
             }
-            return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Proposal jadwal ditolak');
+            return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Pengajuan jadwal ditolak');
             
         } catch (\Exception $e) {
             DB::rollback();
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
-                    'error' => 'Gagal menolak proposal: ' . $e->getMessage()
+                    'error' => 'Gagal menolak pengajuan: ' . $e->getMessage()
                 ], 500);
             }
-            return back()->with('error', 'Gagal menolak proposal: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menolak pengajuan: ' . $e->getMessage());
         }
     }
     
@@ -235,10 +235,10 @@ class JadwalAdminApprovalController extends Controller
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Proposal disetujui dengan perubahan jadwal'
+                    'message' => 'Pengajuan disetujui dengan perubahan jadwal'
                 ]);
             }
-            return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Proposal disetujui dengan perubahan jadwal');
+            return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Pengajuan disetujui dengan perubahan jadwal');
             
         } catch (\Exception $e) {
             DB::rollback();
@@ -270,7 +270,7 @@ class JadwalAdminApprovalController extends Controller
             // Harus dalam status rejected_dosen
             if ($proposal->status !== 'rejected_dosen') {
                 return response()->json([
-                    'error' => 'Proposal tidak dalam status yang dapat diproses'
+                    'error' => 'Pengajuan tidak dalam status yang dapat diproses'
                 ], 400);
             }
             
@@ -504,7 +504,7 @@ class JadwalAdminApprovalController extends Controller
             $proposal = JadwalProposal::with('kelas', 'mataKuliah')->findOrFail($id);
 
             if (! in_array($proposal->status, ['rejected_dosen', 'rejected_admin'])) {
-                $msg = 'Assign dosen pengganti hanya bisa dilakukan pada proposal yang ditolak.';
+                $msg = 'Assign dosen pengganti hanya bisa dilakukan pada pengajuan yang ditolak.';
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json(['error' => $msg], 422);
                 }
@@ -536,7 +536,7 @@ class JadwalAdminApprovalController extends Controller
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Dosen pengganti berhasil di-assign. Proposal dikirim ke dosen baru.',
+                    'message' => 'Dosen pengganti berhasil di-assign. Pengajuan dikirim ke dosen baru.',
                 ]);
             }
 

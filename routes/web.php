@@ -365,6 +365,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'fakultas' => 'fakultas'
     ]);
 
+    // Kelas Perkuliahan Management (Master Data)
+    Route::resource('kelas-perkuliahan', App\Http\Controllers\Admin\KelasPerkuliahanController::class);
+    Route::post('kelas-perkuliahan/generate-bulk', [App\Http\Controllers\Admin\KelasPerkuliahanController::class, 'generateBulk'])->name('kelas-perkuliahan.generate-bulk');
+
+
     // Mata Kuliah Management
     Route::get('mata-kuliah/download-template', [App\Http\Controllers\Admin\MataKuliahController::class, 'downloadTemplate'])->name('mata-kuliah.download-template');
     Route::post('mata-kuliah/import', [App\Http\Controllers\Admin\MataKuliahController::class, 'import'])->name('mata-kuliah.import');
@@ -430,6 +435,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/status', [App\Http\Controllers\Admin\SemesterTransitionController::class, 'status'])->name('status');
         Route::get('/preview', [App\Http\Controllers\Admin\SemesterTransitionController::class, 'preview'])->name('preview');
         Route::post('/process', [App\Http\Controllers\Admin\SemesterTransitionController::class, 'process'])->name('process');
+    });
+
+    // Blast Email Management
+    Route::prefix('blast-email')->name('blast-email.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\BlastEmailController::class, 'index'])->name('index');
+        Route::post('/send', [App\Http\Controllers\Admin\BlastEmailController::class, 'send'])->name('send');
+        Route::post('/preview', [App\Http\Controllers\Admin\BlastEmailController::class, 'getPreview'])->name('preview');
+        Route::get('/logs', [App\Http\Controllers\Admin\BlastEmailController::class, 'logs'])->name('logs');
+        Route::get('/stats', [App\Http\Controllers\Admin\BlastEmailController::class, 'stats'])->name('stats');
+        Route::get('/kelas/{prodi}', [App\Http\Controllers\Admin\BlastEmailController::class, 'getKelasPerProdi'])->name('kelas-per-prodi');
+        Route::get('/search-mahasiswa', [App\Http\Controllers\Admin\BlastEmailController::class, 'searchMahasiswa'])->name('search-mahasiswa');
+        
+        // Outbox Routes
+        Route::get('/outbox', [App\Http\Controllers\Admin\BlastEmailController::class, 'outbox'])->name('outbox');
+        Route::put('/outbox/{outbox}', [App\Http\Controllers\Admin\BlastEmailController::class, 'updateOutbox'])->name('outbox.update');
+        Route::delete('/outbox/{outbox}', [App\Http\Controllers\Admin\BlastEmailController::class, 'destroyOutbox'])->name('outbox.destroy');
     });
     
     // Global search

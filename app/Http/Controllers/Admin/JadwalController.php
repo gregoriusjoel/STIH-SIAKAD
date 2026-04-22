@@ -256,7 +256,7 @@ class JadwalController extends Controller
             'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
             'dosen_id' => 'required|exists:dosens,id',
             'nama_kelas' => 'required|string|max:10',
-            'kuota' => 'required|integer|min:1',
+            'kapasitas' => 'required|integer|min:1',
             'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
@@ -273,7 +273,7 @@ class JadwalController extends Controller
             'mata_kuliah_id' => $request->mata_kuliah_id,
             'dosen_id' => $dosen->user_id, // Map correctly to users.id
             'section' => $request->nama_kelas,
-            'kapasitas' => $request->kuota,
+            'kapasitas' => $request->kapasitas,
         ]);
 
         $jadwal->update([
@@ -680,7 +680,7 @@ class JadwalController extends Controller
                 'available' => false,
                 'message' => "Ruangan $ruangan sudah terpakai oleh $dosenName ($mkName) " .
                     "pukul " . substr($proposalConflict->jam_mulai, 0, 5) . "-" . substr($proposalConflict->jam_selesai, 0, 5) .
-                    " (dari proposal jadwal)"
+                    " (dari pengajuan jadwal)"
             ]);
         }
 

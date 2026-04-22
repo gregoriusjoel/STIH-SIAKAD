@@ -223,7 +223,7 @@ function kelasMatKuliahData() {
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-maroon text-white">
-                    <tr><th class="px-6 py-4 text-left text-sm font-semibold">Mata Kuliah</th><th class="px-6 py-4 text-left text-sm font-semibold">Nama Kelas</th><th class="px-6 py-4 text-left text-sm font-semibold">Dosen</th><th class="px-6 py-4 text-left text-sm font-semibold">Semester</th><th class="px-6 py-4 text-left text-sm font-semibold">Jadwal</th><th class="px-6 py-4 text-left text-sm font-semibold">Kuota</th><th class="px-6 py-4 text-left text-sm font-semibold">Ruangan</th></tr>
+                    <tr><th class="px-6 py-4 text-left text-sm font-semibold">Mata Kuliah</th><th class="px-6 py-4 text-left text-sm font-semibold">Nama Kelas</th><th class="px-6 py-4 text-left text-sm font-semibold">Dosen</th><th class="px-6 py-4 text-left text-sm font-semibold">Semester</th><th class="px-6 py-4 text-left text-sm font-semibold">Jadwal</th><th class="px-6 py-4 text-left text-sm font-semibold">Kapasitas</th><th class="px-6 py-4 text-left text-sm font-semibold">Ruangan</th></tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse($kelasMatKul as $k)

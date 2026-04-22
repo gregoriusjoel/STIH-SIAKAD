@@ -22,3 +22,10 @@ Schedule::command('semester:process-transition')
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/semester-transition.log'));
+
+// Process Email Outbox
+Schedule::command('email:process-outbox')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/email-outbox.log'));

@@ -146,7 +146,7 @@
                         <div class="text-3xl font-bold text-yellow-600">{{ $ruangan->jadwalProposals->count() }}</div>
                         <div class="text-sm text-gray-600">
                             <i class="fas fa-clock mr-1"></i>
-                            Proposal Jadwal
+                            Pengajuan Jadwal
                         </div>
                     </div>
                 </div>
@@ -210,13 +210,13 @@
         </div>
     @endif
 
-    <!-- Proposal Jadwal -->
+    <!-- Pengajuan Jadwal -->
     @if($ruangan->jadwalProposals->count() > 0)
         <div class="mt-6 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div class="px-6 py-4 bg-maroon border-b border-maroon">
                 <h3 class="text-lg font-semibold text-white">
                     <i class="fas fa-clock mr-2"></i>
-                    Proposal Jadwal di Ruangan Ini
+                    Pengajuan Jadwal di Ruangan Ini
                 </h3>
             </div>
 
@@ -270,7 +270,7 @@
             <div class="p-12 text-center text-gray-500">
                 <i class="fas fa-calendar-times text-4xl text-gray-300 mb-4"></i>
                 <p class="text-lg font-semibold">Ruangan Belum Digunakan</p>
-                <p class="text-sm">Ruangan ini belum memiliki jadwal aktif atau proposal jadwal</p>
+                <p class="text-sm">Ruangan ini belum memiliki jadwal aktif atau pengajuan jadwal</p>
             </div>
         </div>
     @endif

@@ -66,8 +66,8 @@ class AcademicEvent extends Model
     {
         $date = $date ?? Carbon::now();
         return $query->active()
-            ->where('start_date', '<=', $date->format('Y-m-d'))
-            ->where('end_date', '>=', $date->format('Y-m-d'));
+            ->where('end_date', '>=', $date->format('Y-m-d'))
+            ->orderBy('start_date', 'asc');
     }
 
     /* ─── Accessors ─── */

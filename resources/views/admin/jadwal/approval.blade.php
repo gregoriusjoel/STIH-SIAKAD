@@ -11,7 +11,7 @@
             <h1 class="text-2xl font-bold text-gray-900">
                 Persetujuan Jadwal
             </h1>
-            <p class="text-gray-500 mt-1">Review dan setujui proposal jadwal dari dosen dan auto-generator.</p>
+            <p class="text-gray-500 mt-1">Review dan setujui pengajuan jadwal dari dosen dan auto-generator.</p>
         </div>
         <div class="flex items-center space-x-3">
             <a href="{{ route('admin.jadwal.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
@@ -136,7 +136,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Lecturer Proposal (Usulan Dosen) -->
+                                        <!-- Lecturer Pengajuan (Usulan Dosen) -->
                                         @if($dosenApproval && ($dosenApproval->hari_pengganti || $dosenApproval->jam_mulai_pengganti || $dosenApproval->ruangan_pengganti))
                                             <div class="hidden xl:flex items-center self-center text-gray-300 mt-4">
                                                 <i class="fas fa-arrow-right"></i>
@@ -220,7 +220,7 @@
                                 <td colspan="5" class="px-6 py-12 text-center text-gray-500">
                                     <div class="flex flex-col items-center">
                                         <i class="fas fa-check-circle fa-3x mb-4 text-gray-200"></i>
-                                        <p class="font-medium">Tidak ada proposal yang butuh persetujuan saat ini.</p>
+                                        <p class="font-medium">Tidak ada pengajuan yang butuh persetujuan saat ini.</p>
                                     </div>
                                 </td>
                             </tr>

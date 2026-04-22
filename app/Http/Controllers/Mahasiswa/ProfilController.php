@@ -181,8 +181,8 @@ class ProfilController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'no_hp' => 'required|string|max:20',
+            'email_pribadi' => 'nullable|email|max:255|unique:mahasiswas,email_pribadi,' . $mahasiswa->id,
+            'no_hp' => 'required|digits_between:11,13',
             'alamat' => 'required|string',
             'tempat_lahir' => 'required|string|max:255',
             'tanggal_lahir' => 'required|date',
@@ -219,13 +219,13 @@ class ProfilController extends Controller
             'kecamatan_ayah' => 'nullable|string|max:255',
             'desa_ayah' => 'nullable|string|max:255',
             'propinsi_ayah' => 'nullable|string|max:255',
-            'handphone_ayah' => 'nullable|string|max:20',
+            'handphone_ayah' => 'nullable|digits_between:11,13',
             'alamat_ibu' => 'nullable|string',
             'kota_ibu' => 'nullable|string|max:255',
             'kecamatan_ibu' => 'nullable|string|max:255',
             'desa_ibu' => 'nullable|string|max:255',
             'propinsi_ibu' => 'nullable|string|max:255',
-            'handphone_ibu' => 'nullable|string|max:20',
+            'handphone_ibu' => 'nullable|digits_between:11,13',
             'tipe_wali' => 'nullable|in:orang_tua,wali',
             'nama_wali' => 'nullable|string|max:255',
             'hubungan_wali' => 'nullable|string|max:255',
@@ -237,7 +237,7 @@ class ProfilController extends Controller
             'kecamatan_wali' => 'nullable|string|max:255',
             'desa_wali' => 'nullable|string|max:255',
             'provinsi_wali' => 'nullable|string|max:255',
-            'handphone_wali' => 'nullable|string|max:20',
+            'handphone_wali' => 'nullable|digits_between:11,13',
             'keluarga' => 'nullable|array',
             'keluarga.*.nama' => 'nullable|string|max:255',
             'keluarga.*.hubungan' => 'nullable|string|max:255',
@@ -264,7 +264,6 @@ class ProfilController extends Controller
 
         // Update user
         $user->name = $request->name;
-        $user->email = $request->email;
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
@@ -274,6 +273,7 @@ class ProfilController extends Controller
 
         // Update mahasiswa
         $mahasiswaData = [
+            'email_pribadi' => $request->email_pribadi,
             'no_hp' => $request->no_hp,
             'alamat' => $request->alamat,
             'tempat_lahir' => $request->tempat_lahir,

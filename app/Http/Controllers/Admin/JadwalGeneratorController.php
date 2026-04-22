@@ -587,15 +587,15 @@ class JadwalGeneratorController extends Controller
             
             // Hanya bisa hapus jika masih pending
             if (!in_array($proposal->status, ['pending_dosen', 'rejected_dosen', 'rejected_admin'])) {
-                return redirect()->back()->with('error', 'Tidak dapat menghapus proposal dengan status ini');
+                return redirect()->back()->with('error', 'Tidak dapat menghapus pengajuan dengan status ini');
             }
             
             $proposal->delete();
             
-            return redirect()->back()->with('success', 'Proposal jadwal berhasil dihapus');
+            return redirect()->back()->with('success', 'Pengajuan jadwal berhasil dihapus');
             
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus proposal: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus pengajuan: ' . $e->getMessage());
         }
     }
 
@@ -611,10 +611,10 @@ class JadwalGeneratorController extends Controller
                 ->whereIn('status', ['pending_dosen', 'rejected_dosen', 'rejected_admin'])
                 ->delete();
 
-            return redirect()->back()->with('success', "{$deleted} proposal jadwal berhasil dihapus");
+            return redirect()->back()->with('success', "{$deleted} pengajuan jadwal berhasil dihapus");
             
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus proposal: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus pengajuan: ' . $e->getMessage());
         }
     }
 }

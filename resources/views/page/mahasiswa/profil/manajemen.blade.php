@@ -139,7 +139,24 @@ $missingByTab[$info['tab']]++;
                                 <div class="flex items-center gap-3">
                                     <label class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-700 cursor-pointer hover:bg-gray-50 transition shadow-sm font-medium">
                                         Choose File
-                                        <input type="file" name="foto" class="hidden" accept=".jpg,.jpeg,.png,image/jpeg,image/png" @change="const file = $event.target.files[0]; if(file){ const reader = new FileReader(); reader.onload = (e) => photoPreview = e.target.result; reader.readAsDataURL(file); }">
+                                        <input type="file" name="foto" class="hidden" accept=".jpg,.jpeg,.png,image/jpeg,image/png" 
+                                            @change="const file = $event.target.files[0]; 
+                                            if(file) { 
+                                                if(file.size > 2 * 1024 * 1024) { 
+                                                    Swal.fire({
+                                                        icon: 'warning',
+                                                        title: 'Ukuran Foto Terlalu Besar!',
+                                                        html: 'Batas maksimal ukuran foto adalah <strong>2MB</strong>.<br><br>File Anda (' + (file.size / (1024 * 1024)).toFixed(2) + 'MB) terlalu besar.',
+                                                        confirmButtonColor: '#8B1538',
+                                                        confirmButtonText: 'OK'
+                                                    });
+                                                    $event.target.value = '';
+                                                    return;
+                                                }
+                                                const reader = new FileReader(); 
+                                                reader.onload = (e) => photoPreview = e.target.result; 
+                                                reader.readAsDataURL(file); 
+                                            }">
                                     </label>
                                     <span class="text-xs text-gray-500 italic">Format: JPG/PNG, Max: 2MB</span>
                                 </div>
@@ -152,14 +169,25 @@ $missingByTab[$info['tab']]++;
                             <div>
                                 <label class="block text-sm text-gray-600 font-medium mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
                                 <input type="text" name="name" value="{{ $user->name }}"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium"
+                                    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '').replace(/\b\w/g, char => char.toUpperCase())">
+                                <p class="mt-1.5 text-[11px] text-gray-400 font-medium italic">Hanya huruf dan spasi (angka & karakter khusus otomatis hilang)</p>
                             </div>
 
                             {{-- Email --}}
                             <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Email <span class="text-red-500">*</span></label>
-                                <input type="email" name="email" value="{{ $user->email }}"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium">
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Email Kampus <span class="text-red-500">*</span></label>
+                                <input type="email" name="email_kampus_display" value="{{ $mahasiswa->email_kampus }}"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                                    readonly>
+                            </div>
+
+                            {{-- Email Pribadi --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Email Pribadi</label>
+                                <input type="email" name="email_pribadi" value="{{ $mahasiswa->email_pribadi }}"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium"
+                                    placeholder="email@gmail.com">
                             </div>
 
                             {{-- No HP --}}
@@ -169,7 +197,7 @@ $missingByTab[$info['tab']]++;
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
                                         <span class="text-sm font-bold opacity-50">+62</span>
                                     </div>
-                                    <input type="text" name="no_hp" value="{{ $mahasiswa->no_hp }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
+                                    <input type="text" name="no_hp" value="{{ $mahasiswa->no_hp }}" minlength="11" maxlength="13" inputmode="numeric" pattern="^[0-9]{11,13}$" oninput="this.value = this.value.replace(/\D/g,'')" onblur="if(this.value.length > 0 && this.value.length < 11) { alert('Nomor tidak valid! Minimal 11 angka.'); }"
                                         class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
                                 </div>
                             </div>
@@ -1325,7 +1353,7 @@ $missingByTab[$info['tab']]++;
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
                                         <span class="text-sm font-bold opacity-50">+62</span>
                                     </div>
-                                    <input type="text" name="handphone_ayah" value="{{ $parent->handphone_ayah ?? '' }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
+                                    <input type="text" name="handphone_ayah" value="{{ $parent->handphone_ayah ?? '' }}" minlength="11" maxlength="13" inputmode="numeric" pattern="^[0-9]{11,13}$" oninput="this.value = this.value.replace(/\D/g,'')" onblur="if(this.value.length > 0 && this.value.length < 11) { alert('Nomor tidak valid! Minimal 11 angka.'); }"
                                         class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
                                 </div>
                             </div>
@@ -1499,7 +1527,7 @@ $missingByTab[$info['tab']]++;
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
                                         <span class="text-sm font-bold opacity-50">+62</span>
                                     </div>
-                                    <input type="text" name="handphone_ibu" value="{{ $parent->handphone_ibu ?? '' }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
+                                    <input type="text" name="handphone_ibu" value="{{ $parent->handphone_ibu ?? '' }}" minlength="11" maxlength="13" inputmode="numeric" pattern="^[0-9]{11,13}$" oninput="this.value = this.value.replace(/\D/g,'')" onblur="if(this.value.length > 0 && this.value.length < 11) { alert('Nomor tidak valid! Minimal 11 angka.'); }"
                                         class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
                                 </div>
                             </div>
@@ -1765,7 +1793,7 @@ $missingByTab[$info['tab']]++;
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-[#8B1538] transition-colors">
                                         <span class="text-sm font-bold opacity-50">+62</span>
                                     </div>
-                                    <input type="text" name="handphone_wali" value="{{ $parent->handphone_wali ?? '' }}" maxlength="13" inputmode="numeric" pattern="^[0-9]{1,13}$" oninput="this.value = this.value.replace(/\D/g,'')"
+                                    <input type="text" name="handphone_wali" value="{{ $parent->handphone_wali ?? '' }}" minlength="11" maxlength="13" inputmode="numeric" pattern="^[0-9]{11,13}$" oninput="this.value = this.value.replace(/\D/g,'')" onblur="if(this.value.length > 0 && this.value.length < 11) { alert('Nomor tidak valid! Minimal 11 angka.'); }"
                                         class="w-full pl-14 pr-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium" placeholder="81xxxxxxxxx">
                                 </div>
                             </div>
@@ -1919,6 +1947,19 @@ $missingByTab[$info['tab']]++;
                 input.value = ''; // Clear the input
                 return false;
             }
+
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ukuran File Terlalu Besar!',
+                    html: 'Batas maksimal ukuran file adalah <strong>5MB</strong>.<br><br>File "<strong>' + file.name + '</strong>" (' + (file.size / (1024 * 1024)).toFixed(2) + 'MB) terlalu besar.',
+                    confirmButtonColor: '#8B1538',
+                    confirmButtonText: 'OK'
+                });
+                input.value = ''; // Clear the input
+                return false;
+            }
         }
         return true;
     }
@@ -1930,7 +1971,6 @@ $missingByTab[$info['tab']]++;
             // akademik
             'name': 'akademik',
             'no_hp': 'akademik',
-            'email': 'akademik',
             // data_pribadi
             'alamat': 'data_pribadi',
             'provinsi': 'data_pribadi',
@@ -2028,6 +2068,7 @@ $missingByTab[$info['tab']]++;
 
         // submit handler
         form.addEventListener('submit', function(e) {
+
             const invalid = [];
             Object.keys(requiredMap).forEach(name => {
                 const field = form.querySelector('[name="' + name + '"]');
@@ -2167,7 +2208,7 @@ $missingByTab[$info['tab']]++;
             // Initial check
             toggleEmptyLabel(element);
 
-            // Add event listeners
+            // events
             const eventType = (element.tagName === 'SELECT' || element.type === 'file') ? 'change' : 'input';
             element.addEventListener(eventType, function() {
                 toggleEmptyLabel(element);

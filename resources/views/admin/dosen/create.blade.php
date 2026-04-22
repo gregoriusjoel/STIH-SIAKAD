@@ -14,7 +14,7 @@
         .two-column-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;            
+            gap: 1.5rem;
             margin-bottom: 1.5rem;
             align-items: start;
         }
@@ -94,7 +94,9 @@
             margin-bottom: 0.375rem;
         }
 
-        .form-input, .form-select, .form-textarea {
+        .form-input,
+        .form-select,
+        .form-textarea {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 1px solid var(--border);
@@ -105,11 +107,15 @@
             font-family: inherit;
         }
 
-        .form-input::placeholder, .form-select::placeholder, .form-textarea::placeholder {
+        .form-input::placeholder,
+        .form-select::placeholder,
+        .form-textarea::placeholder {
             color: #9ca3af;
         }
 
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
@@ -192,25 +198,31 @@
             border: 1px solid var(--border);
             border-radius: 0.5rem;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             line-height: 42px;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 42px;
         }
+
         .select2-container--default.select2-container--focus .select2-selection--single {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
         }
+
         .select2-dropdown {
             border: 1px solid var(--border);
             border-radius: 0.5rem;
         }
+
         .select2-search--dropdown .select2-search__field {
             border: 1px solid var(--border);
             border-radius: 0.375rem;
             padding: 0.5rem 0.75rem;
         }
+
         .select2-results__option--highlighted {
             background-color: #f3e8e8 !important;
             color: var(--primary) !important;
@@ -250,8 +262,7 @@
                                     <label class="form-label">
                                         <i class="fas fa-user mr-2" style="color: #6b7280;"></i>Nama Lengkap *
                                     </label>
-                                    <input type="text" name="name" value="{{ old('name') }}"
-                                        class="form-input"
+                                    <input type="text" name="name" value="{{ old('name') }}" class="form-input"
                                         placeholder="Contoh: Dr. Ahmad Solihin, M.H." required>
                                 </div>
 
@@ -259,8 +270,7 @@
                                     <label class="form-label">
                                         <i class="fas fa-envelope mr-2" style="color: #6b7280;"></i>Email *
                                     </label>
-                                    <input type="email" name="email" value="{{ old('email') }}"
-                                        class="form-input"
+                                    <input type="email" name="email" value="{{ old('email') }}" class="form-input"
                                         placeholder="nama@stih.ac.id" required>
                                 </div>
 
@@ -270,11 +280,11 @@
                                     </label>
                                     <div class="relative">
                                         <input id="dosen_password" type="password" name="password"
-                                            value="{{ old('password', 'dosen123') }}"
-                                            class="form-input" style="padding-right: 2.75rem;"
-                                            placeholder="••••••••" required>
+                                            value="{{ old('password', 'dosen123') }}" class="form-input"
+                                            style="padding-right: 2.75rem;" placeholder="••••••••" required>
                                         <button type="button" id="toggleDosenPw" aria-pressed="false"
-                                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 bg-transparent border-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 bg-transparent border-0"
+                                            style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </div>
@@ -297,8 +307,7 @@
                                 </label>
                                 <div id="mata-kuliah-list" class="input-list">
                                     <div class="input-list-item">
-                                        <select name="mata_kuliah_ids[]"
-                                            class="mk-select form-select flex-1">
+                                        <select name="mata_kuliah_ids[]" class="mk-select form-select flex-1">
                                             <option value="">-- Pilih Mata Kuliah --</option>
                                             @foreach($mataKuliahs as $mk)
                                                 <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
@@ -326,182 +335,188 @@
                             </div>
 
                             <div class="grid grid-cols-1 gap-4">
-                            <div>
-                                <label class="form-label">
-                                    <i class="fas fa-id-card mr-2" style="color: #6b7280;"></i>NIDN *
-                                </label>
-                                <input type="text" name="nidn" value="{{ old('nidn') }}"
-                                    class="form-input"
-                                    placeholder="0123456789012345" inputmode="numeric" pattern="\d{1,16}" maxlength="16"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,16)" required>
-                            </div>
-
-                            <div>
-                                <label class="form-label">
-                                    <i class="fas fa-phone mr-2" style="color: #6b7280;"></i>No. Telepon
-                                </label>
-                                <input type="text" name="phone" value="{{ old('phone') }}"
-                                    class="form-input"
-                                    placeholder="08xxxxxxxxxx" inputmode="numeric" pattern="\d{1,13}" maxlength="13"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)">
-                            </div>
-
-                            <div>
-                                <label class="form-label">
-                                    <i class="fas fa-building-columns mr-2" style="color: #6b7280;"></i>Fakultas *
-                                </label>
-                                <select name="fakultas_id" class="form-select" required>
-                                    <option value="">-- Pilih Fakultas --</option>
-                                    @foreach($fakultas as $fk)
-                                        <option value="{{ $fk->id }}" {{ old('fakultas_id') == $fk->id ? 'selected' : '' }}>
-                                            {{ $fk->kode_fakultas }} - {{ $fk->nama_fakultas }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="form-label">
-                                    <i class="fas fa-business-card mr-2" style="color: #6b7280;"></i>Status Dosen Tetap *
-                                </label>
-                                <select name="dosen_tetap" class="form-select" required>
-                                    <option value="">-- Pilih Status --</option>
-                                    <option value="ya" {{ old('dosen_tetap') == 'ya' ? 'selected' : '' }}>Dosen Tetap</option>
-                                    <option value="tidak" {{ old('dosen_tetap') == 'tidak' ? 'selected' : '' }}>Dosen Tidak Tetap</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="form-label">
-                                    <i class="fas fa-graduation-cap mr-2" style="color: #6b7280;"></i>Pendidikan Terakhir *
-                                </label>
-                                <div id="pendidikan-list" class="input-list">
-                                    <div class="pendidikan-item input-list-item">
-                                        <div class="input-list-item-input">
-                                            <select name="pendidikan_terakhir[]" class="form-select" required>
-                                                <option value="">-- Pilih --</option>
-                                                <option value="S1" {{ old('pendidikan_terakhir.0') == 'S1' ? 'selected' : '' }}>S1</option>
-                                                <option value="S2" {{ old('pendidikan_terakhir.0') == 'S2' ? 'selected' : '' }}>S2</option>
-                                                <option value="S3" {{ old('pendidikan_terakhir.0') == 'S3' ? 'selected' : '' }}>S3</option>
-                                            </select>
-                                            <input type="text" name="universitas[]" 
-                                                placeholder="Nama Universitas"
-                                                class="form-input"
-                                                value="{{ old('universitas.0') }}" required>
-                                        </div>
-                                        <button type="button" id="add-pendidikan" class="input-list-btn">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </div>
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-id-card mr-2" style="color: #6b7280;"></i>NIDN *
+                                    </label>
+                                    <input type="text" name="nidn" value="{{ old('nidn') }}" class="form-input"
+                                        placeholder="0123456789012345" inputmode="numeric" pattern="\d{1,16}" maxlength="16"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,16)" required>
                                 </div>
-                                <span class="help-text">Klik tombol + untuk menambah pendidikan</span>
-                            </div>
 
-                            <div>
-                                <label class="form-label">
-                                    <i class="fas fa-university mr-2" style="color: #6b7280;"></i>Program Studi *
-                                </label>
-                                @php
-                                    $oldProdi = old('prodi', []);
-                                    if (!is_array($oldProdi))
-                                        $oldProdi = [$oldProdi];
-                                @endphp
-                                <div id="prodi-list" class="input-list">
-                                    @if(count($oldProdi) > 0)
-                                        @foreach($oldProdi as $idx => $p)
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-phone mr-2" style="color: #6b7280;"></i>No. Telepon
+                                    </label>
+                                    <input type="text" name="phone" value="{{ old('phone') }}" class="form-input"
+                                        placeholder="08xxxxxxxxxx" inputmode="numeric" minlength="11" maxlength="13"
+                                        pattern="^[0-9]{11,13}$"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)"
+                                        onblur="if(this.value.length > 0 && this.value.length < 11) { alert('Nomor tidak valid! Minimal 11 angka.'); }">
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-building-columns mr-2" style="color: #6b7280;"></i>Fakultas *
+                                    </label>
+                                    <select name="fakultas_id" class="form-select" required>
+                                        <option value="">-- Pilih Fakultas --</option>
+                                        @foreach($fakultas as $fk)
+                                            <option value="{{ $fk->id }}" {{ old('fakultas_id') == $fk->id ? 'selected' : '' }}>
+                                                {{ $fk->kode_fakultas }} - {{ $fk->nama_fakultas }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-business-card mr-2" style="color: #6b7280;"></i>Status Dosen Tetap
+                                        *
+                                    </label>
+                                    <select name="dosen_tetap" class="form-select" required>
+                                        <option value="">-- Pilih Status --</option>
+                                        <option value="ya" {{ old('dosen_tetap') == 'ya' ? 'selected' : '' }}>Dosen Tetap
+                                        </option>
+                                        <option value="tidak" {{ old('dosen_tetap') == 'tidak' ? 'selected' : '' }}>Dosen
+                                            Tidak Tetap</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-graduation-cap mr-2" style="color: #6b7280;"></i>Pendidikan
+                                        Terakhir *
+                                    </label>
+                                    <div id="pendidikan-list" class="input-list">
+                                        <div class="pendidikan-item input-list-item">
+                                            <div class="input-list-item-input">
+                                                <select name="pendidikan_terakhir[]" class="form-select" required>
+                                                    <option value="">-- Pilih --</option>
+                                                    <option value="S1" {{ old('pendidikan_terakhir.0') == 'S1' ? 'selected' : '' }}>S1</option>
+                                                    <option value="S2" {{ old('pendidikan_terakhir.0') == 'S2' ? 'selected' : '' }}>S2</option>
+                                                    <option value="S3" {{ old('pendidikan_terakhir.0') == 'S3' ? 'selected' : '' }}>S3</option>
+                                                </select>
+                                                <input type="text" name="universitas[]" placeholder="Nama Universitas"
+                                                    class="form-input" value="{{ old('universitas.0') }}" required>
+                                            </div>
+                                            <button type="button" id="add-pendidikan" class="input-list-btn">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <span class="help-text">Klik tombol + untuk menambah pendidikan</span>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-university mr-2" style="color: #6b7280;"></i>Program Studi *
+                                    </label>
+                                    @php
+                                        $oldProdi = old('prodi', []);
+                                        if (!is_array($oldProdi))
+                                            $oldProdi = [$oldProdi];
+                                    @endphp
+                                    <div id="prodi-list" class="input-list">
+                                        @if(count($oldProdi) > 0)
+                                            @foreach($oldProdi as $idx => $p)
+                                                <div class="input-list-item">
+                                                    <select name="prodi[]" class="form-select flex-1" required>
+                                                        <option value="">-- Pilih Program Studi --</option>
+                                                        @foreach($prodis as $prodi)
+                                                            <option value="{{ $prodi->kode_prodi }}" {{ $p == $prodi->kode_prodi ? 'selected' : '' }}>
+                                                                {{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @if($idx == 0)
+                                                        <button type="button" id="add-prodi" class="input-list-btn">
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
+                                                    @else
+                                                        <button type="button" class="remove-prodi input-list-btn remove">
+                                                            <i class="fas fa-minus"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        @else
                                             <div class="input-list-item">
                                                 <select name="prodi[]" class="form-select flex-1" required>
                                                     <option value="">-- Pilih Program Studi --</option>
                                                     @foreach($prodis as $prodi)
-                                                        <option value="{{ $prodi->kode_prodi }}" {{ $p == $prodi->kode_prodi ? 'selected' : '' }}>
-                                                            {{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}
-                                                        </option>
+                                                        <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} -
+                                                            {{ $prodi->nama_prodi }}</option>
                                                     @endforeach
                                                 </select>
-                                                @if($idx == 0)
-                                                    <button type="button" id="add-prodi" class="input-list-btn">
-                                                        <i class="fas fa-plus"></i>
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="remove-prodi input-list-btn remove">
-                                                        <i class="fas fa-minus"></i>
-                                                    </button>
-                                                @endif
+                                                <button type="button" id="add-prodi" class="input-list-btn">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
                                             </div>
-                                        @endforeach
-                                    @else
-                                        <div class="input-list-item">
-                                            <select name="prodi[]" class="form-select flex-1" required>
-                                                <option value="">-- Pilih Program Studi --</option>
-                                                @foreach($prodis as $prodi)
-                                                    <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
-                                                @endforeach
-                                            </select>
-                                            <button type="button" id="add-prodi" class="input-list-btn">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    @endif
+                                        @endif
+                                    </div>
+                                    <span class="help-text">Klik tombol + untuk menambah program studi</span>
                                 </div>
-                                <span class="help-text">Klik tombol + untuk menambah program studi</span>
-                            </div>
 
-                            <div>
-                                <label class="form-label">
-                                    <i class="fas fa-briefcase mr-2" style="color: #6b7280;"></i>Jabatan Fungsional
-                                </label>
-                                <select id="jabatan-dropdown" name="jabatan_fungsional" class="form-select">
-                                    <option value="">-- Pilih Jabatan --</option>
-                                    <option value="Lektor" {{ old('jabatan_fungsional') == 'Lektor' ? 'selected' : '' }}>Lektor</option>
-                                    <option value="Lektor Kepala" {{ old('jabatan_fungsional') == 'Lektor Kepala' ? 'selected' : '' }}>Lektor Kepala</option>
-                                    <option value="Profesor" {{ old('jabatan_fungsional') == 'Profesor' ? 'selected' : '' }}>Profesor</option>
-                                    <option value="Asisten Ahli" {{ old('jabatan_fungsional') == 'Asisten Ahli' ? 'selected' : '' }}>Asisten Ahli</option>
-                                    <option value="Tenaga Pengajar" {{ old('jabatan_fungsional') == 'Tenaga Pengajar' ? 'selected' : '' }}>Tenaga Pengajar</option>
-                                    <option value="lainnya" {{ old('jabatan_fungsional') && !in_array(old('jabatan_fungsional'), ['Lektor', 'Lektor Kepala', 'Profesor', 'Asisten Ahli', 'Tenaga Pengajar']) ? 'selected' : '' }}>Lainnya</option>
-                                </select>
-                            </div>
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-briefcase mr-2" style="color: #6b7280;"></i>Jabatan Fungsional
+                                    </label>
+                                    <select id="jabatan-dropdown" name="jabatan_fungsional" class="form-select">
+                                        <option value="">-- Pilih Jabatan --</option>
+                                        <option value="Lektor" {{ old('jabatan_fungsional') == 'Lektor' ? 'selected' : '' }}>
+                                            Lektor</option>
+                                        <option value="Lektor Kepala" {{ old('jabatan_fungsional') == 'Lektor Kepala' ? 'selected' : '' }}>Lektor Kepala</option>
+                                        <option value="Profesor" {{ old('jabatan_fungsional') == 'Profesor' ? 'selected' : '' }}>Profesor</option>
+                                        <option value="Asisten Ahli" {{ old('jabatan_fungsional') == 'Asisten Ahli' ? 'selected' : '' }}>Asisten Ahli</option>
+                                        <option value="Tenaga Pengajar" {{ old('jabatan_fungsional') == 'Tenaga Pengajar' ? 'selected' : '' }}>Tenaga Pengajar</option>
+                                        <option value="lainnya" {{ old('jabatan_fungsional') && !in_array(old('jabatan_fungsional'), ['Lektor', 'Lektor Kepala', 'Profesor', 'Asisten Ahli', 'Tenaga Pengajar']) ? 'selected' : '' }}>Lainnya</option>
+                                    </select>
+                                </div>
 
-                            <div class="hidden" id="jabatan-custom-container">
-                                <label class="form-label">
-                                    <i class="fas fa-pen mr-2" style="color: #6b7280;"></i>Jabatan Lainnya
-                                </label>
-                                <input type="text" id="jabatan-custom" name="jabatan_fungsional_custom"
-                                    class="form-input"
-                                    placeholder="Contoh: Dosen Senior" value="{{ old('jabatan_fungsional_custom') }}">
-                            </div>
+                                <div class="hidden" id="jabatan-custom-container">
+                                    <label class="form-label">
+                                        <i class="fas fa-pen mr-2" style="color: #6b7280;"></i>Jabatan Lainnya
+                                    </label>
+                                    <input type="text" id="jabatan-custom" name="jabatan_fungsional_custom"
+                                        class="form-input" placeholder="Contoh: Dosen Senior"
+                                        value="{{ old('jabatan_fungsional_custom') }}">
+                                </div>
 
-                            <div>
-                                <label class="form-label">
-                                    <i class="fas fa-toggle-on mr-2" style="color: #6b7280;"></i>Status Akun *
-                                </label>
-                                <select name="status" class="form-select" required>
-                                    <option value="aktif" {{ old('status', 'aktif') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="non-aktif" {{ old('status') == 'non-aktif' ? 'selected' : '' }}>Non-Aktif</option>
-                                </select>
-                            </div>
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-toggle-on mr-2" style="color: #6b7280;"></i>Status Akun *
+                                    </label>
+                                    <select name="status" class="form-select" required>
+                                        <option value="aktif" {{ old('status', 'aktif') == 'aktif' ? 'selected' : '' }}>Aktif
+                                        </option>
+                                        <option value="non-aktif" {{ old('status') == 'non-aktif' ? 'selected' : '' }}>
+                                            Non-Aktif</option>
+                                    </select>
+                                </div>
 
-                            <div>
-                                <label class="form-label">
-                                    <i class="fas fa-map-marker-alt mr-2" style="color: #6b7280;"></i>Alamat
-                                </label>
-                                <textarea name="address" rows="4" class="form-textarea"
-                                    placeholder="Jalan, nomor rumah, kelurahan, kecamatan, kota/kabupaten, provinsi">{{ old('address') }}</textarea>
+                                <div>
+                                    <label class="form-label">
+                                        <i class="fas fa-map-marker-alt mr-2" style="color: #6b7280;"></i>Alamat
+                                    </label>
+                                    <textarea name="address" rows="4" class="form-textarea"
+                                        placeholder="Jalan, nomor rumah, kelurahan, kecamatan, kota/kabupaten, provinsi">{{ old('address') }}</textarea>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                <div class="flex justify-end gap-3 mt-8 pt-6">
-                    <a href="{{ route('admin.dosen.index') }}"
-                        class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition flex items-center">
-                        <i class="fas fa-times mr-2"></i>
-                        Batal
-                    </a>
-                    <button type="submit"
-                        class="px-6 py-3 rounded-lg bg-maroon text-white hover:bg-opacity-90 transition font-600 flex items-center shadow-md hover:shadow-lg">
-                        <i class="fas fa-save mr-2"></i>
-                        Simpan
-                    </button>
-                </div>
+                        <div class="flex justify-end gap-3 mt-8 pt-6">
+                            <a href="{{ route('admin.dosen.index') }}"
+                                class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition flex items-center">
+                                <i class="fas fa-times mr-2"></i>
+                                Batal
+                            </a>
+                            <button type="submit"
+                                class="px-6 py-3 rounded-lg bg-maroon text-white hover:bg-opacity-90 transition font-600 flex items-center shadow-md hover:shadow-lg">
+                                <i class="fas fa-save mr-2"></i>
+                                Simpan
+                            </button>
+                        </div>
             </form>
         </div>
     </div>
@@ -526,16 +541,16 @@
                 const row = document.createElement('div');
                 row.className = 'input-list-item';
                 row.innerHTML = `
-                    <select name="mata_kuliah_ids[]" class="mk-select form-select flex-1">
-                        <option value="">-- Pilih Mata Kuliah --</option>
-                        @foreach($mataKuliahs as $mk)
-                            <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
-                        @endforeach
-                    </select>
-                    <button type="button" class="remove-mk input-list-btn remove">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                `;
+                        <select name="mata_kuliah_ids[]" class="mk-select form-select flex-1">
+                            <option value="">-- Pilih Mata Kuliah --</option>
+                            @foreach($mataKuliahs as $mk)
+                                <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
+                            @endforeach
+                        </select>
+                        <button type="button" class="remove-mk input-list-btn remove">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    `;
                 list.appendChild(row);
 
                 // Initialize Select2 for the new dropdown
@@ -545,9 +560,9 @@
                     width: '100%'
                 });
 
-                row.querySelector('.remove-mk')?.addEventListener('click', function () { 
+                row.querySelector('.remove-mk')?.addEventListener('click', function () {
                     $(row).find('.mk-select').select2('destroy');
-                    row.remove(); 
+                    row.remove();
                 });
             });
 
@@ -566,31 +581,31 @@
             const addPendidikanBtn = document.getElementById('add-pendidikan');
             const pendidikanList = document.getElementById('pendidikan-list');
             const pendidikanOptionsHtml = `
-                <option value="">-- Pilih --</option>
-                <option value="S1">S1</option>
-                <option value="S2">S2</option>
-                <option value="S3">S3</option>
-            `;
+                    <option value="">-- Pilih --</option>
+                    <option value="S1">S1</option>
+                    <option value="S2">S2</option>
+                    <option value="S3">S3</option>
+                `;
 
             function makePendidikanRow() {
                 const row = document.createElement('div');
                 row.className = 'pendidikan-item input-list-item';
                 row.innerHTML = `
-                    <div class="input-list-item-input">
-                        <select name="pendidikan_terakhir[]" class="form-select" required>
-                            ${pendidikanOptionsHtml}
-                        </select>
-                        <input type="text" name="universitas[]" 
-                            placeholder="Nama Universitas"
-                            class="form-input"
-                            required>
-                    </div>
-                    <button type="button" class="remove-pendidikan input-list-btn remove">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                `;
-                row.querySelector('.remove-pendidikan')?.addEventListener('click', function () { 
-                    row.remove(); 
+                        <div class="input-list-item-input">
+                            <select name="pendidikan_terakhir[]" class="form-select" required>
+                                ${pendidikanOptionsHtml}
+                            </select>
+                            <input type="text" name="universitas[]" 
+                                placeholder="Nama Universitas"
+                                class="form-input"
+                                required>
+                        </div>
+                        <button type="button" class="remove-pendidikan input-list-btn remove">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    `;
+                row.querySelector('.remove-pendidikan')?.addEventListener('click', function () {
+                    row.remove();
                 });
                 return row;
             }
@@ -604,25 +619,25 @@
             const addProdi = document.getElementById('add-prodi');
             const prodiList = document.getElementById('prodi-list');
             const prodiOptionsHtml = `
-                <option value="">-- Pilih Program Studi --</option>
-                @foreach($prodis as $prodi)
-                    <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
-                @endforeach
-            `;
+                    <option value="">-- Pilih Program Studi --</option>
+                    @foreach($prodis as $prodi)
+                        <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
+                    @endforeach
+                `;
 
             function makeProdiRow() {
                 const row = document.createElement('div');
                 row.className = 'input-list-item';
                 row.innerHTML = `
-                    <select name="prodi[]" class="form-select flex-1" required>
-                        ${prodiOptionsHtml}
-                    </select>
-                    <button type="button" class="remove-prodi input-list-btn remove">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                `;
-                row.querySelector('.remove-prodi')?.addEventListener('click', function () { 
-                    row.remove(); 
+                        <select name="prodi[]" class="form-select flex-1" required>
+                            ${prodiOptionsHtml}
+                        </select>
+                        <button type="button" class="remove-prodi input-list-btn remove">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    `;
+                row.querySelector('.remove-prodi')?.addEventListener('click', function () {
+                    row.remove();
                 });
                 return row;
             }
@@ -649,7 +664,7 @@
 
             // Form Submission with SweetAlert
             const form = document.getElementById('dosenForm');
-            form?.addEventListener('submit', function(e) {
+            form?.addEventListener('submit', function (e) {
                 e.preventDefault();
 
                 // Merge Jabatan values

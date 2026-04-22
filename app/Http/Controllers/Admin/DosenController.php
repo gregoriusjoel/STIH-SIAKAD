@@ -292,7 +292,7 @@ class DosenController extends Controller
             'jabatan_fungsional_custom' => 'nullable|string|max:255',
             'prodi' => 'required|array|min:1',
             'prodi.*' => 'string',
-            'phone' => 'nullable|string',
+            'phone' => 'nullable|digits_between:11,13',
             'address' => 'nullable|string',
             'mata_kuliah_ids' => 'nullable|array',
             'mata_kuliah_ids.*' => 'exists:mata_kuliahs,id',

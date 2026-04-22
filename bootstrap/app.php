@@ -22,5 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e) {
+            return back()->with('warning', '⚠️ Ukuran total unggahan terlalu besar. Batas maksimal total adalah 15 MB. Silakan kurangi jumlah atau ukuran file yang Anda unggah.');
+        });
     })->create();

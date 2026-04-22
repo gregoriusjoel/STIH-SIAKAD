@@ -212,13 +212,23 @@
                             <tbody>
                                 @foreach($mahasiswaPa as $mahasiswa)
                                     <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#0f1117]">
-                                        <td class="px-4 py-3 text-gray-900 dark:text-white">{{ $mahasiswa->nim ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-gray-900 dark:text-white">{{ $mahasiswa->user->name ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ $mahasiswa->program_studi ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-gray-900 dark:text-white font-mono text-sm">{{ $mahasiswa->nim ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-gray-900 dark:text-white font-medium">{{ $mahasiswa->user->name ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-gray-700 dark:text-gray-300">{{ $mahasiswa->prodi ?? '-' }}</td>
                                         <td class="px-4 py-3">
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold 
-                                                {{ $mahasiswa->status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                                {{ $mahasiswa->status ?? 'Aktif' }}
+                                            @php
+                                                $statusConfig = [
+                                                    'aktif' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'icon' => 'fa-check-circle', 'label' => 'Aktif'],
+                                                    'cuti' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'icon' => 'fa-pause-circle', 'label' => 'Cuti'],
+                                                    'lulus' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'icon' => 'fa-graduation-cap', 'label' => 'Lulus'],
+                                                    'do' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'icon' => 'fa-times-circle', 'label' => 'DO'],
+                                                ];
+                                                $status = strtolower($mahasiswa->status ?? 'aktif');
+                                                $config = $statusConfig[$status] ?? $statusConfig['aktif'];
+                                            @endphp
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold {{ $config['bg'] }} {{ $config['text'] }} border border-current border-opacity-30 shadow-sm">
+                                                <i class="fas {{ $config['icon'] }} text-xs"></i>
+                                                {{ $config['label'] }}
                                             </span>
                                         </td>
                                     </tr>

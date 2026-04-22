@@ -81,7 +81,7 @@
                     } else {
                         Swal.fire({
                             title: 'Gagal!',
-                            text: 'Gagal menyetujui proposal: ' + data.message,
+                            text: 'Gagal menyetujui pengajuan: ' + data.message,
                             icon: 'error',
                             confirmButtonColor: '#ef4444'
                         });
@@ -109,8 +109,8 @@
 
         // Confirm rejection
         Swal.fire({
-            title: 'Tolak Proposal?',
-            text: 'Proposal jadwal ini akan ditolak dan dosen akan diberitahu.',
+            title: 'Tolak Pengajuan?',
+            text: 'Pengajuan jadwal ini akan ditolak dan dosen akan diberitahu.',
             icon: 'warning',
             iconColor: '#8B1538',
             showCancelButton: true,
@@ -141,7 +141,7 @@
                     if (data && data.success) {
                         Swal.fire({
                             title: 'Ditolak!',
-                            text: 'Proposal berhasil ditolak.',
+                            text: 'Pengajuan berhasil ditolak.',
                             icon: 'success',
                             confirmButtonColor: '#8B1538'
                         }).then(() => location.reload());
@@ -161,7 +161,7 @@
 
                     Swal.fire({
                         title: 'Gagal!',
-                        text: 'Gagal menolak proposal: ' + msg,
+                        text: 'Gagal menolak pengajuan: ' + msg,
                         icon: 'error',
                         confirmButtonColor: '#ef4444'
                     });
@@ -270,7 +270,7 @@
 
     <!-- Tables Grid Layout 50:50 -->
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8 items-stretch">
-        <!-- Pending Proposals Table (Main Focus) -->
+        <!-- Pending Pengajuan Table (Main Focus) -->
         <div class="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-md overflow-hidden flex flex-col w-full relative h-full min-w-0">
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-primary to-pink-500"></div>
         <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center bg-gray-50/50 dark:bg-[#1a1d2e]">
@@ -278,7 +278,7 @@
                 <div class="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-gray-100 dark:border-slate-700 text-primary">
                     <span class="material-symbols-outlined text-[18px]">assignment_add</span>
                 </div>
-                <h3 class="text-sm font-bold uppercase tracking-wider text-[#111218] dark:text-white">PROPOSAL MENUNGGU PERSETUJUAN ANDA ({{ $pendingProposals->count() }})</h3>
+                <h3 class="text-sm font-bold uppercase tracking-wider text-[#111218] dark:text-white">PENGAJUAN MENUNGGU PERSETUJUAN ANDA ({{ $pendingProposals->count() }})</h3>
             </div>
         </div>
         
@@ -336,7 +336,7 @@
                     @empty
                     <tr>
                         <td colspan="6" class="px-4 py-10 text-center text-gray-400 text-xs">
-                            Tidak ada proposal yang menunggu persetujuan Anda saat ini.
+                            Tidak ada pengajuan yang menunggu persetujuan Anda saat ini.
                         </td>
                     </tr>
                     @endforelse
@@ -466,7 +466,7 @@
              x-transition:enter-end="opacity-100 translate-y-0 scale-100">
             
             <div class="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-[#0b1220]">
-                <h3 class="text-lg font-bold text-[#111218] dark:text-white">Tolak Proposal Jadwal</h3>
+                <h3 class="text-lg font-bold text-[#111218] dark:text-white">Tolak Pengajuan Jadwal</h3>
                 <button @click="closeRejectModal" class="text-gray-400 hover:text-gray-600">
                     <span class="material-symbols-outlined">close</span>
                 </button>
@@ -512,7 +512,7 @@
 
                 <div class="flex justify-end gap-3 pt-2">
                     <button type="button" @click="closeRejectModal" class="px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 transition-colors">Batal</button>
-                    <button type="submit" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold shadow-md transition-colors">Tolak Proposal</button>
+                    <button type="submit" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold shadow-md transition-colors">Tolak Pengajuan</button>
                 </div>
             </form>
         </div>

@@ -45,7 +45,7 @@ class ParentController extends Controller
             'mahasiswa_id' => 'required|exists:mahasiswas,id',
             'hubungan' => 'required|in:ayah,ibu,wali',
             'pekerjaan' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|digits_between:11,13',
             'address' => 'nullable|string',
         ]);
 
@@ -124,7 +124,7 @@ class ParentController extends Controller
             'mahasiswa_id' => 'nullable|exists:mahasiswas,id',
             'hubungan' => 'required|in:ayah,ibu,wali',
             'pekerjaan' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|digits_between:11,13',
             'address' => 'nullable|string',
         ]);
 

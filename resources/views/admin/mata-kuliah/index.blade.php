@@ -1260,10 +1260,21 @@
                 document.getElementById('cf-form-source').value = source;
                 document.getElementById('cf-form-target').value = target;
                 try {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
                     const res = await fetch(
                         `/admin/mata-kuliah-semester/carry-forward/preview?source_semester_id=${source}&target_semester_id=${target}`,
-                        { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }
+                        { 
+                            headers: { 
+                                'X-Requested-With': 'XMLHttpRequest', 
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            } 
+                        }
                     );
+                    if (!res.ok) {
+                        console.error('Response status:', res.status);
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
                     const data = await res.json();
                     document.getElementById('cf-preview').classList.remove('hidden');
                     document.getElementById('cf-summary').innerHTML =
@@ -1287,7 +1298,11 @@
                         ).join('');
                     } else { document.getElementById('cf-conflict-section').classList.add('hidden'); }
                     document.getElementById('cf-submit-btn').disabled = data.to_copy.length === 0;
-                } catch (e) { console.error(e); }
+                } catch (e) { 
+                    console.error('Carry-forward preview error:', e);
+                    document.getElementById('cf-preview').classList.add('hidden');
+                    alert('Gagal memuat preview. Silakan cek koneksi atau refresh halaman.');
+                }
             }
 
             function prepareBulkDetach(e) {

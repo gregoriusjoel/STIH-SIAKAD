@@ -65,7 +65,7 @@ class ProfilController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|digits_between:11,13',
             'address' => 'nullable|string|max:500',
             'nidn' => 'nullable|string|max:20|unique:dosens,nidn,' . $dosen->id,
             'pendidikan_terakhir' => 'nullable|string|max:100',

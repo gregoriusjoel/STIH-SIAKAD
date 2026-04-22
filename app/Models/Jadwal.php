@@ -25,6 +25,7 @@ class Jadwal extends Model
         'approved_at',
         'is_outside_availability',
         'outside_reason',
+        'kelas_perkuliahan_id',
     ];
 
     protected $casts = [
@@ -61,5 +62,13 @@ class Jadwal extends Model
     public function ruangan(): BelongsTo
     {
         return $this->belongsTo(Ruangan::class, 'ruangan', 'kode_ruangan');
+    }
+
+    /**
+     * Get the Kelas Perkuliahan master data (new dynamic system)
+     */
+    public function kelasPerkuliahan(): BelongsTo
+    {
+        return $this->belongsTo(KelasPerkuliahan::class);
     }
 }

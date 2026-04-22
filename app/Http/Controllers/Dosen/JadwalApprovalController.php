@@ -84,12 +84,12 @@ class JadwalApprovalController extends Controller
             
             // Idempotency: jika sudah ditolak oleh dosen sebelumnya, kembalikan sukses supaya UI tidak mencoba mengirim ulang
             if ($proposal->status === 'rejected_dosen') {
-                return response()->json(['success' => true, 'message' => 'Proposal sudah ditolak sebelumnya'], 200);
+                return response()->json(['success' => true, 'message' => 'Pengajuan sudah ditolak sebelumnya'], 200);
             }
 
             // Validasi status (terima baik jika masih menunggu dosen atau sedang menunggu admin setelah perubahan)
             if (!in_array($proposal->status, ['pending_dosen', 'pending_admin'])) {
-                return response()->json(['error' => 'Proposal tidak dalam status pending_dosen (saat ini: ' . $proposal->status . ')'], 400);
+                return response()->json(['error' => 'Pengajuan tidak dalam status pending_dosen (saat ini: ' . $proposal->status . ')'], 400);
             }
             
             // Create record approval
@@ -210,12 +210,12 @@ class JadwalApprovalController extends Controller
             
             // Idempotency: jika sudah ditolak oleh dosen sebelumnya, kembalikan sukses sehingga aksi tidak error
             if ($proposal->status === 'rejected_dosen') {
-                return response()->json(['success' => true, 'message' => 'Proposal sudah ditolak sebelumnya'], 200);
+                return response()->json(['success' => true, 'message' => 'Pengajuan sudah ditolak sebelumnya'], 200);
             }
 
             // Validasi status (izinkan reject jika proposal masih menunggu dosen atau menunggu admin)
             if (!in_array($proposal->status, ['pending_dosen', 'pending_admin'])) {
-                return response()->json(['error' => 'Proposal tidak dalam status pending_dosen (saat ini: ' . $proposal->status . ')'], 400);
+                return response()->json(['error' => 'Pengajuan tidak dalam status pending_dosen (saat ini: ' . $proposal->status . ')'], 400);
             }
             
             // Update status proposal

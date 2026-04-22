@@ -392,7 +392,7 @@
                 <div class="bg-white dark:bg-[#1a1c23] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5">
                     <div class="flex items-center gap-3 mb-4">
                         <span class="w-1 h-6 bg-green-500 rounded-full"></span>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Periode yang Akan Datang</h3>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Periode yang Sedang Berjalan</h3>
                     </div>
                     <div class="space-y-2">
                         @foreach($activePeriods as $period)

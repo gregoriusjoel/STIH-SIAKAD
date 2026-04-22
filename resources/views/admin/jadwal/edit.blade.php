@@ -78,21 +78,37 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2"><i
-                                class="fas fa-user-friends text-gray-400 mr-1"></i>Kuota *</label>
-                        <input type="number" name="kuota" value="{{ old('kuota', $kelasMataKuliah->kapasitas) }}"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition"
-                            placeholder="40" required>
+                                class="fas fa-user-friends text-gray-400 mr-1"></i>Kapasitas *</label>
+                        
+                        {{-- No room selected --}}
+                        <div x-show="!ruangan"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-400 text-sm">
+                            <i class="fas fa-info-circle mr-1"></i> Pilih ruangan terlebih dahulu
+                        </div>
+
+                        {{-- Room selected (auto-fill, readonly) --}}
+                        <template x-if="ruangan">
+                            <div>
+                                <input type="hidden" name="kapasitas" :value="kapasitas">
+                                <div
+                                    class="w-full px-4 py-3 border border-green-300 rounded-lg bg-green-50 text-green-700 text-sm flex items-center justify-between">
+                                    <span><i class="fas fa-check-circle mr-1"></i> <span
+                                            x-text="kapasitas + ' Mahasiswa'"></span></span>
+                                    <i class="fas fa-lock text-green-400 text-xs"></i>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2"><i
                                 class="fas fa-door-open text-gray-400 mr-1"></i>Ruangan <span
                                 class="text-red-500">*</span></label>
-                        <select name="ruangan_id" x-model="ruangan" @change="checkRoom()"
+                        <select name="ruangan_id" x-model="ruangan" @change="updateKapasitas(); checkRoom();"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition"
                             required>
                             <option value="">Pilih Ruangan</option>
                             @foreach($daftarRuangan as $ruangan)
-                                <option value="{{ $ruangan->id }}" {{ old('ruangan_id', $kelasMataKuliah->ruangan_id) == $ruangan->id ? 'selected' : '' }}>
+                                <option value="{{ $ruangan->id }}" data-kapasitas="{{ $ruangan->kapasitas }}" {{ old('ruangan_id', $kelasMataKuliah->ruangan_id) == $ruangan->id ? 'selected' : '' }}>
                                     {{ $ruangan->kode_ruangan }}
                                 </option>
                             @endforeach
@@ -172,6 +188,7 @@ function jadwalEditor() {
         dosens: [],
         loading: false,
         ruangan: '{{ $kelasMataKuliah->ruangan_id ?? '' }}',
+        kapasitas: '',
         hari: '{{ $kelasMataKuliah->hari ?? '' }}',
         jamMulai: '{{ $kelasMataKuliah->jam_mulai ?? '' }}',
         jamSelesai: '{{ $kelasMataKuliah->jam_selesai ?? '' }}',
@@ -182,6 +199,10 @@ function jadwalEditor() {
             // Load dosens jika mata kuliah sudah ada saat edit
             if (this.mataKuliahId) {
                 this.fetchDosens();
+            }
+            // Load kapasitas jika ruangan sudah terpilih saat edit
+            if (this.ruangan) {
+                this.updateKapasitas();
             }
         },
 
@@ -232,6 +253,16 @@ function jadwalEditor() {
                     this.roomStatus = { available: true, message: '' };
                     this.checkingRoom = false;
                 });
+        },
+
+        updateKapasitas() {
+            if (!this.ruangan) {
+                this.kapasitas = '';
+                return;
+            }
+            const select = document.querySelector('select[name=ruangan_id]');
+            const option = select.options[select.selectedIndex];
+            this.kapasitas = option.dataset.kapasitas || '';
         }
     };
 }

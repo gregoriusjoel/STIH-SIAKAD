@@ -58,7 +58,9 @@
                         </label>
                         <input type="tel" id="phone" name="phone" value="{{ old('phone', $dosen->phone) }}" 
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-[#0f1117] text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent"
-                            placeholder="+62...">
+                            placeholder="08xxxxxxxxxx" inputmode="numeric" minlength="11" maxlength="13" pattern="^[0-9]{11,13}$"
+                            oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,13)"
+                            onblur="if(this.value.length > 0 && this.value.length < 11) { alert('Nomor tidak valid! Minimal 11 angka.'); }">
                     </div>
 
                     <!-- NIDN -->
@@ -145,27 +147,6 @@
                                     {{ $p->nama_prodi }}
                                 </option>
                             @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Jabatan Fungsional -->
-                    <div>
-                        <label for="jabatan_fungsional" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Jabatan Fungsional
-                        </label>
-                        <select id="jabatan_fungsional" name="jabatan_fungsional" 
-                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-[#0f1117] text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent">
-                            <option value="">-- Pilih --</option>
-                            @php
-                                $jabatanValue = old('jabatan_fungsional', $dosen->jabatan_fungsional);
-                                if (is_array($jabatanValue)) {
-                                    $jabatanValue = $jabatanValue[0] ?? null;
-                                }
-                            @endphp
-                            <option value="Asisten Ahli" {{ $jabatanValue === 'Asisten Ahli' ? 'selected' : '' }}>Asisten Ahli</option>
-                            <option value="Lektor" {{ $jabatanValue === 'Lektor' ? 'selected' : '' }}>Lektor</option>
-                            <option value="Lektor Kepala" {{ $jabatanValue === 'Lektor Kepala' ? 'selected' : '' }}>Lektor Kepala</option>
-                            <option value="Profesor" {{ $jabatanValue === 'Profesor' ? 'selected' : '' }}>Profesor</option>
                         </select>
                     </div>
 
