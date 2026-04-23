@@ -17,16 +17,16 @@ class DosenController extends Controller
 {
     public function index(Request $request)
     {
-        $service        = app(TeachingAssignmentService::class);
+        $service = app(TeachingAssignmentService::class);
         $semesterService = app(\App\Services\SemesterService::class);
 
-        $activeSemester  = $semesterService->getActiveSemester();
-        $allSemesters    = Semester::orderByDesc('tahun_ajaran')->orderByDesc('nama_semester')->get();
+        $activeSemester = $semesterService->getActiveSemester();
+        $allSemesters = Semester::orderByDesc('tahun_ajaran')->orderByDesc('nama_semester')->get();
 
         $selectedSemesterId = $request->input('semester_id', $activeSemester?->id);
-        $selectedSemester   = $allSemesters->firstWhere('id', $selectedSemesterId) ?? $activeSemester;
+        $selectedSemester = $allSemesters->firstWhere('id', $selectedSemesterId) ?? $activeSemester;
 
-        $tab    = $request->input('tab', 'master');
+        $tab = $request->input('tab', 'master');
         $search = trim($request->input('search', ''));
         $sortBy = $request->input('sort_by', 'name');
         $sortDir = $request->input('sort_direction', 'asc');
@@ -37,7 +37,7 @@ class DosenController extends Controller
             $query = Dosen::with(['user', 'kelasMataKuliahs.mataKuliah', 'kelasMataKuliahs.semester'])
                 ->when($search, function ($q) use ($search) {
                     $q->whereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"))
-                      ->orWhere('nidn', 'like', "%{$search}%");
+                        ->orWhere('nidn', 'like', "%{$search}%");
                 });
 
             // Sorting logic
@@ -50,13 +50,15 @@ class DosenController extends Controller
             } elseif ($sortBy === 'status') {
                 $query->orderBy('status', $sortDir);
             } elseif ($sortBy === 'mk_aktif') {
-                $query->withCount(['kelasMataKuliahs as mk_aktif_count' => function($q) use ($activeSemester) {
-                    if ($activeSemester) {
-                        $q->where('semester_id', $activeSemester->id);
-                    } else {
-                        $q->where('id', 0);
+                $query->withCount([
+                    'kelasMataKuliahs as mk_aktif_count' => function ($q) use ($activeSemester) {
+                        if ($activeSemester) {
+                            $q->where('semester_id', $activeSemester->id);
+                        } else {
+                            $q->where('id', 0);
+                        }
                     }
-                }])->orderBy('mk_aktif_count', $sortDir);
+                ])->orderBy('mk_aktif_count', $sortDir);
             } else {
                 $query->orderBy(User::select('name')->whereColumn('users.id', 'dosens.user_id'), 'asc');
             }
@@ -65,7 +67,7 @@ class DosenController extends Controller
         }
 
         // ── Tab: Dosen Aktif TA ──────────────────────────────────────────────
-        $dosenAktif      = collect();
+        $dosenAktif = collect();
         $dosenAktifCount = 0;
 
         if ($selectedSemester) {
@@ -79,15 +81,15 @@ class DosenController extends Controller
 
             if ($tab === 'dosen-aktif') {
                 $query = Dosen::with([
-                        'user',
-                        'mataKuliahs' => fn($q) => $q->wherePivot('semester_id', $selectedSemester->id)->orderBy('kode_mk'),
-                    ])
+                    'user',
+                    'mataKuliahs' => fn($q) => $q->wherePivot('semester_id', $selectedSemester->id)->orderBy('kode_mk'),
+                ])
                     ->whereIn('id', $assignedDosenIds)
                     ->when($search, fn($q) => $q->whereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")));
 
                 // Apply dynamic sorting to collection since we usesortBy/sortByDesc below
                 $dosenAktif = $query->get();
-                
+
                 if ($sortBy === 'name') {
                     $dosenAktif = $sortDir === 'asc' ? $dosenAktif->sortBy(fn($d) => $d->user->name) : $dosenAktif->sortByDesc(fn($d) => $d->user->name);
                 } elseif ($sortBy === 'nidn') {
@@ -115,7 +117,7 @@ class DosenController extends Controller
                 ->join('semesters', 'semesters.id', '=', 'dma.semester_id')
                 ->when($search, fn($q) => $q->where(function ($q2) use ($search) {
                     $q2->where('users.name', 'like', "%{$search}%")
-                       ->orWhere('dosens.nidn', 'like', "%{$search}%");
+                        ->orWhere('dosens.nidn', 'like', "%{$search}%");
                 }))
                 ->select(
                     'dosens.id as dosen_id',
@@ -139,29 +141,29 @@ class DosenController extends Controller
                 $semesters = $dosenRows->groupBy('semester_id')->map(function ($semRows) {
                     $s = $semRows->first();
                     return [
-                        'id'           => $s->semester_id,
-                        'label'        => $s->nama_semester . ' ' . $s->tahun_ajaran,
+                        'id' => $s->semester_id,
+                        'label' => $s->nama_semester . ' ' . $s->tahun_ajaran,
                         'tahun_ajaran' => $s->tahun_ajaran,
-                        'nama_semester'=> $s->nama_semester,
-                        'is_active'    => (bool) $s->is_active,
-                        'matakuliah'   => $semRows->map(fn($r) => [
-                            'id'      => $r->mk_id,
+                        'nama_semester' => $s->nama_semester,
+                        'is_active' => (bool) $s->is_active,
+                        'matakuliah' => $semRows->map(fn($r) => [
+                            'id' => $r->mk_id,
                             'kode_mk' => $r->kode_mk,
                             'nama_mk' => $r->nama_mk,
-                            'sks'     => $r->sks,
+                            'sks' => $r->sks,
                         ])->values(),
                     ];
                 })->values();
 
                 return [
-                    'dosen_id'  => $first->dosen_id,
-                    'name'      => $first->dosen_name,
-                    'nidn'      => $first->nidn,
-                    'pendidikan'=> $first->pendidikan,
-                    'status'    => $first->dosen_status,
+                    'dosen_id' => $first->dosen_id,
+                    'name' => $first->dosen_name,
+                    'nidn' => $first->nidn,
+                    'pendidikan' => $first->pendidikan,
+                    'status' => $first->dosen_status,
                     'semesters' => $semesters,
-                    'total_ta'  => $semesters->count(),
-                    'total_mk'  => $dosenRows->pluck('mk_id')->unique()->count(),
+                    'total_ta' => $semesters->count(),
+                    'total_mk' => $dosenRows->pluck('mk_id')->unique()->count(),
                 ];
             });
 
@@ -181,8 +183,8 @@ class DosenController extends Controller
         }
 
         // ── Shared data for modals ────────────────────────────────────────────
-        $previousSemester   = $selectedSemester ? $service->getPreviousSemester($selectedSemester) : null;
-        $availableDosens    = Dosen::with('user')->where('status', 'aktif')
+        $previousSemester = $selectedSemester ? $service->getPreviousSemester($selectedSemester) : null;
+        $availableDosens = Dosen::with('user')->where('status', 'aktif')
             ->get()->sortBy(fn($d) => $d->user->name);
         $availableMataKuliah = $selectedSemester
             ? \App\Models\MataKuliah::activeBySemester($selectedSemester->id)->orderBy('kode_mk')->get()
@@ -190,11 +192,18 @@ class DosenController extends Controller
 
         return view('admin.dosen.index', compact(
             'dosens',
-            'activeSemester', 'allSemesters', 'selectedSemester',
-            'tab', 'search', 'sortBy', 'sortDir',
-            'dosenAktif', 'dosenAktifCount',
+            'activeSemester',
+            'allSemesters',
+            'selectedSemester',
+            'tab',
+            'search',
+            'sortBy',
+            'sortDir',
+            'dosenAktif',
+            'dosenAktifCount',
             'historiDosen',
-            'availableDosens', 'availableMataKuliah',
+            'availableDosens',
+            'availableMataKuliah',
             'previousSemester'
         ));
     }
@@ -223,7 +232,7 @@ class DosenController extends Controller
         }
 
         $userId = auth()->id();
-        $now    = now();
+        $now = now();
         $copied = 0;
         $skipped = 0;
 
@@ -236,15 +245,18 @@ class DosenController extends Controller
                     ->where('semester_id', $targetSemId)
                     ->exists();
 
-                if ($exists) { $skipped++; continue; }
+                if ($exists) {
+                    $skipped++;
+                    continue;
+                }
 
                 DB::table('dosen_mata_kuliah')->insert([
-                    'dosen_id'       => $row->dosen_id,
+                    'dosen_id' => $row->dosen_id,
                     'mata_kuliah_id' => $row->mata_kuliah_id,
-                    'semester_id'    => $targetSemId,
-                    'created_by'     => $userId,
-                    'created_at'     => $now,
-                    'updated_at'     => $now,
+                    'semester_id' => $targetSemId,
+                    'created_by' => $userId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ]);
                 $copied++;
             }
@@ -255,7 +267,8 @@ class DosenController extends Controller
         }
 
         $msg = "{$copied} penugasan berhasil disalin ke semester tujuan.";
-        if ($skipped) $msg .= " {$skipped} dilewati (sudah ada).";
+        if ($skipped)
+            $msg .= " {$skipped} dilewati (sudah ada).";
 
         return back()->with('success', $msg);
     }
@@ -419,8 +432,8 @@ class DosenController extends Controller
             }
 
             // Determine jabatan_fungsional value: use custom if "lainnya" was selected
-            $jabatanValue = $request->jabatan_fungsional === 'lainnya' 
-                ? $request->jabatan_fungsional_custom 
+            $jabatanValue = $request->jabatan_fungsional === 'lainnya'
+                ? $request->jabatan_fungsional_custom
                 : $request->jabatan_fungsional;
 
             $pendidikanArray = array_filter($request->pendidikan_terakhir ?? []);
@@ -521,158 +534,158 @@ class DosenController extends Controller
                 $mkIds = [];
                 try {
                     // check existing user by email
-                        $user = User::where('email', $data['email'])->first();
+                    $user = User::where('email', $data['email'])->first();
 
                     if ($user) {
                         // update user name if different
                         if ($user->name !== $data['name']) {
-                                $user->name = $data['name'];
-                                $user->save();
-                            }
+                            $user->name = $data['name'];
+                            $user->save();
+                        }
 
-                            // update password if provided in CSV
-                            if (!empty($data['password'])) {
-                                $user->password = Hash::make($data['password']);
-                                $user->save();
-                            }
+                        // update password if provided in CSV
+                        if (!empty($data['password'])) {
+                            $user->password = Hash::make($data['password']);
+                            $user->save();
+                        }
 
                         // find or create dosen record
                         $dosen = Dosen::where('user_id', $user->id)->orWhere('nidn', $data['nidn'])->first();
-                                if ($dosen) {
-                                    $updateData = [
-                                        'nidn' => $data['nidn'],
-                                        'pendidikan' => $data['pendidikan'] ?? $dosen->pendidikan,
-                                        'phone' => $data['phone'] ?? $dosen->phone,
-                                        'prodi' => isset($data['prodi']) ? array_map('trim', explode('|', $data['prodi'])) : $dosen->prodi,
-                                        'status' => $data['status'] ?? $dosen->status,
-                                    ];
+                        if ($dosen) {
+                            $updateData = [
+                                'nidn' => $data['nidn'],
+                                'pendidikan' => $data['pendidikan'] ?? $dosen->pendidikan,
+                                'phone' => $data['phone'] ?? $dosen->phone,
+                                'prodi' => isset($data['prodi']) ? array_map('trim', explode('|', $data['prodi'])) : $dosen->prodi,
+                                'status' => $data['status'] ?? $dosen->status,
+                            ];
 
-                                    // handle pendidikan_terakhir if provided
-                                    if (!empty($data['pendidikan_terakhir'])) {
-                                        $pendidikanList = preg_split('/[|,;]+/', $data['pendidikan_terakhir']);
-                                        $updateData['pendidikan_terakhir'] = array_filter(array_map('trim', $pendidikanList));
-                                        
-                                        // Update pendidikan string if array is present
-                                        if (!empty($updateData['pendidikan_terakhir'])) {
-                                            $updateData['pendidikan'] = end($updateData['pendidikan_terakhir']);
-                                        }
-                                    }
+                            // handle pendidikan_terakhir if provided
+                            if (!empty($data['pendidikan_terakhir'])) {
+                                $pendidikanList = preg_split('/[|,;]+/', $data['pendidikan_terakhir']);
+                                $updateData['pendidikan_terakhir'] = array_filter(array_map('trim', $pendidikanList));
 
-                                    // handle universitas if provided
-                                    if (!empty($data['universitas'])) {
-                                        $universitasList = preg_split('/[|,;]+/', $data['universitas']);
-                                        $updateData['universitas'] = array_filter(array_map('trim', $universitasList));
-                                    }
-
-                                    // handle dosen_tetap if provided
-                                    if (!empty($data['dosen_tetap'])) {
-                                        $updateData['dosen_tetap'] = in_array(strtolower(trim($data['dosen_tetap'])), ['ya', 'yes', '1', 'true']);
-                                    }
-
-                                    // handle jabatan_fungsional if provided
-                                    if (!empty($data['jabatan_fungsional'])) {
-                                        $jabatanList = preg_split('/[|,;]+/', $data['jabatan_fungsional']);
-                                        $updateData['jabatan_fungsional'] = array_filter(array_map('trim', $jabatanList));
-                                    }
-
-                                    // handle mata_kuliah_kode -> convert to ids and store
-                                    if (!empty($data['mata_kuliah_kode'])) {
-                                        $codes = preg_split('/[|,;]+/', $data['mata_kuliah_kode']);
-                                        $codes = array_filter(array_map('trim', $codes));
-                                        if (count($codes)) {
-                                            $mks = \App\Models\MataKuliah::whereIn('kode_mk', $codes)->get();
-                                            $mkIds = $mks->pluck('id')->toArray();
-                                            $foundCodes = $mks->pluck('kode_mk')->toArray();
-                                            $missing = array_values(array_diff($codes, $foundCodes));
-                                            if (count($missing)) {
-                                                $detailedErrors[] = "Baris $rowNumber: Kode mata kuliah tidak ditemukan: " . implode(', ', $missing);
-                                            }
-                                            $updateData['mata_kuliah_ids'] = $mkIds;
-                                        }
-                                    }
-
-                                    $dosen->update($updateData);
-
-                                    // try syncing pivot if exists
-                                    try {
-                                        if (!empty($mkIds) && method_exists($dosen, 'mataKuliahs')) {
-                                            $dosen->mataKuliahs()->sync($mkIds);
-                                        }
-                                    } catch (\Throwable $e) {
-                                        // ignore if pivot table missing
-                                    }
-
-                                    $updated++;
-                                } else {
-                                    $createData = [
-                                        'user_id' => $user->id,
-                                        'nidn' => $data['nidn'],
-                                        'pendidikan' => $data['pendidikan'] ?? null,
-                                        'prodi' => isset($data['prodi']) ? array_map('trim', explode('|', $data['prodi'])) : [],
-                                        'phone' => $data['phone'] ?? null,
-                                        'address' => $data['address'] ?? null,
-                                        'status' => $data['status'] ?? 'aktif',
-                                    ];
-
-                                    // handle pendidikan_terakhir if provided
-                                    if (!empty($data['pendidikan_terakhir'])) {
-                                        $pendidikanList = preg_split('/[|,;]+/', $data['pendidikan_terakhir']);
-                                        $createData['pendidikan_terakhir'] = array_filter(array_map('trim', $pendidikanList));
-                                    } else {
-                                        $createData['pendidikan_terakhir'] = [];
-                                    }
-
-                                    // handle universitas if provided
-                                    if (!empty($data['universitas'])) {
-                                        $universitasList = preg_split('/[|,;]+/', $data['universitas']);
-                                        $createData['universitas'] = array_filter(array_map('trim', $universitasList));
-                                    } else {
-                                        $createData['universitas'] = [];
-                                    }
-
-                                    // handle dosen_tetap if provided
-                                    if (!empty($data['dosen_tetap'])) {
-                                        $createData['dosen_tetap'] = in_array(strtolower(trim($data['dosen_tetap'])), ['ya', 'yes', '1', 'true']);
-                                    } else {
-                                        $createData['dosen_tetap'] = false;
-                                    }
-
-                                    // handle jabatan_fungsional if provided
-                                    if (!empty($data['jabatan_fungsional'])) {
-                                        $jabatanList = preg_split('/[|,;]+/', $data['jabatan_fungsional']);
-                                        $createData['jabatan_fungsional'] = array_filter(array_map('trim', $jabatanList));
-                                    } else {
-                                        $createData['jabatan_fungsional'] = [];
-                                    }
-
-                                    if (!empty($data['mata_kuliah_kode'])) {
-                                        $codes = preg_split('/[|,;]+/', $data['mata_kuliah_kode']);
-                                        $codes = array_filter(array_map('trim', $codes));
-                                        if (count($codes)) {
-                                            $mks = \App\Models\MataKuliah::whereIn('kode_mk', $codes)->get();
-                                            $mkIds = $mks->pluck('id')->toArray();
-                                            $foundCodes = $mks->pluck('kode_mk')->toArray();
-                                            $missing = array_values(array_diff($codes, $foundCodes));
-                                            if (count($missing)) {
-                                                $detailedErrors[] = "Baris $rowNumber: Kode mata kuliah tidak ditemukan: " . implode(', ', $missing);
-                                            }
-                                            $createData['mata_kuliah_ids'] = $mkIds;
-                                        }
-                                    }
-
-                                    $dosen = Dosen::create($createData);
-
-                                    try {
-                                        if (!empty($mkIds) && method_exists($dosen, 'mataKuliahs')) {
-                                            $dosen->mataKuliahs()->sync($mkIds);
-                                        }
-                                    } catch (\Throwable $e) {
-                                        // ignore if pivot table missing
-                                    }
-
-                                    $imported++;
+                                // Update pendidikan string if array is present
+                                if (!empty($updateData['pendidikan_terakhir'])) {
+                                    $updateData['pendidikan'] = end($updateData['pendidikan_terakhir']);
                                 }
+                            }
+
+                            // handle universitas if provided
+                            if (!empty($data['universitas'])) {
+                                $universitasList = preg_split('/[|,;]+/', $data['universitas']);
+                                $updateData['universitas'] = array_filter(array_map('trim', $universitasList));
+                            }
+
+                            // handle dosen_tetap if provided
+                            if (!empty($data['dosen_tetap'])) {
+                                $updateData['dosen_tetap'] = in_array(strtolower(trim($data['dosen_tetap'])), ['ya', 'yes', '1', 'true']);
+                            }
+
+                            // handle jabatan_fungsional if provided
+                            if (!empty($data['jabatan_fungsional'])) {
+                                $jabatanList = preg_split('/[|,;]+/', $data['jabatan_fungsional']);
+                                $updateData['jabatan_fungsional'] = array_filter(array_map('trim', $jabatanList));
+                            }
+
+                            // handle mata_kuliah_kode -> convert to ids and store
+                            if (!empty($data['mata_kuliah_kode'])) {
+                                $codes = preg_split('/[|,;]+/', $data['mata_kuliah_kode']);
+                                $codes = array_filter(array_map('trim', $codes));
+                                if (count($codes)) {
+                                    $mks = \App\Models\MataKuliah::whereIn('kode_mk', $codes)->get();
+                                    $mkIds = $mks->pluck('id')->toArray();
+                                    $foundCodes = $mks->pluck('kode_mk')->toArray();
+                                    $missing = array_values(array_diff($codes, $foundCodes));
+                                    if (count($missing)) {
+                                        $detailedErrors[] = "Baris $rowNumber: Kode mata kuliah tidak ditemukan: " . implode(', ', $missing);
+                                    }
+                                    $updateData['mata_kuliah_ids'] = $mkIds;
+                                }
+                            }
+
+                            $dosen->update($updateData);
+
+                            // try syncing pivot if exists
+                            try {
+                                if (!empty($mkIds) && method_exists($dosen, 'mataKuliahs')) {
+                                    $dosen->mataKuliahs()->sync($mkIds);
+                                }
+                            } catch (\Throwable $e) {
+                                // ignore if pivot table missing
+                            }
+
+                            $updated++;
                         } else {
+                            $createData = [
+                                'user_id' => $user->id,
+                                'nidn' => $data['nidn'],
+                                'pendidikan' => $data['pendidikan'] ?? null,
+                                'prodi' => isset($data['prodi']) ? array_map('trim', explode('|', $data['prodi'])) : [],
+                                'phone' => $data['phone'] ?? null,
+                                'address' => $data['address'] ?? null,
+                                'status' => $data['status'] ?? 'aktif',
+                            ];
+
+                            // handle pendidikan_terakhir if provided
+                            if (!empty($data['pendidikan_terakhir'])) {
+                                $pendidikanList = preg_split('/[|,;]+/', $data['pendidikan_terakhir']);
+                                $createData['pendidikan_terakhir'] = array_filter(array_map('trim', $pendidikanList));
+                            } else {
+                                $createData['pendidikan_terakhir'] = [];
+                            }
+
+                            // handle universitas if provided
+                            if (!empty($data['universitas'])) {
+                                $universitasList = preg_split('/[|,;]+/', $data['universitas']);
+                                $createData['universitas'] = array_filter(array_map('trim', $universitasList));
+                            } else {
+                                $createData['universitas'] = [];
+                            }
+
+                            // handle dosen_tetap if provided
+                            if (!empty($data['dosen_tetap'])) {
+                                $createData['dosen_tetap'] = in_array(strtolower(trim($data['dosen_tetap'])), ['ya', 'yes', '1', 'true']);
+                            } else {
+                                $createData['dosen_tetap'] = false;
+                            }
+
+                            // handle jabatan_fungsional if provided
+                            if (!empty($data['jabatan_fungsional'])) {
+                                $jabatanList = preg_split('/[|,;]+/', $data['jabatan_fungsional']);
+                                $createData['jabatan_fungsional'] = array_filter(array_map('trim', $jabatanList));
+                            } else {
+                                $createData['jabatan_fungsional'] = [];
+                            }
+
+                            if (!empty($data['mata_kuliah_kode'])) {
+                                $codes = preg_split('/[|,;]+/', $data['mata_kuliah_kode']);
+                                $codes = array_filter(array_map('trim', $codes));
+                                if (count($codes)) {
+                                    $mks = \App\Models\MataKuliah::whereIn('kode_mk', $codes)->get();
+                                    $mkIds = $mks->pluck('id')->toArray();
+                                    $foundCodes = $mks->pluck('kode_mk')->toArray();
+                                    $missing = array_values(array_diff($codes, $foundCodes));
+                                    if (count($missing)) {
+                                        $detailedErrors[] = "Baris $rowNumber: Kode mata kuliah tidak ditemukan: " . implode(', ', $missing);
+                                    }
+                                    $createData['mata_kuliah_ids'] = $mkIds;
+                                }
+                            }
+
+                            $dosen = Dosen::create($createData);
+
+                            try {
+                                if (!empty($mkIds) && method_exists($dosen, 'mataKuliahs')) {
+                                    $dosen->mataKuliahs()->sync($mkIds);
+                                }
+                            } catch (\Throwable $e) {
+                                // ignore if pivot table missing
+                            }
+
+                            $imported++;
+                        }
+                    } else {
                         // create new user and dosen (use provided password or default)
                         $plainPassword = !empty($data['password']) ? $data['password'] : 'dosen123';
                         $user = User::create([
@@ -681,7 +694,7 @@ class DosenController extends Controller
                             'password' => Hash::make($plainPassword),
                             'role' => 'dosen',
                         ]);
-                        
+
                         $createData = [
                             'user_id' => $user->id,
                             'nidn' => $data['nidn'],
@@ -763,7 +776,8 @@ class DosenController extends Controller
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
         } finally {
-            if (is_resource($handle)) fclose($handle);
+            if (is_resource($handle))
+                fclose($handle);
         }
 
         $message = "Import selesai: $imported baru, $updated diperbarui, $failed gagal.";
@@ -928,7 +942,7 @@ class DosenController extends Controller
         $dosen->load(['user', 'kelasMataKuliahs.mataKuliah']);
 
         $semesterService = app(\App\Services\SemesterService::class);
-        $activeSemester  = $semesterService->getActiveSemester();
+        $activeSemester = $semesterService->getActiveSemester();
 
         $service = app(TeachingAssignmentService::class);
         $currentAssignments = $activeSemester
@@ -948,28 +962,28 @@ class DosenController extends Controller
 
         return response()->json([
             'dosen' => [
-                'id'   => $dosen->id,
+                'id' => $dosen->id,
                 'name' => $dosen->user->name,
                 'nidn' => $dosen->nidn,
             ],
             'active_semester' => $activeSemester ? [
-                'id'    => $activeSemester->id,
+                'id' => $activeSemester->id,
                 'label' => $activeSemester->nama_semester . ' ' . $activeSemester->tahun_ajaran,
             ] : null,
-            'current_ids'         => $currentAssignments->pluck('id')->values(),
+            'current_ids' => $currentAssignments->pluck('id')->values(),
             'current_assignments' => $currentAssignments->map(fn($mk) => [
-                'id'      => $mk->id,
+                'id' => $mk->id,
                 'kode_mk' => $mk->kode_mk,
                 'nama_mk' => $mk->nama_mk,
-                'sks'     => $mk->sks,
+                'sks' => $mk->sks,
             ]),
             'historic_mk_ids' => $historicMkIds,
-            'available_mk'    => $allMK->map(fn($mk) => [
-                'id'      => $mk->id,
+            'available_mk' => $allMK->map(fn($mk) => [
+                'id' => $mk->id,
                 'kode_mk' => $mk->kode_mk,
                 'nama_mk' => $mk->nama_mk,
-                'sks'     => $mk->sks,
-                'semester'=> $mk->semester,
+                'sks' => $mk->sks,
+                'semester' => $mk->semester,
             ]),
         ]);
     }

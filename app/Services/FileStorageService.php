@@ -13,7 +13,17 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class FileStorageService
 {
-    public const DISK = 's3';
+    /**
+     * Get the configured disk for file storage.
+     * Uses FILESYSTEM_DISK from .env (s3local for local testing, s3 for production)
+     */
+    private function getDisk(?string $path = null): string
+    {
+        if (!$path) {
+            return config('filesystems.default', 's3local');
+        }
+        return \App\Helpers\FileHelper::resolveDiskForPath($path);
+    }
 
     /** MIME types treated as images. */
     private const IMAGE_MIMES = [
@@ -63,7 +73,7 @@ class FileStorageService
         $extension = $file->getClientOriginalExtension();
         $filename  = Str::uuid() . '.' . $extension;
 
-        Storage::disk(self::DISK)->putFileAs($folder, $file, $filename);
+        Storage::disk($this->getDisk($folder))->putFileAs($folder, $file, $filename);
 
         return $folder . '/' . $filename;
     }
@@ -90,7 +100,7 @@ class FileStorageService
         $filename  = Str::uuid() . '.' . $extension;
         $path      = $folder . '/' . $filename;
 
-        Storage::disk(self::DISK)->putFileAs($folder, $file, $filename);
+        Storage::disk($this->getDisk())->putFileAs($folder, $file, $filename);
 
         return \App\Models\Upload::create([
             'user_id'       => $userId,
@@ -100,7 +110,7 @@ class FileStorageService
             'extension'     => strtolower($extension),
             'folder'        => $folder,
             'size'          => $file->getSize(),
-            'disk'          => self::DISK,
+            'disk'          => $this->getDisk(),
             'label'         => $label,
         ]);
     }
@@ -113,7 +123,7 @@ class FileStorageService
      */
     public function put(string $path, string $content): void
     {
-        Storage::disk(self::DISK)->put($path, $content);
+        Storage::disk($this->getDisk())->put($path, $content);
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -125,8 +135,8 @@ class FileStorageService
      */
     public function delete(?string $path): void
     {
-        if ($path && Storage::disk(self::DISK)->exists($path)) {
-            Storage::disk(self::DISK)->delete($path);
+        if ($path && Storage::disk($this->getDisk())->exists($path)) {
+            Storage::disk($this->getDisk())->delete($path);
         }
     }
 
@@ -135,7 +145,7 @@ class FileStorageService
      */
     public function deleteDirectory(string $directory): void
     {
-        Storage::disk(self::DISK)->deleteDirectory($directory);
+        Storage::disk($this->getDisk())->deleteDirectory($directory);
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -147,7 +157,7 @@ class FileStorageService
      */
     public function url(string $path): string
     {
-        return Storage::disk(self::DISK)->url($path);
+        return Storage::disk($this->getDisk())->url($path);
     }
 
     /**
@@ -156,7 +166,7 @@ class FileStorageService
      */
     public function temporaryUrl(string $path, int $minutes = 5): string
     {
-        return Storage::disk(self::DISK)->temporaryUrl(
+        return Storage::disk($this->getDisk())->temporaryUrl(
             $path, now()->addMinutes($minutes)
         );
     }
@@ -170,7 +180,7 @@ class FileStorageService
             return false;
         }
 
-        return Storage::disk(self::DISK)->exists($path);
+        return Storage::disk($this->getDisk())->exists($path);
     }
 
     /**
@@ -181,7 +191,7 @@ class FileStorageService
     {
         $name ??= basename($path);
 
-        return Storage::disk(self::DISK)->download($path, $name);
+        return Storage::disk($this->getDisk())->download($path, $name);
     }
 
     /**
@@ -191,7 +201,7 @@ class FileStorageService
     {
         $name ??= basename($path);
 
-        return Storage::disk(self::DISK)->response($path, $name);
+        return Storage::disk($this->getDisk())->response($path, $name);
     }
 
     // ──────────────────────────────────────────────────────────────

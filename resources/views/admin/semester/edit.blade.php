@@ -3,7 +3,7 @@
 @section('page-title', 'Edit Semester')
 @section('content')
     <div class="w-full">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon ">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg  ">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white rounded-t-xl">
                 <h3 class="text-xl font-bold flex items-center"><i class="fas fa-calendar-alt mr-3 text-2xl"></i>Edit
                     Semester & Tahun Ajaran</h3>
@@ -22,7 +22,8 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"><i
-                                class="fas fa-graduation-cap text-gray-400 dark:text-gray-500 mr-1"></i>Tahun Ajaran *</label>
+                                class="fas fa-graduation-cap text-gray-400 dark:text-gray-500 mr-1"></i>Tahun Ajaran
+                            *</label>
                         @php
                             $currentYear = (int) date('Y');
                             $startYear = $currentYear - 2;
@@ -41,7 +42,8 @@
                     <div class="md:col-span-2 flex flex-col md:flex-row items-center gap-4">
                         <div class="flex-1 w-full">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"><i
-                                    class="fas fa-calendar-alt text-gray-400 dark:text-gray-500 mr-1"></i>Tanggal Mulai *</label>
+                                    class="fas fa-calendar-alt text-gray-400 dark:text-gray-500 mr-1"></i>Tanggal Mulai
+                                *</label>
                             <input type="date" name="tanggal_mulai" id="tanggal_mulai"
                                 value="{{ old('tanggal_mulai', optional($semester->tanggal_mulai)->format('Y-m-d')) }}"
                                 class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
@@ -56,7 +58,8 @@
 
                         <div class="flex-1 w-full">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"><i
-                                    class="fas fa-calendar-alt text-gray-400 dark:text-gray-500 mr-1"></i>Tanggal Selesai *</label>
+                                    class="fas fa-calendar-alt text-gray-400 dark:text-gray-500 mr-1"></i>Tanggal Selesai
+                                *</label>
                             <input type="date" name="tanggal_selesai" id="tanggal_selesai"
                                 value="{{ old('tanggal_selesai', optional($semester->tanggal_selesai)->format('Y-m-d')) }}"
                                 class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
@@ -74,11 +77,13 @@
                             <option value="aktif" {{ old('status', $semester->status) == 'aktif' ? 'selected' : '' }}>Aktif
                             </option>
                         </select>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Jika dipilih <strong>Aktif</strong>, semester lain akan
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Jika dipilih <strong>Aktif</strong>,
+                            semester lain akan
                             dinonaktifkan.</p>
                     </div>
                 </div>
-                <div class="flex justify-end space-x-3 mt-8 pt-6 border-t dark:border-gray-700"><a href="{{ route('admin.semester.index') }}"
+                <div class="flex justify-end space-x-3 mt-8 pt-6 border-t dark:border-gray-700"><a
+                        href="{{ route('admin.semester.index') }}"
                         class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition flex items-center"><i
                             class="fas fa-times mr-2"></i>Batal</a><button type="submit"
                         class="bg-maroon text-white px-6 py-3 rounded-lg hover:bg-white-700 transition flex items-center shadow-md transform hover:scale-105"><i

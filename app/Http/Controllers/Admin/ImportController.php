@@ -378,7 +378,7 @@ class ImportController extends Controller
             $query->where('type', $request->type);
         }
 
-        $logs = $query->paginate(20);
+        $logs = $query->paginate(10);
         $importTypes = $this->importTypes;
 
         return view('admin.import.history', compact('logs', 'importTypes'));

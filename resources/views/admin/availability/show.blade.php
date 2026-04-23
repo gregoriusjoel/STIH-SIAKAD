@@ -5,7 +5,7 @@
 @section('content')
     <div class="space-y-6">
         {{-- Header --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg  overflow-hidden">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-white font-bold text-xl backdrop-blur-sm">

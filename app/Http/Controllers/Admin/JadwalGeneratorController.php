@@ -122,7 +122,7 @@ class JadwalGeneratorController extends Controller
     {
         $jadwalProposals = JadwalProposal::with(['mataKuliah', 'kelas', 'dosen', 'generatedBy'])
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(10);
 
         $statistics = [
             'total_proposals' => JadwalProposal::count(),

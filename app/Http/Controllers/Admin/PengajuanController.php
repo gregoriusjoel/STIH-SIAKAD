@@ -100,7 +100,7 @@ class PengajuanController extends Controller
             return redirect()->back()->with('error', 'Dokumen bertanda tangan belum tersedia.');
         }
 
-        return Storage::disk('s3')->download(
+        return Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($pengajuan->signed_doc_path))->download(
             $pengajuan->signed_doc_path,
             'Signed_' . $pengajuan->mahasiswa->nim . '_' . $pengajuan->jenis_label . '.' . pathinfo($pengajuan->signed_doc_path, PATHINFO_EXTENSION)
         );
@@ -114,7 +114,7 @@ class PengajuanController extends Controller
             return redirect()->back()->with('error', 'Dokumen generate belum tersedia.');
         }
 
-        return Storage::disk('s3')->download($pengajuan->generated_doc_path);
+        return Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($pengajuan->generated_doc_path))->download($pengajuan->generated_doc_path);
     }
 
     // ── Download final approved letter ────────────────────────────
@@ -125,6 +125,6 @@ class PengajuanController extends Controller
             return redirect()->back()->with('error', 'Surat final belum tersedia.');
         }
 
-        return Storage::disk('s3')->download($pengajuan->file_surat);
+        return Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($pengajuan->file_surat))->download($pengajuan->file_surat);
     }
 }

@@ -500,7 +500,7 @@
                                             </div>
                                             <div class="text-left sm:text-right">
                                                 @if($t->file_path)
-                                                    <a href="{{ \Illuminate\Support\Facades\Storage::disk('s3')->url($t->file_path) }}"
+                                                    <a href="{{ \App\Helpers\FileHelper::filePrivateUrl($t->file_path) }}"
                                                        target="_blank"
                                                        class="text-[10px] sm:text-xs text-primary hover:underline font-bold inline-flex items-center gap-1">
                                                         <span class="material-symbols-outlined text-[14px] sm:text-[16px]">visibility</span>
@@ -525,7 +525,7 @@
                                                         'dueDate' => $t->due_date ? \Carbon\Carbon::parse($t->due_date)->format('d M Y H:i') : '-',
                                                         'maxScore' => $t->max_score ?? 100,
                                                         'submissionType' => strtoupper($t->submission_type ?? 'ANY'),
-                                                        'filePath' => $t->file_path ? \Illuminate\Support\Facades\Storage::disk('s3')->url($t->file_path) : null
+                                                        'filePath' => $t->file_path ? \App\Helpers\FileHelper::filePrivateUrl($t->file_path) : null
                                                     ])) }}"
                                                     x-data @click="$dispatch('open-detail-tugas', JSON.parse(atob($el.dataset.task)))"
                                                     class="flex-1 sm:flex-none w-full sm:w-auto px-3 py-1.5 bg-white border border-gray-200 hover:bg-gray-50 rounded text-xs transition-colors">Detail</button>

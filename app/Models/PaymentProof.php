@@ -74,12 +74,11 @@ class PaymentProof extends Model
             return '';
         }
 
-        // If using S3 and not a local link, use temporary URL for private access
-        if (config('filesystems.default') === 's3' || str_contains($this->file_path, 'uploads/')) {
-            return Storage::disk('s3')->temporaryUrl(
-                $this->file_path,
-                now()->addMinutes(15) // 15 mins is plenty for viewing
-            );
+        // Use private URL helper which handles signed routes and local/S3 resolution
+        try {
+            return \App\Helpers\FileHelper::privateUrl($this->file_path, 15);
+        } catch (\Exception $e) {
+            return Storage::url($this->file_path);
         }
 
         return Storage::url($this->file_path);

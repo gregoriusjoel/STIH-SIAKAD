@@ -60,6 +60,23 @@ return [
             'report' => false,
         ],
 
+        's3local' => [
+            'driver' => 'local',
+            'root' => env('S3LOCAL_ROOT', storage_path('app/s3')) . '/public',
+            'url' => rtrim(env('APP_URL'), '/').env('S3LOCAL_URL_PATH', '/storage/s3'),
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        's3private' => [
+            'driver' => 'local',
+            'root' => env('S3LOCAL_ROOT', storage_path('app/s3')) . '/private',
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
 
     /*
@@ -75,6 +92,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('storage/s3') => storage_path('app/s3/public'),
     ],
 
 ];

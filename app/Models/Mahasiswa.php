@@ -21,7 +21,7 @@ class Mahasiswa extends Model
             return null;
         }
 
-        return \Illuminate\Support\Facades\Storage::disk('s3')->url($this->foto);
+        return \App\Helpers\FileHelper::fileUrl($this->foto);
     }
 
     /**
@@ -34,7 +34,18 @@ class Mahasiswa extends Model
             return null;
         }
 
-        return \Illuminate\Support\Facades\Storage::disk('s3')->url($path);
+        return \App\Helpers\FileHelper::fileUrl($path);
+    }
+
+
+    /**
+     * Get a safe storage folder name for this student.
+     * Format: [NAMA]_[NIM] (e.g. GREGORIUS_JOEL_123456)
+     */
+    public function getStorageFolderAttribute(): string
+    {
+        $safeName = strtoupper(str_replace(' ', '_', $this->nama ?: 'STUDENT'));
+        return $safeName . '_' . ($this->nim ?? $this->id);
     }
 
 

@@ -13,12 +13,18 @@ use App\Http\Controllers\Mahasiswa\JadwalController as MahasiswaJadwalController
 use App\Http\Controllers\Mahasiswa\PembayaranController;
 use App\Http\Controllers\Mahasiswa\ProfilController;
 use App\Http\Controllers\Mahasiswa\PengajuanController;
+use App\Http\Controllers\StorageController;
 use Illuminate\Support\Facades\Storage;
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Secure Private File Access
+Route::get('/files/private', \App\Http\Controllers\PrivateFileController::class)
+    ->middleware(['auth'])
+    ->name('files.private');
 
 Route::get('/test-500', function () {
     abort(500);
@@ -507,6 +513,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('krs/{kr}/status', [App\Http\Controllers\Admin\KrsController::class, 'updateStatus'])->name('krs.updateStatus');
     Route::post('krs/mahasiswa/{mahasiswa}/reopen', [App\Http\Controllers\Admin\KrsController::class, 'reopenForStudent'])->name('krs.reopen');
     Route::delete('krs/{kr}', [App\Http\Controllers\Admin\KrsController::class, 'destroy'])->name('krs.destroy');
+    Route::delete('krs/mahasiswa/{mahasiswa}', [App\Http\Controllers\Admin\KrsController::class, 'destroyAll'])->name('krs.destroyAll');
 
     // Pengajuan Management (Surat Mahasiswa)
     Route::prefix('pengajuan')->name('pengajuan.')->group(function () {

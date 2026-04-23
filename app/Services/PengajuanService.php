@@ -47,13 +47,13 @@ class PengajuanService
     {
         // Hapus file lama jika ada
         if ($pengajuan->signed_doc_path) {
-            Storage::disk('s3')->delete($pengajuan->signed_doc_path);
+            Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($pengajuan->signed_doc_path))->delete($pengajuan->signed_doc_path);
         }
 
-        $path = $file->store(
-            'pengajuan/signed/' . $pengajuan->mahasiswa_id,
-            's3'
-        );
+        $targetFolder = 'pengajuan/signed/' . $pengajuan->mahasiswa->storage_folder;
+        $fileName = \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($targetFolder . '/' . $fileName);
+        $path = $file->storeAs($targetFolder, $fileName, $resolvedDisk);
 
         $pengajuan->update(['signed_doc_path' => $path]);
     }
@@ -93,24 +93,24 @@ class PengajuanService
     {
         // Delete generated doc if exists
         if ($pengajuan->generated_doc_path) {
-            Storage::disk('s3')->delete($pengajuan->generated_doc_path);
+            Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($pengajuan->generated_doc_path))->delete($pengajuan->generated_doc_path);
         }
 
         // Delete signed doc if exists
         if ($pengajuan->signed_doc_path) {
-            Storage::disk('s3')->delete($pengajuan->signed_doc_path);
+            Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($pengajuan->signed_doc_path))->delete($pengajuan->signed_doc_path);
         }
 
         // Delete final file_surat if any
         if ($pengajuan->file_surat) {
-            Storage::disk('s3')->delete($pengajuan->file_surat);
+            Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($pengajuan->file_surat))->delete($pengajuan->file_surat);
         }
 
         // Delete revisions
         if ($pengajuan->revisions()->exists()) {
             foreach ($pengajuan->revisions as $rev) {
                 if ($rev->signed_doc_path) {
-                    Storage::disk('s3')->delete($rev->signed_doc_path);
+                    Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($rev->signed_doc_path))->delete($rev->signed_doc_path);
                 }
                 $rev->delete();
             }

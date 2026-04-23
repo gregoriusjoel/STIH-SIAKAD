@@ -25,7 +25,7 @@ class InstallmentRequestController extends Controller
         $requests = InstallmentRequest::with(['student.user', 'invoice'])
             ->where('status', 'SUBMITTED')
             ->orderBy('created_at')
-            ->paginate(20);
+            ->paginate(10);
 
         return view('finance.installment-requests.index', compact('requests'));
     }

@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="w-full">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden ">
             <div class="p-6 border-b border-gray-200 bg-maroon text-white flex justify-between items-center">
                 <div>
                     <h3 class="text-xl font-bold flex items-center">

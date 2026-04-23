@@ -23,22 +23,22 @@ class ThesisFileService
 
     public function storeProposal(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/proposal", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/proposal", self::DISK);
     }
 
     public function storeGuidanceFile(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/bimbingan", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/bimbingan", self::DISK);
     }
 
     public function storeSidangFile(Mahasiswa $mahasiswa, string $type, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/sidang/{$type}", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/sidang/{$type}", self::DISK);
     }
 
     public function storeRevision(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/revisi", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/revisi", self::DISK);
     }
 
     /**
@@ -118,7 +118,7 @@ class ThesisFileService
      */
     public function storeLogbook(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/logbook", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/logbook", self::DISK);
     }
 
     /**

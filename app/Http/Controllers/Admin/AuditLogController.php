@@ -29,7 +29,7 @@ class AuditLogController extends Controller
             $query->where('auditable_type', 'like', "%{$request->entity_type}%");
         }
 
-        $logs = $query->paginate(20)->withQueryString();
+        $logs = $query->paginate(10)->withQueryString();
 
         $actions = AuditLog::distinct()->pluck('action');
 

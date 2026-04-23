@@ -31,7 +31,7 @@ class UploadController extends Controller
     {
         $uploads = Upload::where('user_id', Auth::id())
             ->latest()
-            ->paginate(20);
+            ->paginate(10);
 
         return view('uploads.index', compact('uploads'));
     }

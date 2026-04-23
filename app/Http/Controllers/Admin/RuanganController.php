@@ -33,7 +33,7 @@ class RuanganController extends Controller
             });
         }
 
-        $ruangans = $query->orderBy('kode_ruangan')->paginate(20);
+        $ruangans = $query->orderBy('kode_ruangan')->paginate(10);
         $kategoris = KategoriRuangan::aktif()->ordered()->get();
 
         return view('admin.master-data.ruangan.index', compact('ruangans', 'kategoris'));

@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="w-full">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden ">
             <div class="p-6 border-b border-gray-200 bg-maroon text-white">
                 <h3 class="text-xl font-bold flex items-center">
                     <i class="fas fa-edit mr-3 text-2xl"></i>
@@ -176,11 +176,11 @@
                     const end = jamSelesai.value.split(':').map(Number);
                     const startMin = start[0] * 60 + start[1];
                     let endMin = end[0] * 60 + end[1];
-                    
+
                     if (endMin < startMin && jamSelesai.value === '00:00') {
                         endMin += (24 * 60);
                     }
-                    
+
                     const duration = endMin - startMin;
                     document.getElementById('preview-durasi').textContent = duration + ' menit';
                 }

@@ -67,9 +67,11 @@ class InternshipWorkflowService
      */
     public function uploadSignedRequestLetter(Internship $internship, $file): void
     {
+        $targetFolder = 'internship/signed/' . $internship->mahasiswa->storage_folder;
         $fileName = 'internship_request_signed_' . $internship->id . '_' . time()
                     . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('internship/signed', $fileName, 's3');
+        $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($targetFolder . '/' . $fileName);
+        $path = $file->storeAs($targetFolder, $fileName, $resolvedDisk);
 
         $internship->update([
             'request_letter_signed_path' => $path,
@@ -165,9 +167,11 @@ class InternshipWorkflowService
      */
     public function saveMahasiswaAcceptanceLetter(Internship $internship, \Illuminate\Http\UploadedFile $file): void
     {
+        $targetFolder = 'internship/acceptance/' . $internship->mahasiswa->storage_folder;
         $ext  = $file->getClientOriginalExtension();
         $name = 'acceptance_' . $internship->id . '_' . time() . '.' . $ext;
-        $path = $file->storeAs('internship/acceptance', $name, 's3');
+        $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($targetFolder . '/' . $name);
+        $path = $file->storeAs($targetFolder, $name, $resolvedDisk);
         $internship->update(['acceptance_letter_path' => $path]);
     }
 
@@ -182,9 +186,11 @@ class InternshipWorkflowService
         }
 
         if ($file) {
+            $targetFolder = 'internship/acceptance/' . $internship->mahasiswa->storage_folder;
             $ext  = $file->getClientOriginalExtension();
             $name = 'acceptance_' . $internship->id . '_' . time() . '.' . $ext;
-            $path = $file->storeAs('internship/acceptance', $name, 's3');
+            $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($targetFolder . '/' . $name);
+            $path = $file->storeAs($targetFolder, $name, $resolvedDisk);
             $internship->update(['acceptance_letter_path' => $path]);
         }
 
@@ -215,9 +221,11 @@ class InternshipWorkflowService
      */
     public function uploadAdminSignedPdf(Internship $internship, $file): void
     {
+        $targetFolder = 'internship/admin_signed/' . $internship->mahasiswa->storage_folder;
         $ext      = $file->getClientOriginalExtension();
         $fileName = 'official_signed_' . $internship->id . '_' . time() . '.' . $ext;
-        $path     = $file->storeAs('internship/admin_signed', $fileName, 's3');
+        $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($targetFolder . '/' . $fileName);
+        $path     = $file->storeAs($targetFolder, $fileName, $resolvedDisk);
 
         $internship->update(['admin_signed_pdf_path' => $path]);
     }
@@ -361,7 +369,7 @@ class InternshipWorkflowService
         // Delete files
         foreach (['request_letter_generated_path', 'request_letter_signed_path', 'acceptance_letter_path', 'dokumen_pendukung_path'] as $field) {
             if ($internship->$field) {
-                Storage::disk('s3')->delete($internship->$field);
+                Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($internship->$field))->delete($internship->$field);
             }
         }
 

@@ -196,7 +196,7 @@
                 {{-- Surat penerimaan dibuat oleh pihak instansi. Admin mengonfirmasi SETELAH mahasiswa upload. --}}
                 @if($internship->acceptance_letter_path)
                     {{-- Mahasiswa has uploaded – show download + confirm --}}
-                    <a href="{{ \Illuminate\Support\Facades\Storage::disk('s3')->url($internship->acceptance_letter_path) }}"
+                    <a href="{{ \App\Helpers\FileHelper::filePrivateUrl($internship->acceptance_letter_path) }}"
                        target="_blank"
                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-teal-200 hover:bg-teal-50 text-teal-700 text-sm font-bold rounded-xl transition shadow-sm">
                         <span class="material-symbols-outlined text-[16px]">download</span> Lihat Surat Penerimaan (upload mahasiswa)

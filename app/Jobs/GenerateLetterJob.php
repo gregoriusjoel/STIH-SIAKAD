@@ -93,12 +93,13 @@ class GenerateLetterJob implements ShouldQueue
 
         // ── 4. Simpan file output ─────────────────────────────────
         $fileName  = 'generated_' . $pengajuan->id . '_' . time() . '.docx';
-        $storagePath = 'pengajuan/generated/' . $fileName;
+        $storagePath = 'pengajuan/generated/' . $pengajuan->mahasiswa->storage_folder . '/' . $fileName;
 
         $tmpPath = sys_get_temp_dir() . '/' . $fileName;
         $templateProcessor->saveAs($tmpPath);
 
-        Storage::disk('s3')->put($storagePath, file_get_contents($tmpPath));
+        $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($storagePath);
+        Storage::disk($resolvedDisk)->put($storagePath, file_get_contents($tmpPath));
 
         @unlink($tmpPath);
 

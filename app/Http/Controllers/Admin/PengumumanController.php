@@ -10,7 +10,7 @@ class PengumumanController extends Controller
 {
     public function index()
     {
-        $pengumumans = Pengumuman::orderByDesc('published_at')->paginate(20);
+        $pengumumans = Pengumuman::orderByDesc('published_at')->paginate(10);
         return view('admin.pengumuman.index', compact('pengumumans'));
     }
 

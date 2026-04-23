@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg  overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-maroon text-white">
@@ -34,14 +34,16 @@
                                 <div class="flex items-center">
                                     <div
                                         class="flex-shrink-0 h-10 w-10 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
-                                        {{ strtoupper(substr($u->name, 0, 1)) }}</div>
+                                        {{ strtoupper(substr($u->name, 0, 1)) }}
+                                    </div>
                                     <div class="ml-4">
                                         <div class="font-semibold text-gray-900 dark:text-gray-100">{{ $u->name }}</div>
                                         <div class="text-sm text-gray-500 dark:text-gray-400">ID: {{ $u->id }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 dark:text-gray-300"><i class="fas fa-envelope text-maroon mr-2"></i>{{ $u->email }}</td>
+                            <td class="px-6 py-4 dark:text-gray-300"><i
+                                    class="fas fa-envelope text-maroon mr-2"></i>{{ $u->email }}</td>
                             <td class="px-6 py-4 text-center">
                                 @if($u->role == 'admin')
                                     <span
@@ -79,9 +81,8 @@
                                         class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition"
                                         title="Edit"><i class="fas fa-edit"></i></a>
                                     @if($u->id != auth()->id())
-                                        <form action="{{ route('admin.users.destroy', $u) }}" method="POST"
-                                            class="delete-form">@csrf @method('DELETE')<button
-                                                type="submit"
+                                        <form action="{{ route('admin.users.destroy', $u) }}" method="POST" class="delete-form">
+                                            @csrf @method('DELETE')<button type="submit"
                                                 class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition"
                                                 title="Hapus"><i class="fas fa-trash"></i></button></form>
                                     @endif
@@ -100,7 +101,8 @@
             </table>
         </div>
         @if($users->hasPages())
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">{{ $users->links() }}</div>
+            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                {{ $users->links() }}</div>
         @endif
     </div>
 
@@ -108,9 +110,9 @@
         <script>
             // SweetAlert Delete Confirmation
             document.querySelectorAll('.delete-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', function (e) {
                     e.preventDefault();
-                    
+
                     Swal.fire({
                         title: 'Apakah Anda yakin?',
                         text: "Data user ini akan dihapus permanen!",

@@ -48,7 +48,7 @@ class KelasPerkuliahanController extends Controller
             });
         }
 
-        $kelasPerkuliahans = $query->paginate(20)->withQueryString();
+        $kelasPerkuliahans = $query->paginate(10)->withQueryString();
         $prodis = Prodi::orderBy('nama_prodi')->get();
         $semesters = Semester::orderByDesc('id')->get();
 
@@ -76,18 +76,14 @@ class KelasPerkuliahanController extends Controller
      */
     public function store(KelasPerkuliahanRequest $request)
     {
-        $kp = $this->service->findOrCreate($request->validated());
-
-        if (!$kp->wasRecentlyCreated) {
-            return redirect()
-                ->route('admin.kelas-perkuliahan.index')
-                ->with('success', "Kelas Perkuliahan \"{$kp->nama_kelas}\" sudah ada sebelumnya. Data yang ada digunakan kembali.");
-        }
+        $kp = KelasPerkuliahan::create($request->validated());
 
         return redirect()
             ->route('admin.kelas-perkuliahan.index')
             ->with('success', "Kelas Perkuliahan \"{$kp->nama_kelas}\" berhasil ditambahkan.");
     }
+
+
 
     /**
      * Display the specified kelas perkuliahan.

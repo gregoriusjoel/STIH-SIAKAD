@@ -232,7 +232,7 @@
 
 @section('content')
     <div class="w-full">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden ">
             <div class="p-6 border-b border-gray-200 bg-maroon text-white">
                 <h3 class="text-xl font-bold flex items-center">
                     <i class="fas fa-chalkboard-teacher mr-3 text-2xl"></i>
@@ -446,7 +446,8 @@
                                                     <option value="">-- Pilih Program Studi --</option>
                                                     @foreach($prodis as $prodi)
                                                         <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} -
-                                                            {{ $prodi->nama_prodi }}</option>
+                                                            {{ $prodi->nama_prodi }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                                 <button type="button" id="add-prodi" class="input-list-btn">
@@ -541,16 +542,16 @@
                 const row = document.createElement('div');
                 row.className = 'input-list-item';
                 row.innerHTML = `
-                        <select name="mata_kuliah_ids[]" class="mk-select form-select flex-1">
-                            <option value="">-- Pilih Mata Kuliah --</option>
-                            @foreach($mataKuliahs as $mk)
-                                <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
-                            @endforeach
-                        </select>
-                        <button type="button" class="remove-mk input-list-btn remove">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                    `;
+                            <select name="mata_kuliah_ids[]" class="mk-select form-select flex-1">
+                                <option value="">-- Pilih Mata Kuliah --</option>
+                                @foreach($mataKuliahs as $mk)
+                                    <option value="{{ $mk->id }}">{{ $mk->kode_mk }} - {{ $mk->nama_mk }}</option>
+                                @endforeach
+                            </select>
+                            <button type="button" class="remove-mk input-list-btn remove">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        `;
                 list.appendChild(row);
 
                 // Initialize Select2 for the new dropdown
@@ -581,29 +582,29 @@
             const addPendidikanBtn = document.getElementById('add-pendidikan');
             const pendidikanList = document.getElementById('pendidikan-list');
             const pendidikanOptionsHtml = `
-                    <option value="">-- Pilih --</option>
-                    <option value="S1">S1</option>
-                    <option value="S2">S2</option>
-                    <option value="S3">S3</option>
-                `;
+                        <option value="">-- Pilih --</option>
+                        <option value="S1">S1</option>
+                        <option value="S2">S2</option>
+                        <option value="S3">S3</option>
+                    `;
 
             function makePendidikanRow() {
                 const row = document.createElement('div');
                 row.className = 'pendidikan-item input-list-item';
                 row.innerHTML = `
-                        <div class="input-list-item-input">
-                            <select name="pendidikan_terakhir[]" class="form-select" required>
-                                ${pendidikanOptionsHtml}
-                            </select>
-                            <input type="text" name="universitas[]" 
-                                placeholder="Nama Universitas"
-                                class="form-input"
-                                required>
-                        </div>
-                        <button type="button" class="remove-pendidikan input-list-btn remove">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                    `;
+                            <div class="input-list-item-input">
+                                <select name="pendidikan_terakhir[]" class="form-select" required>
+                                    ${pendidikanOptionsHtml}
+                                </select>
+                                <input type="text" name="universitas[]" 
+                                    placeholder="Nama Universitas"
+                                    class="form-input"
+                                    required>
+                            </div>
+                            <button type="button" class="remove-pendidikan input-list-btn remove">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        `;
                 row.querySelector('.remove-pendidikan')?.addEventListener('click', function () {
                     row.remove();
                 });
@@ -619,23 +620,23 @@
             const addProdi = document.getElementById('add-prodi');
             const prodiList = document.getElementById('prodi-list');
             const prodiOptionsHtml = `
-                    <option value="">-- Pilih Program Studi --</option>
-                    @foreach($prodis as $prodi)
-                        <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
-                    @endforeach
-                `;
+                        <option value="">-- Pilih Program Studi --</option>
+                        @foreach($prodis as $prodi)
+                            <option value="{{ $prodi->kode_prodi }}">{{ $prodi->kode_prodi }} - {{ $prodi->nama_prodi }}</option>
+                        @endforeach
+                    `;
 
             function makeProdiRow() {
                 const row = document.createElement('div');
                 row.className = 'input-list-item';
                 row.innerHTML = `
-                        <select name="prodi[]" class="form-select flex-1" required>
-                            ${prodiOptionsHtml}
-                        </select>
-                        <button type="button" class="remove-prodi input-list-btn remove">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                    `;
+                            <select name="prodi[]" class="form-select flex-1" required>
+                                ${prodiOptionsHtml}
+                            </select>
+                            <button type="button" class="remove-prodi input-list-btn remove">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        `;
                 row.querySelector('.remove-prodi')?.addEventListener('click', function () {
                     row.remove();
                 });

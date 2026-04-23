@@ -3,7 +3,7 @@
 @section('page-title', 'Tambah User')
 @section('content')
     <div class="w-full" x-data="{ role: '' }">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg ">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white rounded-t-xl">
                 <h3 class="text-xl font-bold flex items-center"><i class="fas fa-user-plus mr-3 text-2xl"></i>Tambah User
                     Baru</h3>
@@ -83,7 +83,8 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"><i
-                                        class="fas fa-graduation-cap text-gray-400 dark:text-gray-500 mr-1"></i>Program Studi *</label>
+                                        class="fas fa-graduation-cap text-gray-400 dark:text-gray-500 mr-1"></i>Program
+                                    Studi *</label>
                                 <select name="prodi"
                                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
                                     <option value="">Pilih Prodi</option>

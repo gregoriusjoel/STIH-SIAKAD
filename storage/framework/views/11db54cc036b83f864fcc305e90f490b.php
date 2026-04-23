@@ -1,0 +1,514 @@
+<?php $__env->startSection('title', 'Data KRS'); ?>
+<?php $__env->startSection('page-title', 'Data KRS'); ?>
+
+<?php $__env->startSection('content'); ?>
+<div class="mb-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                <i class="fas fa-file-alt mr-3 text-maroon dark:text-red-500"></i>
+                Manajemen KRS
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Kelola dan verifikasi Kartu Rencana Studi mahasiswa</p>
+        </div>
+    </div>
+
+    <!-- Semester Aktif & Pengaturan KRS (two-column) -->
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left: Semester Aktif -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden relative flex">
+                        <div class="flex w-full">
+                            <div class="flex-1 p-6 relative flex flex-col justify-between">
+                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">Semester Aktif</p>
+                                <?php if(isset($semesterAktif)): ?>
+                                    <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-gray-100 mt-1 break-words"><?php echo e($semesterAktif->nama_semester ?? '-'); ?> <?php echo e($semesterAktif->tahun_ajaran ?? ''); ?></h3>
+
+                                    <div class="flex flex-wrap items-center gap-2 mt-2">
+                                        <?php
+                                            $now = \Carbon\Carbon::now();
+                                            $mulai = $semesterAktif->tanggal_mulai ? \Carbon\Carbon::parse($semesterAktif->tanggal_mulai) : null;
+                                            $selesai = $semesterAktif->tanggal_selesai ? \Carbon\Carbon::parse($semesterAktif->tanggal_selesai) : null;
+                                            $isRunning = $mulai && $selesai && $now->between($mulai, $selesai);
+                                        ?>
+
+                                        <?php if($isRunning): ?>
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                                <i class="fas fa-check-circle mr-2"></i>
+                                                Sedang Berjalan
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
+                                                <i class="fas fa-clock mr-2"></i>
+                                                Tidak Aktif
+                                            </span>
+                                        <?php endif; ?>
+
+                                        <?php if($selesai): ?>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400 flex items-center mt-1 md:mt-0"><i class="fas fa-clock text-gray-400 dark:text-gray-500 mr-2"></i>Berakhir <?php echo e($selesai->format('d M Y')); ?></div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <hr class="my-4 md:my-5 border-t border-gray-100 dark:border-gray-700">
+                                    <div class="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                        <a href="<?php echo e(route('admin.semester.manage')); ?>" class="w-full sm:w-auto px-5 py-2.5 bg-maroon text-white text-sm font-semibold rounded-full hover:bg-red-900 transition flex items-center justify-center shadow-sm whitespace-nowrap"><i class="fas fa-plus mr-2"></i>Set Semester Baru</a>
+                                        <a href="<?php echo e(route('admin.kalender.index')); ?>" class="w-full sm:w-auto px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-full text-gray-700 dark:text-gray-300 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition flex items-center justify-center whitespace-nowrap">Lihat Kalender Akademik</a>
+                                    </div>
+                                <?php else: ?>
+                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-2">Belum ada semester aktif</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Silakan atur semester aktif pada halaman Semester & Tahun Ajaran.</p>
+                                    <div class="mt-4">
+                                        <a href="<?php echo e(route('admin.semester.manage')); ?>" class="w-full sm:w-auto px-5 py-2.5 bg-maroon text-white text-sm font-semibold rounded-lg hover:bg-red-900 transition inline-flex items-center justify-center"><i class="fas fa-cog mr-2"></i>Atur Semester</a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="hidden md:flex w-44 pr-6 items-center justify-end relative">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-4 right-4 opacity-10" width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: rgba(0,0,0,0.04);">
+                                    <rect x="3" y="2" width="18" height="18" rx="2" />
+                                    <path d="M16 2v4" />
+                                    <path d="M8 2v4" />
+                                    <path d="M3 10h18" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Pengaturan KRS -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Pengaturan KRS</h3>
+
+                        <?php if(isset($semesterAktif)): ?>
+                        <form action="<?php echo e(route('admin.semester.update-krs-settings', $semesterAktif->id)); ?>" method="POST">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('PUT'); ?>
+
+                            <div class="mb-4">
+                                <label class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700">Status Pengisian KRS</span>
+                                   <div class="flex items-center gap-3">
+                                        <input type="checkbox"
+                                            name="krs_dapat_diisi"
+                                            value="1"
+                                            <?php echo e($semesterAktif->krs_dapat_diisi ? 'checked' : ''); ?>
+
+                                            class="sr-only peer"
+                                            id="krsToggleAdmin">
+                                        <label for="krsToggleAdmin"
+                                            class="relative w-11 h-6 flex-shrink-0 bg-gray-200 dark:bg-gray-600 
+                                                rounded-full peer 
+                                                peer-checked:bg-green-600 
+                                                cursor-pointer
+                                                after:content-[''] 
+                                                after:absolute 
+                                                after:top-[2px] 
+                                                after:left-[2px] 
+                                                after:bg-white 
+                                                after:border-gray-300 
+                                                after:border 
+                                                after:rounded-full 
+                                                after:h-5 
+                                                after:w-5 
+                                                after:transition-all
+                                                peer-checked:after:translate-x-full
+                                                peer-checked:after:border-white">
+                                        </label>
+                                    </div>
+                                </label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1"><?php echo e($semesterAktif->krs_dapat_diisi ? 'Mahasiswa dapat mengisi KRS' : 'Mahasiswa tidak dapat mengisi KRS'); ?></p>
+                            </div>
+
+
+                            <div class="mb-4">
+                                <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Mulai Periode</label>
+                                <input type="date" name="krs_mulai" value="<?php echo e($semesterAktif->krs_mulai?->format('Y-m-d')); ?>" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Akhir Periode</label>
+                                <input type="date" name="krs_selesai" value="<?php echo e($semesterAktif->krs_selesai?->format('Y-m-d')); ?>" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm">
+                            </div>
+
+                            <button type="submit" class="w-full px-5 py-2.5 bg-maroon text-white text-sm font-semibold rounded-lg hover:bg-red-900 transition flex items-center justify-center mt-5 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-maroon/30 ring-1 ring-maroon/10">
+                                <i class="fas fa-save mr-2"></i>
+                                Simpan Pengaturan
+                            </button>
+                        </form>
+                        <?php else: ?>
+                        <div class="text-sm text-gray-500">Belum ada semester aktif. Silakan atur semester aktif pada halaman Semester & Tahun Ajaran.</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="block md:hidden space-y-4">
+                <?php $__empty_1 = true; $__currentLoopData = $krsData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $mahasiswa): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
+                        $uniqueKrs = collect($mahasiswa->krs)->unique('mata_kuliah_id');
+                        $totalSks = 0;
+                        $krsStatus = 'draft';
+                        if ($uniqueKrs->isNotEmpty()) {
+                            foreach ($uniqueKrs as $k) {
+                                $sks = optional($k->mataKuliah)->sks
+                                    ?? optional(optional($k->kelas)->mataKuliah)->sks
+                                    ?? 0;
+                                $totalSks += (int) $sks;
+                                if ($k->status !== 'draft') {
+                                    $krsStatus = $k->status;
+                                }
+                            }
+                        }
+
+                        $currentSemesterInfo = $mahasiswa->getCurrentSemesterInfo();
+                        $displayStatus = ($krsStatus === 'draft') ? 'Draft' : 'Sudah Isi';
+                    ?>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-maroon to-red-700 flex items-center justify-center text-white font-bold mr-3 text-sm">
+                                    <?php echo e(strtoupper(substr(optional($mahasiswa->user)->name ?? 'U', 0, 1))); ?>
+
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-1"><?php echo e(optional($mahasiswa->user)->name ?? 'Nama tidak tersedia'); ?></div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        NIM: <?php echo e($mahasiswa->nim); ?>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                 <?php if($displayStatus === 'Draft'): ?>
+                                    <span class="px-2 py-1 inline-flex items-center text-xs font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300">
+                                        Draft
+                                    </span>
+                                <?php else: ?>
+                                    <span class="px-2 py-1 inline-flex items-center text-xs font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                        Sudah Isi
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 text-sm mb-4 border-t border-b border-gray-100 dark:border-gray-700 py-3">
+                            <div>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase">Prodi</span>
+                                <span class="font-medium text-gray-800 dark:text-gray-200"><?php echo e($mahasiswa->prodi ?? '-'); ?></span>
+                            </div>
+                            <div>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase">Semester</span>
+                                <span class="font-medium text-gray-800 dark:text-gray-200">Semester <?php echo e($currentSemesterInfo->semester_number ?? '-'); ?></span>
+                            </div>
+                            <div>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase">Total SKS</span>
+                                <span class="font-medium text-purple-700 dark:text-purple-400 font-bold"><?php echo e($totalSks ? $totalSks . ' SKS' : '-'); ?></span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 justify-end">
+                             <button type="button" onclick="document.getElementById('modal-krs-<?php echo e($mahasiswa->id); ?>').classList.remove('hidden')" class="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 px-3 py-1.5 rounded-lg text-sm font-medium transition" title="Detail">
+                                <i class="fas fa-eye mr-1"></i> Detail
+                            </button>
+
+                            <form action="<?php echo e(route('admin.krs.reopen', $mahasiswa)); ?>" method="POST" class="inline">
+                                <?php echo csrf_field(); ?>
+                                <button type="submit" 
+                                    class="bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 px-3 py-1.5 rounded-lg text-sm font-medium transition" 
+                                    onclick="event.preventDefault(); showConfirm('Buka kembali pengisian KRS untuk mahasiswa ini? Mahasiswa akan dapat mengedit KRS.', () => this.closest('form').submit(), null, 'Konfirmasi Edit KRS')"
+                                    title="Buka Kembali">
+                                    <i class="fas fa-edit mr-1"></i> Edit
+                                </button>
+                            </form>
+
+                            <?php
+                                $firstKrs = $mahasiswa->krs->first();
+                            ?>
+                            
+                            <button type="button" onclick="confirmDeleteKrs(<?php echo e($mahasiswa->id); ?>, true)" 
+                                class="bg-maroon text-white hover:bg-red-900 px-3 py-1.5 rounded-lg text-sm font-medium transition">
+                                <i class="fas fa-trash mr-1"></i> Hapus
+                            </button>
+                            <form id="delete-krs-form-mobile-<?php echo e($mahasiswa->id); ?>" action="<?php echo e(route('admin.krs.destroyAll', $mahasiswa->id)); ?>" method="POST" class="hidden">
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('DELETE'); ?>
+                            </form>
+                        </div>
+                    </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-8 text-center border border-gray-200 dark:border-gray-700">
+                        <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+                            <i class="fas fa-inbox text-3xl text-gray-400 dark:text-gray-500"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Belum ada data KRS</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Data KRS akan tampil ketika mahasiswa melakukan pengisian KRS</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hidden md:block">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-maroon text-white">
+                <tr>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-hashtag mr-2"></i>No
+                    </th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-user-graduate mr-2"></i>Mahasiswa
+                    </th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-building mr-2"></i>Prodi
+                    </th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-calendar-alt mr-2"></i>Semester
+                    </th>
+                    <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-calculator mr-2"></i>SKS
+                    </th>
+                    <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-info-circle mr-2"></i>Status
+                    </th>
+                    <th scope="col" class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-cog mr-2"></i>Aksi
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <?php
+                    $rowNo = ($krsData->currentPage() - 1) * $krsData->perPage();
+                ?>
+                <?php $__empty_1 = true; $__currentLoopData = $krsData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $mahasiswa): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
+                        // Deduplicate by mata_kuliah_id to avoid double-counting
+                        $uniqueKrs = collect($mahasiswa->krs)->unique('mata_kuliah_id');
+                        $totalSks = 0;
+                        $krsStatus = 'draft';
+                        if ($uniqueKrs->isNotEmpty()) {
+                            foreach ($uniqueKrs as $k) {
+                                $sks = optional($k->mataKuliah)->sks
+                                    ?? optional(optional($k->kelas)->mataKuliah)->sks
+                                    ?? 0;
+                                $totalSks += (int) $sks;
+                                if ($k->status !== 'draft') {
+                                    $krsStatus = $k->status;
+                                }
+                            }
+                        }
+                        
+                        // Get current semester info
+                        $currentSemesterInfo = $mahasiswa->getCurrentSemesterInfo();
+                    ?>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
+                            <?php echo e(++$rowNo); ?>
+
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-maroon to-red-700 flex items-center justify-center text-white font-bold mr-3">
+                                    <?php echo e(strtoupper(substr(optional($mahasiswa->user)->name ?? 'U', 0, 1))); ?>
+
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-900 dark:text-gray-100"><?php echo e(optional($mahasiswa->user)->name ?? 'Nama tidak tersedia'); ?></div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        <i class="fas fa-id-card text-gray-400 dark:text-gray-500 mr-1"></i>
+                                        NIM: <?php echo e($mahasiswa->nim); ?>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                            <?php echo e($mahasiswa->prodi ?? '-'); ?>
+
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm text-gray-700 dark:text-gray-300">
+                                <i class="fas fa-calendar text-gray-400 dark:text-gray-500 mr-1"></i>
+                                Semester <?php echo e($currentSemesterInfo->semester_number ?? '-'); ?>
+
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-sm font-bold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
+                                <i class="fas fa-calculator mr-1"></i>
+                                <?php echo e($totalSks ? $totalSks . ' SKS' : '-'); ?>
+
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <?php
+                                $displayStatus = ($krsStatus === 'draft') ? 'Draft' : 'Sudah Isi';
+                            ?>
+                            <?php if($displayStatus === 'Draft'): ?>
+                                <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300">
+                                    <i class="fas fa-edit mr-1"></i>
+                                    Draft
+                                </span>
+                            <?php else: ?>
+                                <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Sudah Isi
+                                </span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            <div class="flex items-center justify-center space-x-2">
+                                <button type="button" onclick="document.getElementById('modal-krs-<?php echo e($mahasiswa->id); ?>').classList.remove('hidden')" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="Detail">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <form action="<?php echo e(route('admin.krs.reopen', $mahasiswa)); ?>" method="POST" class="inline">
+                                    <?php echo csrf_field(); ?>
+                                    <button type="submit" 
+                                        class="text-yellow-600 dark:text-yellow-400 hover:text-yellow-900 dark:hover:text-yellow-300 transition p-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded" 
+                                        onclick="event.preventDefault(); showConfirm('Buka kembali pengisian KRS untuk mahasiswa ini? Mahasiswa akan dapat mengedit KRS.', () => this.closest('form').submit(), null, 'Konfirmasi Edit KRS')"
+                                        title="Buka Kembali (Reopen)">
+                                        <i class="fas fa-edit"></i>
+                                        </button>
+                                    </form>
+                                <?php
+                                    // Get the first KRS record for this mahasiswa to use for actions
+                                    $firstKrs = $mahasiswa->krs->first();
+                                ?>
+                                <?php
+                                    $firstKrs = $mahasiswa->krs->first();
+                                ?>
+                                
+                                <button type="button" onclick="confirmDeleteKrs(<?php echo e($mahasiswa->id); ?>)" 
+                                    class="bg-maroon text-white p-1.5 rounded hover:bg-maroon-700 transition" 
+                                    title="Hapus">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                                <form id="delete-krs-form-<?php echo e($mahasiswa->id); ?>" action="<?php echo e(route('admin.krs.destroyAll', $mahasiswa->id)); ?>" method="POST" class="hidden">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('DELETE'); ?>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fas fa-inbox text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                                <p class="text-lg font-medium">Belum ada data KRS</p>
+                                <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Data KRS akan tampil ketika mahasiswa melakukan pengisian KRS</p>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    
+    <?php if($krsData->hasPages()): ?>
+        <div class="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+            <?php echo e($krsData->links()); ?>
+
+        </div>
+    <?php endif; ?>
+</div>
+
+<!-- Modals outside responsive containers -->
+<?php $__currentLoopData = $krsData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $mahasiswa): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <div id="modal-krs-<?php echo e($mahasiswa->id); ?>" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-11/12 md:w-3/4 lg:w-2/3 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+            <div class="flex items-center justify-between px-6 py-4 bg-maroon text-white">
+                <div class="flex items-center space-x-3">
+                    <div class="h-10 w-10 rounded-full bg-white bg-opacity-10 flex items-center justify-center text-white font-bold">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold">Detail KRS</h3>
+                        <p class="text-sm text-white text-opacity-90">Informasi KRS mahasiswa</p>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('modal-krs-<?php echo e($mahasiswa->id); ?>').classList.add('hidden')" class="text-white text-xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 text-sm text-gray-700 dark:text-gray-300">
+                <div class="grid grid-cols-1 gap-2 mb-4">
+                    <div><strong class="text-gray-900 dark:text-gray-100">Mahasiswa:</strong> <?php echo e(optional($mahasiswa->user)->name ?? 'Nama tidak tersedia'); ?> (NIM: <?php echo e($mahasiswa->nim ?? '-'); ?>)</div>
+                    <?php
+                        $currentSemesterInfo = $mahasiswa->getCurrentSemesterInfo();
+                    ?>
+                    <div><strong class="text-gray-900 dark:text-gray-100">Semester:</strong> Semester <?php echo e($currentSemesterInfo->semester_number ?? '-'); ?></div>
+                    <div><strong class="text-gray-900 dark:text-gray-100">Total SKS:</strong> <?php echo e(collect($mahasiswa->krs)->unique('mata_kuliah_id')->sum(function($k) { return optional($k->mataKuliah)->sks ?? optional(optional($k->kelas)->mataKuliah)->sks ?? 0; })); ?> SKS</div>
+                </div>
+                <div class="border-t dark:border-gray-700 pt-4">
+                    <strong class="block mb-2 text-gray-900 dark:text-gray-100">Daftar Mata Kuliah:</strong>
+                    <?php if($mahasiswa->krs->count() > 0): ?>
+                    <?php $uniqueKrsModal = collect($mahasiswa->krs)->unique('mata_kuliah_id'); ?>
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Mata Kuliah</th>
+                                    <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">SKS</th>
+                                    <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <?php $__currentLoopData = $uniqueKrsModal; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $krsItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <tr>
+                                        <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
+                                            <?php echo e(optional($krsItem->mataKuliah)->nama_mk ?? optional(optional($krsItem->kelas)->mataKuliah)->nama_mk ?? '-'); ?>
+
+                                        </td>
+                                        <td class="px-3 py-2 text-sm text-center text-gray-900 dark:text-gray-100">
+                                            <?php echo e(optional($krsItem->mataKuliah)->sks ?? optional(optional($krsItem->kelas)->mataKuliah)->sks ?? '-'); ?>
+
+                                        </td>
+                                        <td class="px-3 py-2 text-sm text-center">
+                                            <?php if($krsItem->status === 'draft'): ?>
+                                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300">Draft</span>
+                                            <?php else: ?>
+                                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">Sudah Isi</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </tbody>
+                        </table>
+                    <?php else: ?>
+                        <p class="text-gray-500 text-sm">Belum ada mata kuliah yang diambil</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 flex justify-end">
+                 <button onclick="document.getElementById('modal-krs-<?php echo e($mahasiswa->id); ?>').classList.add('hidden')" class="px-4 py-2 border dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">Tutup</button>
+            </div>
+        </div>
+    </div>
+<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+function confirmDeleteKrs(krsId, isMobile = false) {
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Data KRS ini akan dihapus permanen!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#7a1621',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formId = isMobile ? 'delete-krs-form-mobile-' + krsId : 'delete-krs-form-' + krsId;
+            const form = document.getElementById(formId);
+            if (form) {
+                form.submit();
+            } else {
+                console.error('Delete form not found for ID: ' + formId);
+            }
+        }
+    });
+}
+</script>
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/naradata/STIH-SIAKAD/resources/views/admin/krs/index.blade.php ENDPATH**/ ?>

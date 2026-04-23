@@ -740,10 +740,22 @@
                             <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
                                 Program Studi *
                             </label>
-                            <input type="text" name="prodi[]"
-                                value="{{ old('prodi.0', is_array($dosen->prodi) && count($dosen->prodi) ? $dosen->prodi[0] : '') }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
-                                placeholder="Ilmu Hukum" required>
+                            <select name="prodi[]" 
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition" required>
+                                <option value="">-- Pilih Program Studi --</option>
+                                @foreach(\App\Models\Prodi::where('status', 'aktif')->get() as $p)
+                                    @php
+                                        $currentProdi = old('prodi.0');
+                                        if (!$currentProdi) {
+                                            $currentProdi = is_array($dosen->prodi) && count($dosen->prodi) ? $dosen->prodi[0] : $dosen->prodi;
+                                        }
+                                        $isSelected = ($currentProdi == $p->nama_prodi || $currentProdi == $p->kode_prodi);
+                                    @endphp
+                                    <option value="{{ $p->nama_prodi }}" {{ $isSelected ? 'selected' : '' }}>
+                                        {{ $p->nama_prodi }}
+                                    </option>
+                                @endforeach
+                            </select>
                             @error('prodi')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                         </div>
 

@@ -347,7 +347,7 @@
                         </div>
                         
                         <div class="relative group/btn-direct flex-1 md:flex-none">
-                            <button type="button" id="immediateBtn" class="w-full px-6 py-2.5 bg-gradient-to-r from-rose-500 to-rose-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-rose-600/25 hover:shadow-rose-600/40 transform transition-all active:scale-[0.98] flex items-center justify-center gap-2 relative overflow-hidden" title="Kirim Langsung (Tanpa Antrean)">
+                            <button type="button" id="immediateBtn" class="w-full px-6 py-2.5 bg-gradient-to-r from-rose-700 to-rose-900 text-white rounded-xl text-sm font-bold shadow-lg shadow-rose-900/25 hover:shadow-rose-900/40 transform transition-all active:scale-[0.98] flex items-center justify-center gap-2 relative overflow-hidden" title="Kirim Langsung (Tanpa Antrean)">
                                 <span class="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover/btn-direct:translate-x-full transition-transform duration-700 ease-in-out"></span>
                                 <i class="fas fa-bolt opacity-90"></i> Kirim Langsung
                             </button>

@@ -33,13 +33,12 @@ class KelasPerkuliahanService
             'tingkat' => $attributes['tingkat'],
             'kode_prodi' => $attributes['kode_prodi'],
             'kode_kelas' => $attributes['kode_kelas'],
-            'tahun_akademik_id' => $attributes['tahun_akademik_id'] ?? null,
         ];
 
         // Additional attributes to set on create
         $additional = [
             'prodi_id' => $attributes['prodi_id'] ?? null,
-            // nama_kelas is auto-generated via model boot event
+            'tahun_akademik_id' => $attributes['tahun_akademik_id'] ?? null,
         ];
 
         return KelasPerkuliahan::firstOrCreate($uniqueKey, $additional);
@@ -55,7 +54,6 @@ class KelasPerkuliahanService
         $existing = KelasPerkuliahan::where('tingkat', $attributes['tingkat'])
             ->where('kode_prodi', $attributes['kode_prodi'])
             ->where('kode_kelas', $attributes['kode_kelas'])
-            ->where('tahun_akademik_id', $attributes['tahun_akademik_id'] ?? null)
             ->where('id', '!=', $kelasPerkuliahan->id)
             ->first();
 

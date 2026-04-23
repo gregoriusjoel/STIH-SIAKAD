@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="w-full">
-        <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+        <div class="bg-white rounded-xl shadow-lg  overflow-hidden">
             <div class="p-6 border-b border-gray-200 bg-maroon text-white">
                 <h3 class="text-xl font-bold flex items-center">
                     <i class="fas fa-book-medical mr-3 text-2xl"></i>
@@ -94,7 +94,8 @@
                                     Mata Kuliah Ini Memiliki Praktikum / Lab
                                 </span>
                             </label>
-                            <p class="text-xs text-gray-500 mt-1">Centang jika mata kuliah ini memiliki komponen praktikum/lab. Jadwal praktikumnya akan ditentukan oleh dosen.</p>
+                            <p class="text-xs text-gray-500 mt-1">Centang jika mata kuliah ini memiliki komponen
+                                praktikum/lab. Jadwal praktikumnya akan ditentukan oleh dosen.</p>
                         </div>
 
                         <div class="md:col-span-2">
@@ -107,7 +108,8 @@
                                 required>
                                 <option value="">Pilih Program Studi</option>
                                 @foreach($prodis as $prodi)
-                                    <option value="{{ $prodi->id }}" {{ old('prodi_id') == $prodi->id ? 'selected' : '' }}>{{ $prodi->nama_prodi }}</option>
+                                    <option value="{{ $prodi->id }}" {{ old('prodi_id') == $prodi->id ? 'selected' : '' }}>
+                                        {{ $prodi->nama_prodi }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -307,7 +307,7 @@ class ProfilController extends Controller
                 $this->storage->delete($mahasiswa->foto);
             }
 
-            $fotoPath = $this->storage->upload($request->file('foto'), 'images/mahasiswa/foto');
+            $fotoPath = $this->storage->upload($request->file('foto'), 'images/mahasiswa/foto/' . $mahasiswa->storage_folder);
             $mahasiswaData['foto'] = $fotoPath;
         }
 
@@ -324,7 +324,7 @@ class ProfilController extends Controller
                 // Upload new files to S3
                 $uploadedFiles = [];
                 foreach ($request->file($docType) as $file) {
-                    $path = $this->storage->upload($file, 'documents/mahasiswa/' . $mahasiswa->nim);
+                    $path = $this->storage->upload($file, 'documents/mahasiswa/' . $mahasiswa->storage_folder);
                     $uploadedFiles[] = $path;
                 }
 
@@ -425,7 +425,7 @@ class ProfilController extends Controller
                 $this->storage->delete($mahasiswa->foto);
             }
 
-            $fotoPath = $this->storage->upload($request->file('foto'), 'images/mahasiswa/foto');
+            $fotoPath = $this->storage->upload($request->file('foto'), 'images/mahasiswa/foto/' . $mahasiswa->storage_folder);
 
             $mahasiswa->update([
                 'foto' => $fotoPath

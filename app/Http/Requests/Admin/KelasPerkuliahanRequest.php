@@ -19,10 +19,20 @@ class KelasPerkuliahanRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = $this->route('kelas_perkuliahan')?->id;
+
         return [
             'tingkat'           => 'required|integer|min:1|max:8',
             'kode_prodi'        => 'required|string|max:10',
-            'kode_kelas'        => 'required|string|max:5',
+            'kode_kelas'        => [
+                'required',
+                'string',
+                'max:5',
+                \Illuminate\Validation\Rule::unique('kelas_perkuliahans')
+                    ->where('tingkat', $this->tingkat)
+                    ->where('kode_prodi', $this->kode_prodi)
+                    ->ignore($id),
+            ],
             'prodi_id'          => 'required|exists:prodis,id',
             'tahun_akademik_id' => 'nullable|exists:semesters,id',
         ];
@@ -40,6 +50,7 @@ class KelasPerkuliahanRequest extends FormRequest
             'prodi_id.required'   => 'Program Studi wajib dipilih.',
             'kode_prodi.required' => 'Kode Prodi wajib diisi.',
             'kode_kelas.required' => 'Kode Kelas wajib diisi.',
+            'kode_kelas.unique'   => 'Nama Kelas ini sudah ada. Gunakan Kode Kelas lain.',
         ];
     }
 

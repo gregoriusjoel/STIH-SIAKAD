@@ -28,7 +28,7 @@ class InvoiceController extends Controller
             $query->where('status', $status);
         }
 
-        $invoices = $query->paginate(20);
+        $invoices = $query->paginate(10);
 
         // Calculate stats for the dashboard
         $stats = [

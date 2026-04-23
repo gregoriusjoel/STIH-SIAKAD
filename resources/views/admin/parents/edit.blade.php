@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="w-full">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-maroon">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden ">
             <div class="p-6 border-b border-gray-200 bg-maroon text-white">
                 <h3 class="text-xl font-bold flex items-center">
                     <i class="fas fa-user-edit mr-3 text-2xl"></i>
@@ -42,11 +42,13 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <button type="button" id="btnSyncParent" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition shadow-md flex items-center gap-2 whitespace-nowrap">
+                                    <button type="button" id="btnSyncParent"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition shadow-md flex items-center gap-2 whitespace-nowrap">
                                         <i class="fas fa-sync-alt"></i> Tarik Data
                                     </button>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1">Pilih mahasiswa, lalu klik 'Tarik Data' untuk mengisi otomatis dari database.</p>
+                                <p class="text-xs text-gray-500 mt-1">Pilih mahasiswa, lalu klik 'Tarik Data' untuk mengisi
+                                    otomatis dari database.</p>
                             </div>
 
                             <div>
@@ -72,7 +74,8 @@
                                     <i class="fas fa-briefcase text-gray-400 mr-1"></i>
                                     Pekerjaan
                                 </label>
-                                <input type="text" name="pekerjaan" id="pekerjaan" value="{{ old('pekerjaan', $parent->pekerjaan) }}"
+                                <input type="text" name="pekerjaan" id="pekerjaan"
+                                    value="{{ old('pekerjaan', $parent->pekerjaan) }}"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
                             </div>
 
@@ -112,16 +115,23 @@
                                 $loginEmail = $parent->user->email;
                                 $loginPassword = '';
                                 $isMahasiswaAccount = $parent->user && $parent->user->role === 'mahasiswa';
-                                
+
                                 if ($isMahasiswaAccount) {
-                                    if ($parent->hubungan === 'ayah' && $parent->nama_ayah) $loginName = $parent->nama_ayah;
-                                    elseif ($parent->hubungan === 'ibu' && $parent->nama_ibu) $loginName = $parent->nama_ibu;
-                                    elseif ($parent->hubungan === 'wali' && $parent->nama_wali) $loginName = $parent->nama_wali;
-                                    elseif ($parent->nama_ayah) $loginName = $parent->nama_ayah;
-                                    elseif ($parent->nama_ibu) $loginName = $parent->nama_ibu;
-                                    elseif ($parent->nama_wali) $loginName = $parent->nama_wali;
-                                    else $loginName = '';
-                                    
+                                    if ($parent->hubungan === 'ayah' && $parent->nama_ayah)
+                                        $loginName = $parent->nama_ayah;
+                                    elseif ($parent->hubungan === 'ibu' && $parent->nama_ibu)
+                                        $loginName = $parent->nama_ibu;
+                                    elseif ($parent->hubungan === 'wali' && $parent->nama_wali)
+                                        $loginName = $parent->nama_wali;
+                                    elseif ($parent->nama_ayah)
+                                        $loginName = $parent->nama_ayah;
+                                    elseif ($parent->nama_ibu)
+                                        $loginName = $parent->nama_ibu;
+                                    elseif ($parent->nama_wali)
+                                        $loginName = $parent->nama_wali;
+                                    else
+                                        $loginName = '';
+
                                     // Generate Email and Password from NIM
                                     $nim = $parent->mahasiswa ? $parent->mahasiswa->nim : '';
                                     $domain = '@' . 'parent.stih.ac.id';
@@ -131,19 +141,23 @@
                             @endphp
 
                             @if($isMahasiswaAccount)
-                            <div class="md:col-span-2 bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-2">
-                                <div class="flex items-start">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <h3 class="text-sm font-medium text-yellow-800">Perhatian: Akun Terhubung dengan Mahasiswa</h3>
-                                        <div class="mt-2 text-sm text-yellow-700">
-                                            <p>Data orang tua ini ditambahkan oleh mahasiswa dan belum memiliki akun login mandiri. Menyimpan form ini <b>tidak akan mengubah data login mahasiswa</b>. Sistem otomatis menyarankan Email dan Password baru untuk orang tua ini. Jika disimpan, akun baru akan dibuatkan.</p>
+                                <div class="md:col-span-2 bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-2">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h3 class="text-sm font-medium text-yellow-800">Perhatian: Akun Terhubung dengan
+                                                Mahasiswa</h3>
+                                            <div class="mt-2 text-sm text-yellow-700">
+                                                <p>Data orang tua ini ditambahkan oleh mahasiswa dan belum memiliki akun login
+                                                    mandiri. Menyimpan form ini <b>tidak akan mengubah data login mahasiswa</b>.
+                                                    Sistem otomatis menyarankan Email dan Password baru untuk orang tua ini.
+                                                    Jika disimpan, akun baru akan dibuatkan.</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                             @endif
 
                             <div class="md:col-span-2">
@@ -171,8 +185,10 @@
                                     <i class="fas fa-lock text-gray-400 mr-1"></i>
                                     Password {{ $isMahasiswaAccount ? '*' : '(kosongkan jika tidak ingin mengubah)' }}
                                 </label>
-                                <input type="{{ $isMahasiswaAccount ? 'text' : 'password' }}" name="password" id="parent_password" value="{{ $loginPassword }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" {{ $isMahasiswaAccount ? 'required' : '' }}>
+                                <input type="{{ $isMahasiswaAccount ? 'text' : 'password' }}" name="password"
+                                    id="parent_password" value="{{ $loginPassword }}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
+                                    {{ $isMahasiswaAccount ? 'required' : '' }}>
                             </div>
                         </div>
                     </div>
@@ -194,138 +210,138 @@
             </form>
         </div>
     </div>
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Sync Parent Data logic
-            const btnSync = document.getElementById('btnSyncParent');
-            const mhsSelect = document.getElementById('mahasiswa_id');
-            const hubunganSelect = document.getElementById('hubungan');
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Sync Parent Data logic
+                const btnSync = document.getElementById('btnSyncParent');
+                const mhsSelect = document.getElementById('mahasiswa_id');
+                const hubunganSelect = document.getElementById('hubungan');
 
-            btnSync.addEventListener('click', async function() {
-                const mahasiswaId = mhsSelect.value;
-                if (!mahasiswaId) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Pilih Mahasiswa',
-                        text: 'Silakan pilih mahasiswa terlebih dahulu.',
-                        confirmButtonColor: '#7a1621'
-                    });
-                    return;
-                }
-
-                // Add loading state
-                const originalText = btnSync.innerHTML;
-                btnSync.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-                btnSync.disabled = true;
-
-                try {
-                    const response = await fetch(`/admin/parents/existing/${mahasiswaId}`);
-                    const result = await response.json();
-
-                    if (result.success && result.data) {
-                        const data = result.data;
-                        
-                        let hubungan = hubunganSelect.value;
-                        if (!hubungan) {
-                            if (data.nama_ayah) hubungan = 'ayah';
-                            else if (data.nama_ibu) hubungan = 'ibu';
-                            else if (data.nama_wali) hubungan = 'wali';
-                            else hubungan = 'ayah'; 
-                            
-                            hubunganSelect.value = hubungan;
-                        }
-
-                        if (hubungan === 'ayah') {
-                            document.getElementById('name').value = data.nama_ayah || '';
-                            document.getElementById('pekerjaan').value = data.pekerjaan_ayah || data.pekerjaan || '';
-                            document.getElementById('phone').value = data.handphone_ayah || data.phone || '';
-                            document.getElementById('address').value = data.alamat_ayah || data.address || '';
-                        } else if (hubungan === 'ibu') {
-                            document.getElementById('name').value = data.nama_ibu || '';
-                            document.getElementById('pekerjaan').value = data.pekerjaan_ibu || data.pekerjaan || '';
-                            document.getElementById('phone').value = data.handphone_ibu || data.phone || '';
-                            document.getElementById('address').value = data.alamat_ibu || data.address || '';
-                        } else if (hubungan === 'wali') {
-                            document.getElementById('name').value = data.nama_wali || '';
-                            document.getElementById('pekerjaan').value = data.pekerjaan_wali || data.pekerjaan || '';
-                            document.getElementById('phone').value = data.handphone_wali || data.phone || '';
-                            document.getElementById('address').value = data.alamat_wali || data.address || '';
-                        }
-
-                        // Trigger highlighting
-                        ['name', 'pekerjaan', 'phone', 'address', 'hubungan'].forEach(id => {
-                            const el = document.getElementById(id);
-                            if(el && el.value) {
-                                el.classList.add('bg-green-50');
-                                setTimeout(() => el.classList.remove('bg-green-50'), 1500);
-                            }
-                        });
-
+                btnSync.addEventListener('click', async function () {
+                    const mahasiswaId = mhsSelect.value;
+                    if (!mahasiswaId) {
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Data Ditemukan!',
-                            text: `Berhasil menarik data ${hubungan} dari database.`,
-                            confirmButtonColor: '#7a1621',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-
-                    } else {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Data Kosong',
-                            text: 'Mahasiswa ini belum memiliki data orang tua yang tercatat.',
+                            icon: 'warning',
+                            title: 'Pilih Mahasiswa',
+                            text: 'Silakan pilih mahasiswa terlebih dahulu.',
                             confirmButtonColor: '#7a1621'
                         });
+                        return;
                     }
-                } catch (error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Terjadi Kesalahan',
-                        text: 'Gagal menarik data dari server.',
-                        confirmButtonColor: '#7a1621'
-                    });
-                } finally {
-                    btnSync.innerHTML = originalText;
-                    btnSync.disabled = false;
-                }
-            });
 
-            // Update data dynamically if user changes 'hubungan' after syncing
-            hubunganSelect.addEventListener('change', function() {
-                if (document.getElementById('name').value !== '') {
-                    btnSync.click(); 
-                }
-            });
+                    // Add loading state
+                    const originalText = btnSync.innerHTML;
+                    btnSync.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                    btnSync.disabled = true;
 
-            // SweetAlert Update Confirmation
-            const form = document.getElementById('parentForm');
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                Swal.fire({
-                    title: 'Apakah Anda yakin?',
-                    text: "Perubahan data orang tua/wali akan disimpan.",
-                    icon: 'question',
-                    iconColor: '#7a1621',
-                    showCancelButton: true,
-                    confirmButtonColor: '#7a1621',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, Perbarui!',
-                    cancelButtonText: 'Batal',
-                    background: '#ffffff',
-                    customClass: {
-                        confirmButton: 'px-4 py-2 rounded-lg font-bold',
-                        cancelButton: 'px-4 py-2 rounded-lg font-bold'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
+                    try {
+                        const response = await fetch(`/admin/parents/existing/${mahasiswaId}`);
+                        const result = await response.json();
+
+                        if (result.success && result.data) {
+                            const data = result.data;
+
+                            let hubungan = hubunganSelect.value;
+                            if (!hubungan) {
+                                if (data.nama_ayah) hubungan = 'ayah';
+                                else if (data.nama_ibu) hubungan = 'ibu';
+                                else if (data.nama_wali) hubungan = 'wali';
+                                else hubungan = 'ayah';
+
+                                hubunganSelect.value = hubungan;
+                            }
+
+                            if (hubungan === 'ayah') {
+                                document.getElementById('name').value = data.nama_ayah || '';
+                                document.getElementById('pekerjaan').value = data.pekerjaan_ayah || data.pekerjaan || '';
+                                document.getElementById('phone').value = data.handphone_ayah || data.phone || '';
+                                document.getElementById('address').value = data.alamat_ayah || data.address || '';
+                            } else if (hubungan === 'ibu') {
+                                document.getElementById('name').value = data.nama_ibu || '';
+                                document.getElementById('pekerjaan').value = data.pekerjaan_ibu || data.pekerjaan || '';
+                                document.getElementById('phone').value = data.handphone_ibu || data.phone || '';
+                                document.getElementById('address').value = data.alamat_ibu || data.address || '';
+                            } else if (hubungan === 'wali') {
+                                document.getElementById('name').value = data.nama_wali || '';
+                                document.getElementById('pekerjaan').value = data.pekerjaan_wali || data.pekerjaan || '';
+                                document.getElementById('phone').value = data.handphone_wali || data.phone || '';
+                                document.getElementById('address').value = data.alamat_wali || data.address || '';
+                            }
+
+                            // Trigger highlighting
+                            ['name', 'pekerjaan', 'phone', 'address', 'hubungan'].forEach(id => {
+                                const el = document.getElementById(id);
+                                if (el && el.value) {
+                                    el.classList.add('bg-green-50');
+                                    setTimeout(() => el.classList.remove('bg-green-50'), 1500);
+                                }
+                            });
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Data Ditemukan!',
+                                text: `Berhasil menarik data ${hubungan} dari database.`,
+                                confirmButtonColor: '#7a1621',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+
+                        } else {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Data Kosong',
+                                text: 'Mahasiswa ini belum memiliki data orang tua yang tercatat.',
+                                confirmButtonColor: '#7a1621'
+                            });
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan',
+                            text: 'Gagal menarik data dari server.',
+                            confirmButtonColor: '#7a1621'
+                        });
+                    } finally {
+                        btnSync.innerHTML = originalText;
+                        btnSync.disabled = false;
                     }
                 });
+
+                // Update data dynamically if user changes 'hubungan' after syncing
+                hubunganSelect.addEventListener('change', function () {
+                    if (document.getElementById('name').value !== '') {
+                        btnSync.click();
+                    }
+                });
+
+                // SweetAlert Update Confirmation
+                const form = document.getElementById('parentForm');
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Perubahan data orang tua/wali akan disimpan.",
+                        icon: 'question',
+                        iconColor: '#7a1621',
+                        showCancelButton: true,
+                        confirmButtonColor: '#7a1621',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Perbarui!',
+                        cancelButtonText: 'Batal',
+                        background: '#ffffff',
+                        customClass: {
+                            confirmButton: 'px-4 py-2 rounded-lg font-bold',
+                            cancelButton: 'px-4 py-2 rounded-lg font-bold'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
             });
-        });
-    </script>
-@endpush
+        </script>
+    @endpush
 @endsection

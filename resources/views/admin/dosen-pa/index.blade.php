@@ -5,37 +5,37 @@
 
 @section('content')
     <div x-data="{ 
-        showDetail: false,
-        selectedDosenId: null,
-        selectedDosenName: '',
-        mahasiswaList: [],
-        loading: false,
-        toggleDetail(id, name) {
-            if (this.selectedDosenId === id) {
-                this.showDetail = !this.showDetail;
-            } else {
-                this.selectedDosenId = id;
-                this.selectedDosenName = name;
-                this.showDetail = true;
-                this.loadMahasiswa(id);
-                this.$nextTick(() => $refs.detailCard.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+            showDetail: false,
+            selectedDosenId: null,
+            selectedDosenName: '',
+            mahasiswaList: [],
+            loading: false,
+            toggleDetail(id, name) {
+                if (this.selectedDosenId === id) {
+                    this.showDetail = !this.showDetail;
+                } else {
+                    this.selectedDosenId = id;
+                    this.selectedDosenName = name;
+                    this.showDetail = true;
+                    this.loadMahasiswa(id);
+                    this.$nextTick(() => $refs.detailCard.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+                }
+            },
+            loadMahasiswa(dosenId) {
+                this.loading = true;
+                this.mahasiswaList = [];
+                fetch(`/admin/dosen-pa/${dosenId}/mahasiswa`)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.mahasiswaList = data;
+                        this.loading = false;
+                    })
+                    .catch(error => {
+                        console.error('Error loading mahasiswa:', error);
+                        this.loading = false;
+                    });
             }
-        },
-        loadMahasiswa(dosenId) {
-            this.loading = true;
-            this.mahasiswaList = [];
-            fetch(`/admin/dosen-pa/${dosenId}/mahasiswa`)
-                .then(response => response.json())
-                .then(data => {
-                    this.mahasiswaList = data;
-                    this.loading = false;
-                })
-                .catch(error => {
-                    console.error('Error loading mahasiswa:', error);
-                    this.loading = false;
-                });
-        }
-    }">
+        }">
         <div class="mb-6 flex flex-col items-start md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
@@ -58,7 +58,8 @@
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-maroon text-white">
@@ -99,7 +100,8 @@
                                             {{ strtoupper(substr($dosen->user->name, 0, 1)) }}
                                         </div>
                                         <div>
-                                            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $dosen->user->name }}</div>
+                                            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                                {{ $dosen->user->name }}</div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">
                                                 <i class="fas fa-phone text-gray-400 dark:text-gray-500 mr-1"></i>
                                                 {{ $dosen->phone ?? '-' }}
@@ -150,11 +152,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
+                                <td colspan="6"
+                                    class="px-6 py-12 text-center text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
                                     <div class="flex flex-col items-center justify-center">
                                         <i class="fas fa-inbox text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
                                         <p class="text-lg font-medium">Belum ada data Dosen PA</p>
-                                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Klik "Tambah Dosen PA" untuk menambahkan</p>
+                                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Klik "Tambah Dosen PA" untuk
+                                            menambahkan</p>
                                     </div>
                                 </td>
                             </tr>
@@ -171,7 +175,7 @@
 
         {{-- Detail Dosen PA Card --}}
         <div x-ref="detailCard" x-show="showDetail" x-transition
-            class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" style="display: none;">
+            class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg  overflow-hidden" style="display: none;">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div>
                     <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
@@ -217,7 +221,8 @@
                                 <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400 font-medium">
                                     <div class="flex flex-col items-center justify-center">
                                         <i class="fas fa-user-slash text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                                        <p class="text-gray-500 dark:text-gray-400 font-medium">Belum ada mahasiswa yang dibimbing.</p>
+                                        <p class="text-gray-500 dark:text-gray-400 font-medium">Belum ada mahasiswa yang
+                                            dibimbing.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -230,14 +235,16 @@
                                     <div class="flex items-center">
                                         <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold mr-3"
                                             x-text="mhs.name ? mhs.name.charAt(0).toUpperCase() : '-'"></div>
-                                        <div class="text-sm font-semibold text-gray-900 dark:text-gray-100" x-text="mhs.name"></div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-gray-100"
+                                            x-text="mhs.name"></div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="text-sm font-mono text-maroon font-bold" x-text="mhs.nim"></span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm text-gray-900 dark:text-gray-100" x-text="mhs.program_studi || 'Ilmu Hukum'"></span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-100"
+                                        x-text="mhs.program_studi || 'Ilmu Hukum'"></span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <span
@@ -249,8 +256,10 @@
                     </tbody>
                 </table>
             </div>
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-between items-center">
-                <div class="text-xs text-gray-500 dark:text-gray-400">Menampilkan <span x-text="mahasiswaList.length"></span> mahasiswa</div>
+            <div
+                class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-between items-center">
+                <div class="text-xs text-gray-500 dark:text-gray-400">Menampilkan <span
+                        x-text="mahasiswaList.length"></span> mahasiswa</div>
             </div>
         </div>
     </div>
@@ -264,7 +273,8 @@
                     <i class="fas fa-file-import"></i> Import Data Dosen PA
                 </h3>
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('admin.import.template', ['type' => 'dosen_pa', 'format' => 'xlsx']) }}" data-no-loader
+                    <a href="{{ route('admin.import.template', ['type' => 'dosen_pa', 'format' => 'xlsx']) }}"
+                        data-no-loader
                         class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
                         <i class="fas fa-file-excel"></i> Template Excel
                     </a>
@@ -272,7 +282,8 @@
                         class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
                         <i class="fas fa-file-csv"></i> Template CSV
                     </a>
-                    <button onclick="closeImportModal()" class="text-white text-xl hover:text-white/80 transition">&times;</button>
+                    <button onclick="closeImportModal()"
+                        class="text-white text-xl hover:text-white/80 transition">&times;</button>
                 </div>
             </div>
             <div class="flex-1 overflow-y-auto p-6 space-y-5">
@@ -280,10 +291,12 @@
                     class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center transition-all duration-300 hover:border-maroon dark:hover:border-red-500 hover:bg-maroon/5 cursor-pointer">
                     <input type="file" id="imp-file-input" class="hidden" accept=".csv,.xlsx,.xls">
                     <div id="imp-dropzone-content">
-                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                        <div
+                            class="w-14 h-14 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             <i class="fas fa-cloud-upload-alt text-2xl text-gray-400"></i>
                         </div>
-                        <h4 class="text-base font-semibold text-gray-700 dark:text-gray-300 mb-1">Drag & drop file di sini</h4>
+                        <h4 class="text-base font-semibold text-gray-700 dark:text-gray-300 mb-1">Drag & drop file di sini
+                        </h4>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">atau klik untuk memilih file</p>
                         <p class="text-xs text-gray-400">Format: CSV, XLSX | Maksimal: 10MB</p>
                     </div>
@@ -331,12 +344,14 @@
                     </h4>
                     <div class="flex flex-wrap gap-2">
                         <span class="px-2 py-1 text-xs rounded-lg bg-red-100 text-red-700 font-semibold">nim*</span>
-                        <span class="px-2 py-1 text-xs rounded-lg bg-red-100 text-red-700 font-semibold">nidn_dosen_pa*</span>
+                        <span
+                            class="px-2 py-1 text-xs rounded-lg bg-red-100 text-red-700 font-semibold">nidn_dosen_pa*</span>
                     </div>
                     <p class="text-xs text-gray-400 mt-2"><span class="text-red-500">*</span> = kolom wajib</p>
                 </div>
                 <div id="imp-preview-container" class="hidden">
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                         <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                             <h4 class="text-sm font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
                                 <i class="fas fa-table text-maroon"></i> Preview Data
@@ -345,11 +360,16 @@
                         </div>
                         <div class="overflow-x-auto max-h-64">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead class="bg-gray-50 dark:bg-gray-700/50 sticky top-0"><tr id="imp-preview-header"></tr></thead>
-                                <tbody id="imp-preview-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+                                <thead class="bg-gray-50 dark:bg-gray-700/50 sticky top-0">
+                                    <tr id="imp-preview-header"></tr>
+                                </thead>
+                                <tbody id="imp-preview-body"
+                                    class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                             </table>
                         </div>
-                        <div id="imp-preview-more" class="hidden p-3 text-center text-xs text-gray-500 border-t border-gray-200 dark:border-gray-700"></div>
+                        <div id="imp-preview-more"
+                            class="hidden p-3 text-center text-xs text-gray-500 border-t border-gray-200 dark:border-gray-700">
+                        </div>
                     </div>
                 </div>
                 <div id="imp-validation-errors" class="hidden">
@@ -397,9 +417,9 @@
 
             // SweetAlert Delete Confirmation
             document.querySelectorAll('.delete-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', function (e) {
                     e.preventDefault();
-                    
+
                     Swal.fire({
                         title: 'Apakah Anda yakin?',
                         text: "Semua assignment mahasiswa dari Dosen PA ini akan dihapus permanen!",
@@ -432,23 +452,23 @@
             const impDropzone = document.getElementById('imp-dropzone');
             const impFileInput = document.getElementById('imp-file-input');
             impDropzone.addEventListener('click', (e) => { if (!e.target.closest('button')) impFileInput.click(); });
-            impDropzone.addEventListener('dragover', (e) => { e.preventDefault(); impDropzone.classList.add('border-maroon','bg-maroon/10'); });
-            impDropzone.addEventListener('dragleave', () => { impDropzone.classList.remove('border-maroon','bg-maroon/10'); });
-            impDropzone.addEventListener('drop', (e) => { e.preventDefault(); impDropzone.classList.remove('border-maroon','bg-maroon/10'); if (e.dataTransfer.files.length) impHandleFile(e.dataTransfer.files[0]); });
+            impDropzone.addEventListener('dragover', (e) => { e.preventDefault(); impDropzone.classList.add('border-maroon', 'bg-maroon/10'); });
+            impDropzone.addEventListener('dragleave', () => { impDropzone.classList.remove('border-maroon', 'bg-maroon/10'); });
+            impDropzone.addEventListener('drop', (e) => { e.preventDefault(); impDropzone.classList.remove('border-maroon', 'bg-maroon/10'); if (e.dataTransfer.files.length) impHandleFile(e.dataTransfer.files[0]); });
             impFileInput.addEventListener('change', (e) => { if (e.target.files.length) impHandleFile(e.target.files[0]); });
-            document.addEventListener('keydown', (e) => { if (e.key==='Escape') closeImportModal(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeImportModal(); });
 
             function impHandleFile(file) {
                 const ext = file.name.split('.').pop().toLowerCase();
-                if (!['csv','xlsx','xls'].includes(ext)) { Swal.fire('Format Tidak Didukung','Gunakan CSV atau XLSX.','error'); return; }
-                if (file.size > 10*1024*1024) { Swal.fire('File Terlalu Besar','Maksimal 10MB.','error'); return; }
+                if (!['csv', 'xlsx', 'xls'].includes(ext)) { Swal.fire('Format Tidak Didukung', 'Gunakan CSV atau XLSX.', 'error'); return; }
+                if (file.size > 10 * 1024 * 1024) { Swal.fire('File Terlalu Besar', 'Maksimal 10MB.', 'error'); return; }
                 impSelectedFile = file;
                 document.getElementById('imp-dropzone-content').classList.add('hidden');
                 document.getElementById('imp-file-selected').classList.remove('hidden');
                 document.getElementById('imp-filename').textContent = file.name;
-                document.getElementById('imp-filesize').textContent = (file.size/1024).toFixed(1)+' KB';
+                document.getElementById('imp-filesize').textContent = (file.size / 1024).toFixed(1) + ' KB';
                 document.getElementById('imp-btn-preview').disabled = false;
-                ['imp-preview-container','imp-validation-errors','imp-results'].forEach(id => document.getElementById(id).classList.add('hidden'));
+                ['imp-preview-container', 'imp-validation-errors', 'imp-results'].forEach(id => document.getElementById(id).classList.add('hidden'));
                 document.getElementById('imp-btn-import').disabled = true;
             }
             function impClearFile() {
@@ -457,7 +477,7 @@
                 document.getElementById('imp-file-selected').classList.add('hidden');
                 document.getElementById('imp-btn-preview').disabled = true;
                 document.getElementById('imp-btn-import').disabled = true;
-                ['imp-preview-container','imp-validation-errors','imp-results'].forEach(id => document.getElementById(id).classList.add('hidden'));
+                ['imp-preview-container', 'imp-validation-errors', 'imp-results'].forEach(id => document.getElementById(id).classList.add('hidden'));
             }
             function closeImportModal() { document.getElementById('importModal').classList.add('hidden'); }
 
@@ -466,62 +486,62 @@
                 const fd = new FormData(); fd.append('file', impSelectedFile);
                 document.getElementById('imp-progress').classList.remove('hidden');
                 try {
-                    const r = await fetch(`/admin/import/${IMP_TYPE}/preview`, { method:'POST', body:fd, headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content} });
+                    const r = await fetch(`/admin/import/${IMP_TYPE}/preview`, { method: 'POST', body: fd, headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content } });
                     const res = await r.json();
                     document.getElementById('imp-progress').classList.add('hidden');
                     if (res.success) {
                         impBuildPreview(res.data);
-                        const v = res.data.validation||{};
-                        if (v.valid) { document.getElementById('imp-btn-import').disabled=false; document.getElementById('imp-validation-errors').classList.add('hidden'); }
-                        else { impShowErrors(v.errors||[]); document.getElementById('imp-btn-import').disabled=(v.validated_data?.length||0)===0; }
-                    } else { Swal.fire('Error',res.message||'Error','error'); }
-                } catch(e) { document.getElementById('imp-progress').classList.add('hidden'); Swal.fire('Error',e.message,'error'); }
+                        const v = res.data.validation || {};
+                        if (v.valid) { document.getElementById('imp-btn-import').disabled = false; document.getElementById('imp-validation-errors').classList.add('hidden'); }
+                        else { impShowErrors(v.errors || []); document.getElementById('imp-btn-import').disabled = (v.validated_data?.length || 0) === 0; }
+                    } else { Swal.fire('Error', res.message || 'Error', 'error'); }
+                } catch (e) { document.getElementById('imp-progress').classList.add('hidden'); Swal.fire('Error', e.message, 'error'); }
             }
 
             function impBuildPreview(data) {
-                const hdr=document.getElementById('imp-preview-header'), body=document.getElementById('imp-preview-body'), stats=document.getElementById('imp-preview-stats');
-                hdr.innerHTML=''; body.innerHTML='';
-                const cols=data.columns||[], rows=data.preview||[];
-                cols.forEach(c=>{ const th=document.createElement('th'); th.className='px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap'; th.textContent=c; hdr.appendChild(th); });
-                rows.slice(0,50).forEach(row=>{ const tr=document.createElement('tr'); tr.className='hover:bg-gray-50 dark:hover:bg-gray-700/50'; cols.forEach(c=>{ const td=document.createElement('td'); td.className='px-3 py-2 text-xs text-gray-700 dark:text-gray-300 whitespace-nowrap'; td.textContent=row[c]||'-'; tr.appendChild(td); }); body.appendChild(tr); });
-                const v=data.validation||{};
-                stats.innerHTML=`<span class="px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">Total: ${data.total_rows||0}</span><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 font-medium">Valid: ${v.valid_rows||0}</span>${(v.duplicate_rows||0)>0?`<span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 font-medium">Duplikat: ${v.duplicate_rows}</span>`:''}`;
-                const more=document.getElementById('imp-preview-more');
-                if(data.total_rows>50){more.textContent=`Menampilkan 50 dari ${data.total_rows} baris`;more.classList.remove('hidden');}else{more.classList.add('hidden');}
+                const hdr = document.getElementById('imp-preview-header'), body = document.getElementById('imp-preview-body'), stats = document.getElementById('imp-preview-stats');
+                hdr.innerHTML = ''; body.innerHTML = '';
+                const cols = data.columns || [], rows = data.preview || [];
+                cols.forEach(c => { const th = document.createElement('th'); th.className = 'px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap'; th.textContent = c; hdr.appendChild(th); });
+                rows.slice(0, 50).forEach(row => { const tr = document.createElement('tr'); tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/50'; cols.forEach(c => { const td = document.createElement('td'); td.className = 'px-3 py-2 text-xs text-gray-700 dark:text-gray-300 whitespace-nowrap'; td.textContent = row[c] || '-'; tr.appendChild(td); }); body.appendChild(tr); });
+                const v = data.validation || {};
+                stats.innerHTML = `<span class="px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">Total: ${data.total_rows || 0}</span><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 font-medium">Valid: ${v.valid_rows || 0}</span>${(v.duplicate_rows || 0) > 0 ? `<span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 font-medium">Duplikat: ${v.duplicate_rows}</span>` : ''}`;
+                const more = document.getElementById('imp-preview-more');
+                if (data.total_rows > 50) { more.textContent = `Menampilkan 50 dari ${data.total_rows} baris`; more.classList.remove('hidden'); } else { more.classList.add('hidden'); }
                 document.getElementById('imp-preview-container').classList.remove('hidden');
             }
 
             function impShowErrors(errors) {
-                const list=document.getElementById('imp-error-list'); list.innerHTML='';
-                if(!errors?.length){document.getElementById('imp-validation-errors').classList.add('hidden');return;}
-                errors.slice(0,20).forEach(err=>{ const li=document.createElement('li'); li.className='flex items-start gap-2 text-xs text-red-700 dark:text-red-300'; const msg=Array.isArray(err.errors)?err.errors.join(', '):(err.errors||err.message||'Error'); li.innerHTML=`<i class="fas fa-times-circle mt-0.5 flex-shrink-0"></i><span><strong>Baris ${err.row||'?'}:</strong> ${msg}</span>`; list.appendChild(li); });
-                if(errors.length>20){const li=document.createElement('li');li.className='text-xs text-red-600 italic';li.textContent=`... dan ${errors.length-20} error lainnya`;list.appendChild(li);}
+                const list = document.getElementById('imp-error-list'); list.innerHTML = '';
+                if (!errors?.length) { document.getElementById('imp-validation-errors').classList.add('hidden'); return; }
+                errors.slice(0, 20).forEach(err => { const li = document.createElement('li'); li.className = 'flex items-start gap-2 text-xs text-red-700 dark:text-red-300'; const msg = Array.isArray(err.errors) ? err.errors.join(', ') : (err.errors || err.message || 'Error'); li.innerHTML = `<i class="fas fa-times-circle mt-0.5 flex-shrink-0"></i><span><strong>Baris ${err.row || '?'}:</strong> ${msg}</span>`; list.appendChild(li); });
+                if (errors.length > 20) { const li = document.createElement('li'); li.className = 'text-xs text-red-600 italic'; li.textContent = `... dan ${errors.length - 20} error lainnya`; list.appendChild(li); }
                 document.getElementById('imp-validation-errors').classList.remove('hidden');
             }
 
             async function impImportData() {
                 if (!impSelectedFile) return;
-                Swal.fire({title:'Konfirmasi Import',text:'Import data dosen PA?',icon:'question',iconColor:'#7a1621',showCancelButton:true,confirmButtonColor:'#7a1621',cancelButtonColor:'#6c757d',confirmButtonText:'Ya, Import!',cancelButtonText:'Batal'}).then(async(r)=>{ if(r.isConfirmed) await impPerformImport(); });
+                Swal.fire({ title: 'Konfirmasi Import', text: 'Import data dosen PA?', icon: 'question', iconColor: '#7a1621', showCancelButton: true, confirmButtonColor: '#7a1621', cancelButtonColor: '#6c757d', confirmButtonText: 'Ya, Import!', cancelButtonText: 'Batal' }).then(async (r) => { if (r.isConfirmed) await impPerformImport(); });
             }
             async function impPerformImport() {
-                const fd=new FormData(); fd.append('file',impSelectedFile); fd.append('skip_duplicates',document.getElementById('imp-skip-duplicates').checked?'1':'0');
-                document.getElementById('imp-progress').classList.remove('hidden'); document.getElementById('imp-btn-import').disabled=true;
+                const fd = new FormData(); fd.append('file', impSelectedFile); fd.append('skip_duplicates', document.getElementById('imp-skip-duplicates').checked ? '1' : '0');
+                document.getElementById('imp-progress').classList.remove('hidden'); document.getElementById('imp-btn-import').disabled = true;
                 try {
-                    const r=await fetch(`/admin/import/${IMP_TYPE}/import`,{method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content}});
-                    const res=await r.json(); document.getElementById('imp-progress').classList.add('hidden');
+                    const r = await fetch(`/admin/import/${IMP_TYPE}/import`, { method: 'POST', body: fd, headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content } });
+                    const res = await r.json(); document.getElementById('imp-progress').classList.add('hidden');
                     impShowResults(res);
-                } catch(e) { document.getElementById('imp-progress').classList.add('hidden'); Swal.fire('Error',e.message,'error'); document.getElementById('imp-btn-import').disabled=false; }
+                } catch (e) { document.getElementById('imp-progress').classList.add('hidden'); Swal.fire('Error', e.message, 'error'); document.getElementById('imp-btn-import').disabled = false; }
             }
             function impShowResults(result) {
-                const c=document.getElementById('imp-results-container'),t=document.getElementById('imp-results-title'),s=document.getElementById('imp-results-summary'),d=document.getElementById('imp-results-details');
-                if(result.success){c.className='rounded-xl p-5 border bg-green-50 border-green-200';t.innerHTML='<i class="fas fa-check-circle text-green-600"></i><span class="text-green-800">Import Berhasil!</span>';}
-                else{c.className='rounded-xl p-5 border bg-red-50 border-red-200';t.innerHTML='<i class="fas fa-times-circle text-red-600"></i><span class="text-red-800">Import Gagal</span>';}
-                const sm=result.result?.summary||{};
-                s.innerHTML=`<div class="text-center p-3 bg-white rounded-lg"><div class="text-xl font-bold text-gray-800">${sm.total||0}</div><div class="text-xs text-gray-500">Total</div></div><div class="text-center p-3 bg-white rounded-lg"><div class="text-xl font-bold text-green-600">${sm.success||0}</div><div class="text-xs text-gray-500">Berhasil</div></div><div class="text-center p-3 bg-white rounded-lg"><div class="text-xl font-bold text-red-600">${sm.failed||0}</div><div class="text-xs text-gray-500">Gagal</div></div>`;
-                const failed=result.result?.results?.failed||[];
-                d.innerHTML=failed.length?`<h5 class="font-semibold text-red-700 mb-1 text-xs">Detail Error:</h5><ul class="space-y-1 text-xs text-red-600 max-h-32 overflow-y-auto">${failed.map(f=>`<li>Baris ${f.row}: ${f.error}</li>`).join('')}</ul>`:'';
+                const c = document.getElementById('imp-results-container'), t = document.getElementById('imp-results-title'), s = document.getElementById('imp-results-summary'), d = document.getElementById('imp-results-details');
+                if (result.success) { c.className = 'rounded-xl p-5 border bg-green-50 border-green-200'; t.innerHTML = '<i class="fas fa-check-circle text-green-600"></i><span class="text-green-800">Import Berhasil!</span>'; }
+                else { c.className = 'rounded-xl p-5 border bg-red-50 border-red-200'; t.innerHTML = '<i class="fas fa-times-circle text-red-600"></i><span class="text-red-800">Import Gagal</span>'; }
+                const sm = result.result?.summary || {};
+                s.innerHTML = `<div class="text-center p-3 bg-white rounded-lg"><div class="text-xl font-bold text-gray-800">${sm.total || 0}</div><div class="text-xs text-gray-500">Total</div></div><div class="text-center p-3 bg-white rounded-lg"><div class="text-xl font-bold text-green-600">${sm.success || 0}</div><div class="text-xs text-gray-500">Berhasil</div></div><div class="text-center p-3 bg-white rounded-lg"><div class="text-xl font-bold text-red-600">${sm.failed || 0}</div><div class="text-xs text-gray-500">Gagal</div></div>`;
+                const failed = result.result?.results?.failed || [];
+                d.innerHTML = failed.length ? `<h5 class="font-semibold text-red-700 mb-1 text-xs">Detail Error:</h5><ul class="space-y-1 text-xs text-red-600 max-h-32 overflow-y-auto">${failed.map(f => `<li>Baris ${f.row}: ${f.error}</li>`).join('')}</ul>` : '';
                 document.getElementById('imp-results').classList.remove('hidden');
-                if(result.success) setTimeout(()=>window.location.reload(),2500);
+                if (result.success) setTimeout(() => window.location.reload(), 2500);
             }
         </script>
     @endpush

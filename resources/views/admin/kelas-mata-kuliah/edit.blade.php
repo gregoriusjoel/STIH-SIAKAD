@@ -3,9 +3,10 @@
 @section('page-title', 'Edit Kelas Mata Kuliah')
 @section('content')
     <div class="w-full">
-        <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" x-data="kelasMataKuliahEditor()" x-init="initialize()">
+        <div class="bg-white rounded-xl shadow-lg  overflow-hidden" x-data="kelasMataKuliahEditor()" x-init="initialize()">
             <div class="p-6 border-b border-gray-200 bg-maroon text-white rounded-t-xl">
-                <h3 class="text-xl font-bold flex items-center"><i class="fas fa-chalkboard-teacher mr-3 text-2xl"></i>Edit Kelas Mata Kuliah</h3>
+                <h3 class="text-xl font-bold flex items-center"><i class="fas fa-chalkboard-teacher mr-3 text-2xl"></i>Edit
+                    Kelas Mata Kuliah</h3>
             </div>
             <form action="{{ route('admin.kelas-mata-kuliah.update', $kelasMataKuliah) }}" method="POST" class="p-6">
                 @csrf @method('PUT')
@@ -28,7 +29,8 @@
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                             required>
                             <option value="">Pilih Dosen</option>@foreach($dosens as $d)<option value="{{ $d->id }}" {{ old('dosen_id', $kelasMataKuliah->dosen_id) == $d->id ? 'selected' : '' }}>
-                            {{ $d->user->name }}</option>@endforeach
+                                {{ $d->user->name }}
+                            </option>@endforeach
                         </select></div>
                     <div><label class="block text-sm font-medium text-gray-700 mb-2"><i
                                 class="fas fa-user-friends text-gray-400 mr-1"></i>Kapasitas *</label><input type="number"
@@ -36,19 +38,23 @@
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                             :class="{ 'bg-green-50 border-green-300 text-green-700 cursor-not-allowed': ruanganId, 'bg-white': !ruanganId }"
                             placeholder="Pilih ruangan terlebih dahulu" required>
-                        <small class="text-xs text-gray-500 block mt-1">Nilai Alpine: <span x-text="kapasitas || 'kosong'"></span></small>
+                        <small class="text-xs text-gray-500 block mt-1">Nilai Alpine: <span
+                                x-text="kapasitas || 'kosong'"></span></small>
                     </div>
                     <div><label class="block text-sm font-medium text-gray-700 mb-2"><i
-                                class="fas fa-door-open text-gray-400 mr-1"></i>Ruangan</label><select name="ruangan_id" x-model="ruanganId" @change="updateKapasitas()"
+                                class="fas fa-door-open text-gray-400 mr-1"></i>Ruangan</label><select name="ruangan_id"
+                            x-model="ruanganId" @change="updateKapasitas()"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
                             <option value="">Pilih Ruangan</option>
                             @forelse($daftarRuangan as $r)
-                                <option value="{{ $r->id }}" data-kapasitas="{{ $r->kapasitas }}" {{ old('ruangan_id', $kelasMataKuliah->ruangan_id) == $r->id ? 'selected' : '' }}>{{ $r->kode_ruangan }} ({{ $r->kapasitas }})</option>
+                                <option value="{{ $r->id }}" data-kapasitas="{{ $r->kapasitas }}" {{ old('ruangan_id', $kelasMataKuliah->ruangan_id) == $r->id ? 'selected' : '' }}>{{ $r->kode_ruangan }}
+                                    ({{ $r->kapasitas }})</option>
                             @empty
                                 <option disabled>Tidak ada ruangan</option>
                             @endforelse
                         </select>
-                        <small class="text-xs text-gray-500 block mt-1">ID: <span x-text="ruanganId || 'kosong'"></span></small>
+                        <small class="text-xs text-gray-500 block mt-1">ID: <span
+                                x-text="ruanganId || 'kosong'"></span></small>
                     </div>
                     <div><label class="block text-sm font-medium text-gray-700 mb-2"><i
                                 class="fas fa-calendar-day text-gray-400 mr-1"></i>Hari</label><select name="hari"
@@ -82,38 +88,38 @@
 @endsection
 
 @push('scripts')
-<script>
-function kelasMataKuliahEditor() {
-    return {
-        ruanganId: '{{ $kelasMataKuliah->ruangan_id ?? "" }}',
-        kapasitas: '{{ $kelasMataKuliah->kapasitas ?? "" }}',
+    <script>
+        function kelasMataKuliahEditor() {
+            return {
+                ruanganId: '{{ $kelasMataKuliah->ruangan_id ?? "" }}',
+                kapasitas: '{{ $kelasMataKuliah->kapasitas ?? "" }}',
 
-        initialize() {
-            // Set kapasitas saat initialize
-            if (this.ruanganId) {
-                this.$nextTick(() => {
-                    this.updateKapasitas();
-                });
-            }
-        },
+                initialize() {
+                    // Set kapasitas saat initialize
+                    if (this.ruanganId) {
+                        this.$nextTick(() => {
+                            this.updateKapasitas();
+                        });
+                    }
+                },
 
-        updateKapasitas() {
-            if (!this.ruanganId) {
-                this.kapasitas = '';
-                return;
-            }
-            // Ambil value dari select element directly
-            const select = document.querySelector('select[name="ruangan_id"]');
-            if (!select) return;
-            
-            const selectedOption = select.options[select.selectedIndex];
-            const kapasitas = selectedOption?.getAttribute('data-kapasitas') || '';
-            
-            if (kapasitas) {
-                this.kapasitas = kapasitas;
-            }
+                updateKapasitas() {
+                    if (!this.ruanganId) {
+                        this.kapasitas = '';
+                        return;
+                    }
+                    // Ambil value dari select element directly
+                    const select = document.querySelector('select[name="ruangan_id"]');
+                    if (!select) return;
+
+                    const selectedOption = select.options[select.selectedIndex];
+                    const kapasitas = selectedOption?.getAttribute('data-kapasitas') || '';
+
+                    if (kapasitas) {
+                        this.kapasitas = kapasitas;
+                    }
+                }
+            };
         }
-    };
-}
-</script>
+    </script>
 @endpush

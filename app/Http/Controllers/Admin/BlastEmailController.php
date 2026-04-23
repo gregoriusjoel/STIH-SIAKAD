@@ -127,7 +127,7 @@ class BlastEmailController extends Controller
             )
             ->orderByDesc('email_blast_logs.created_at');
 
-        $logs = $query->paginate(20);
+        $logs = $query->paginate(10);
 
         // Convert timestamp strings to Carbon instances in items only
         $logs->setCollection($logs->getCollection()->map(function($item) {
@@ -265,7 +265,7 @@ class BlastEmailController extends Controller
         $outboxes = \App\Models\EmailOutbox::with('mahasiswa.user')
             ->orderByRaw("FIELD(status, 'pending', 'failed', 'sent', 'cancelled')")
             ->orderBy('scheduled_at', 'asc')
-            ->paginate(20);
+            ->paginate(10);
 
         return view('admin.blast-email.outbox', compact('outboxes'));
     }

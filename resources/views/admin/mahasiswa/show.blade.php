@@ -255,7 +255,7 @@
                                     @if($mahasiswa->file_ijazah && count($mahasiswa->file_ijazah) > 0)
                                         @foreach($mahasiswa->file_ijazah as $file)
                                             <a href="#"
-                                                @click.prevent="previewUrl = '{{ \Illuminate\Support\Facades\Storage::disk('s3')->url($file) }}'; previewTitle = 'Preview Ijazah'; previewType = '{{ pathinfo($file, PATHINFO_EXTENSION) }}'; previewOpen = true"
+                                                @click.prevent="previewUrl = '{{ \App\Helpers\FileHelper::filePrivateUrl($file) }}'; previewTitle = 'Preview Ijazah'; previewType = '{{ pathinfo($file, PATHINFO_EXTENSION) }}'; previewOpen = true"
                                                 class="text-cyan-600 hover:underline block text-sm cursor-pointer">
                                                 <i
                                                     class="fas fa-file-{{ in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['pdf']) ? 'pdf' : 'image' }} mr-1"></i>{{ basename($file) }}
@@ -272,7 +272,7 @@
                                     @if($mahasiswa->file_transkrip && count($mahasiswa->file_transkrip) > 0)
                                         @foreach($mahasiswa->file_transkrip as $file)
                                             <a href="#"
-                                                @click.prevent="previewUrl = '{{ \Illuminate\Support\Facades\Storage::disk('s3')->url($file) }}'; previewTitle = 'Preview Transkrip Nilai'; previewType = '{{ pathinfo($file, PATHINFO_EXTENSION) }}'; previewOpen = true"
+                                                @click.prevent="previewUrl = '{{ \App\Helpers\FileHelper::filePrivateUrl($file) }}'; previewTitle = 'Preview Transkrip Nilai'; previewType = '{{ pathinfo($file, PATHINFO_EXTENSION) }}'; previewOpen = true"
                                                 class="text-cyan-600 hover:underline block text-sm cursor-pointer">
                                                 <i
                                                     class="fas fa-file-{{ in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['pdf']) ? 'pdf' : 'image' }} mr-1"></i>{{ basename($file) }}
@@ -289,7 +289,7 @@
                                     @if($mahasiswa->file_kk && count($mahasiswa->file_kk) > 0)
                                         @foreach($mahasiswa->file_kk as $file)
                                             <a href="#"
-                                                @click.prevent="previewUrl = '{{ \Illuminate\Support\Facades\Storage::disk('s3')->url($file) }}'; previewTitle = 'Preview Kartu Keluarga'; previewType = '{{ pathinfo($file, PATHINFO_EXTENSION) }}'; previewOpen = true"
+                                                @click.prevent="previewUrl = '{{ \App\Helpers\FileHelper::filePrivateUrl($file) }}'; previewTitle = 'Preview Kartu Keluarga'; previewType = '{{ pathinfo($file, PATHINFO_EXTENSION) }}'; previewOpen = true"
                                                 class="text-cyan-600 hover:underline block text-sm cursor-pointer">
                                                 <i
                                                     class="fas fa-file-{{ in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['pdf']) ? 'pdf' : 'image' }} mr-1"></i>{{ basename($file) }}
@@ -306,7 +306,7 @@
                                     @if($mahasiswa->file_ktp && count($mahasiswa->file_ktp) > 0)
                                         @foreach($mahasiswa->file_ktp as $file)
                                             <a href="#"
-                                                @click.prevent="previewUrl = '{{ \Illuminate\Support\Facades\Storage::disk('s3')->url($file) }}'; previewTitle = 'Preview KTP'; previewType = '{{ pathinfo($file, PATHINFO_EXTENSION) }}'; previewOpen = true"
+                                                @click.prevent="previewUrl = '{{ \App\Helpers\FileHelper::filePrivateUrl($file) }}'; previewTitle = 'Preview KTP'; previewType = '{{ pathinfo($file, PATHINFO_EXTENSION) }}'; previewOpen = true"
                                                 class="text-cyan-600 hover:underline block text-sm cursor-pointer">
                                                 <i
                                                     class="fas fa-file-{{ in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['pdf']) ? 'pdf' : 'image' }} mr-1"></i>{{ basename($file) }}

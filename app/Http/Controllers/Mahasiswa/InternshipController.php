@@ -121,8 +121,10 @@ class InternshipController extends Controller
 
 
         if ($request->hasFile('dokumen_pendukung')) {
-            $data['dokumen_pendukung_path'] = $request->file('dokumen_pendukung')
-                ->store('documents/internship/dokumen', 's3');
+            $targetFolder = 'documents/internship/dokumen/' . $mahasiswa->storage_folder;
+            $fileName = \Illuminate\Support\Str::uuid() . '.' . $request->file('dokumen_pendukung')->getClientOriginalExtension();
+            $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($targetFolder . '/' . $fileName);
+            $data['dokumen_pendukung_path'] = $request->file('dokumen_pendukung')->storeAs($targetFolder, $fileName, $resolvedDisk);
         }
 
         $internship = $this->workflow->createDraft($mahasiswa->id, $activeSemester->id, $data);
@@ -208,7 +210,7 @@ class InternshipController extends Controller
 
         try {
             $path = $this->workflow->generateRequestLetter($internship);
-            return Storage::disk('s3')->download($path, 'Surat_Pengantar_Magang.docx');
+            return Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($path))->download($path, 'Surat_Pengantar_Magang.docx');
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', 'Gagal generate surat: ' . $e->getMessage());
         }
@@ -297,14 +299,7 @@ class InternshipController extends Controller
 
         $path = $internship->admin_signed_pdf_path ?? $internship->admin_final_pdf_path;
 
-        if (!$path || !\Illuminate\Support\Facades\Storage::disk('s3')->exists($path)) {
-            return redirect()->back()->with('error', 'Surat resmi belum tersedia.');
-        }
-
-        $ext = pathinfo($path, PATHINFO_EXTENSION);
-        $nim = $internship->mahasiswa?->nim ?? $internship->id;
-
-        return \Illuminate\Support\Facades\Storage::disk('s3')->download(
+        return \Illuminate\Support\Facades\Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($path))->download(
             $path,
             "Surat_Pengantar_Resmi_{$nim}.{$ext}"
         );
@@ -321,7 +316,7 @@ class InternshipController extends Controller
             return redirect()->back()->with('error', 'Surat penerimaan belum tersedia.');
         }
 
-        return Storage::disk('s3')->download(
+        return Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($internship->acceptance_letter_path))->download(
             $internship->acceptance_letter_path,
             'Surat_Penerimaan_Magang.docx'
         );

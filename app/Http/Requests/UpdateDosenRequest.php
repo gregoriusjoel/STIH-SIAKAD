@@ -53,8 +53,8 @@ class UpdateDosenRequest extends FormRequest
         ];
     }
 
-    public function validated()
+    public function validated($key = null, $default = null)
     {
-        return array_filter(parent::validated(), fn($value) => $value !== null && $value !== '');
+        return array_filter(parent::validated($key, $default), fn($value) => $value !== null && $value !== '');
     }
 }

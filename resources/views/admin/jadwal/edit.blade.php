@@ -3,7 +3,7 @@
 @section('page-title', 'Edit Jadwal')
 @section('content')
     <div class="w-full">
-        <div class="bg-white rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden" x-data="jadwalEditor()" x-init="initialize()">
+        <div class="bg-white rounded-xl shadow-lg  overflow-hidden" x-data="jadwalEditor()" x-init="initialize()">
             <div class="p-6 border-b border-gray-200 bg-maroon text-white rounded-t-xl">
                 <h3 class="text-xl font-bold flex items-center"><i class="fas fa-edit mr-3 text-2xl"></i>Edit Jadwal</h3>
             </div>

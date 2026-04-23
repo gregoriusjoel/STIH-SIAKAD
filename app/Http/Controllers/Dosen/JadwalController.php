@@ -469,8 +469,10 @@ class JadwalController extends Controller
         if ($metode === 'asynchronous' && $request->hasFile('asynchronous_file')) {
             $file           = $request->file('asynchronous_file');
             $filename       = \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
-            Storage::disk('s3')->putFileAs('documents/asynchronous', $file, $filename, 'public');
-            $asyncFilePath  = 'documents/asynchronous/' . $filename;
+            $targetFolder   = 'documents/asynchronous';
+            $resolvedDisk   = \App\Helpers\FileHelper::resolveDiskForPath($targetFolder . '/' . $filename);
+            Storage::disk($resolvedDisk)->putFileAs($targetFolder, $file, $filename);
+            $asyncFilePath  = $targetFolder . '/' . $filename;
         }
 
         // Delete any existing reschedule for this kelas + week (replace it)

@@ -21,7 +21,7 @@
         </div>
     </div>
 
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
     
 
     <div class="overflow-x-auto">

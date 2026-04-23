@@ -1802,15 +1802,17 @@ class LecturerController extends Controller
                 ->where('tipe_dokumen', $tipeDokumen)
                 ->first();
 
-            // Generate new filename & store file terlebih dahulu
+            // Generate new filename & store file
             $fileName = \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $path     = $file->storeAs('documents/dokumen-kelas', $fileName, 's3');
+            $targetFolder = 'documents/dokumen-kelas';
+            $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($targetFolder . '/' . $fileName);
+            $path = $file->storeAs($targetFolder, $fileName, $resolvedDisk);
 
             if ($existingDoc) {
                 // Hapus file lama secara aman (abaikan jika gagal, jangan gagalkan upload baru)
                 if (!empty($existingDoc->path_file)) {
                     try {
-                        Storage::disk('s3')->delete($existingDoc->path_file);
+                        Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($existingDoc->path_file))->delete($existingDoc->path_file);
                     } catch (\Throwable $deleteError) {
                         Log::warning('Gagal menghapus file dokumen lama', [
                             'kelas_id' => $kelas->id,
@@ -1866,7 +1868,7 @@ class LecturerController extends Controller
             ->where('tipe_dokumen', $tipe)
             ->firstOrFail();
 
-        if (!Storage::disk('s3')->exists($dokumen->path_file)) {
+        if (!Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($dokumen->path_file))->exists($dokumen->path_file)) {
             Log::error('Document file not found on S3', [
                 'kelas_id' => $id,
                 'tipe'     => $tipe,
@@ -1875,12 +1877,14 @@ class LecturerController extends Controller
             return back()->with('error', 'File dokumen tidak ditemukan di cloud storage. Silakan upload ulang.');
         }
 
-        // Serve from S3
+        $disk = \App\Helpers\FileHelper::resolveDiskForPath($dokumen->path_file);
+        
+        // Serve from storage
         if (request()->has('view')) {
-            return Storage::disk('s3')->response($dokumen->path_file, $dokumen->nama_file);
+            return Storage::disk($disk)->response($dokumen->path_file, $dokumen->nama_file);
         }
 
-        return Storage::disk('s3')->download($dokumen->path_file, $dokumen->nama_file);
+        return Storage::disk($disk)->download($dokumen->path_file, $dokumen->nama_file);
     }
 
     /**
@@ -1908,7 +1912,7 @@ class LecturerController extends Controller
 
         if ($dokumen) {
             // Delete file from storage
-            Storage::disk('s3')->delete($dokumen->path_file);
+            Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($dokumen->path_file))->delete($dokumen->path_file);
             // Delete database record
             $dokumen->delete();
 

@@ -32,7 +32,8 @@ class InternshipLetterService
         $processor = new TemplateProcessor($templatePath);
         $this->fillPlaceholders($processor, $context);
 
-        return $this->saveDocument($processor, 'internship/request', "request_letter_{$internship->id}");
+        $folder = 'internship/request/' . $internship->mahasiswa->storage_folder;
+        return $this->saveDocument($processor, $folder, "request_letter_{$internship->id}");
     }
 
     /**
@@ -68,19 +69,21 @@ class InternshipLetterService
 
         // Coba konversi ke PDF via LibreOffice CLI
         $pdfPath = $this->convertDocxToPdf($tmpDocx);
-
+ 
         if ($pdfPath) {
             // Berhasil konversi ke PDF
-            $storageName = 'internship/admin_official/official_' . $internship->id . '_' . time() . '.pdf';
-            Storage::disk('s3')->put($storageName, file_get_contents($pdfPath));
+            $storageName = 'internship/admin_official/' . $internship->mahasiswa->storage_folder . '/official_' . $internship->id . '_' . time() . '.pdf';
+            $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($storageName);
+            Storage::disk($resolvedDisk)->put($storageName, file_get_contents($pdfPath));
             @unlink($tmpDocx);
             @unlink($pdfPath);
             return $storageName;
         }
 
         // Fallback: simpan DOCX
-        $storageName = 'internship/admin_official/official_' . $internship->id . '_' . time() . '.docx';
-        Storage::disk('s3')->put($storageName, file_get_contents($tmpDocx));
+        $storageName = 'internship/admin_official/' . $internship->mahasiswa->storage_folder . '/official_' . $internship->id . '_' . time() . '.docx';
+        $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($storageName);
+        Storage::disk($resolvedDisk)->put($storageName, file_get_contents($tmpDocx));
         @unlink($tmpDocx);
 
         Log::warning("InternshipLetterService: LibreOffice tidak tersedia. File disimpan sebagai DOCX: {$storageName}");
@@ -167,7 +170,8 @@ class InternshipLetterService
         $tmpPath     = sys_get_temp_dir() . '/' . $fileName;
 
         $processor->saveAs($tmpPath);
-        Storage::disk('s3')->put($storagePath, file_get_contents($tmpPath));
+        $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($storagePath);
+        Storage::disk($resolvedDisk)->put($storagePath, file_get_contents($tmpPath));
         @unlink($tmpPath);
 
         return $storagePath;

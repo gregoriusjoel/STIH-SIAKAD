@@ -147,7 +147,7 @@ class InternshipController extends Controller
         }
 
         $ext = pathinfo($internship->admin_final_pdf_path, PATHINFO_EXTENSION);
-        return Storage::disk('s3')->download(
+        return Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($internship->admin_final_pdf_path))->download(
             $internship->admin_final_pdf_path,
             'Surat_Permohonan_Resmi_' . ($internship->mahasiswa?->nim ?? $internship->id) . '.' . $ext
         );
@@ -182,7 +182,7 @@ class InternshipController extends Controller
             return redirect()->back()->with('error', 'PDF belum tersedia.');
         }
 
-        return Storage::disk('s3')->download(
+        return Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($path))->download(
             $path,
             'Surat_Permohonan_Resmi_Signed_' . ($internship->mahasiswa?->nim ?? $internship->id) . '.pdf'
         );

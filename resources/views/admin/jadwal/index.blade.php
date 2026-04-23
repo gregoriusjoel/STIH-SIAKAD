@@ -47,7 +47,7 @@
 
 
             {{-- Card: Active Schedules (Full Width) --}}
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden h-full flex flex-col">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg  overflow-hidden h-full flex flex-col">
                 <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex flex-col md:flex-row items-center justify-between gap-4">
                     <div class="font-semibold text-white text-lg w-full md:w-auto"><i class="fas fa-check-circle mr-2"></i>Jadwal Aktif
                     </div>
@@ -129,7 +129,7 @@
         </div>
 
         {{-- Card: Checks Ketersediaan Waktu Dosen --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden"
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg  overflow-hidden"
              x-data="{ modalOpen: false, modalDosen: '', modalDate: '', modalSlots: [] }">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-maroon text-white flex items-center justify-between">
                 <div class="font-semibold text-white text-lg"><i class="fas fa-history mr-2"></i>Log Update Ketersediaan Waktu Dosen</div>

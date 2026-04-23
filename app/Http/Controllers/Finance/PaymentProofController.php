@@ -28,7 +28,7 @@ class PaymentProofController extends Controller
             ])
             ->where('status', 'UPLOADED')
             ->orderBy('created_at')
-            ->paginate(20);
+            ->paginate(10);
 
         return view('finance.payment-proofs.index', compact('proofs'));
     }

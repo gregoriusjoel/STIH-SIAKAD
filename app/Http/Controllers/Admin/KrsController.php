@@ -104,4 +104,14 @@ class KrsController extends Controller
             return back()->with('error', 'Gagal membuka KRS: ' . $e->getMessage());
         }
     }
+    public function destroyAll(Mahasiswa $mahasiswa)
+    {
+        try {
+            Krs::where('mahasiswa_id', $mahasiswa->id)->delete();
+            return redirect()->route('admin.krs.index')
+                ->with('success', 'Seluruh data KRS mahasiswa berhasil dihapus');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus KRS: ' . $e->getMessage());
+        }
+    }
 }

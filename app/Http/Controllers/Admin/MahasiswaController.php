@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Hash;
 
 class MahasiswaController extends Controller
 {
-    public function __construct(private FileStorageService $storage) {}
+    public function __construct(private FileStorageService $storage)
+    {
+    }
     /**
      * Display a listing of the resource.
      */
@@ -183,7 +185,7 @@ class MahasiswaController extends Controller
             }
 
             // Delete student document directory from S3
-            $this->storage->deleteDirectory('documents/mahasiswa/' . $mahasiswa->nim);
+            $this->storage->deleteDirectory('documents/mahasiswa/' . $mahasiswa->storage_folder);
 
             // Delete associated user record (which will cascade delete the mahasiswa and parent records)
             if ($mahasiswa->user) {

@@ -27,10 +27,10 @@
         </div>
     </div>
 
-    <div x-data="{ selectedMahasiswa: null }"
-        class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-4 border-maroon overflow-hidden">
+    <div x-data="{ selectedMahasiswa: null }" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg  overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border-separate" style="border-spacing: 0;">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border-separate"
+                style="border-spacing: 0;">
                 <thead class="bg-maroon text-white rounded-t-xl">
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tl-xl">
@@ -61,89 +61,95 @@
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     @forelse($mahasiswas as $mahasiswa)
-                        <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition cursor-pointer"
-                            @click="selectedMahasiswa = {{ Js::from([
-                                'nim' => $mahasiswa->nim,
-                                'name' => $mahasiswa->user->name,
-                                'email' => $mahasiswa->user->email,
-                                'no_hp' => $mahasiswa->no_hp ?? '-',
-                                'prodi' => $mahasiswa->prodi,
-                                'angkatan' => $mahasiswa->angkatan,
-                                'status' => ucfirst($mahasiswa->status),
-                                'foto' => $mahasiswa->foto ? \Illuminate\Support\Facades\Storage::disk('s3')->url($mahasiswa->foto) : null,
-                            ]) }}"
-                            :class="{ 'bg-blue-50 dark:bg-blue-900/30': selectedMahasiswa && selectedMahasiswa.nim === '{{ $mahasiswa->nim }}' }">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
-                                {{ ($mahasiswas->currentPage() - 1) * $mahasiswas->perPage() + $loop->iteration }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-maroon dark:text-red-400">
-                                {{ $mahasiswa->nim }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div
-                                        class="bg-maroon text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-3">
-                                        {{ strtoupper(substr($mahasiswa->user->name, 0, 1)) }}
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $mahasiswa->user->name }}</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                <div class="space-y-1">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-envelope text-blue-400 dark:text-blue-500 mr-1"></i>
-                                        <span class="font-medium">{{ $mahasiswa->email_kampus }}</span>
-                                        <span class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full font-semibold">Login</span>
-                                    </div>
-                                    @if($mahasiswa->email_pribadi)
-                                        <div class="flex items-center">
-                                            <i class="fas fa-envelope text-gray-400 dark:text-gray-500 mr-1"></i>
-                                            <span class="text-sm">{{ $mahasiswa->email_pribadi }}</span>
-                                        </div>
-                                    @endif
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                <span class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-1 rounded-full text-xs font-medium">
-                                    {{ $mahasiswa->prodi }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                <i class="fas fa-calendar-alt text-gray-400 dark:text-gray-500 mr-1"></i>
-                                {{ $mahasiswa->angkatan }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full 
-                                            {{ $mahasiswa->status == 'aktif' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' : '' }}
-                                            {{ $mahasiswa->status == 'cuti' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' : '' }}
-                                            {{ $mahasiswa->status == 'lulus' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' : '' }}
-                                            {{ $mahasiswa->status == 'drop-out' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' : '' }}">
-                                    <i class="fas fa-circle text-xs mr-1"></i>
-                                    {{ ucfirst($mahasiswa->status) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center space-x-2" @click.stop>
-                                    <a href="{{ route('admin.mahasiswa.show', $mahasiswa) }}"
-                                        class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition" title="Detail">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.mahasiswa.edit', $mahasiswa) }}"
-                                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('admin.mahasiswa.destroy', $mahasiswa) }}" method="POST"
-                                        class="inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition"
-                                            title="Hapus">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                                    <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition cursor-pointer" @click="selectedMahasiswa = {{ Js::from([
+                            'nim' => $mahasiswa->nim,
+                            'name' => $mahasiswa->user->name,
+                            'email' => $mahasiswa->user->email,
+                            'no_hp' => $mahasiswa->no_hp ?? '-',
+                            'prodi' => $mahasiswa->prodi,
+                            'angkatan' => $mahasiswa->angkatan,
+                            'status' => ucfirst($mahasiswa->status),
+                            'foto' => $mahasiswa->foto ? \App\Helpers\FileHelper::fileUrl($mahasiswa->foto) : null,
+                        ]) }}"
+                                        :class="{ 'bg-blue-50 dark:bg-blue-900/30': selectedMahasiswa && selectedMahasiswa.nim === '{{ $mahasiswa->nim }}' }">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                            {{ ($mahasiswas->currentPage() - 1) * $mahasiswas->perPage() + $loop->iteration }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-maroon dark:text-red-400">
+                                            {{ $mahasiswa->nim }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div
+                                                    class="bg-maroon text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-3">
+                                                    {{ strtoupper(substr($mahasiswa->user->name, 0, 1)) }}
+                                                </div>
+                                                <span
+                                                    class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $mahasiswa->user->name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                            <div class="space-y-1">
+                                                <div class="flex items-center">
+                                                    <i class="fas fa-envelope text-blue-400 dark:text-blue-500 mr-1"></i>
+                                                    <span class="font-medium">{{ $mahasiswa->email_kampus }}</span>
+                                                    <span
+                                                        class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full font-semibold">Login</span>
+                                                </div>
+                                                @if($mahasiswa->email_pribadi)
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-envelope text-gray-400 dark:text-gray-500 mr-1"></i>
+                                                        <span class="text-sm">{{ $mahasiswa->email_pribadi }}</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <span
+                                                class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                {{ $mahasiswa->prodi }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <i class="fas fa-calendar-alt text-gray-400 dark:text-gray-500 mr-1"></i>
+                                            {{ $mahasiswa->angkatan }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <span
+                                                class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full 
+                                                                {{ $mahasiswa->status == 'aktif' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' : '' }}
+                                                                {{ $mahasiswa->status == 'cuti' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' : '' }}
+                                                                {{ $mahasiswa->status == 'lulus' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' : '' }}
+                                                                {{ $mahasiswa->status == 'drop-out' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' : '' }}">
+                                                <i class="fas fa-circle text-xs mr-1"></i>
+                                                {{ ucfirst($mahasiswa->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex items-center space-x-2" @click.stop>
+                                                <a href="{{ route('admin.mahasiswa.show', $mahasiswa) }}"
+                                                    class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition"
+                                                    title="Detail">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('admin.mahasiswa.edit', $mahasiswa) }}"
+                                                    class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition"
+                                                    title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('admin.mahasiswa.destroy', $mahasiswa) }}" method="POST"
+                                                    class="inline delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition"
+                                                        title="Hapus">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
                     @empty
                         <tr>
                             <td colspan="8" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
@@ -181,7 +187,8 @@
                         class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
                         <i class="fas fa-file-csv"></i> Template CSV
                     </a>
-                    <button onclick="closeImportModal()" class="text-white text-xl hover:text-white/80 transition">&times;</button>
+                    <button onclick="closeImportModal()"
+                        class="text-white text-xl hover:text-white/80 transition">&times;</button>
                 </div>
             </div>
 
@@ -192,7 +199,8 @@
                     class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center transition-all duration-300 hover:border-maroon dark:hover:border-red-500 hover:bg-maroon/5 dark:hover:bg-red-900/10 cursor-pointer">
                     <input type="file" id="imp-file-input" class="hidden" accept=".csv,.xlsx,.xls">
                     <div id="imp-dropzone-content">
-                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                        <div
+                            class="w-14 h-14 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 dark:text-gray-500"></i>
                         </div>
                         <h4 class="text-base font-semibold text-gray-700 dark:text-gray-300 mb-1">
@@ -241,12 +249,14 @@
                         <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">...</span>
                     </div>
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-                        <div id="imp-progress-bar" class="bg-maroon h-2.5 rounded-full animate-pulse" style="width: 100%"></div>
+                        <div id="imp-progress-bar" class="bg-maroon h-2.5 rounded-full animate-pulse" style="width: 100%">
+                        </div>
                     </div>
                 </div>
 
                 {{-- Kolom Template Info --}}
-                <div id="imp-columns-info" class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                <div id="imp-columns-info"
+                    class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
                     <h4 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                         <i class="fas fa-columns text-maroon dark:text-red-400"></i> Kolom Template
                     </h4>
@@ -256,17 +266,20 @@
                             $required = ['nim', 'nama', 'email_pribadi', 'prodi', 'angkatan'];
                         @endphp
                         @foreach($columns as $display => $actual)
-                            <span class="px-2 py-1 text-xs rounded-lg {{ in_array($actual, $required) ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-semibold' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400' }}">
+                            <span
+                                class="px-2 py-1 text-xs rounded-lg {{ in_array($actual, $required) ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-semibold' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400' }}">
                                 {{ $display }}{{ in_array($actual, $required) ? '*' : '' }}
                             </span>
                         @endforeach
                     </div>
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2"><span class="text-red-500">*</span> = kolom wajib</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2"><span class="text-red-500">*</span> = kolom
+                        wajib</p>
                 </div>
 
                 {{-- Preview Table --}}
                 <div id="imp-preview-container" class="hidden">
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                         <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                             <h4 class="text-sm font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
                                 <i class="fas fa-table text-maroon dark:text-red-400"></i> Preview Data
@@ -278,10 +291,13 @@
                                 <thead class="bg-gray-50 dark:bg-gray-700/50 sticky top-0">
                                     <tr id="imp-preview-header"></tr>
                                 </thead>
-                                <tbody id="imp-preview-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+                                <tbody id="imp-preview-body"
+                                    class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                             </table>
                         </div>
-                        <div id="imp-preview-more" class="hidden p-3 text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700"></div>
+                        <div id="imp-preview-more"
+                            class="hidden p-3 text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
+                        </div>
                     </div>
                 </div>
 
@@ -311,9 +327,9 @@
         <script>
             // SweetAlert Delete Confirmation
             document.querySelectorAll('.delete-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', function (e) {
                     e.preventDefault();
-                    
+
                     Swal.fire({
                         title: 'Apakah Anda yakin?',
                         text: "Data mahasiswa ini akan dihapus permanen!",
@@ -534,17 +550,17 @@
                 const duplicateRows = validation.duplicate_rows || 0;
 
                 stats.innerHTML = `
-                    <span class="px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-medium">
-                        Total: ${data.total_rows || 0}
-                    </span>
-                    <span class="px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium">
-                        Valid: ${validRows}
-                    </span>
-                    ${duplicateRows > 0 ? `
-                    <span class="px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 font-medium">
-                        Duplikat: ${duplicateRows}
-                    </span>` : ''}
-                `;
+                            <span class="px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-medium">
+                                Total: ${data.total_rows || 0}
+                            </span>
+                            <span class="px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium">
+                                Valid: ${validRows}
+                            </span>
+                            ${duplicateRows > 0 ? `
+                            <span class="px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 font-medium">
+                                Duplikat: ${duplicateRows}
+                            </span>` : ''}
+                        `;
 
                 if (data.total_rows > 50) {
                     more.textContent = `Menampilkan 50 dari ${data.total_rows} baris`;
@@ -646,28 +662,28 @@
 
                 const s = result.result?.summary || {};
                 summary.innerHTML = `
-                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
-                        <div class="text-xl font-bold text-gray-800 dark:text-gray-200">${s.total || 0}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">Total</div>
-                    </div>
-                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
-                        <div class="text-xl font-bold text-green-600 dark:text-green-400">${s.success || 0}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">Berhasil</div>
-                    </div>
-                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
-                        <div class="text-xl font-bold text-red-600 dark:text-red-400">${s.failed || 0}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">Gagal</div>
-                    </div>
-                `;
+                            <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                <div class="text-xl font-bold text-gray-800 dark:text-gray-200">${s.total || 0}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Total</div>
+                            </div>
+                            <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                <div class="text-xl font-bold text-green-600 dark:text-green-400">${s.success || 0}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Berhasil</div>
+                            </div>
+                            <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                <div class="text-xl font-bold text-red-600 dark:text-red-400">${s.failed || 0}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Gagal</div>
+                            </div>
+                        `;
 
                 const failedRows = result.result?.results?.failed || [];
                 if (failedRows.length > 0) {
                     details.innerHTML = `
-                        <h5 class="font-semibold text-red-700 dark:text-red-400 mb-1 text-xs">Detail Error:</h5>
-                        <ul class="space-y-1 text-xs text-red-600 dark:text-red-300 max-h-32 overflow-y-auto">
-                            ${failedRows.map(f => `<li>Baris ${f.row}: ${f.error}</li>`).join('')}
-                        </ul>
-                    `;
+                                <h5 class="font-semibold text-red-700 dark:text-red-400 mb-1 text-xs">Detail Error:</h5>
+                                <ul class="space-y-1 text-xs text-red-600 dark:text-red-300 max-h-32 overflow-y-auto">
+                                    ${failedRows.map(f => `<li>Baris ${f.row}: ${f.error}</li>`).join('')}
+                                </ul>
+                            `;
                 } else {
                     details.innerHTML = '';
                 }

@@ -227,7 +227,7 @@
                                 class="bg-maroon text-white hover:bg-red-900 px-3 py-1.5 rounded-lg text-sm font-medium transition">
                                 <i class="fas fa-trash mr-1"></i> Hapus
                             </button>
-                            <form id="delete-krs-form-mobile-{{ $mahasiswa->id }}" action="#" method="POST" class="hidden">
+                            <form id="delete-krs-form-mobile-{{ $mahasiswa->id }}" action="{{ route('admin.krs.destroyAll', $mahasiswa->id) }}" method="POST" class="hidden">
                                 @csrf
                                 @method('DELETE')
                             </form>
@@ -372,7 +372,7 @@
                                     title="Hapus">
                                     <i class="fas fa-trash text-xs"></i>
                                 </button>
-                                <form id="delete-krs-form-{{ $mahasiswa->id }}" action="#" method="POST" class="hidden">
+                                <form id="delete-krs-form-{{ $mahasiswa->id }}" action="{{ route('admin.krs.destroyAll', $mahasiswa->id) }}" method="POST" class="hidden">
                                     @csrf
                                     @method('DELETE')
                                 </form>

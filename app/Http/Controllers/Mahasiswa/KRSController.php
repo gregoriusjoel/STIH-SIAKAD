@@ -16,6 +16,34 @@ use Carbon\Carbon;
 
 class KRSController extends Controller
 {
+    /**
+     * Get S3 path for KRS file with fallback support for old student_id based paths.
+     */
+    private function getKrsS3Path($mahasiswa, $filename, $isWrite = false)
+    {
+        $newPath = 'krs/' . $mahasiswa->storage_folder . '/' . $filename;
+        
+        // If we are writing, we prefer the new path format
+        if ($isWrite) {
+            return $newPath;
+        }
+
+        // For reading/checking: check NEW path first
+        $newDisk = \App\Helpers\FileHelper::resolveDiskForPath($newPath);
+        if (Storage::disk($newDisk)->exists($newPath)) {
+            return $newPath;
+        }
+        
+        // Fallback to OLD path (mahasiswa_id)
+        $oldPath = 'krs/' . $mahasiswa->id . '/' . $filename;
+        $oldDisk = \App\Helpers\FileHelper::resolveDiskForPath($oldPath);
+        if (Storage::disk($oldDisk)->exists($oldPath)) {
+            return $oldPath;
+        }
+        
+        return $newPath;
+    }
+
     public function index(\Illuminate\Http\Request $request)
     {
         $user = Auth::user();
@@ -90,9 +118,9 @@ class KRSController extends Controller
             foreach ($semesterHistory as $s) {
                 $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
                 $filename = 'KRS_' . $nimOrId . '_' . $s->semester_number . '.pdf';
-                $path = 'krs/' . $mahasiswa->id . '/' . $filename;
+                $path = $this->getKrsS3Path($mahasiswa, $filename);
 
-                if (Storage::disk('s3')->exists($path)) {
+                if (Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($path))->exists($path)) {
                     $downloadable[] = $s->semester_number;
                     continue;
                 }
@@ -288,9 +316,9 @@ class KRSController extends Controller
                 // Check if PDF exists
                 $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
                 $filename = 'KRS_' . $nimOrId . '_' . $s->semester_number . '.pdf';
-                $path = 'krs/' . $mahasiswa->id . '/' . $filename;
+                $path = $this->getKrsS3Path($mahasiswa, $filename);
 
-                if (Storage::disk('s3')->exists($path)) {
+                if (Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($path))->exists($path)) {
                     $downloadable[] = $s->semester_number;
                     continue;
                 }
@@ -362,7 +390,12 @@ class KRSController extends Controller
         // Use semester_number-based filename (aligned with confirm page history table).
         $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
         $filename = 'KRS_' . $nimOrId . '_' . $requestedSemester . '.pdf';
-        $path = 'krs/' . $mahasiswa->id . '/' . $filename;
+        $path = $this->getKrsS3Path($mahasiswa, $filename, true);
+        $disk = \App\Helpers\FileHelper::resolveDiskForPath($path);
+        
+        if (Storage::disk($disk)->exists($path)) {
+            return Storage::disk($disk)->download($path, $filename);
+        }
 
         $existingKrs = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->whereHas('mataKuliah', function ($q) use ($semesterKodeId) {
@@ -402,7 +435,7 @@ class KRSController extends Controller
 
         $pdfBinary = $pdf->output();
 
-        Storage::disk('s3')->put($path, $pdfBinary, [
+        Storage::disk($disk)->put($path, $pdfBinary, [
             'ContentType' => 'application/pdf',
             'CacheControl' => 'no-store, no-cache, must-revalidate, max-age=0',
         ]);
@@ -619,8 +652,8 @@ class KRSController extends Controller
             // Save PDF to public storage for later download; do not force immediate download
             $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
             $filename = 'KRS_' . $nimOrId . '_' . ($krsSemesterForPdf->id ?? 'sem') . '.pdf';
-            $path = 'krs/' . $mahasiswa->id . '/' . $filename;
-            Storage::disk('s3')->put($path, $pdf->output());
+            $path = $this->getKrsS3Path($mahasiswa, $filename, true);
+            Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($path))->put($path, $pdf->output());
 
             if ($status === 'sudah submit') {
                 \App\Models\AuditLog::log('krs.submitted', $mahasiswa, [
@@ -715,9 +748,9 @@ class KRSController extends Controller
             // Check if PDF exists
             $nimOrId = $mahasiswa->nim ?? $mahasiswa->id;
             $filename = 'KRS_' . $nimOrId . '_' . $s->semester_number . '.pdf';
-            $path = 'krs/' . $mahasiswa->id . '/' . $filename;
+            $path = $this->getKrsS3Path($mahasiswa, $filename);
 
-            if (Storage::disk('s3')->exists($path)) {
+            if (Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($path))->exists($path)) {
                 $downloadable[] = $s->semester_number;
                 continue;
             }
