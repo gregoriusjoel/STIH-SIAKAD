@@ -76,7 +76,7 @@ class PaymentProof extends Model
 
         // Use private URL helper which handles signed routes and local/S3 resolution
         try {
-            return \App\Helpers\FileHelper::privateUrl($this->file_path, 15);
+            return \App\Helpers\FileHelper::filePrivateUrl($this->file_path, 15);
         } catch (\Exception $e) {
             return Storage::url($this->file_path);
         }

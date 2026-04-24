@@ -93,6 +93,15 @@ class PrivateFileController extends Controller
             return;
         }
 
+        // Keuangan (Finance) role access
+        if ($user->role === 'keuangan') {
+            // Can access payment proofs and installment documents
+            if (str_contains($path, 'documents/payment-proofs') || 
+                str_contains($path, 'documents/installments')) {
+                return;
+            }
+        }
+
         abort(403, 'Anda tidak memiliki izin untuk mengakses file ini.');
     }
 }

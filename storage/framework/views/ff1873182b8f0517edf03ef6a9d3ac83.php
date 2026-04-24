@@ -961,7 +961,7 @@ $missingByTab[$info['tab']]++;
                             $iconClass = in_array($ext, ['jpg','jpeg','png']) ? 'fa-file-image text-blue-600' : 'fa-file-pdf text-[#8B1538]';
                             ?>
                             <button type="button"
-                                onclick="openFilePreview('<?php echo e(\Illuminate\Support\Facades\Storage::disk('s3')->url($file)); ?>', 'Preview <?php echo e($doc['label']); ?>', '<?php echo e($ext); ?>')"
+                                onclick="openFilePreview('<?php echo e(\App\Helpers\FileHelper::filePrivateUrl($file)); ?>', 'Preview <?php echo e($doc['label']); ?>', '<?php echo e($ext); ?>')"
                                 class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#4B5563] text-[11px] font-bold rounded-lg transition-colors border border-[#E5E7EB] cursor-pointer">
                                 <i class="fas <?php echo e($iconClass); ?>"></i>
                                 <?php echo e(Str::limit(basename($file), 20)); ?>
