@@ -107,6 +107,9 @@
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Mahasiswa</th>
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Semester</th>
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50 text-right">Total Tagihan</th>
+                        @if(false){{-- VA Column Hidden --}}
+                        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50 text-center">VA</th>
+                        @endif
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50 text-center">Status</th>
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50 text-center">Aksi</th>
                     </tr>
@@ -137,6 +140,18 @@
                             <td class="px-8 py-6 text-right">
                                 <span class="text-sm font-black text-slate-900 tracking-tight">Rp {{ number_format($invoice->total_tagihan, 0, ',', '.') }}</span>
                             </td>
+                            @if(false){{-- VA Cell Hidden --}}
+                            <td class="px-8 py-6 text-center">
+                                @if($invoice->bank_name && $invoice->va_number)
+                                    <div class="inline-flex flex-col items-center gap-0.5">
+                                        <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-black uppercase tracking-wider rounded-md border border-blue-100">{{ $invoice->bank_name }}</span>
+                                        <span class="text-[10px] font-bold text-slate-400 font-mono tracking-wider">{{ substr($invoice->va_number, 0, 4) }}...{{ substr($invoice->va_number, -4) }}</span>
+                                    </div>
+                                @else
+                                    <span class="text-slate-200">—</span>
+                                @endif
+                            </td>
+                            @endif
                             <td class="px-8 py-6 text-center">
                                 @php
                                     $statusClasses = [

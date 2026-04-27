@@ -75,6 +75,47 @@
                         </p>
                     </div>
                 @endif
+
+                {{-- VA Payment Info (Hidden - set to true to enable) --}}
+                @if(false)
+                @if($invoice->bank_name && $invoice->va_number)
+                    <div class="mt-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl" x-data="{ copied: false }">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0">
+                                <i class="fas fa-university text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800">Informasi Pembayaran Virtual Account</h3>
+                                <p class="text-xs text-slate-500">Transfer ke rekening VA berikut untuk melakukan pembayaran</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded-xl border border-blue-100">
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-500 mb-1">Bank</p>
+                                <p class="text-lg font-bold text-slate-800">{{ $invoice->bank_name }}</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-xl border border-blue-100 relative">
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-500 mb-1">Nomor Virtual Account</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-lg font-bold text-slate-800 font-mono tracking-wider">{{ $invoice->va_number }}</p>
+                                    <button type="button"
+                                            @click="navigator.clipboard.writeText('{{ $invoice->va_number }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                                            class="ml-auto px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-90"
+                                            :class="copied ? 'bg-emerald-100 text-emerald-600 border border-emerald-200' : 'bg-blue-100 text-blue-600 border border-blue-200 hover:bg-blue-200'">
+                                        <span x-show="!copied" class="flex items-center gap-1"><i class="fas fa-copy text-[10px]"></i> Salin</span>
+                                        <span x-show="copied" x-cloak class="flex items-center gap-1"><i class="fas fa-check text-[10px]"></i> Tersalin!</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @elseif($invoice->status !== 'LUNAS')
+                    <div class="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3 text-sm text-slate-500">
+                        <i class="fas fa-info-circle text-slate-400"></i>
+                        Silakan hubungi bagian keuangan kampus untuk informasi metode pembayaran.
+                    </div>
+                @endif
+                @endif
             </div>
         </div>
 

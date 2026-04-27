@@ -106,6 +106,8 @@ class InvoiceController extends Controller
             'total_tagihan' => $request->total_tagihan,
             'allow_partial' => $request->allow_partial ?? false,
             'notes' => $request->notes,
+            'bank_name' => $request->bank_name,
+            'va_number' => $request->va_number,
             'created_by' => auth()->id(),
             'status' => 'DRAFT',
         ]);

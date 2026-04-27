@@ -35,7 +35,7 @@
             <h2 class="text-xl font-semibold text-gray-600 mb-4">404 - Not Found</h2>
 
             <p class="text-gray-500 mb-8">
-                Maaf, halaman yang Anda cari tidak dapat ditemukan atau telah dipindahkan.
+                Maaf, halaman yang Anda cari tidak dapat ditemukan.
             </p>
 
             <div class="space-y-4">

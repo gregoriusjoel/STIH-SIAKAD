@@ -130,6 +130,64 @@
                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest ml-1">Nominal akan diformat otomatis</p>
                 </div>
 
+                {{-- VA Section (Hidden - set to true to enable) --}}
+                @if(false)
+                <div class="md:col-span-2 p-6 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-2xl border border-blue-100/50 space-y-6">
+                    <div class="flex items-center gap-3 mb-1">
+                        <div class="size-9 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                            <i class="fas fa-university text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Virtual Account (Opsional)</h4>
+                            <p class="text-[10px] text-slate-400 font-medium">Informasi VA akan ditampilkan ke mahasiswa & orang tua</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Bank Name --}}
+                        <div class="space-y-2">
+                            <label for="bank_name" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
+                                Bank
+                            </label>
+                            <div class="relative group">
+                                <select name="bank_name" id="bank_name"
+                                        class="w-full pl-12 pr-4 py-4 bg-white border-none rounded-2xl text-slate-800 font-bold text-sm focus:ring-2 focus:ring-blue-500 transition-all appearance-none cursor-pointer">
+                                    <option value="">-- Tidak menggunakan VA --</option>
+                                    <option value="BCA" {{ old('bank_name') == 'BCA' ? 'selected' : '' }}>BCA</option>
+                                    <option value="BNI" {{ old('bank_name') == 'BNI' ? 'selected' : '' }}>BNI</option>
+                                    <option value="BRI" {{ old('bank_name') == 'BRI' ? 'selected' : '' }}>BRI</option>
+                                    <option value="Mandiri" {{ old('bank_name') == 'Mandiri' ? 'selected' : '' }}>Bank Mandiri</option>
+                                    <option value="BSI" {{ old('bank_name') == 'BSI' ? 'selected' : '' }}>Bank Syariah Indonesia (BSI)</option>
+                                    <option value="BTN" {{ old('bank_name') == 'BTN' ? 'selected' : '' }}>BTN</option>
+                                    <option value="CIMB Niaga" {{ old('bank_name') == 'CIMB Niaga' ? 'selected' : '' }}>CIMB Niaga</option>
+                                    <option value="Danamon" {{ old('bank_name') == 'Danamon' ? 'selected' : '' }}>Bank Danamon</option>
+                                    <option value="Permata" {{ old('bank_name') == 'Permata' ? 'selected' : '' }}>Bank Permata</option>
+                                </select>
+                                <i class="fas fa-landmark absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none transition-transform group-focus-within:rotate-180">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- VA Number --}}
+                        <div class="space-y-2">
+                            <label for="va_number" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
+                                Nomor Virtual Account
+                            </label>
+                            <div class="relative group">
+                                <input type="text" name="va_number" id="va_number" value="{{ old('va_number') }}"
+                                       placeholder="Contoh: 8800123456789"
+                                       inputmode="numeric"
+                                       pattern="[0-9]*"
+                                       class="w-full pl-12 pr-4 py-4 bg-white border-none rounded-2xl text-slate-800 font-bold text-sm focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-300 tracking-widest font-mono">
+                                <i class="fas fa-hashtag absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                            </div>
+                            <p class="text-[10px] text-slate-400 font-bold ml-1">Hanya angka, tanpa spasi atau tanda baca</p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 {{-- Allow Partial --}}
                 <div class="md:col-span-2 flex items-center gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100/50 group cursor-pointer hover:bg-slate-100/50 transition-colors">
                     <div class="relative flex items-center justify-center size-6 shrink-0">
@@ -267,6 +325,14 @@
         totalInput.closest('form').addEventListener('submit', function() {
             totalInput.value = totalInput.value.replace(/\D/g, '');
         });
+
+        // VA number: only allow digits
+        const vaInput = document.getElementById('va_number');
+        if (vaInput) {
+            vaInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+            });
+        }
     });
 </script>
 

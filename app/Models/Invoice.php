@@ -22,6 +22,8 @@ class Invoice extends Model
         'status',
         'allow_partial',
         'notes',
+        'bank_name',
+        'va_number',
         'created_by',
         'published_at',
     ];

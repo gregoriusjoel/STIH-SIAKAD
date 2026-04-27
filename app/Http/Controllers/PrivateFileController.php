@@ -17,6 +17,10 @@ class PrivateFileController extends Controller
     {
         // 1. Validate Signature (Laravel builtin)
         if (!$request->hasValidSignature()) {
+            \Log::warning('Private file access: Invalid signature', [
+                'user_id' => $request->user()?->id,
+                'path' => $request->query('path')
+            ]);
             abort(403, 'Tautan kedaluwarsa atau tidak valid.');
         }
 
@@ -25,11 +29,30 @@ class PrivateFileController extends Controller
 
         // 2. Validate File Existence
         if (!Storage::disk($disk)->exists($path)) {
+            \Log::error('Private file access: File not found', [
+                'disk' => $disk,
+                'path' => $path,
+                'absolute_path' => Storage::disk($disk)->path($path)
+            ]);
             abort(404, 'File tidak ditemukan.');
         }
 
         // 3. Authorization Check
-        $this->authorizeAccess($path, $request->user());
+        try {
+            $this->authorizeAccess($path, $request->user());
+        } catch (\Exception $e) {
+            \Log::warning('Private file access: Unauthorized', [
+                'user_role' => $request->user()?->role,
+                'path' => $path,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+
+        \Log::info('Private file access: Success', [
+            'user_id' => $request->user()?->id,
+            'path' => $path
+        ]);
 
         // 4. Return Streamed Response
         return Storage::disk($disk)->response($path);

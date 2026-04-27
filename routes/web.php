@@ -326,6 +326,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
+    // Notifikasi (History)
+    Route::get('/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+
     // Pengumuman (Admin CRUD)
     Route::resource('pengumuman', App\Http\Controllers\Admin\PengumumanController::class);
 

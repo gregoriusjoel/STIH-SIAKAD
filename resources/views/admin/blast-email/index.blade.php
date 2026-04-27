@@ -283,7 +283,7 @@
                             <select id="filter_type" name="filter_type" class="w-full pl-11 pr-10 py-3.5 premium-input rounded-xl text-sm text-slate-800 font-bold appearance-none cursor-pointer @error('filter_type') border-red-500 ring-4 ring-red-500/10 @enderror" required>
                                 <option value="" class="font-normal">-- Pilih Kriteria Target --</option>
                                 <option value="all" {{ old('filter_type') == 'all' ? 'selected' : '' }}>Semua Mahasiswa Aktif</option>
-                                <option value="angkatan" {{ old('filter_type') == 'angkatan' ? 'selected' : '' }}>Filter Berdasarkan Angkatan</option>
+                                <option value="angkatan" {{ old('filter_type') == 'angkatan' ? 'selected' : '' }}>Filter Berdasarkan Tahun Ajaran</option>
                                 <option value="prodi" {{ old('filter_type') == 'prodi' ? 'selected' : '' }}>Filter Berdasarkan Program Studi</option>
                                 <option value="tingkat" {{ old('filter_type') == 'tingkat' ? 'selected' : '' }}>Filter Berdasarkan Tingkat Semester</option>
                                 <option value="kelas" {{ old('filter_type') == 'kelas' ? 'selected' : '' }}>Filter Berdasarkan Kelas Perkuliahan</option>
@@ -1036,7 +1036,7 @@ function getPreview() {
     .then(data => {
         if (data.success) {
             let html = `
-                <div class="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl p-5 mb-5 shadow-lg shadow-indigo-500/20 text-white fade-in-up">
+                <div class="bg-gradient-to-br from-maroon to-red-900 rounded-2xl p-5 mb-5 shadow-lg shadow-maroon/20 text-white fade-in-up">
                     <div class="flex items-center gap-3 mb-2">
                         <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
                             <i class="fas fa-users text-sm"></i>

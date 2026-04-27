@@ -104,6 +104,42 @@
                             <i class="fas fa-sticky-note text-gray-400 mr-1"></i> {{ $invoice->notes }}
                         </div>
                     @endif
+
+                    {{-- VA Payment Info (Hidden - set to true to enable) --}}
+                    @if(false)
+                    @if($invoice->bank_name && $invoice->va_number)
+                        <div class="mt-4 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl" x-data="{ copied: false }">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i class="fas fa-university text-blue-600"></i>
+                                <span class="text-sm font-bold text-slate-800">Informasi Pembayaran Virtual Account</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div class="bg-white p-3 rounded-lg border border-blue-100">
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-blue-500 mb-0.5">Bank</p>
+                                    <p class="text-base font-bold text-slate-800">{{ $invoice->bank_name }}</p>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg border border-blue-100">
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-blue-500 mb-0.5">Nomor VA</p>
+                                    <div class="flex items-center gap-2">
+                                        <p class="text-base font-bold text-slate-800 font-mono tracking-wider">{{ $invoice->va_number }}</p>
+                                        <button type="button"
+                                                @click="navigator.clipboard.writeText('{{ $invoice->va_number }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                                                class="ml-auto px-2 py-1 rounded-md text-[10px] font-bold transition-all active:scale-90"
+                                                :class="copied ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'">
+                                            <span x-show="!copied"><i class="fas fa-copy"></i> Salin</span>
+                                            <span x-show="copied" x-cloak><i class="fas fa-check"></i> Tersalin!</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($invoice->status !== 'LUNAS')
+                        <div class="mt-3 p-3 bg-gray-50 border border-gray-100 rounded-lg flex items-center gap-2 text-sm text-gray-500">
+                            <i class="fas fa-info-circle text-gray-400"></i>
+                            Hubungi bagian keuangan kampus untuk informasi metode pembayaran.
+                        </div>
+                    @endif
+                    @endif
                 </div>
             @empty
                 <div class="bg-white rounded-xl shadow-sm p-12 text-center">

@@ -22,6 +22,8 @@ class StoreInvoiceRequest extends FormRequest
             'total_tagihan' => 'required|integer|min:0',
             'allow_partial' => 'nullable|boolean',
             'notes' => 'nullable|string|max:1000',
+            'bank_name' => 'nullable|string|max:50',
+            'va_number' => 'nullable|string|max:50|regex:/^[0-9]+$/',
         ];
     }
 

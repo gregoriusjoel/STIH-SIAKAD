@@ -134,6 +134,24 @@
                                     <td class="px-8 py-4 text-sm font-medium text-slate-400 text-right italic">{{ $invoice->notes }}</td>
                                 </tr>
                             @endif
+                            @if(false){{-- VA Row Hidden --}}
+                            @if($invoice->bank_name && $invoice->va_number)
+                                <tr class="bg-blue-50/30">
+                                    <td class="px-8 py-4 text-sm font-bold text-slate-600">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-university text-blue-500"></i>
+                                            Metode Pembayaran VA
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-4 text-right">
+                                        <div class="inline-flex flex-col items-end gap-1">
+                                            <span class="text-[10px] font-black uppercase tracking-widest text-blue-500">{{ $invoice->bank_name }}</span>
+                                            <span class="text-sm font-black text-slate-800 tracking-widest font-mono">{{ $invoice->va_number }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
+                            @endif{{-- End VA Row Hidden --}}
                         </tbody>
                     </table>
                 </div>
