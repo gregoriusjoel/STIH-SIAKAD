@@ -20,6 +20,7 @@ class Invoice extends Model
         'paket_sks_bayar',
         'total_tagihan',
         'status',
+        'auto_generated_from_krs',
         'allow_partial',
         'notes',
         'bank_name',
@@ -31,6 +32,7 @@ class Invoice extends Model
     protected $casts = [
         'total_tagihan' => 'integer',
         'allow_partial' => 'boolean',
+        'auto_generated_from_krs' => 'boolean',
         'published_at' => 'datetime',
     ];
 

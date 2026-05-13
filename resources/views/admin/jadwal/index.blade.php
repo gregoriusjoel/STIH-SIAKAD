@@ -140,6 +140,7 @@
                         <thead class="bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                             <tr>
                                 <th class="px-4 py-3 text-left font-semibold">Waktu Update</th>
+                                <th class="px-4 py-3 text-left font-semibold">Semester</th>
                                 <th class="px-4 py-3 text-left font-semibold">Dosen</th>
                                 <th class="px-4 py-3 text-left font-semibold">Total Slot</th>
                                 <th class="px-4 py-3 text-left font-semibold">Detail Ketersediaan</th>
@@ -150,6 +151,9 @@
                             @forelse($availabilityChecks as $check)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                     <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ $check->created_at->format('d M Y H:i') }}</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 bg-maroon-50 text-maroon rounded text-xs font-bold">{{ $check->semester_name }}</span>
+                                    </td>
                                     <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{{ $check->dosen->user->name ?? $check->dosen->nama ?? '-' }}</td>
                                     <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
                                         <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">{{ $check->total_slots }} Slot</span>

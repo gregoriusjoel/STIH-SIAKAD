@@ -215,14 +215,9 @@
                 @endif
             </td>
             <td class="px-5 py-4 text-center whitespace-nowrap">
-                @php
-                    $mkAktifCount = $activeSemester
-                        ? $dosen->kelasMataKuliahs->filter(fn($km) => $km->semester_id == $activeSemester->id)->pluck('mata_kuliah_id')->unique()->count()
-                        : 0;
-                @endphp
-                @if($mkAktifCount > 0)
+                @if($dosen->mk_aktif_count > 0)
                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">
-                        <i class="fas fa-book-open text-[10px]"></i> {{ $mkAktifCount }}
+                        <i class="fas fa-book-open text-[10px]"></i> {{ $dosen->mk_aktif_count }}
                     </span>
                 @else
                     <span class="text-xs text-gray-400 dark:text-gray-500">—</span>
@@ -639,7 +634,7 @@
             <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
                 <p class="text-xs text-yellow-800 dark:text-yellow-300 font-semibold flex items-start gap-2">
                     <i class="fas fa-info-circle mt-0.5 flex-shrink-0"></i>
-                    Hanya penugasan yang belum ada di semester tujuan yang akan disalin. Data yang sudah ada tidak akan digandakan.
+                    Menyalin semua penugasan dosen dari semester sumber. Penugasan yang <strong>sudah terdaftar</strong> di semester tujuan akan dilewati otomatis untuk mencegah duplikasi data.
                 </p>
             </div>
             <div class="flex justify-end gap-3 pt-2 border-t border-gray-100 dark:border-gray-700">

@@ -22,6 +22,9 @@ class SendCredentialsMail extends Mailable implements ShouldQueue
         public ?string $customSubject = null,
         public ?string $customGreeting = null,
         public ?string $customMessage = null,
+        public ?string $loginEmail = null,
+        public bool $isParent = false,
+        public ?string $recipientName = null,
     ) {}
 
     public function envelope(): Envelope
@@ -42,6 +45,9 @@ class SendCredentialsMail extends Mailable implements ShouldQueue
                 'login_url' => 'https://satu.axiona.id',
                 'custom_greeting' => $this->customGreeting,
                 'custom_message' => $this->customMessage,
+                'loginEmail' => $this->loginEmail,
+                'isParent' => $this->isParent,
+                'recipientName' => $this->recipientName,
             ],
         );
     }

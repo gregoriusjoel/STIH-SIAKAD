@@ -146,7 +146,7 @@
                 </div>
 
                 @push('styles')
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+                {{-- Cropper.js CSS sudah di-bundle via resources/js/cropper.js (Vite). --}}
                 <style>
                     .cropper-view-box,
                     .cropper-face {
@@ -167,7 +167,8 @@
                 @endpush
 
                 @push('scripts')
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+                {{-- Cropper.js di-bundle lokal via Vite (akses lewat window.Cropper). --}}
+                @vite('resources/js/cropper.js')
                 <script>
                     function photoCropper() {
                         return {

@@ -8,6 +8,7 @@ use App\Models\KelasPerkuliahan;
 use App\Models\Prodi;
 use App\Models\Semester;
 use App\Services\KelasPerkuliahanService;
+use App\Services\MahasiswaClassAssignmentService;
 use Illuminate\Http\Request;
 
 class KelasPerkuliahanController extends Controller
@@ -22,7 +23,7 @@ class KelasPerkuliahanController extends Controller
     public function index(Request $request)
     {
         $query = KelasPerkuliahan::with(['prodi', 'tahunAkademik'])
-            ->orderBy('tingkat')
+            ->orderByDesc('angkatan')
             ->orderBy('kode_prodi')
             ->orderBy('kode_kelas');
 
@@ -31,8 +32,8 @@ class KelasPerkuliahanController extends Controller
             $query->where('prodi_id', $request->prodi_id);
         }
 
-        if ($request->filled('tingkat')) {
-            $query->where('tingkat', $request->tingkat);
+        if ($request->filled('angkatan')) {
+            $query->where('angkatan', $request->angkatan);
         }
 
         if ($request->filled('tahun_akademik_id')) {
@@ -66,8 +67,9 @@ class KelasPerkuliahanController extends Controller
     {
         $prodis = Prodi::orderBy('nama_prodi')->get();
         $semesters = Semester::orderByDesc('id')->get();
+        $angkatanOptions = range((int) date('Y'), 1960);
 
-        return view('admin.kelas-perkuliahan.create', compact('prodis', 'semesters'));
+        return view('admin.kelas-perkuliahan.create', compact('prodis', 'semesters', 'angkatanOptions'));
     }
 
     /**
@@ -76,7 +78,14 @@ class KelasPerkuliahanController extends Controller
      */
     public function store(KelasPerkuliahanRequest $request)
     {
-        $kp = KelasPerkuliahan::create($request->validated());
+        try {
+            $kp = $this->service->findOrCreate($request->validated());
+        } catch (\InvalidArgumentException $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['kode_kelas' => $e->getMessage()]);
+        }
 
         return redirect()
             ->route('admin.kelas-perkuliahan.index')
@@ -109,11 +118,13 @@ class KelasPerkuliahanController extends Controller
     {
         $prodis = Prodi::orderBy('nama_prodi')->get();
         $semesters = Semester::orderByDesc('id')->get();
+        $angkatanOptions = range((int) date('Y'), 1960);
 
         return view('admin.kelas-perkuliahan.edit', compact(
             'kelasPerkuliahan',
             'prodis',
-            'semesters'
+            'semesters',
+            'angkatanOptions'
         ));
     }
 
@@ -159,35 +170,31 @@ class KelasPerkuliahanController extends Controller
         if ($mode === 'auto') {
             $request->validate([
                 'prodi_id'                  => 'required|exists:prodis,id',
+                'angkatan'                  => 'required|digits:4',
                 'tahun_akademik_id'         => 'nullable|exists:semesters,id',
-                'max_tingkat'               => 'required|integer|min:1|max:8',
                 'max_students_per_class'    => 'required|integer|min:1|max:100',
+                'jumlah_mahasiswa'          => 'required|integer|min:0|max:10000',
                 'overwrite'                 => 'nullable|boolean',
             ]);
 
-            // Validate siswa per tingkat
-            $maxTingkat = $request->integer('max_tingkat');
-            $siswaPerTingkat = [];
-            for ($i = 1; $i <= $maxTingkat; $i++) {
-                $siswaPerTingkat[$i] = $request->integer("siswa_tingkat_{$i}", 0);
-            }
-
             $maxPerKelas = $request->integer('max_students_per_class');
+            $jumlahMahasiswa = $request->integer('jumlah_mahasiswa');
             $overwrite = $request->boolean('overwrite', false);
+            $kelasPerAngkatan = $jumlahMahasiswa > 0 ? (int) ceil($jumlahMahasiswa / $maxPerKelas) : 0;
+            $kelasPerAngkatan = max(1, $kelasPerAngkatan);
 
-            // Calculate classes per level based on student count
             $result = $overwrite 
-                ? $this->service->generateForProdiWithOverwritePerLevel(
+                ? $this->service->generateForAngkatanWithOverwrite(
                     $request->prodi_id,
+                    $request->angkatan,
                     $request->tahun_akademik_id,
-                    $siswaPerTingkat,
-                    $maxPerKelas
+                    $kelasPerAngkatan
                 )
-                : $this->service->generateForProdiPerLevel(
+                : $this->service->generateForAngkatan(
                     $request->prodi_id,
+                    $request->angkatan,
                     $request->tahun_akademik_id,
-                    $siswaPerTingkat,
-                    $maxPerKelas
+                    $kelasPerAngkatan
                 );
 
             $createdCount = $result['created']->count();
@@ -205,28 +212,27 @@ class KelasPerkuliahanController extends Controller
         } else {
             $request->validate([
                 'prodi_id'          => 'required|exists:prodis,id',
+                'angkatan'          => 'required|digits:4',
                 'tahun_akademik_id' => 'nullable|exists:semesters,id',
-                'max_tingkat'       => 'required|integer|min:1|max:8',
-                'kelas_per_tingkat' => 'required|integer|min:1|max:10',
+                'kelas_per_angkatan' => 'required|integer|min:1|max:20',
                 'overwrite'         => 'nullable|boolean',
             ]);
 
-            $kelasPerTingkat = $request->integer('kelas_per_tingkat');
-            $maxTingkat = $request->integer('max_tingkat');
+            $kelasPerAngkatan = $request->integer('kelas_per_angkatan');
             $overwrite = $request->boolean('overwrite', false);
 
             $result = $overwrite
-                ? $this->service->generateForProdiWithOverwrite(
+                ? $this->service->generateForAngkatanWithOverwrite(
                     $request->prodi_id,
+                    $request->angkatan,
                     $request->tahun_akademik_id,
-                    $maxTingkat,
-                    $kelasPerTingkat
+                    $kelasPerAngkatan
                 )
-                : $this->service->generateForProdi(
+                : $this->service->generateForAngkatan(
                     $request->prodi_id,
+                    $request->angkatan,
                     $request->tahun_akademik_id,
-                    $maxTingkat,
-                    $kelasPerTingkat
+                    $kelasPerAngkatan
                 );
 
             $createdCount = $result['created']->count();
@@ -246,6 +252,62 @@ class KelasPerkuliahanController extends Controller
         return redirect()
             ->route('admin.kelas-perkuliahan.index')
             ->with('success', $message);
+    }
+
+    public function options(Request $request, MahasiswaClassAssignmentService $assignmentService)
+    {
+        $request->validate([
+            'prodi_id' => 'nullable|exists:prodis,id',
+            'angkatan' => 'nullable|digits:4',
+            'tahun_akademik_id' => 'nullable|exists:semesters,id',
+        ]);
+
+        $tahunAkademik = $assignmentService->resolveAcademicYear(
+            $request->filled('tahun_akademik_id') ? (int) $request->tahun_akademik_id : null
+        );
+
+        if (!$request->filled('prodi_id') || !$request->filled('angkatan')) {
+            return response()->json([
+                'data' => [],
+                'meta' => [
+                    'count' => 0,
+                    'angkatan' => null,
+                    'tahun_akademik_id' => $tahunAkademik?->id,
+                    'tahun_akademik_label' => $tahunAkademik?->display_label,
+                    'message' => 'Pilih prodi dan angkatan terlebih dahulu.',
+                ],
+            ]);
+        }
+
+        $options = $this->service->getStudentDropdownOptions(
+            (int) $request->prodi_id,
+            (string) $request->angkatan,
+            $tahunAkademik?->id
+        );
+
+        $missingAcademicYearCount = 0;
+        if ($options->isEmpty()) {
+            $missingAcademicYearCount = KelasPerkuliahan::query()
+                ->where('prodi_id', (int) $request->prodi_id)
+                ->where('angkatan', (string) $request->angkatan)
+                ->whereNull('tahun_akademik_id')
+                ->count();
+        }
+
+        return response()->json([
+            'data' => $options,
+            'meta' => [
+                'count' => $options->count(),
+                'angkatan' => (string) $request->angkatan,
+                'tahun_akademik_id' => $tahunAkademik?->id,
+                'tahun_akademik_label' => $tahunAkademik?->display_label,
+                'message' => $options->isEmpty()
+                    ? ($missingAcademicYearCount > 0
+                        ? 'Kelas untuk prodi dan angkatan ini ada, tetapi belum dihubungkan ke tahun akademik aktif. Silakan set Tahun Akademik di Master Data Kelas.'
+                        : 'Belum ada kelas tersedia, silakan buat di Master Data Kelas.')
+                    : 'Kelas difilter berdasarkan prodi, angkatan, dan tahun akademik.',
+            ],
+        ]);
     }
 
 }

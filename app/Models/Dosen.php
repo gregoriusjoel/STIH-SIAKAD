@@ -99,4 +99,14 @@ class Dosen extends Model
     {
         return $this->hasMany(DosenAttendance::class);
     }
+
+    public function prestasis()
+    {
+        return $this->morphMany(Prestasi::class, 'pengaju');
+    }
+
+    public function prestasiDampingan(): HasMany
+    {
+        return $this->hasMany(Prestasi::class, 'dosen_pendamping_id');
+    }
 }

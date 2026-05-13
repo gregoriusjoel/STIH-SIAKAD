@@ -32,7 +32,7 @@ class NilaiTugasController extends Controller
     {
         return Krs::with(['mahasiswa.user'])
             ->where('kelas_id', $kelasId)
-            ->whereIn('status', ['approved', 'disetujui'])
+            ->where('status', 'sudah submit')
             ->get()
             ->map(fn($krs) => $krs->mahasiswa)
             ->filter()
@@ -259,7 +259,7 @@ class NilaiTugasController extends Controller
             fputcsv($handle, ['Rekap Nilai Tugas']);
             fputcsv($handle, ['Mata Kuliah', $kelas->mataKuliah->nama_mk ?? $kelas->mataKuliah->nama ?? '-']);
             fputcsv($handle, ['Kode', $kelas->mataKuliah->kode_mk ?? '-']);
-            fputcsv($handle, ['Kelas', $kelas->section ?? $kelas->kode_kelas ?? '-']);
+            fputcsv($handle, ['Kelas', $kelas->kelasPerkuliahan?->kode_kelas ?? '-']);
             fputcsv($handle, ['Dosen', $kelas->dosen?->nama ?? '-']);
             fputcsv($handle, ['Tanggal Export', now()->format('d M Y H:i')]);
             fputcsv($handle, []);
@@ -319,7 +319,7 @@ class NilaiTugasController extends Controller
         $html .= '<tr><td colspan="' . (4 + $tugasList->count() + 2) . '" style="font-weight: bold; font-size: 16px; text-align: center;">Rekap Nilai Tugas</td></tr>';
         $html .= '<tr><td><b>Mata Kuliah</b></td><td colspan="' . (3 + $tugasList->count() + 2) . '">' . htmlspecialchars($kelas->mataKuliah->nama_mk ?? '-') . '</td></tr>';
         $html .= '<tr><td><b>Kode</b></td><td colspan="' . (3 + $tugasList->count() + 2) . '">' . htmlspecialchars($kelas->mataKuliah->kode_mk ?? '-') . '</td></tr>';
-        $html .= '<tr><td><b>Kelas</b></td><td colspan="' . (3 + $tugasList->count() + 2) . '">' . htmlspecialchars($kelas->section ?? '-') . '</td></tr>';
+        $html .= '<tr><td><b>Kelas</b></td><td colspan="' . (3 + $tugasList->count() + 2) . '">' . htmlspecialchars($kelas->kelasPerkuliahan?->kode_kelas ?? '-') . '</td></tr>';
         $html .= '<tr><td><b>Dosen</b></td><td colspan="' . (3 + $tugasList->count() + 2) . '">' . htmlspecialchars($kelas->dosen?->nama ?? '-') . '</td></tr>';
         $html .= '<tr><td><b>Tanggal Export</b></td><td colspan="' . (3 + $tugasList->count() + 2) . '">' . now()->format('d M Y H:i') . '</td></tr>';
         $html .= '<tr><td colspan="' . (4 + $tugasList->count() + 2) . '">&nbsp;</td></tr>';

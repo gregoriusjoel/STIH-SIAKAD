@@ -13,7 +13,7 @@
                     <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Rekap Nilai Tugas</p>
                     <h1 class="text-2xl font-extrabold text-gray-900">
                         {{ $kelas->mataKuliah->nama_mk ?? $kelas->mataKuliah->nama ?? '-' }}
-                        <span class="text-xl font-semibold text-red-700">— Kelas {{ $kelas->section ?? $kelas->kode_kelas ?? '' }}</span>
+                        <span class="text-xl font-semibold text-red-700">— {{ $kelas->resolved_kelas_name }}</span>
                     </h1>
                     <div class="flex flex-wrap gap-3 mt-2 text-sm text-gray-500">
                         <span><i class="fas fa-tag mr-1"></i>{{ $kelas->mataKuliah->kode_mk ?? '-' }}</span>

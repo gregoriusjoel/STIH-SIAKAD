@@ -127,23 +127,8 @@
             const pw = document.getElementById('pw');
             const pwc = document.getElementById('pw_confirm');
 
-            function applyDefault() {
-                if (!pw || !pwc || !roleSelect) return;
-                // only set defaults when fields are empty
-                if (pw.value.trim() !== '') return;
-                const role = roleSelect.value;
-                if (role === 'mahasiswa') {
-                    pw.value = 'mahasiswa123'; pwc.value = 'mahasiswa123';
-                } else if (role === 'dosen') {
-                    pw.value = 'dosen123'; pwc.value = 'dosen123';
-                } else if (role === 'parent') {
-                    pw.value = 'parent123'; pwc.value = 'parent123';
-                }
-            }
-
-            roleSelect?.addEventListener('change', applyDefault);
-            // apply on first load if role already selected
-            applyDefault();
+            // Note: Default password auto-fill removed for security (avoid weak default credentials).
+            // Admin must enter a password manually for every new user.
 
             // Toggle visibility for password fields
             const togglePwBtn = document.getElementById('togglePwBtn');

@@ -87,9 +87,9 @@
                             </div>
                         </div>
 
-                        {{-- Filter by Kelas/Section --}}
+                        {{-- Filter by Kode Kelas --}}
                         <div class="mb-5">
-                            <label class="text-[11px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2.5 block">KELAS</label>
+                            <label class="text-[11px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2.5 block">KODE KELAS</label>
                             <div class="flex flex-wrap gap-2">
                                 <template x-for="sec in availableSections" :key="sec">
                                     <button @click="toggleSection(sec)"
@@ -122,16 +122,16 @@
         <div id="classGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 {{ count($classes) === 0 ? '!grid-cols-1 md:!grid-cols-1 lg:!grid-cols-1' : '' }}">
             @forelse($classes as $class)
                 @php
-                    $searchableText = strtolower($class['name'] . ' ' . $class['code'] . ' ' . $class['section'] . ' ' . $class['day'] . ' ' . ($class['time'] ?? ''));
+                    $searchableText = strtolower($class['name'] . ' ' . $class['code'] . ' ' . $class['kode_kelas'] . ' ' . $class['day'] . ' ' . ($class['time'] ?? ''));
                 @endphp
                 <div class="kelas-card bg-white dark:bg-[#1a1d2e] rounded-2xl border border-gray-100 dark:border-slate-800 p-6 xl:p-8 flex flex-col h-full shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-[#8B1538]/20 transition-all duration-300 group relative"
                     data-search="{{ $searchableText }}"
                     data-day="{{ $class['day'] }}"
-                    data-section="{{ $class['section'] }}">
+                    data-section="{{ $class['kode_kelas'] }}">
                     
-                    <!-- Section Badge -->
-                    <div class="w-7 h-7 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-[#8B1538] dark:text-rose-400 font-bold text-[10px] mb-5 shadow-sm border border-rose-100 dark:border-rose-500/20">
-                        {{ $class['section'] }}
+                    <!-- Kelas Badge -->
+                    <div class="w-fit min-w-[2.25rem] h-8 px-3 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-[#8B1538] dark:text-rose-400 font-bold text-[11px] mb-5 shadow-sm border border-rose-100 dark:border-rose-500/20">
+                        {{ $class['kode_kelas'] }}
                     </div>
 
                     <!-- Course Info -->

@@ -25,10 +25,9 @@ class KelasMataKuliahController extends Controller
             
         $activeKelas = $activeJadwals->pluck('kelas')->filter();
 
-        // Build normalized combination keys: mata_kuliah_id + section (lowercase, trimmed)
+        // Build normalized combination keys: mata_kuliah_id + kelas_perkuliahan_id
         $activeCombinations = $activeKelas->map(function ($k) {
-            $section = strtolower(trim((string) $k->section));
-            return $k->mata_kuliah_id . '-' . $section;
+            return $k->mata_kuliah_id . '-' . $k->kelas_perkuliahan_id;
         })->unique()->toArray();
 
         // Show classes that have active jadwal mapping OR own schedule fields.
@@ -47,12 +46,9 @@ class KelasMataKuliahController extends Controller
 
                 // Find matching Jadwal for this MK and Class code mapping back via Kelas
                 $matchingJadwal = $activeJadwals->first(function ($jadwal) use ($kmk) {
-                      $jadwalSection = strtolower(trim((string) ($jadwal->kelas->section ?? '')));
-                      $kmkClassCode = strtolower(trim((string) $kmk->kode_kelas));
-
                     return $jadwal->kelas && 
                            $jadwal->kelas->mata_kuliah_id == $kmk->mata_kuliah_id && 
-                          $jadwalSection === $kmkClassCode;
+                           $jadwal->kelas->kelas_perkuliahan_id == $kmk->kelas_perkuliahan_id;
                 });
                 
                 $kmk->jadwal = $matchingJadwal;
@@ -261,16 +257,16 @@ class KelasMataKuliahController extends Controller
             $tahunAjaran = $semester->tahun_ajaran ?? (date('Y') . '/' . (date('Y') + 1));
             $semesterType = $semester->nama_semester ?? null;
 
-            // Try to find existing Kelas (kelas table) matching mata_kuliah_id + section
+            // Try to find existing Kelas (kelas table) matching mata_kuliah_id + kelas_perkuliahan_id
             $kelasForJadwal = Kelas::where('mata_kuliah_id', $mapped['mata_kuliah_id'])
-                ->where('section', $mapped['kode_kelas'])
+                ->where('kelas_perkuliahan_id', $created->kelas_perkuliahan_id)
                 ->first();
 
             if (!$kelasForJadwal) {
                 $kelasForJadwal = Kelas::create([
                     'mata_kuliah_id' => $mapped['mata_kuliah_id'],
                     'dosen_id' => $userDosenId,
-                    'section' => $mapped['kode_kelas'],
+                    'kelas_perkuliahan_id' => $created->kelas_perkuliahan_id,
                     'kapasitas' => $mapped['kapasitas'] ?? 40,
                     'tahun_ajaran' => $tahunAjaran,
                     'semester_type' => $semesterType ?? 'Ganjil',
@@ -359,14 +355,14 @@ class KelasMataKuliahController extends Controller
 
             // Find or create kelas (kelas table)
             $kelasForJadwal = Kelas::where('mata_kuliah_id', $mapped['mata_kuliah_id'])
-                ->where('section', $mapped['kode_kelas'])
+                ->where('kelas_perkuliahan_id', $kelasMataKuliah->kelas_perkuliahan_id)
                 ->first();
 
             if (!$kelasForJadwal) {
                 $kelasForJadwal = Kelas::create([
                     'mata_kuliah_id' => $mapped['mata_kuliah_id'],
                     'dosen_id' => $userDosenId,
-                    'section' => $mapped['kode_kelas'],
+                    'kelas_perkuliahan_id' => $kelasMataKuliah->kelas_perkuliahan_id,
                     'kapasitas' => $mapped['kapasitas'] ?? 40,
                     'tahun_ajaran' => $tahunAjaran,
                     'semester_type' => $semesterType ?? 'Ganjil',
@@ -397,7 +393,7 @@ class KelasMataKuliahController extends Controller
         // Find and delete related Kelas and Jadwal records
         // This ensures the class no longer appears in lecturer's "Daftar Kelas Ajar"
         $relatedKelas = Kelas::where('mata_kuliah_id', $kelasMataKuliah->mata_kuliah_id)
-            ->where('section', $kelasMataKuliah->kode_kelas)
+            ->where('kelas_perkuliahan_id', $kelasMataKuliah->kelas_perkuliahan_id)
             ->first();
         
         if ($relatedKelas) {
@@ -507,9 +503,9 @@ class KelasMataKuliahController extends Controller
         // Get students from KRS (checking both specific KMK and generic Kelas)
         $students = \App\Models\Krs::where(function($q) use ($id, $kelasMataKuliah) {
                 $q->where('kelas_mata_kuliah_id', $id);
-                // Fallback to finding students linked to any "Kelas" that matches this MK and section
+                // Fallback to finding students linked to any "Kelas" that matches this MK and KP
                 $kelasId = \App\Models\Kelas::where('mata_kuliah_id', $kelasMataKuliah->mata_kuliah_id)
-                    ->where('section', $kelasMataKuliah->kode_kelas)
+                    ->where('kelas_perkuliahan_id', $kelasMataKuliah->kelas_perkuliahan_id)
                     ->value('id');
                 if ($kelasId) {
                     $q->orWhere('kelas_id', $kelasId);

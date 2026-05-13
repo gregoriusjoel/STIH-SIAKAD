@@ -63,7 +63,7 @@
                                 </span>
                             @endif
                         </div>
-                        <p class="text-gray-500">{{ $kelas->mataKuliah->nama_mk }} - Kelas {{ $kelas->section }}</p>
+                        <p class="text-gray-500">{{ $kelas->mataKuliah->nama_mk }} - {{ $kelas->resolved_kelas_name }}</p>
                     </div>
                 </div>
 
@@ -1364,8 +1364,8 @@
             });
         @endif
     </script>
-    {{-- TinyMCE CDN --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {{-- TinyMCE di-bundle lokal via Vite (akses lewat window.tinymce). --}}
+    @vite('resources/js/tinymce.js')
     <script>
         document.addEventListener('alpine:init', () => {
             tinymce.init({

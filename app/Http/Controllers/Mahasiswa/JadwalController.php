@@ -28,7 +28,7 @@ class JadwalController extends Controller
             });
         }
 
-        $krsData = $krsQuery->whereIn('status', ['approved', 'disetujui', 'sudah submit'])
+        $krsData = $krsQuery->where('status', 'sudah submit')
             ->where('ambil_mk', 'ya')
             ->get();
         
@@ -60,7 +60,7 @@ class JadwalController extends Controller
                     'kode_mk' => $kelas->mataKuliah->kode_mk ?? '-',
                     'sks' => $kelas->mataKuliah->sks ?? 0,
                     'dosen' => $kelas->dosen->user->name ?? ($kelas->dosen->nama ?? '-'),
-                    'kelas' => $kelas->section ?? '-',
+                    'kelas' => $kelas->resolved_kelas_name,
                     'jam_mulai' => $jadwal->jam_mulai,
                     'jam_selesai' => $jadwal->jam_selesai,
                     'ruangan' => $jadwal->ruangan ?? 'Online'

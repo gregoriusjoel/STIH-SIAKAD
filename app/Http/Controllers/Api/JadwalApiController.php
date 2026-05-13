@@ -14,7 +14,7 @@ class JadwalApiController extends Controller
      */
     public function pending(): JsonResponse
     {
-        $pendingJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
+        $pendingJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen', 'kelas.kelasPerkuliahan'])
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get()
@@ -25,7 +25,7 @@ class JadwalApiController extends Controller
                     'mata_kuliah' => $jadwal->kelas->mataKuliah->nama_mk,
                     'kode' => $jadwal->kelas->mataKuliah->kode,
                     'sks' => $jadwal->kelas->mataKuliah->sks,
-                    'section' => $jadwal->kelas->section,
+                    'nama_kelas' => $jadwal->kelas->kelasPerkuliahan?->nama_kelas ?? $jadwal->kelas->kelasPerkuliahan?->kode_kelas ?? '-',
                     'dosen' => $jadwal->kelas->dosen->name,
                     'hari' => $jadwal->hari,
                     'jam_mulai' => $jadwal->jam_mulai,
@@ -48,7 +48,7 @@ class JadwalApiController extends Controller
      */
     public function approved(): JsonResponse
     {
-        $approvedJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen', 'approvedBy'])
+        $approvedJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen', 'kelas.kelasPerkuliahan', 'approvedBy'])
             ->where('status', 'approved')
             ->orderBy('approved_at', 'desc')
             ->get()
@@ -57,7 +57,7 @@ class JadwalApiController extends Controller
                     'id' => $jadwal->id,
                     'mata_kuliah' => $jadwal->kelas->mataKuliah->nama_mk,
                     'kode' => $jadwal->kelas->mataKuliah->kode,
-                    'section' => $jadwal->kelas->section,
+                    'nama_kelas' => $jadwal->kelas->kelasPerkuliahan?->nama_kelas ?? $jadwal->kelas->kelasPerkuliahan?->kode_kelas ?? '-',
                     'dosen' => $jadwal->kelas->dosen->name,
                     'hari' => $jadwal->hari,
                     'jam_mulai' => $jadwal->jam_mulai,
@@ -135,13 +135,12 @@ class JadwalApiController extends Controller
     }
 
     /**
-     * Assign room and section to an approved schedule (activates the schedule)
+     * Assign room to an approved schedule (activates the schedule)
      */
     public function assignRoom(Request $request, int $id): JsonResponse
     {
         $request->validate([
             'ruangan' => 'required|string|max:100',
-            'section' => 'required|string|max:10',
         ]);
 
         $jadwal = Jadwal::with('kelas')->findOrFail($id);
@@ -153,11 +152,6 @@ class JadwalApiController extends Controller
             ], 400);
         }
 
-        // Update kelas section
-        $jadwal->kelas->update([
-            'section' => $request->input('section'),
-        ]);
-
         // Update jadwal
         $jadwal->update([
             'ruangan' => $request->input('ruangan'),
@@ -166,7 +160,7 @@ class JadwalApiController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Kelas dan ruangan berhasil di-assign. Jadwal sekarang aktif.',
+            'message' => 'Ruangan berhasil di-assign. Jadwal sekarang aktif.',
             'data' => $jadwal->fresh(['kelas.mataKuliah', 'kelas.dosen']),
         ]);
     }
@@ -176,7 +170,7 @@ class JadwalApiController extends Controller
      */
     public function active(): JsonResponse
     {
-        $activeJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen'])
+        $activeJadwals = Jadwal::with(['kelas.mataKuliah', 'kelas.dosen', 'kelas.kelasPerkuliahan'])
             ->where('status', 'active')
             ->orderBy('hari')
             ->orderBy('jam_mulai')
@@ -188,7 +182,7 @@ class JadwalApiController extends Controller
                     'kode' => $jadwal->kelas->mataKuliah->kode,
                     'sks' => $jadwal->kelas->mataKuliah->sks,
                     'jenis' => $jadwal->kelas->mataKuliah->jenis,
-                    'section' => $jadwal->kelas->section,
+                    'nama_kelas' => $jadwal->kelas->kelasPerkuliahan?->nama_kelas ?? $jadwal->kelas->kelasPerkuliahan?->kode_kelas ?? '-',
                     'dosen' => $jadwal->kelas->dosen->name,
                     'hari' => $jadwal->hari,
                     'jam_mulai' => $jadwal->jam_mulai,

@@ -64,7 +64,7 @@ class KrsController extends Controller
     public function updateStatus(Request $request, Krs $kr)
     {
         $request->validate([
-            'status' => 'required|in:pending,disetujui,ditolak',
+            'status' => 'required|in:pending,sudah submit,ditolak',
             'keterangan' => 'nullable|string',
         ]);
 

@@ -24,13 +24,15 @@ class KelasController extends Controller
         // Fetch approved KRS records for the student
         // Using 'with' to eager load relationships and avoid N+1 problem
         $krsRecords = Krs::where('mahasiswa_id', $mahasiswa->id)
-            ->whereIn('status', ['approved', 'disetujui', 'sudah submit'])
+            ->where('status', 'sudah submit')
             ->with([
                 'kelas',
                 'kelas.dosen',
                 'mataKuliah',
                 'kelasMataKuliah',
                 'kelasMataKuliah.dosen',
+                'kelas.kelasPerkuliahan',
+                'kelasMataKuliah.kelasPerkuliahan',
                 'kelas.jadwals' => function ($q) {
                     $q->where('status', 'active');
                 }
@@ -55,7 +57,7 @@ class KelasController extends Controller
                 'kode_mk' => $krs->mataKuliah->kode_mk,
                 'sks' => $krs->mataKuliah->sks,
                 'semester' => $krs->mataKuliah->semester,
-                'section' => $kelas ? $kelas->section : '-',
+                'kode_kelas' => $kelas ? ($kelas->kelasPerkuliahan?->nama_kelas ?? $kelas->kelasPerkuliahan?->kode_kelas ?? '-') : '-',
                 'dosen' => $dosen ? $dosen->nama : 'Belum ditentukan',
                 'hari' => $jadwal ? $jadwal->hari : '-',
                 'jam' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',
@@ -79,12 +81,13 @@ class KelasController extends Controller
         // Verify student has APPROVED KRS for this class
         $krs = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->where('kelas_id', $id)
-            ->whereIn('status', ['approved', 'disetujui', 'sudah submit'])
+            ->where('status', 'sudah submit')
             ->firstOrFail();
 
         $kelas = $krs->kelas()->with([
             'mataKuliah',
             'dosen',
+            'kelasPerkuliahan',
             'jadwals' => function ($q) {
                 $q->where('status', 'active');
             }
@@ -216,7 +219,7 @@ class KelasController extends Controller
             // Fallback if class_mata_kuliah_id in KRS might be null, try to find via Kelas
             if (!$pertemuanRecord && $kelas) {
                  $kmk = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-                    ->where('kode_kelas', $kelas->section)
+                    ->where('kode_kelas', $kelas->kelasPerkuliahan?->kode_kelas)
                     ->first();
                  if ($kmk) {
                     $pertemuanRecord = \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $kmk->id)
@@ -269,7 +272,7 @@ class KelasController extends Controller
             'code' => $kelas->mataKuliah->kode_mk,
             'sks' => $kelas->mataKuliah->sks,
             'semester' => $kelas->mataKuliah->semester,
-            'section' => $kelas->section,
+            'kode_kelas' => $kelas->kelasPerkuliahan?->nama_kelas ?? $kelas->kelasPerkuliahan?->kode_kelas ?? '-',
             'dosen' => $kelas->dosen->nama ?? 'Belum ditentukan',
             'day' => $jadwal ? $jadwal->hari : '-',
             'time' => $jadwal ? substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5) : '-',

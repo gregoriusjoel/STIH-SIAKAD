@@ -498,12 +498,8 @@
     </div>
 
     @push('styles')
-        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
-        <!-- PDF.js CDN -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-        <script>     // Set worker
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-        </script>
+        {{-- FullCalendar + pdf.js di-bundle lokal via Vite (eliminasi cross-domain script + SRI requirement). --}}
+        @vite(['resources/js/fullcalendar.js', 'resources/js/pdfjs.js'])
         <style>
             /* Custom Scrollbar for Modal */
             .custom-scrollbar::-webkit-scrollbar {
@@ -919,7 +915,7 @@
     @endpush
 
     @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+        {{-- FullCalendar JS sudah di-load via @vite di @push('styles') di atas; akses lewat window.FullCalendar.Calendar. --}}
         <script>
             let calendar;
 

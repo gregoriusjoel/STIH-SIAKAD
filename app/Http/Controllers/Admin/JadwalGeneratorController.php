@@ -19,9 +19,9 @@ use App\Services\ScheduleAutoGeneratorService;
 class JadwalGeneratorController extends Controller
 {
     private $availableHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    
+
     private $ruangList = []; // populated from `ruangans` table at runtime
-    
+
     private ScheduleAutoGeneratorService $scheduleService;
 
     /**
@@ -66,45 +66,45 @@ class JadwalGeneratorController extends Controller
     {
         $combinations = [];
         $count = $jamPerkuliahans->count();
-        
+
         // Need at least $requiredSks slots to form a combination
         if ($count < $requiredSks) {
             return $combinations;
         }
-        
+
         $slots = $jamPerkuliahans->toArray();
-        
+
         // Try each starting position
         for ($i = 0; $i <= $count - $requiredSks; $i++) {
             $isConsecutive = true;
             $selectedSlots = [];
-            
+
             // Check if next N slots are consecutive
             for ($j = 0; $j < $requiredSks; $j++) {
                 $currentSlot = $slots[$i + $j];
                 $selectedSlots[] = $currentSlot;
-                
+
                 // Check if this slot connects to the next one (end time = next start time)
                 if ($j < $requiredSks - 1) {
                     $nextSlot = $slots[$i + $j + 1];
-                    
+
                     $currentEnd = date('H:i', strtotime($currentSlot['jam_selesai']));
                     $nextStart = date('H:i', strtotime($nextSlot['jam_mulai']));
-                    
+
                     if ($currentEnd !== $nextStart) {
                         $isConsecutive = false;
                         break;
                     }
                 }
             }
-            
+
             // If all slots are consecutive, create combined slot
             if ($isConsecutive && count($selectedSlots) === $requiredSks) {
                 $firstSlot = $selectedSlots[0];
                 $lastSlot = $selectedSlots[count($selectedSlots) - 1];
-                
+
                 $jamKeList = array_map(fn($s) => $s['jam_ke'], $selectedSlots);
-                
+
                 $combinations[] = [
                     'jam_mulai' => date('H:i', strtotime($firstSlot['jam_mulai'])),
                     'jam_selesai' => date('H:i', strtotime($lastSlot['jam_selesai'])),
@@ -114,7 +114,7 @@ class JadwalGeneratorController extends Controller
                 ];
             }
         }
-        
+
         return $combinations;
     }
 
@@ -161,9 +161,11 @@ class JadwalGeneratorController extends Controller
 
             // Still not found? Return error
             if (!$semester) {
-                return redirect()->back()->with('error', 
-                    'Semester ' . $request->semester . ' ' . $request->tahun_ajaran . 
-                    ' tidak ditemukan. Silakan buat semester terlebih dahulu di menu Master Semester.');
+                return redirect()->back()->with(
+                    'error',
+                    'Semester ' . $request->semester . ' ' . $request->tahun_ajaran .
+                    ' tidak ditemukan. Silakan buat semester terlebih dahulu di menu Master Semester.'
+                );
             }
 
             Log::info("Auto-generating jadwal for semester_id: {$semester->id} ({$semester->nama_semester} {$semester->tahun_ajaran})");
@@ -180,11 +182,8 @@ class JadwalGeneratorController extends Controller
                 // Delete both approved schedules and proposals for this period
                 \App\Models\Jadwal::whereIn('kelas_id', $kelasIdsForPeriod)->delete();
                 \App\Models\JadwalProposal::whereIn('kelas_id', $kelasIdsForPeriod)->delete();
-                
-                // Delete kelas_mata_kuliahs for this semester
-                \App\Models\KelasMataKuliah::where('semester_id', $semester->id)->delete();
-                
-                Log::info("Deleted old schedules, proposals, and kelas_mata_kuliahs for semester_id: {$semester->id}");
+
+                Log::info("Deleted old schedules and proposals for semester_id: {$semester->id}");
             }
 
             $generated = 0;
@@ -208,37 +207,38 @@ class JadwalGeneratorController extends Controller
                 ->get();
 
             $kelasMataKuliahs = collect();
-            
+
             foreach ($dosens as $dosen) {
                 // Parse JSON mata_kuliah_ids
                 $mkIds = json_decode($dosen->mata_kuliah_ids, true);
-                
+
                 if (!is_array($mkIds) || empty($mkIds)) {
                     continue;
                 }
-                
+
                 // Untuk setiap mata kuliah yang diampu dosen ini
                 foreach ($mkIds as $mkId) {
                     // Ambil data mata kuliah
                     $mataKuliah = DB::table('mata_kuliahs')->where('id', $mkId)->first();
-                    
+
                     if (!$mataKuliah) {
                         continue;
                     }
-                    
+
                     // Cek apakah sudah ada di kelas_mata_kuliahs (untuk ambil preferensi)
                     $kmk = DB::table('kelas_mata_kuliahs')
                         ->where('mata_kuliah_id', $mkId)
                         ->where('dosen_id', $dosen->id)
                         ->first();
-                    
+
                     // Buat object untuk generate
-                    $kelasMataKuliahs->push((object)[
+                    $kelasMataKuliahs->push((object) [
                         'id' => $kmk->id ?? null,
                         'mata_kuliah_id' => $mkId,
                         'dosen_id' => $dosen->id,
-                        'kode_kelas' => $kmk->kode_kelas ?? 'A',
+                        'kode_kelas' => $kmk->kode_kelas ?? '01',
                         'kapasitas' => $kmk->kapasitas ?? 40,
+                        'kelas_perkuliahan_id' => $kmk->kelas_perkuliahan_id ?? null,
                         'ruang' => $kmk->ruang ?? null,
                         'hari' => $kmk->hari ?? null,
                         'jam_mulai' => $kmk->jam_mulai ?? null,
@@ -250,10 +250,10 @@ class JadwalGeneratorController extends Controller
                     ]);
                 }
             }
-            
+
             // Sort classes by priority (limited availability first, high SKS first)
             $sortedClasses = $this->scheduleService->sortClassesByPriority($kelasMataKuliahs->toArray());
-            
+
             // Tracking untuk prevent duplicate dalam satu batch
             $processedCombinations = [];
 
@@ -265,13 +265,13 @@ class JadwalGeneratorController extends Controller
                     continue;
                 }
                 $processedCombinations[$combinationKey] = true;
-                
+
                 // Data sudah difilter dari kelas_mata_kuliahs dengan dosen_id
                 // Jika ada di sini, berarti dosen memang sudah di-assign untuk mengajar mata kuliah ini
                 // Tidak perlu validasi mata_kuliah_ids lagi
 
-                $proposal = $this->generateJadwalForMataKuliah($kmk, $request->semester, $request->tahun_ajaran);
-                
+                $proposal = $this->generateJadwalForMataKuliah($kmk, $request->semester, $request->tahun_ajaran, $semester->id);
+
                 if ($proposal) {
                     $generated++;
                 } else {
@@ -295,7 +295,7 @@ class JadwalGeneratorController extends Controller
                     ->whereIn('id', $dosenIds)
                     ->get()
                     ->keyBy('id');
-                
+
                 $dosenFallbackList = [];
                 foreach ($stats['dosen_fallbacks'] as $dosenId => $count) {
                     $dosen = $dosens->get($dosenId);
@@ -342,7 +342,7 @@ class JadwalGeneratorController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             // Log error to database (if table exists)
             try {
                 \App\Models\JadwalGenerateLog::create([
@@ -355,35 +355,61 @@ class JadwalGeneratorController extends Controller
             } catch (\Exception $logError) {
                 Log::warning('Could not log jadwal generation error: ' . $logError->getMessage());
             }
-            
+
             Log::error('Error generating jadwal: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal generate jadwal: ' . $e->getMessage());
         }
     }
 
-    private function generateJadwalForMataKuliah($kmk, $semester, $tahunAjaran)
+    private function generateJadwalForMataKuliah($kmk, $semester, $tahunAjaran, $semesterId)
     {
-        // Determine kelas_id: try to map from kode_kelas -> section
-        $section = null;
-        if (!empty($kmk->kode_kelas)) {
-            $parts = explode('-', $kmk->kode_kelas);
-            $section = end($parts);
+        // Fetch mata kuliah early to get prodi_id context
+        $mataKuliah = \App\Models\MataKuliah::find($kmk->mata_kuliah_id);
+        $prodiId = $mataKuliah?->prodi_id;
+
+        // Determine kelas_perkuliahan_id
+        $kelasPerkuliahanId = $kmk->kelas_perkuliahan_id ?? null;
+
+        if (!$kelasPerkuliahanId) {
+            // Try to map from kode_kelas
+            $section = null;
+            if (!empty($kmk->kode_kelas)) {
+                $parts = explode('-', $kmk->kode_kelas);
+                $section = end($parts);
+            }
+
+            // Find KelasPerkuliahan for this semester, prodi, and section
+            $kp = \App\Models\KelasPerkuliahan::where('tahun_akademik_id', $semesterId)
+                ->when($prodiId, function($q) use ($prodiId) {
+                    return $q->where('prodi_id', $prodiId);
+                })
+                ->where('kode_kelas', $section ?? '01')
+                ->first();
+            
+            $kelasPerkuliahanId = $kp?->id;
+
+            // Last resort fallback: if no specific code match, pick the first class in this semester and prodi
+            if (!$kelasPerkuliahanId) {
+                $kpFallback = \App\Models\KelasPerkuliahan::where('tahun_akademik_id', $semesterId)
+                    ->when($prodiId, function($q) use ($prodiId) {
+                        return $q->where('prodi_id', $prodiId);
+                    })
+                    ->first();
+                $kelasPerkuliahanId = $kpFallback?->id;
+            }
         }
 
-        $kelasModel = null;
-        if ($section) {
-            $kelasModel = Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
-                ->where('section', $section)
-                ->where('tahun_ajaran', $tahunAjaran)
-                ->first();
-        }
+        $kelasModel = Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
+            ->where('kelas_perkuliahan_id', $kelasPerkuliahanId)
+            ->where('tahun_ajaran', $tahunAjaran)
+            ->first();
 
         // Jika tidak ada, buat kelas baru menggunakan data dari kmk
         if (!$kelasModel) {
             $kelasModel = Kelas::create([
                 'mata_kuliah_id' => $kmk->mata_kuliah_id,
                 'dosen_id' => $kmk->dosen_id,
-                'section' => $section ?? ($kmk->kode_kelas ?? 'A'),
+                'kelas_perkuliahan_id' => $kelasPerkuliahanId,
                 'kapasitas' => $kmk->kapasitas ?? 30,
                 'tahun_ajaran' => $tahunAjaran,
                 'semester_type' => $semester,
@@ -397,22 +423,22 @@ class JadwalGeneratorController extends Controller
             ->where('dosen_id', $kmk->dosen_id)
             ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
             ->first();
-            
+
         if ($existingProposal) {
-            Log::info("Skipping generation: existing proposal (status: {$existingProposal->status}) for {$kmk->mata_kuliah_nama} - {$kelasModel->section}");
+            Log::info("Skipping generation: existing proposal (status: {$existingProposal->status}) for {$kmk->mata_kuliah_nama} - " . ($kelasModel->resolved_kelas_name ?? '-'));
             return null;
         }
-        
+
         // Also check if jadwal already exists
         $existingJadwal = Jadwal::whereHas('kelas', function ($query) use ($kmk, $tahunAjaran) {
-                $query->where('mata_kuliah_id', $kmk->mata_kuliah_id)
-                      ->where('dosen_id', $kmk->dosen_id)
-                      ->where('tahun_ajaran', $tahunAjaran);
-            })
+            $query->where('mata_kuliah_id', $kmk->mata_kuliah_id)
+                ->where('dosen_id', $kmk->dosen_id)
+                ->where('tahun_ajaran', $tahunAjaran);
+        })
             ->exists();
-            
+
         if ($existingJadwal) {
-            Log::info("Skipping generation: jadwal already exists for {$kmk->mata_kuliah_nama} - {$kelasModel->section}");
+            Log::info("Skipping generation: jadwal already exists for {$kmk->mata_kuliah_nama} - " . ($kelasModel->resolved_kelas_name ?? '-'));
             return null;
         }
 
@@ -443,22 +469,21 @@ class JadwalGeneratorController extends Controller
         }
 
         // Otherwise try available slots with availability-aware scheduling
-        // Fetch mata kuliah to get SKS
-        $mataKuliah = \App\Models\MataKuliah::find($kmk->mata_kuliah_id);
+        // Fetch mata kuliah to get SKS (already fetched above)
         $requiredSks = $mataKuliah ? $mataKuliah->sks : 1;
-        
+
         // Get candidate slots from service (prioritizes availability)
         $slotData = $this->scheduleService->getCandidateSlots($kmk->dosen_id, $requiredSks);
-        
+
         if (empty($slotData['slots'])) {
             Log::warning("No slots available for {$requiredSks} SKS - {$kmk->mata_kuliah_nama}");
             $this->scheduleService->recordFailure();
             return null;
         }
-        
+
         // Try to assign class to a slot
         $assignment = $this->scheduleService->tryAssignClass($kmk, $slotData, $slotData['source']);
-        
+
         if (!$assignment) {
             Log::warning("Failed to assign slot (all slots have conflicts or no room) for {$kmk->mata_kuliah_nama} - {$kmk->kode_kelas}");
             $this->scheduleService->recordFailure();
@@ -475,8 +500,8 @@ class JadwalGeneratorController extends Controller
             'jam_selesai' => $assignment['jam_selesai'],
             'ruangan' => $assignment['ruangan'],
             'status' => 'pending_dosen',
-            'catatan_generate' => $assignment['is_outside_availability'] 
-                ? "Auto generated (fallback: {$assignment['outside_reason']})" 
+            'catatan_generate' => $assignment['is_outside_availability']
+                ? "Auto generated (fallback: {$assignment['outside_reason']})"
                 : 'Auto generated (sesuai ketersediaan dosen)',
             'is_outside_availability' => $assignment['is_outside_availability'],
             'outside_reason' => $assignment['outside_reason'],
@@ -486,7 +511,7 @@ class JadwalGeneratorController extends Controller
 
         // Record statistics
         $this->scheduleService->recordSuccess(
-            $assignment['is_outside_availability'], 
+            $assignment['is_outside_availability'],
             $assignment['outside_reason'],
             $kmk->dosen_id
         );
@@ -510,11 +535,11 @@ class JadwalGeneratorController extends Controller
             ->where('jadwals.hari', $hari)
             ->where(function ($query) use ($jamMulai, $jamSelesai) {
                 $query->whereBetween('jadwals.jam_mulai', [$jamMulai, $jamSelesai])
-                      ->orWhereBetween('jadwals.jam_selesai', [$jamMulai, $jamSelesai])
-                      ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
-                          $q->where('jadwals.jam_mulai', '<=', $jamMulai)
+                    ->orWhereBetween('jadwals.jam_selesai', [$jamMulai, $jamSelesai])
+                    ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
+                        $q->where('jadwals.jam_mulai', '<=', $jamMulai)
                             ->where('jadwals.jam_selesai', '>=', $jamSelesai);
-                      });
+                    });
             })
             ->exists();
 
@@ -523,11 +548,11 @@ class JadwalGeneratorController extends Controller
             ->where('hari', $hari)
             ->where(function ($query) use ($jamMulai, $jamSelesai) {
                 $query->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
-                      ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
-                      ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
-                          $q->where('jam_mulai', '<=', $jamMulai)
+                    ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
+                    ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
+                        $q->where('jam_mulai', '<=', $jamMulai)
                             ->where('jam_selesai', '>=', $jamSelesai);
-                      });
+                    });
             })
             ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
             ->exists();
@@ -538,23 +563,23 @@ class JadwalGeneratorController extends Controller
     private function findAvailableRoom($hari, $jamMulai, $jamSelesai, $randomize = false)
     {
         $ruangList = $this->ruangList;
-        
+
         // Randomize ruangan jika diminta untuk variasi
         if ($randomize) {
             shuffle($ruangList);
         }
-        
+
         foreach ($ruangList as $ruang) {
             // Cek apakah ruang sudah terpakai di jadwal aktif
             $ruangTerpakai = Jadwal::where('hari', $hari)
                 ->where('ruangan', $ruang)
                 ->where(function ($query) use ($jamMulai, $jamSelesai) {
                     $query->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
-                          ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
-                          ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
-                              $q->where('jam_mulai', '<=', $jamMulai)
+                        ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
+                        ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
+                            $q->where('jam_mulai', '<=', $jamMulai)
                                 ->where('jam_selesai', '>=', $jamSelesai);
-                          });
+                        });
                 })
                 ->exists();
 
@@ -563,11 +588,11 @@ class JadwalGeneratorController extends Controller
                 ->where('ruangan', $ruang)
                 ->where(function ($query) use ($jamMulai, $jamSelesai) {
                     $query->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
-                          ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
-                          ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
-                              $q->where('jam_mulai', '<=', $jamMulai)
+                        ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
+                        ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
+                            $q->where('jam_mulai', '<=', $jamMulai)
                                 ->where('jam_selesai', '>=', $jamSelesai);
-                          });
+                        });
                 })
                 ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
                 ->exists();
@@ -584,16 +609,16 @@ class JadwalGeneratorController extends Controller
     {
         try {
             $proposal = JadwalProposal::findOrFail($id);
-            
+
             // Hanya bisa hapus jika masih pending
             if (!in_array($proposal->status, ['pending_dosen', 'rejected_dosen', 'rejected_admin'])) {
                 return redirect()->back()->with('error', 'Tidak dapat menghapus pengajuan dengan status ini');
             }
-            
+
             $proposal->delete();
-            
+
             return redirect()->back()->with('success', 'Pengajuan jadwal berhasil dihapus');
-            
+
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal menghapus pengajuan: ' . $e->getMessage());
         }
@@ -612,7 +637,7 @@ class JadwalGeneratorController extends Controller
                 ->delete();
 
             return redirect()->back()->with('success', "{$deleted} pengajuan jadwal berhasil dihapus");
-            
+
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal menghapus pengajuan: ' . $e->getMessage());
         }

@@ -43,7 +43,7 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">Materi {{ $meeting['label'] }}</h1>
-                        <p class="text-gray-500">{{ $kelas->mataKuliah->nama_mk }} - Kelas {{ $kelas->section }}</p>
+                        <p class="text-gray-500">{{ $kelas->mataKuliah->nama_mk }} - {{ $kelas->resolved_kelas_name }}</p>
                     </div>
                 </div>
                 <div class="flex gap-3">
@@ -233,7 +233,7 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{{-- SweetAlert2 sudah di-bundle global via Vite sebagai window.Swal. --}}
 <script>
     // Flash message handling
     @if(session('success'))

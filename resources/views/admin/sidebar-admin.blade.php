@@ -332,6 +332,29 @@
                 @endif
             </li>
             <li>
+                @if(Route::has('admin.prestasi.index'))
+                    <a href="{{ route('admin.prestasi.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.prestasi.*') ? 'active' : '' }}">
+                        <i class="fas fa-trophy w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Manajemen Prestasi</span>
+                        @php
+                            $pendingPrestasiCount = 0;
+                            try {
+                                if (Schema::hasTable('prestasis')) {
+                                    $pendingPrestasiCount = \App\Models\Prestasi::where('status', \App\Models\Prestasi::STATUS_DIAJUKAN)->count();
+                                }
+                            } catch (\Exception $e) {
+                                $pendingPrestasiCount = 0;
+                            }
+                        @endphp
+                        @if($pendingPrestasiCount > 0)
+                            <span class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                {{ $pendingPrestasiCount }}
+                            </span>
+                        @endif
+                    </a>
+                @endif
+            </li>
+            <li>
                 @if(Route::has('admin.skripsi.index'))
                     <a href="{{ route('admin.skripsi.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.skripsi.*') ? 'active' : '' }}">
                         <i class="fas fa-graduation-cap w-5 mr-3"></i>
@@ -344,6 +367,13 @@
                                 {{ $pendingSkripsiCount }}
                             </span>
                         @endif
+                    </a>
+                @endif
+            <li>
+                @if(Route::has('admin.hasil-kuisioner.index'))
+                    <a href="{{ route('admin.hasil-kuisioner.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.hasil-kuisioner.*') ? 'active' : '' }}">
+                        <i class="fas fa-poll w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Hasil Kuisioner</span>
                     </a>
                 @endif
             </li>

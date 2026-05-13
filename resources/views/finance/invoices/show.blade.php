@@ -33,6 +33,11 @@
 
         @if($invoice->status === 'DRAFT')
             <div class="flex items-center gap-3">
+                <a href="{{ route('finance.invoices.edit', $invoice) }}" 
+                   class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-lg shadow-blue-500/10 flex items-center gap-2 group">
+                    <i class="fas fa-edit transition-transform group-hover:rotate-6"></i>
+                    Edit Tagihan
+                </a>
                 <form action="{{ route('finance.invoices.publish', $invoice) }}" method="POST" onsubmit="return confirm('Publish tagihan ini?')">
                     @csrf
                     <button type="submit" class="px-6 py-3 bg-[#8B1538] hover:bg-[#6D1029] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-lg shadow-red-900/10 flex items-center gap-2 group">

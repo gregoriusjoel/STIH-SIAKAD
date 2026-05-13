@@ -23,7 +23,7 @@ class JadwalApprovalController extends Controller
             return redirect()->back()->with('error', 'User tidak terhubung dengan data dosen');
         }
 
-        $proposals = JadwalProposal::with(['mataKuliah', 'kelas', 'generatedBy', 'approvals'])
+        $proposals = JadwalProposal::with(['mataKuliah', 'kelas.kelasPerkuliahan', 'generatedBy', 'approvals'])
             ->where('dosen_id', $dosen->id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -137,7 +137,7 @@ class JadwalApprovalController extends Controller
             // Upsert into kelas_mata_kuliahs so the active schedule is reflected there as well
             try {
                 $kelas = $proposal->kelas;
-                $kodeKelas = $kelas?->section ?? null;
+                $kodeKelas = $kelas?->kelasPerkuliahan?->kode_kelas ?? null;
                 
                 // Get active semester
                 $activeSemester = \App\Models\Semester::where('status', 'aktif')->first()
@@ -147,21 +147,27 @@ class JadwalApprovalController extends Controller
                     'mata_kuliah_id' => $proposal->mata_kuliah_id,
                     'dosen_id' => $proposal->dosen_id,
                     'semester_id' => $activeSemester?->id,
+                    'kelas_perkuliahan_id' => $kelas?->kelas_perkuliahan_id,
                     'kode_kelas' => $kodeKelas,
-                    'kapasitas' => 40,
-                    'ruang' => $ruangKode,
+                    'kapasitas' => $kelas->kapasitas ?? 40,
+                    'ruang' => $ruangKode ?: '-',
                     'ruangan_id' => $ruanganId ?? null,
                     'hari' => $proposal->hari,
                     'jam_mulai' => $proposal->jam_mulai,
                     'jam_selesai' => $proposal->jam_selesai,
                 ];
 
-                if ($kodeKelas) {
+                // Attempt to find existing KMK record for this exact class/dosen combination
+                $existingKmk = null;
+                if ($kelas->kelas_perkuliahan_id || $kodeKelas) {
                     $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)
-                        ->where('kode_kelas', $kodeKelas)
+                        ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                            return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
+                        }, function($q) use ($kodeKelas) {
+                            return $q->where('kode_kelas', $kodeKelas);
+                        })
+                        ->where('dosen_id', $proposal->dosen_id)
                         ->first();
-                } else {
-                    $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)->first();
                 }
 
                 if ($existingKmk) {
@@ -170,7 +176,7 @@ class JadwalApprovalController extends Controller
                     KelasMataKuliah::create($kmkData);
                 }
             } catch (\Exception $e) {
-                // ignore upsert errors
+                \Log::error('Gagal sinkronisasi KelasMataKuliah saat approval dosen: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -259,7 +265,7 @@ class JadwalApprovalController extends Controller
         
         $proposal = JadwalProposal::with([
             'mataKuliah', 
-            'kelas', 
+            'kelas.kelasPerkuliahan', 
             'generatedBy', 
             'approvals.user'
         ])

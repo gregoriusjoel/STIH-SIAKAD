@@ -34,7 +34,7 @@
                     $mk = $k->kelasMataKuliah?->mataKuliah ?? $k->kelas?->mataKuliah ?? $k->mataKuliah;
                     $kelasLabel = $k->kelasMataKuliah?->nama_kelas
                         ?? $k->kelasMataKuliah?->kode_kelas
-                        ?? $k->kelas?->section
+                        ?? $k->kelas?->resolved_kelas_name
                         ?? '-';
                     $dosenName = $k->kelasMataKuliah?->dosen?->user?->name
                         ?? $k->kelas?->dosen?->user?->name

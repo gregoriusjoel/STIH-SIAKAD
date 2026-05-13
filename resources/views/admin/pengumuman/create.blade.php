@@ -96,26 +96,31 @@
 @endpush
 
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+{{-- CKEditor 5 Classic di-bundle lokal via Vite (akses lewat window.ClassicEditor). --}}
+@vite('resources/js/ckeditor.js')
 <script>
-    ClassicEditor
-        .create(document.querySelector('#isi'), {
-            toolbar: {
-                items: [
-                    'heading', '|',
-                    'bold', 'italic', 'underline', 'strikethrough', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'outdent', 'indent', '|',
-                    'link', 'blockQuote', 'insertTable', '|',
-                    'undo', 'redo'
-                ],
-                shouldNotGroupWhenFull: true
-            },
-            placeholder: 'Tuliskan detail informasi di sini...'
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    document.addEventListener('DOMContentLoaded', function () {
+        ClassicEditor
+            .create(document.querySelector('#isi'), {
+                licenseKey: 'GPL',
+                plugins: Object.values(window.CKEditorPlugins),
+                toolbar: {
+                    items: [
+                        'heading', '|',
+                        'bold', 'italic', 'underline', 'strikethrough', '|',
+                        'bulletedList', 'numberedList', '|',
+                        'outdent', 'indent', '|',
+                        'link', 'blockQuote', 'insertTable', '|',
+                        'undo', 'redo'
+                    ],
+                    shouldNotGroupWhenFull: true
+                },
+                placeholder: 'Tuliskan detail informasi di sini...'
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    });
 </script>
 @endpush
 

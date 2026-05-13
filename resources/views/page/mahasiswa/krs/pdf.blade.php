@@ -114,7 +114,7 @@
                         : '-';
 
                     $ruangan = $kelasMk?->ruang ?? $jadwalLegacy?->ruangan ?? '-';
-                    $kelasKode = $kelasMk?->kode_kelas ?? $kelasLegacy?->section;
+                    $kelasKode = $kelasMk?->kode_kelas ?? $kelasLegacy?->resolved_kelas_name;
                     $ruanganLabel = $kelasKode ? ($ruangan . ' | ' . $kelasKode) : $ruangan;
 
                     $dosenName = $kelasMk?->dosen?->user?->name

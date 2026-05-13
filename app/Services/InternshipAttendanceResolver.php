@@ -60,7 +60,7 @@ class InternshipAttendanceResolver
     public function getClassAttendanceSummary(int $kelasMataKuliahId, int $totalPertemuan): array
     {
         $krsEntries = Krs::where('kelas_mata_kuliah_id', $kelasMataKuliahId)
-            ->whereIn('status', ['approved', 'disetujui'])
+            ->where('status', 'sudah submit')
             ->with(['mahasiswa.user'])
             ->get();
 

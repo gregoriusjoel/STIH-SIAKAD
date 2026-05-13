@@ -16,19 +16,19 @@ class JadwalAdminApprovalController extends Controller
     public function index()
     {
         $proposals = JadwalProposal::with([
-            'mataKuliah', 
-            'kelas', 
-            'dosen', 
-            'generatedBy', 
+            'mataKuliah',
+            'kelas.kelasPerkuliahan',
+            'dosen',
+            'generatedBy',
             'approvals.user'
         ])
-        ->whereIn('status', ['approved_dosen', 'rejected_dosen', 'pending_admin'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // Kelompokkan berdasarkan status
         $needingApproval = $proposals->whereIn('status', ['approved_dosen', 'rejected_dosen']);
         $inReview = $proposals->where('status', 'pending_admin');
+        $fullHistory = $proposals->whereIn('status', ['approved_admin', 'rejected_admin', 'approved_dosen', 'rejected_dosen', 'pending_admin', 'pending_dosen']);
 
         $statistics = [
             'waiting_admin' => $needingApproval->count(),
@@ -37,19 +37,19 @@ class JadwalAdminApprovalController extends Controller
             'rejected_dosen' => $proposals->where('status', 'rejected_dosen')->count(),
         ];
 
-        return view('admin.jadwal.approval', compact('proposals', 'statistics', 'needingApproval', 'inReview'));
+        return view('admin.jadwal.approval', compact('proposals', 'statistics', 'needingApproval', 'inReview', 'fullHistory'));
     }
 
     public function show($id)
     {
         $proposal = JadwalProposal::with([
-            'mataKuliah', 
-            'kelas', 
+            'mataKuliah',
+            'kelas.kelasPerkuliahan',
             'dosen',
-            'generatedBy', 
+            'generatedBy',
             'approvals.user'
         ])
-        ->findOrFail($id);
+            ->findOrFail($id);
 
         // Dapatkan approval terakhir dari dosen
         $dosenApproval = $proposal->approvals()
@@ -64,9 +64,9 @@ class JadwalAdminApprovalController extends Controller
     {
         try {
             DB::beginTransaction();
-            
+
             $proposal = JadwalProposal::findOrFail($id);
-            
+
             // Validasi status - boleh disetujui bila sudah disetujui dosen, sedang pending admin,
             // atau ketika dosen menolak namun memberikan usulan alternatif (rejected_dosen)
             if (!in_array($proposal->status, ['approved_dosen', 'pending_admin', 'rejected_dosen'])) {
@@ -97,17 +97,17 @@ class JadwalAdminApprovalController extends Controller
                     'ruangan' => $dosenApproval->ruangan_pengganti ?? $proposal->ruangan,
                 ]);
             }
-            
+
             // Cek konflik jadwal sebelum approve
             if ($this->hasScheduleConflict($proposal)) {
                 return response()->json([
                     'error' => 'Ada konflik jadwal. Periksa kembali waktu dan ruangan.'
                 ], 400);
             }
-            
+
             // Update status ke approved admin
             $proposal->update(['status' => 'approved_admin']);
-            
+
             // Buat record approval admin
             JadwalApproval::create([
                 'jadwal_proposal_id' => $proposal->id,
@@ -116,20 +116,20 @@ class JadwalAdminApprovalController extends Controller
                 'action' => 'approve',
                 'approved_at' => now()
             ]);
-            
+
             // Pindahkan ke tabel jadwal aktif
             $this->moveToActiveSchedule($proposal);
-            
+
             DB::commit();
-            
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                        'message' => 'Pengajuan jadwal disetujui dan jadwal telah aktif'
+                    'message' => 'Pengajuan jadwal disetujui dan jadwal telah aktif'
                 ]);
             }
-                return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Pengajuan jadwal disetujui dan jadwal telah aktif');
-            
+            return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Pengajuan jadwal disetujui dan jadwal telah aktif');
+
         } catch (\Exception $e) {
             DB::rollback();
             if ($request->ajax() || $request->wantsJson()) {
@@ -140,28 +140,28 @@ class JadwalAdminApprovalController extends Controller
             return back()->with('error', 'Gagal menyetujui pengajuan: ' . $e->getMessage());
         }
     }
-    
+
     public function reject(Request $request, $id)
     {
         $request->validate([
             'alasan_penolakan' => 'required|string|max:500'
         ]);
-        
+
         try {
             DB::beginTransaction();
-            
+
             $proposal = JadwalProposal::findOrFail($id);
-            
+
             // Validasi status
             if (!in_array($proposal->status, ['approved_dosen', 'pending_admin'])) {
                 return response()->json([
                     'error' => 'Pengajuan tidak dalam status yang dapat ditolak admin'
                 ], 400);
             }
-            
+
             // Update status ke rejected admin
             $proposal->update(['status' => 'rejected_admin']);
-            
+
             // Buat record approval admin
             JadwalApproval::create([
                 'jadwal_proposal_id' => $proposal->id,
@@ -171,9 +171,9 @@ class JadwalAdminApprovalController extends Controller
                 'alasan_penolakan' => $request->alasan_penolakan,
                 'approved_at' => now()
             ]);
-            
+
             DB::commit();
-            
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
@@ -181,7 +181,7 @@ class JadwalAdminApprovalController extends Controller
                 ]);
             }
             return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Pengajuan jadwal ditolak');
-            
+
         } catch (\Exception $e) {
             DB::rollback();
             if ($request->ajax() || $request->wantsJson()) {
@@ -192,7 +192,7 @@ class JadwalAdminApprovalController extends Controller
             return back()->with('error', 'Gagal menolak pengajuan: ' . $e->getMessage());
         }
     }
-    
+
     public function approveWithChanges(Request $request, $id)
     {
         $request->validate([
@@ -202,12 +202,12 @@ class JadwalAdminApprovalController extends Controller
             'ruangan' => 'required|string|max:100',
             'catatan' => 'nullable|string|max:500'
         ]);
-        
+
         try {
             DB::beginTransaction();
-            
+
             $proposal = JadwalProposal::findOrFail($id);
-            
+
             // Update proposal dengan perubahan admin
             $proposal->update([
                 'hari' => $request->hari,
@@ -216,7 +216,7 @@ class JadwalAdminApprovalController extends Controller
                 'ruangan' => $request->ruangan,
                 'status' => 'approved_admin'
             ]);
-            
+
             // Buat record approval admin dengan perubahan
             JadwalApproval::create([
                 'jadwal_proposal_id' => $proposal->id,
@@ -226,12 +226,12 @@ class JadwalAdminApprovalController extends Controller
                 'alasan_penolakan' => $request->catatan ?? 'Disetujui dengan perubahan jadwal',
                 'approved_at' => now()
             ]);
-            
+
             // Pindahkan ke tabel jadwal aktif dengan perubahan
             $this->moveToActiveSchedule($proposal);
-            
+
             DB::commit();
-            
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
@@ -239,7 +239,7 @@ class JadwalAdminApprovalController extends Controller
                 ]);
             }
             return redirect()->route('admin.jadwal_admin_approval.index')->with('success', 'Pengajuan disetujui dengan perubahan jadwal');
-            
+
         } catch (\Exception $e) {
             DB::rollback();
             if ($request->ajax() || $request->wantsJson()) {
@@ -250,7 +250,7 @@ class JadwalAdminApprovalController extends Controller
             return back()->with('error', 'Gagal menyetujui dengan perubahan: ' . $e->getMessage());
         }
     }
-    
+
     public function processDosenRequest(Request $request, $id)
     {
         $request->validate([
@@ -261,36 +261,36 @@ class JadwalAdminApprovalController extends Controller
             'ruangan' => 'required_if:action,propose_new|string|max:100',
             'catatan' => 'nullable|string|max:500'
         ]);
-        
+
         try {
             DB::beginTransaction();
-            
+
             $proposal = JadwalProposal::findOrFail($id);
-            
+
             // Harus dalam status rejected_dosen
             if ($proposal->status !== 'rejected_dosen') {
                 return response()->json([
                     'error' => 'Pengajuan tidak dalam status yang dapat diproses'
                 ], 400);
             }
-            
+
             $dosenApproval = $proposal->approvals()
                 ->where('role', 'dosen')
                 ->where('action', 'reject')
                 ->latest()
                 ->first();
-                
+
             if (!$dosenApproval) {
                 return response()->json(['error' => 'Data penolakan dosen tidak ditemukan'], 400);
             }
-            
+
             switch ($request->action) {
                 case 'approve_alternative':
                     // Setujui usulan dosen
                     if (!$dosenApproval->hasAlternative()) {
                         return response()->json(['error' => 'Dosen tidak memberikan usulan alternatif'], 400);
                     }
-                    
+
                     $proposal->update([
                         'hari' => $dosenApproval->hari_pengganti,
                         'jam_mulai' => $dosenApproval->jam_mulai_pengganti,
@@ -298,17 +298,17 @@ class JadwalAdminApprovalController extends Controller
                         'ruangan' => $dosenApproval->ruangan_pengganti ?? $proposal->ruangan,
                         'status' => 'approved_admin'
                     ]);
-                    
+
                     $this->moveToActiveSchedule($proposal);
                     $message = 'Usulan jadwal dosen disetujui dan jadwal telah aktif';
                     break;
-                    
+
                 case 'reject_alternative':
                     // Tolak usulan dosen
                     $proposal->update(['status' => 'rejected_admin']);
                     $message = 'Usulan jadwal dosen ditolak';
                     break;
-                    
+
                 case 'propose_new':
                     // Admin memberikan usulan baru — kirim kembali ke dosen untuk konfirmasi
                     $proposal->update([
@@ -321,7 +321,7 @@ class JadwalAdminApprovalController extends Controller
                     $message = 'Usulan jadwal baru telah dibuat dan dikirim ke dosen untuk konfirmasi';
                     break;
             }
-            
+
             // Buat record approval admin. Jika admin mengusulkan jadwal baru, simpan juga nilai pengganti
             $approvalData = [
                 'jadwal_proposal_id' => $proposal->id,
@@ -340,14 +340,14 @@ class JadwalAdminApprovalController extends Controller
             }
 
             JadwalApproval::create($approvalData);
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => $message
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
@@ -371,49 +371,49 @@ class JadwalAdminApprovalController extends Controller
                 return back()->with('error', 'Status tidak valid');
         }
     }
-    
+
     private function hasScheduleConflict(JadwalProposal $proposal)
     {
         // Cek konflik dengan jadwal aktif
         $conflictActive = Jadwal::where('id', '!=', $proposal->id)
-            ->whereHas('kelas', function($q) use ($proposal) {
+            ->whereHas('kelas', function ($q) use ($proposal) {
                 $q->where('dosen_id', $proposal->dosen_id);
             })
             ->where('hari', $proposal->hari)
             ->where(function ($query) use ($proposal) {
                 $query->whereBetween('jam_mulai', [$proposal->jam_mulai, $proposal->jam_selesai])
-                      ->orWhereBetween('jam_selesai', [$proposal->jam_mulai, $proposal->jam_selesai])
-                      ->orWhere(function ($q) use ($proposal) {
-                          $q->where('jam_mulai', '<=', $proposal->jam_mulai)
+                    ->orWhereBetween('jam_selesai', [$proposal->jam_mulai, $proposal->jam_selesai])
+                    ->orWhere(function ($q) use ($proposal) {
+                        $q->where('jam_mulai', '<=', $proposal->jam_mulai)
                             ->where('jam_selesai', '>=', $proposal->jam_selesai);
-                      });
+                    });
             })
             ->exists();
-            
+
         // Cek konflik dengan proposal lain yang sudah approved
         $conflictProposal = JadwalProposal::where('id', '!=', $proposal->id)
             ->where('dosen_id', $proposal->dosen_id)
             ->where('hari', $proposal->hari)
             ->where(function ($query) use ($proposal) {
                 $query->whereBetween('jam_mulai', [$proposal->jam_mulai, $proposal->jam_selesai])
-                      ->orWhereBetween('jam_selesai', [$proposal->jam_mulai, $proposal->jam_selesai])
-                      ->orWhere(function ($q) use ($proposal) {
-                          $q->where('jam_mulai', '<=', $proposal->jam_mulai)
+                    ->orWhereBetween('jam_selesai', [$proposal->jam_mulai, $proposal->jam_selesai])
+                    ->orWhere(function ($q) use ($proposal) {
+                        $q->where('jam_mulai', '<=', $proposal->jam_mulai)
                             ->where('jam_selesai', '>=', $proposal->jam_selesai);
-                      });
+                    });
             })
             ->whereIn('status', ['approved_admin'])
             ->exists();
-            
+
         return $conflictActive || $conflictProposal;
     }
-    
+
     private function moveToActiveSchedule(JadwalProposal $proposal)
     {
         // Cek apakah sudah ada jadwal aktif untuk kelas ini
         $existingJadwal = Jadwal::where('kelas_id', $proposal->kelas_id)
             ->first();
-            
+
         if ($existingJadwal) {
             // Update jadwal yang ada
             $existingJadwal->update([
@@ -442,8 +442,8 @@ class JadwalAdminApprovalController extends Controller
         // Upsert into kelas_mata_kuliahs so the active schedule is reflected there as well
         try {
             $kelas = $proposal->kelas;
-            $kodeKelas = $kelas?->section ?? null;
-            
+            $kodeKelas = $kelas?->kelasPerkuliahan?->kode_kelas ?? null;
+
             // Get active semester
             $activeSemester = \App\Models\Semester::where('status', 'aktif')->first()
                 ?? \App\Models\Semester::latest()->first();
@@ -452,21 +452,42 @@ class JadwalAdminApprovalController extends Controller
                 'mata_kuliah_id' => $proposal->mata_kuliah_id,
                 'dosen_id' => $proposal->dosen_id,
                 'semester_id' => $activeSemester?->id,
+                'kelas_perkuliahan_id' => $kelas?->kelas_perkuliahan_id,
                 'kode_kelas' => $kodeKelas,
-                'kapasitas' => 40,
-                'ruang' => $proposal->ruangan,
+                'kapasitas' => $kelas->kapasitas ?? 40,
+                'ruang' => $proposal->ruangan ?: '-',
                 'ruangan_id' => $proposal->ruangan_id ?? null,
                 'hari' => $proposal->hari,
                 'jam_mulai' => $proposal->jam_mulai,
                 'jam_selesai' => $proposal->jam_selesai,
             ];
 
-            if ($kodeKelas) {
+            if ($kelas?->kelas_perkuliahan_id || $kodeKelas) {
+                // First try exact match: same mata_kuliah + (KP or kode_kelas) + dosen
                 $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)
-                    ->where('kode_kelas', $kodeKelas)
+                    ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                        return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
+                    }, function($q) use ($kodeKelas) {
+                        return $q->where('kode_kelas', $kodeKelas);
+                    })
+                    ->where('dosen_id', $proposal->dosen_id)
                     ->first();
+
+                // Fallback: same mata_kuliah + (KP or kode_kelas) (any dosen)
+                if (!$existingKmk) {
+                    $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)
+                        ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                            return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
+                        }, function($q) use ($kodeKelas) {
+                            return $q->where('kode_kelas', $kodeKelas);
+                        })
+                        ->first();
+                }
             } else {
-                $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)->first();
+                $existingKmk = KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)
+                    ->where('dosen_id', $proposal->dosen_id)
+                    ->first()
+                    ?? KelasMataKuliah::where('mata_kuliah_id', $proposal->mata_kuliah_id)->first();
             }
 
             if ($existingKmk) {
@@ -495,7 +516,7 @@ class JadwalAdminApprovalController extends Controller
     {
         $request->validate([
             'dosen_pengganti_id' => 'required|exists:dosens,id',
-            'catatan_admin'      => 'nullable|string|max:500',
+            'catatan_admin' => 'nullable|string|max:500',
         ]);
 
         try {
@@ -503,7 +524,7 @@ class JadwalAdminApprovalController extends Controller
 
             $proposal = JadwalProposal::with('kelas', 'mataKuliah')->findOrFail($id);
 
-            if (! in_array($proposal->status, ['rejected_dosen', 'rejected_admin'])) {
+            if (!in_array($proposal->status, ['rejected_dosen', 'rejected_admin'])) {
                 $msg = 'Assign dosen pengganti hanya bisa dilakukan pada pengajuan yang ditolak.';
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json(['error' => $msg], 422);
@@ -514,7 +535,7 @@ class JadwalAdminApprovalController extends Controller
             $validasiService = app(\App\Services\JadwalValidasiService::class);
             $hasil = $validasiService->assignDosenPengganti($proposal, (int) $request->dosen_pengganti_id);
 
-            if (! $hasil['success']) {
+            if (!$hasil['success']) {
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json(['error' => $hasil['message']], 422);
                 }
@@ -523,12 +544,12 @@ class JadwalAdminApprovalController extends Controller
 
             JadwalApproval::create([
                 'jadwal_proposal_id' => $proposal->id,
-                'approved_by'        => Auth::id(),
-                'role'               => 'admin',
-                'action'             => 'approve',
-                'alasan_penolakan'   => $request->catatan_admin
+                'approved_by' => Auth::id(),
+                'role' => 'admin',
+                'action' => 'approve',
+                'alasan_penolakan' => $request->catatan_admin
                     ?? 'Admin assign dosen pengganti setelah penolakan.',
-                'approved_at'        => now(),
+                'approved_at' => now(),
             ]);
 
             DB::commit();

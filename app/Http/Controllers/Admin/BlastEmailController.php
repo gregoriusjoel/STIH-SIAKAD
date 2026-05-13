@@ -55,12 +55,14 @@ class BlastEmailController extends Controller
         try {
             $filters = $this->buildFilters($request);
             $isCredentials = $request->boolean('send_credentials', false);
+            $credentialType = $isCredentials ? $request->input('credential_type', '') : 'none';
 
-            if ($isCredentials) {
+            if ($isCredentials && !empty($credentialType)) {
                 // Send credentials (email kampus + password)
                 $result = $this->blastService->sendCredentials(
                     filters: $filters,
                     senderId: auth()->id(),
+                    credentialType: $credentialType, // 'student', 'parents', or 'both'
                     immediate: $request->boolean('immediate', false),
                     scheduledAt: $request->input('scheduled_at'),
                     customSubject: $request->input('subject'),
@@ -71,6 +73,7 @@ class BlastEmailController extends Controller
                 Log::info('[CREDENTIALS BLAST] Sent successfully', [
                     'batch_id' => $result['batch_id'],
                     'recipients' => $result['total_recipients'],
+                    'credential_type' => $credentialType,
                     'user_id' => auth()->id(),
                 ]);
             } else {

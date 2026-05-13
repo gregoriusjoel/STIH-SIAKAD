@@ -17,6 +17,7 @@
             <form action="{{ route('admin.mahasiswa.update', $mahasiswa) }}" method="POST" class="p-6 edit-form">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="tahun_akademik_id" value="{{ old('tahun_akademik_id', $activeTahunAkademik?->id ?? $mahasiswa->tahun_akademik_id) }}">
 
                 <div class="space-y-6">
                     <!-- Data User -->
@@ -69,16 +70,13 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class="fas fa-toggle-on text-green-500 mr-1"></i>
-                                    Email Aktif *
+                                    Email Login Utama
                                 </label>
-                                <select name="email_aktif"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    required>
-                                    <option value="">Pilih Email Aktif</option>
-                                    <option value="pribadi" {{ old('email_aktif', $mahasiswa->email_aktif) == 'pribadi' ? 'selected' : '' }}>Email Pribadi</option>
-                                    <option value="kampus" {{ old('email_aktif', $mahasiswa->email_aktif) == 'kampus' ? 'selected' : '' }}>Email Kampus</option>
-                                </select>
-                                <small class="text-gray-500 mt-1 block">Email mana yang digunakan untuk login utama</small>
+                                <input type="text" value="Email Kampus"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
+                                    readonly>
+                                <input type="hidden" name="email_aktif" value="kampus">
+                                <small class="text-gray-500 mt-1 block">Login mahasiswa tetap menggunakan Email Kampus</small>
                             </div>
 
                             <div class="md:col-span-2">
@@ -120,12 +118,12 @@
                                     <i class="fas fa-book-open text-gray-400 mr-1"></i>
                                     Program Studi *
                                 </label>
-                                <select name="prodi"
+                                <select name="prodi_id" id="prodi_id"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                     required>
                                     <option value="">Pilih Program Studi</option>
                                     @foreach($prodis as $prodi)
-                                        <option value="{{ $prodi->nama_prodi }}" {{ old('prodi', $mahasiswa->prodi) == $prodi->nama_prodi ? 'selected' : '' }}>
+                                        <option value="{{ $prodi->id }}" {{ (string) old('prodi_id', $mahasiswa->prodi_id) === (string) $prodi->id ? 'selected' : '' }}>
                                             {{ $prodi->nama_prodi }}
                                         </option>
                                     @endforeach
@@ -137,7 +135,7 @@
                                     <i class="fas fa-calendar-alt text-gray-400 mr-1"></i>
                                     Angkatan *
                                 </label>
-                                <select name="angkatan"
+                                <select name="angkatan" id="angkatan"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                     required>
                                     <option value="">Pilih Angkatan</option>
@@ -152,12 +150,34 @@
                                     <i class="fas fa-layer-group text-gray-400 mr-1"></i>
                                     Semester *
                                 </label>
-                                <select name="semester" required
+                                <select name="semester" id="semester" required
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
                                     @for($i = 1; $i <= 8; $i++)
                                         <option value="{{ $i }}" {{ old('semester', $mahasiswa->semester ?? 1) == $i ? 'selected' : '' }}>Semester {{ $i }}</option>
                                     @endfor
                                 </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-school text-gray-400 mr-1"></i>
+                                    Kelas Perkuliahan
+                                </label>
+                                <select name="kelas_perkuliahan_id" id="kelas_perkuliahan_id"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                    <option value="">Pilih prodi dan angkatan terlebih dahulu</option>
+                                    @if($selectedKelasPerkuliahan)
+                                        <option value="{{ $selectedKelasPerkuliahan->id }}" selected>
+                                            {{ $selectedKelasPerkuliahan->display_label }}
+                                        </option>
+                                    @endif
+                                </select>
+                                <small class="text-gray-500 mt-1 block">
+                                    Kelas difilter berdasarkan prodi, angkatan, dan tahun akademik.
+                                </small>
+                                <small class="text-maroon mt-1 block" id="kelas_option_message">
+                                    {{ $activeTahunAkademik ? 'Tahun akademik aktif: ' . $activeTahunAkademik->display_label : 'Tahun akademik aktif belum diatur.' }}
+                                </small>
                             </div>
 
                             <div>
@@ -172,7 +192,20 @@
                                     <option value="cuti" {{ old('status', $mahasiswa->status) == 'cuti' ? 'selected' : '' }}>
                                         Cuti</option>
                                     <option value="lulus" {{ old('status', $mahasiswa->status) == 'lulus' ? 'selected' : '' }}>Lulus</option>
-                                    <option value="drop-out" {{ old('status', $mahasiswa->status) == 'drop-out' ? 'selected' : '' }}>Drop Out</option>
+                                    <option value="do" {{ old('status', $mahasiswa->status) == 'do' ? 'selected' : '' }}>Drop Out</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-venus-mars text-gray-400 mr-1"></i>
+                                    Jenis Kelamin
+                                </label>
+                                <select name="jenis_kelamin"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="Laki-Laki" {{ old('jenis_kelamin', $mahasiswa->jenis_kelamin) == 'Laki-Laki' ? 'selected' : '' }}>Laki-Laki</option>
+                                    <option value="Perempuan" {{ old('jenis_kelamin', $mahasiswa->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
                             </div>
 
@@ -219,6 +252,88 @@
     </div>
     @push('scripts')
         <script>
+            const prodiSelect = document.getElementById('prodi_id');
+            const angkatanSelect = document.getElementById('angkatan');
+            const kelasSelect = document.getElementById('kelas_perkuliahan_id');
+            const kelasMessage = document.getElementById('kelas_option_message');
+            const tahunAkademikId = @json(old('tahun_akademik_id', $activeTahunAkademik?->id ?? $mahasiswa->tahun_akademik_id));
+            const selectedKelasId = @json((string) old('kelas_perkuliahan_id', $selectedKelasPerkuliahan?->id));
+            const optionsUrl = @json(route('kelas-perkuliahan.options'));
+
+            async function loadKelasOptions() {
+                if (!prodiSelect.value || !angkatanSelect.value) {
+                    kelasSelect.innerHTML = '<option value="">Pilih prodi dan angkatan terlebih dahulu</option>';
+                    kelasSelect.disabled = true;
+                    kelasMessage.textContent = 'Kelas difilter berdasarkan prodi, angkatan, dan tahun akademik.';
+                    return;
+                }
+
+                kelasSelect.disabled = true;
+                kelasSelect.innerHTML = '<option value="">Memuat data kelas...</option>';
+
+                try {
+                    const params = new URLSearchParams({
+                        prodi_id: prodiSelect.value,
+                        angkatan: angkatanSelect.value,
+                    });
+
+                    if (tahunAkademikId) {
+                        params.set('tahun_akademik_id', tahunAkademikId);
+                    }
+
+                    const response = await fetch(`${optionsUrl}?${params.toString()}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    const payload = await response.json();
+                    const options = payload.data || [];
+                    const currentValue = kelasSelect.dataset.currentValue || selectedKelasId || '';
+
+                    kelasSelect.innerHTML = '<option value="">Pilih Kelas Perkuliahan</option>';
+
+                    if (options.length === 0) {
+                        kelasSelect.innerHTML = '<option value="">Belum ada kelas tersedia</option>';
+                        kelasSelect.disabled = true;
+                    } else {
+                        options.forEach((option) => {
+                            const item = document.createElement('option');
+                            item.value = option.id;
+                            item.textContent = option.display_label;
+                            if (String(currentValue) === String(option.id)) {
+                                item.selected = true;
+                            }
+                            kelasSelect.appendChild(item);
+                        });
+                        kelasSelect.disabled = false;
+                    }
+
+                    kelasMessage.textContent = payload.meta?.message || 'Kelas difilter berdasarkan prodi, angkatan, dan tahun akademik.';
+                    kelasSelect.dataset.currentValue = kelasSelect.value;
+                } catch (error) {
+                    kelasSelect.innerHTML = '<option value="">Gagal memuat kelas</option>';
+                    kelasSelect.disabled = true;
+                    kelasMessage.textContent = 'Gagal memuat kelas. Silakan coba lagi.';
+                }
+            }
+
+            if (kelasSelect) {
+                kelasSelect.dataset.currentValue = selectedKelasId || '';
+            }
+
+            prodiSelect?.addEventListener('change', () => {
+                kelasSelect.dataset.currentValue = '';
+                loadKelasOptions();
+            });
+
+            angkatanSelect?.addEventListener('change', () => {
+                kelasSelect.dataset.currentValue = '';
+                loadKelasOptions();
+            });
+            loadKelasOptions();
+
             document.querySelectorAll('.edit-form').forEach(form => {
                 form.addEventListener('submit', function (e) {
                     e.preventDefault();

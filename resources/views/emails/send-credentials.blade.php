@@ -1,22 +1,31 @@
 <x-mail::message>
 # {{ $custom_greeting ?? 'Selamat Datang di SIAKAD STIH' }}
 
-Halo **{{ $mahasiswa->user->name }}** ({{ $mahasiswa->nim }}),
+Halo **{{ $recipientName ?? $mahasiswa->user->name }}** @if(!$isParent) ({{ $mahasiswa->nim }}) @endif,
 
+@if($isParent)
+Akun Portal Orang Tua SIAKAD Anda telah dibuat untuk memantau aktivitas akademik mahasiswa **{{ $mahasiswa->user->name }}** ({{ $mahasiswa->nim }}). Berikut adalah kredensial login Anda:
+
+<x-mail::panel>
+**Email Login:** {{ $loginEmail }}<br>
+**Password:** {{ $password }}
+</x-mail::panel>
+@else
 @if(!empty($custom_message))
 {!! nl2br(e($custom_message)) !!}
 
 <x-mail::panel>
-**Email Kampus:** {{ $email_kampus }}<br>
+**Email Kampus:** {{ $loginEmail ?? $email_kampus }}<br>
 **Password:** {{ $password }}
 </x-mail::panel>
 @else
 Akun SIAKAD Anda telah dibuat. Berikut adalah kredensial login Anda:
 
 <x-mail::panel>
-**Email Kampus:** {{ $email_kampus }}<br>
+**Email Kampus:** {{ $loginEmail ?? $email_kampus }}<br>
 **Password:** {{ $password }}
 </x-mail::panel>
+@endif
 @endif
 
 <x-mail::button :url="$login_url" color="primary">

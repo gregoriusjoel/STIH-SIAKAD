@@ -9,14 +9,12 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logo_stih_white.png') }}">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
+    {{-- FontAwesome / Alpine / jQuery di-bundle lokal via Vite. --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         .sidebar {
-            background: linear-gradient(to bottom, #7a1621 0%, #7a1621 100px, #ffffff 200px);
+            background: linear-gradient(to bottom, #7a1621 0%, #7a1621 120px, #ffffff 230px);
             background-repeat: no-repeat;
             background-color: #ffffff;
             border-right: 1px solid rgba(0, 0, 0, 0.08);

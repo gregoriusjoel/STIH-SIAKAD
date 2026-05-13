@@ -10,6 +10,7 @@ use App\Models\JadwalReschedule;
 use App\Models\KelasReschedule;
 use App\Models\Krs;
 use App\Models\Pengajuan;
+use App\Models\Prestasi;
 use App\Models\SkripsiSidangRegistration;
 use App\Models\SkripsiSubmission;
 use Carbon\Carbon;
@@ -235,6 +236,29 @@ class NotificationService
                     'human_time' => $safeHumanTime($when),
                     'created_at_ts' => Carbon::parse($when)->timestamp,
                     'needs_action' => true,
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        // 9) Prestasi
+        try {
+            $query = Prestasi::with('pengaju')->orderByDesc('updated_at');
+            if (!$includeHandled) {
+                $query->where('status', Prestasi::STATUS_DIAJUKAN);
+            }
+            $prestasis = $query->limit($limit)->get();
+
+            foreach ($prestasis as $prestasi) {
+                $when = $prestasi->updated_at ?? $prestasi->created_at;
+                $notifications->push([
+                    'id' => 'prestasi-' . $prestasi->id,
+                    'title' => 'Pengajuan Prestasi',
+                    'message' => $prestasi->pengaju_name . ' mengajukan ' . $prestasi->nama_kegiatan . '.',
+                    'icon' => 'emoji_events',
+                    'url' => route('admin.prestasi.show', $prestasi),
+                    'human_time' => $safeHumanTime($when),
+                    'created_at_ts' => Carbon::parse($when)->timestamp,
+                    'needs_action' => $prestasi->status === Prestasi::STATUS_DIAJUKAN,
                 ]);
             }
         } catch (\Throwable $e) {}

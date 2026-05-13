@@ -51,7 +51,7 @@
                             <h1 class="text-2xl font-bold text-gray-900">{{ $classInfo['name'] }}</h1>
                             <span
                                 class="px-3 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-100">
-                                Kelas {{ $classInfo['section'] }}
+                                Kelas {{ $classInfo['kode_kelas'] }}
                             </span>
                         </div>
 

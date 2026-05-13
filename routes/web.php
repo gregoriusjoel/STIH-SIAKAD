@@ -7,6 +7,7 @@ use App\Http\Controllers\Dosen\JadwalController;
 use App\Http\Controllers\Dosen\ProfilController as DosenProfilController;
 use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
 use App\Http\Controllers\Mahasiswa\AktivasiController;
+use App\Http\Controllers\Mahasiswa\SemesterAktivasiController;
 use App\Http\Controllers\Mahasiswa\KRSController;
 use App\Http\Controllers\Mahasiswa\NilaiController;
 use App\Http\Controllers\Mahasiswa\JadwalController as MahasiswaJadwalController;
@@ -153,6 +154,20 @@ Route::prefix('dosen')->name('dosen.')->where(['pertemuan' => '[a-z0-9:]+'])->gr
     Route::get('/pengumuman', [App\Http\Controllers\Page\PengumumanController::class, 'index'])->name('pengumuman.index');
     Route::get('/pengumuman/{pengumuman}', [App\Http\Controllers\Page\PengumumanController::class, 'show'])->name('pengumuman.show');
 
+    // ── Prestasi (Dosen) ──────────────────────────────────
+    Route::prefix('prestasi')->name('prestasi.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Dosen\PrestasiController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Dosen\PrestasiController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Dosen\PrestasiController::class, 'store'])->name('store');
+        Route::get('/{prestasi}', [\App\Http\Controllers\Dosen\PrestasiController::class, 'show'])->name('show');
+        Route::get('/{prestasi}/edit', [\App\Http\Controllers\Dosen\PrestasiController::class, 'edit'])->name('edit');
+        Route::put('/{prestasi}', [\App\Http\Controllers\Dosen\PrestasiController::class, 'update'])->name('update');
+        Route::post('/{prestasi}/submit', [\App\Http\Controllers\Dosen\PrestasiController::class, 'submit'])->name('submit');
+        Route::post('/{prestasi}/upload-dokumen', [\App\Http\Controllers\Dosen\PrestasiController::class, 'uploadDokumen'])->name('upload-dokumen');
+        Route::get('/{prestasi}/surat/{surat}/download', [\App\Http\Controllers\Dosen\PrestasiController::class, 'downloadSurat'])->name('surat.download');
+        Route::delete('/{prestasi}', [\App\Http\Controllers\Dosen\PrestasiController::class, 'destroy'])->name('destroy');
+    });
+
     // ── Bimbingan Magang (Dosen) ──────────────────────────────────
     Route::prefix('magang')->name('magang.')->group(function () {
         Route::get('/', [App\Http\Controllers\Dosen\InternshipController::class, 'index'])->name('index');
@@ -186,12 +201,16 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
     Route::get('/aktivasi', [AktivasiController::class, 'index'])->name('aktivasi.index');
     Route::post('/aktivasi', [AktivasiController::class, 'store'])->name('aktivasi.store');
 
+    // Semester Aktivasi Questionnaire (wajib sebelum akses semester baru)
+    Route::get('/semester-aktivasi', [SemesterAktivasiController::class, 'index'])->name('semester-aktivasi.index');
+    Route::post('/semester-aktivasi', [SemesterAktivasiController::class, 'store'])->name('semester-aktivasi.store');
+
     // New student survey (must be accessible before filling it)
     Route::get('/survey-new', [App\Http\Controllers\Mahasiswa\NewStudentSurveyController::class, 'index'])->name('survey_new.index');
     Route::post('/survey-new', [App\Http\Controllers\Mahasiswa\NewStudentSurveyController::class, 'store'])->name('survey_new.store');
 
     // Routes yang memerlukan status check
-    Route::middleware(['mahasiswa.status'])->group(function () {
+    Route::middleware(['mahasiswa.status', 'check.semester.kuesioner'])->group(function () {
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
 
         // Pengumuman untuk mahasiswa
@@ -266,8 +285,19 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
 
     // Menu Akademik Tambahan
     Route::view('/perpustakaan', 'errors.503')->name('perpustakaan.index');
-    Route::view('/prestasi', 'errors.503')->name('prestasi.index');
-
+    // Manajemen Prestasi
+    Route::prefix('prestasi')->name('prestasi.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'store'])->name('store');
+        Route::get('/{prestasi}', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'show'])->name('show');
+        Route::get('/{prestasi}/edit', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'edit'])->name('edit');
+        Route::put('/{prestasi}', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'update'])->name('update');
+        Route::post('/{prestasi}/submit', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'submit'])->name('submit');
+        Route::post('/{prestasi}/upload-dokumen', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'uploadDokumen'])->name('upload-dokumen');
+        Route::get('/{prestasi}/surat/{surat}/download', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'downloadSurat'])->name('surat.download');
+        Route::delete('/{prestasi}', [\App\Http\Controllers\Mahasiswa\PrestasiController::class, 'destroy'])->name('destroy');
+    });
     // ── Magang (Internship) ──────────────────────────────────────
     Route::prefix('magang')->name('magang.')->group(function () {
         Route::get('/', [App\Http\Controllers\Mahasiswa\InternshipController::class, 'index'])->name('index');
@@ -322,6 +352,10 @@ Route::prefix('parent')->name('parent.')->middleware(['auth', 'parent.role'])->g
 Route::get('/admin/dosen/import-template', [App\Http\Controllers\Admin\DosenController::class, 'downloadTemplate'])
     ->name('admin.dosen.import-template');
 
+Route::get('/kelas-perkuliahan/options', [App\Http\Controllers\Admin\KelasPerkuliahanController::class, 'options'])
+    ->middleware(['auth', 'admin'])
+    ->name('kelas-perkuliahan.options');
+
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
@@ -331,6 +365,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Pengumuman (Admin CRUD)
     Route::resource('pengumuman', App\Http\Controllers\Admin\PengumumanController::class);
+
+    // Manajemen Prestasi
+    Route::prefix('prestasi')->name('prestasi.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\PrestasiController::class, 'index'])->name('index');
+        Route::post('/settings', [\App\Http\Controllers\Admin\PrestasiController::class, 'updateSettings'])->name('settings.update');
+        Route::get('/preview-nomor', [\App\Http\Controllers\Admin\PrestasiController::class, 'previewNomor'])->name('preview-nomor');
+        Route::get('/export-excel', [\App\Http\Controllers\Admin\PrestasiController::class, 'exportExcel'])->name('export-excel');
+        Route::get('/{prestasi}', [\App\Http\Controllers\Admin\PrestasiController::class, 'show'])->name('show');
+        Route::post('/{prestasi}/approve', [\App\Http\Controllers\Admin\PrestasiController::class, 'approve'])->name('approve');
+        Route::post('/{prestasi}/reject', [\App\Http\Controllers\Admin\PrestasiController::class, 'reject'])->name('reject');
+        Route::post('/{prestasi}/selesai', [\App\Http\Controllers\Admin\PrestasiController::class, 'markSelesai'])->name('selesai');
+        Route::post('/{prestasi}/generate-surat', [\App\Http\Controllers\Admin\PrestasiController::class, 'generateSurat'])->name('generate-surat');
+        Route::get('/{prestasi}/surat/{surat}/download', [\App\Http\Controllers\Admin\PrestasiController::class, 'downloadSurat'])->name('surat.download');
+        Route::get('/{prestasi}/surat/{surat}/preview', [\App\Http\Controllers\Admin\PrestasiController::class, 'previewSurat'])->name('surat.preview');
+        Route::post('/{prestasi}/verify-sertifikat', [\App\Http\Controllers\Admin\PrestasiController::class, 'verifySertifikat'])->name('verify-sertifikat');
+    });
 
     // User Management
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
@@ -366,6 +416,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Parent Management
     Route::get('parents/existing/{mahasiswa_id}', [App\Http\Controllers\Admin\ParentController::class, 'getExistingData'])->name('parents.existing');
+    Route::post('parents/generate-accounts', [App\Http\Controllers\Admin\ParentController::class, 'generateAccounts'])->name('parents.generate-accounts');
     Route::resource('parents', App\Http\Controllers\Admin\ParentController::class);
 
     // Master Data Management
@@ -587,6 +638,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/preview/{encodedPath}', [App\Http\Controllers\Admin\SkripsiController::class, 'previewFile'])->name('preview')->where('encodedPath', '.*');
     });
 
+    // Hasil Kuisioner Management
+    Route::prefix('hasil-kuisioner')->name('hasil-kuisioner.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\HasilKuisionerController::class, 'index'])->name('index');
+        Route::get('/{type}', [App\Http\Controllers\Admin\HasilKuisionerController::class, 'show'])->name('show');
+        Route::get('/{type}/export-excel', [App\Http\Controllers\Admin\HasilKuisionerController::class, 'exportExcel'])->name('export-excel');
+    });
+
     Route::prefix('thesis')->group(function () {
         Route::any('/{any?}', fn(string $any = '') => redirect('/admin/skripsi/'.$any))->where('any', '.*');
     });
@@ -602,4 +660,3 @@ Route::middleware('auth')->group(function () {
     Route::get('/uploads/{upload}', [App\Http\Controllers\UploadController::class, 'show'])->name('uploads.show');
     Route::delete('/uploads/{upload}', [App\Http\Controllers\UploadController::class, 'destroy'])->name('uploads.destroy');
 });
-

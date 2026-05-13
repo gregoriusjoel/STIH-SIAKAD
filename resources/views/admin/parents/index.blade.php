@@ -13,6 +13,11 @@
             <p class="text-gray-600 text-sm mt-1">Kelola data orang tua/wali mahasiswa</p>
         </div>
         <div class="flex items-center gap-2 flex-shrink-0">
+            <button type="button" onclick="document.getElementById('generateModal').classList.remove('hidden')"
+                class="bg-white dark:bg-gray-800 text-maroon dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 border-2 border-maroon/10 hover:border-maroon px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-sm text-sm font-bold">
+                <i class="fas fa-sync-alt text-xs"></i>
+                Tarik Data Akun
+            </button>
             <button type="button" onclick="document.getElementById('importModal').classList.remove('hidden')"
                 class="bg-white dark:bg-gray-800 text-maroon dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 border-2 border-maroon/10 hover:border-maroon px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-sm text-sm font-bold">
                 <i class="fas fa-file-import text-xs"></i>
@@ -148,6 +153,39 @@
                 {{ $parents->links() }}
             </div>
         @endif
+    </div>
+
+    {{-- ═══════════════ MODAL: TARIK DATA AKUN ═══════════════ --}}
+    <div id="generateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden"
+        onclick="if(event.target===this) closeGenerateModal()">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md flex flex-col mx-4 transform transition-all">
+            <div class="flex items-center justify-between px-6 py-4 bg-maroon text-white rounded-t-2xl flex-shrink-0">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i class="fas fa-sync-alt"></i> Tarik Data Akun
+                </h3>
+                <button onclick="closeGenerateModal()" class="text-white text-xl hover:text-white/80 transition">&times;</button>
+            </div>
+            <form id="generate-accounts-form" action="{{ route('admin.parents.generate-accounts') }}" method="POST">
+                @csrf
+                <div class="p-6">
+                    <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">Sistem akan membuatkan akun secara otomatis bagi data orang tua yang saat ini belum memiliki akun yang valid.</p>
+                    
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Pilih Angkatan Mahasiswa</label>
+                    <select name="angkatan" class="w-full border border-gray-300 dark:border-gray-600 rounded-xl text-sm px-4 py-3 outline-none focus:ring-2 focus:ring-maroon/50 focus:border-maroon bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+                        <option value="all">Semua Angkatan</option>
+                        @foreach($angkatans as $year)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 rounded-b-2xl border-t border-gray-100 dark:border-gray-600 flex justify-end gap-3">
+                    <button type="button" onclick="closeGenerateModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Batal</button>
+                    <button type="submit" id="btn-submit-generate" class="px-4 py-2 text-sm font-medium text-white bg-maroon rounded-lg hover:bg-red-900 transition-colors flex items-center gap-2">
+                        <i class="fas fa-check"></i> Ya, Tarik Data!
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     {{-- ═══════════════ MODAL: IMPORT ORANG TUA ═══════════════ --}}
@@ -317,6 +355,34 @@
                 });
             </script>
         @endif
+        
+        @if(session('info'))
+            <script>
+                Swal.fire({
+                    title: 'Info',
+                    text: "{{ session('info') }}",
+                    icon: 'info',
+                    timer: 3000,
+                    showConfirmButton: false,
+                    background: '#ffffff',
+                    customClass: {
+                        popup: 'rounded-xl'
+                    }
+                });
+            </script>
+        @endif
+
+        <script>
+            function closeGenerateModal() {
+                document.getElementById('generateModal').classList.add('hidden');
+            }
+
+            document.getElementById('generate-accounts-form').addEventListener('submit', function(e) {
+                const btn = document.getElementById('btn-submit-generate');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+            });
+        </script>
 
         {{-- Import Modal JavaScript --}}
         <script>

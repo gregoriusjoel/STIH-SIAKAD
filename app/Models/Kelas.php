@@ -16,7 +16,6 @@ class Kelas extends Model
     protected $fillable = [
         'mata_kuliah_id',
         'dosen_id',
-        'section',
         'kapasitas',
         'tahun_ajaran',
         'semester_type',
@@ -58,11 +57,10 @@ class Kelas extends Model
 
     public function mahasiswas()
     {
-        // KRS status values have changed over time (indonesian: 'disetujui', english: 'approved').
-        // Accept either so students with approved KRS are included in the class participant list.
+        // KRS status is standardized to 'sudah submit' for all submitted/approved entries.
         return $this->belongsToMany(Mahasiswa::class, 'krs', 'kelas_id', 'mahasiswa_id')
             ->withPivot('status')
-            ->wherePivotIn('status', ['approved', 'disetujui']);
+            ->wherePivot('status', 'sudah submit');
     }
 
     /**
@@ -90,22 +88,24 @@ class Kelas extends Model
     }
 
     /**
-     * Get the Kelas Perkuliahan master data (new dynamic system)
+     * Get the class name (nama_kelas) from KelasPerkuliahan relationship
+     * Accessible as $kelas->resolved_kelas_name
+     */
+    public function getResolvedKelasNameAttribute(): string
+    {
+        // Must have kelas_perkuliahan_id to function
+        if (!$this->kelas_perkuliahan_id) {
+            return '-';
+        }
+        
+        return $this->kelasPerkuliahan?->nama_kelas ?? $this->kelasPerkuliahan?->kode_kelas ?? '-';
+    }
+
+    /**
+     * Get the Kelas Perkuliahan master data (primary relation)
      */
     public function kelasPerkuliahan(): BelongsTo
     {
         return $this->belongsTo(KelasPerkuliahan::class);
-    }
-
-    /**
-     * Resolve the class name: prefer new relation, fallback to legacy 'section'.
-     */
-    public function getResolvedKelasNameAttribute(): string
-    {
-        if ($this->kelas_perkuliahan_id && $this->kelasPerkuliahan) {
-            return $this->kelasPerkuliahan->nama_kelas;
-        }
-
-        return $this->section ?? '-';
     }
 }

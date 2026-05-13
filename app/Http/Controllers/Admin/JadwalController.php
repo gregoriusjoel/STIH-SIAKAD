@@ -11,6 +11,8 @@ use App\Models\JadwalProposal;
 use App\Models\Ruangan;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class JadwalController extends Controller
 {
@@ -36,7 +38,7 @@ class JadwalController extends Controller
         $activeJadwals = $activeJadwalsQuery
             ->get()
             ->map(function ($j) {
-                return (object)[
+                return (object) [
                     'id' => $j->id,
                     'db_id' => $j->id,
                     'type' => 'jadwal',
@@ -46,7 +48,7 @@ class JadwalController extends Controller
                     'ruang' => $j->ruangan,
                     'nama_mk' => $j->kelas->mataKuliah->nama_mk ?? '-',
                     'sks' => $j->kelas->mataKuliah->sks ?? 0,
-                    'kode_kelas' => $j->kelas->section ?? '-',
+                    'kode_kelas' => $j->kelas->resolved_kelas_name ?? '-',
                     'dosen_name' => $j->kelas->dosen->nama ?? 'N/A',
                     'dosen_id' => $j->kelas->dosen_id ?? null,
                     'mata_kuliah_id' => $j->kelas->mata_kuliah_id ?? null,
@@ -74,25 +76,28 @@ class JadwalController extends Controller
         $sortedSchedules = $merged->sort(function ($a, $b) use ($hariOrder) {
             $dayA = $hariOrder[$a->hari] ?? 99;
             $dayB = $hariOrder[$b->hari] ?? 99;
-            if ($dayA != $dayB) return $dayA <=> $dayB;
+            if ($dayA != $dayB)
+                return $dayA <=> $dayB;
             return $a->jam_mulai <=> $b->jam_mulai;
         })->values();
 
         // Use unique pageName 'active_page' for the active schedules paginator
         $pageName = 'active_page';
-        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage($pageName) ?: 1;
+        $currentPage = Paginator::resolveCurrentPage($pageName) ?: 1;
         $perPage = 4;
-        $currentPageItems = $sortedSchedules->slice(($currentPage - 1) * $perPage, $perPage)->all();
-        $kelasMataKuliahs = new \Illuminate\Pagination\LengthAwarePaginator(
+        $currentPageItems = $sortedSchedules->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $kelasMataKuliahs = new LengthAwarePaginator(
             $currentPageItems,
             $sortedSchedules->count(),
             $perPage,
             $currentPage,
             [
-                'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
+                'path' => Paginator::resolveCurrentPath(),
                 'pageName' => $pageName
             ]
-        )->withQueryString();
+        );
+        $kelasMataKuliahs->withQueryString();
 
         // Load ALL schedules for room visualization (not paginated)
         $allSchedules = $sortedSchedules;
@@ -141,26 +146,26 @@ class JadwalController extends Controller
             ->withQueryString();
 
         // Fetch Dosen Availability Updates (Logs of availability setting)
-        $availabilityLogsRaw = \App\Models\DosenAvailability::with(['dosen.user', 'jamPerkuliahan'])
+        $availabilityLogsRaw = \App\Models\DosenAvailability::with(['dosen.user', 'jamPerkuliahan', 'semester'])
             ->orderBy('created_at', 'desc')
             ->get();
-            
-        // Group by minute and dosen to show as a single log entry per submission
-        $availabilityChecks = $availabilityLogsRaw->groupBy(function($item) {
-            return $item->dosen_id . '_' . $item->created_at->format('Y-m-d H:i');
-        })->map(function($group) {
+
+        // Group by minute, dosen, and semester to show as a single log entry per submission
+        $availabilityChecks = $availabilityLogsRaw->groupBy(function ($item) {
+            return $item->dosen_id . '_' . $item->semester_id . '_' . $item->created_at->format('Y-m-d H:i');
+        })->map(function ($group) {
             $first = $group->first();
-            
+
             // Group the slots by day
-            $hariDetails = $group->groupBy('hari')->map(function($slots, $hari) {
+            $hariDetails = $group->groupBy('hari')->map(function ($slots, $hari) {
                 return $hari . ' (' . $slots->count() . ' slot)';
             })->implode(', ');
-            
+
             // Sort order for days
             $hariOrder = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 7];
-            
+
             // Collect and sort slots for modal viewing
-            $slotsData = $group->map(function($slot) {
+            $slotsData = $group->map(function ($slot) {
                 return [
                     'hari' => $slot->hari,
                     'jam' => $slot->jamPerkuliahan ? substr($slot->jamPerkuliahan->jam_mulai, 0, 5) . ' - ' . substr($slot->jamPerkuliahan->jam_selesai, 0, 5) : 'Unknown',
@@ -170,22 +175,24 @@ class JadwalController extends Controller
                 // First sort by day
                 $dayA = $hariOrder[$a['hari']] ?? 99;
                 $dayB = $hariOrder[$b['hari']] ?? 99;
-                
+
                 if ($dayA != $dayB) {
                     return $dayA <=> $dayB;
                 }
-                
+
                 // Then sort by jam_ke
                 return $a['jam_ke'] <=> $b['jam_ke'];
-            })->map(function($slot) {
+            })->map(function ($slot) {
                 // format back jam_ke to '-' if it was missing 
-                if ($slot['jam_ke'] === 999) $slot['jam_ke'] = '-';
+                if ($slot['jam_ke'] === 999)
+                    $slot['jam_ke'] = '-';
                 return $slot;
             })->values()->all();
 
-            return (object)[
+            return (object) [
                 'created_at' => $first->created_at,
                 'dosen' => $first->dosen,
+                'semester_name' => ($first->semester->nama_semester ?? '-') . ' ' . ($first->semester->tahun_ajaran ?? ''),
                 'detail' => $hariDetails,
                 'total_slots' => $group->count(),
                 'slots_data' => $slotsData
@@ -213,7 +220,7 @@ class JadwalController extends Controller
         ]);
 
         $ruangan = Ruangan::findOrFail($request->ruangan_id);
-        
+
         Jadwal::create([
             'kelas_id' => $request->kelas_id,
             'hari' => $request->hari,
@@ -236,7 +243,7 @@ class JadwalController extends Controller
         $kelasMataKuliah = new \stdClass();
         $kelasMataKuliah->id = $kelas->id ?? null;
         $kelasMataKuliah->mata_kuliah_id = $kelas->mata_kuliah_id ?? ($kelas->mataKuliah->id ?? null);
-        $kelasMataKuliah->kode_kelas = $kelas->section ?? ($kelas->kode_kelas ?? null);
+        $kelasMataKuliah->kode_kelas = $kelas->resolved_kelas_name ?? ($kelas->kode_kelas ?? null);
         $kelasMataKuliah->kapasitas = $kelas->kapasitas ?? null;
         $kelasMataKuliah->ruangan_id = $jadwal->ruangan_id ?? null;
         $kelasMataKuliah->ruang = $jadwal->ruangan ?? null;
@@ -264,15 +271,14 @@ class JadwalController extends Controller
         ]);
 
         $ruangan = Ruangan::findOrFail($request->ruangan_id);
-        
+
         // Update related Kelas (pointing to Kelas table)
         // Note: Dosen ID in Kelas table points to users.id, but the form gives dosens.id
         $dosen = \App\Models\Dosen::findOrFail($request->dosen_id);
-        
+
         $jadwal->kelas->update([
             'mata_kuliah_id' => $request->mata_kuliah_id,
-            'dosen_id' => $dosen->user_id, // Map correctly to users.id
-            'section' => $request->nama_kelas,
+            'dosen_id' => $dosen->id, // Correctly use dosens.id
             'kapasitas' => $request->kapasitas,
         ]);
 
@@ -290,14 +296,14 @@ class JadwalController extends Controller
     public function destroy(Jadwal $jadwal)
     {
         $kelas = $jadwal->kelas;
-        
+
         // Delete related Kelas and any other records
         if ($kelas) {
             // Find and delete the record in kelas_mata_kuliahs if it exists
             \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-                ->where('kode_kelas', $kelas->section)
+                ->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id)
                 ->delete();
-                
+
             $kelas->delete();
         }
 
@@ -358,7 +364,6 @@ class JadwalController extends Controller
     {
         $request->validate([
             'ruangan_id' => 'required|exists:ruangans,id',
-            'section' => 'required|string|max:10',
         ]);
 
         if ($jadwal->status !== 'approved') {
@@ -368,9 +373,10 @@ class JadwalController extends Controller
 
         $ruangan = Ruangan::findOrFail($request->ruangan_id);
 
-        // Update kelas section
+        // The class metadata is now managed via KelasPerkuliahan relationship.
+        // Ensure the class is linked to the right context.
         $jadwal->kelas->update([
-            'section' => $request->input('section'),
+            'kapasitas' => $jadwal->kelas->kapasitas, // just a placeholder update if needed
         ]);
 
         // Update jadwal with room and activate
@@ -589,8 +595,10 @@ class JadwalController extends Controller
         $ignoreId = $request->ignore_id;
 
         // Normalize to H:i format (strip seconds if present)
-        if (strlen($mulai) > 5) $mulai = substr($mulai, 0, 5);
-        if (strlen($selesai) > 5) $selesai = substr($selesai, 0, 5);
+        if (strlen($mulai) > 5)
+            $mulai = substr($mulai, 0, 5);
+        if (strlen($selesai) > 5)
+            $selesai = substr($selesai, 0, 5);
 
         // If ruangan_id is provided, get the kode_ruangan
         if ($request->ruangan_id) {
@@ -609,7 +617,7 @@ class JadwalController extends Controller
 
         // 1. Check KelasMataKuliah table
         $query = \App\Models\KelasMataKuliah::where('hari', $hari)
-            ->where(function($q) use ($ruangan, $request) {
+            ->where(function ($q) use ($ruangan, $request) {
                 $q->where('ruang', $ruangan);
                 if ($request->ruangan_id) {
                     $q->orWhere('ruangan_id', $request->ruangan_id);
@@ -659,7 +667,7 @@ class JadwalController extends Controller
 
         // 3. Check JadwalProposal table (approved/pending proposals)
         $proposalConflict = \App\Models\JadwalProposal::where('hari', $hari)
-            ->where(function($q) use ($ruangan, $request) {
+            ->where(function ($q) use ($ruangan, $request) {
                 $q->where('ruangan', $ruangan);
                 if ($request->ruangan_id) {
                     $q->orWhere('ruangan_id', $request->ruangan_id);
@@ -698,9 +706,9 @@ class JadwalController extends Controller
         $dosens = \App\Models\Dosen::whereHas('mataKuliahs', function ($q) use ($mataKuliahId) {
             $q->where('mata_kuliah_id', $mataKuliahId);
         })->with('user')->get()->map(fn($d) => [
-            'id' => $d->id,
-            'name' => $d->user->name ?? $d->nama
-        ]);
+                'id' => $d->id,
+                'name' => $d->user->name ?? $d->nama
+            ]);
 
         return response()->json(['dosens' => $dosens]);
     }

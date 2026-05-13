@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Disallow: /admin/
+Disallow: /api/
+Disallow: /dosen/
+Disallow: /mahasiswa/
+Disallow: /parent/
+Disallow: /login
+Disallow: /password/

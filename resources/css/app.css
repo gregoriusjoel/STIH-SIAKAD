@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+/* Bundle 3rd-party CSS locally via Vite (sebelumnya dimuat dari CDN). */
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import 'flatpickr/dist/flatpickr.min.css';
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';

@@ -17,7 +17,7 @@
                 <p class="text-sm text-[#616889]">{{ $class_info['code'] }} • {{ $class_info['sks'] }} SKS • Semester {{ $class_info['semester'] }}</p>
             </div>
             <span class="px-3 py-1 rounded text-xs font-bold bg-pink-50 text-[#8B1538] border border-pink-100">
-                {{ $class_info['section'] }}
+                {{ $class_info['class_name'] }}
             </span>
         </div>
 
@@ -66,6 +66,7 @@
                         <th class="px-4 py-3 font-semibold">Nama</th>
                         <th class="px-4 py-3 font-semibold">No. Telp</th>
                         <th class="px-4 py-3 font-semibold">Prodi</th>
+                        <th class="px-4 py-3 font-semibold text-center">Kehadiran</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -75,6 +76,11 @@
                         <td class="px-4 py-3 text-[#111218] font-medium">{{ $student['name'] }}</td>
                         <td class="px-4 py-3 text-[#616889]">{{ $student['phone'] ?? '-' }}</td>
                         <td class="px-4 py-3 text-[#616889]">{{ $student['prodi'] }}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="px-2 py-0.5 rounded-lg bg-blue-50 text-[#8B1538] text-xs font-bold border border-blue-100">
+                                {{ $student['attendance_count'] }}/{{ $student['total_meetings'] }}
+                            </span>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>

@@ -74,9 +74,9 @@
 
     {{-- Filters --}}
     <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-border-color p-6 mb-6">
-        <form method="GET" action="{{ route('admin.pengajuan.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <form method="GET" action="{{ route('admin.pengajuan.index') }}" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             {{-- Search --}}
-            <div class="md:col-span-2">
+            <div class="md:col-span-4">
                 <label class="block text-sm font-medium text-text-secondary mb-2">Cari Mahasiswa</label>
                 <input type="text" name="search" value="{{ request('search') }}"
                     placeholder="Nama atau NIM..."
@@ -84,7 +84,7 @@
             </div>
 
             {{-- Status Filter --}}
-            <div>
+            <div class="md:col-span-3">
                 <label class="block text-sm font-medium text-text-secondary mb-2">Status</label>
                 <select name="status" class="w-full rounded-xl border border-gray-300 bg-gray-50 py-2.5 px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary">
                     <option value="all" {{ request('status') === 'all' ? 'selected' : '' }}>Semua Status</option>
@@ -97,7 +97,7 @@
             </div>
 
             {{-- Jenis Filter --}}
-            <div>
+            <div class="md:col-span-3">
                 <label class="block text-sm font-medium text-text-secondary mb-2">Jenis</label>
                 <select name="jenis" class="w-full rounded-xl border border-gray-300 bg-gray-50 py-2.5 px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary">
                     <option value="all" {{ request('jenis') === 'all' ? 'selected' : '' }}>Semua Jenis</option>
@@ -107,12 +107,12 @@
                 </select>
             </div>
 
-            <div class="md:col-span-4 flex gap-3">
-                <button type="submit" class="btn bg-primary text-white hover:bg-primary-hover rounded-xl px-6 py-2.5 font-medium">
+            <div class="md:col-span-2 flex gap-2">
+                <button type="submit" class="flex-1 btn bg-primary text-white hover:bg-primary-hover rounded-xl py-2.5 font-medium flex items-center justify-center">
                     <i class="fas fa-search mr-2"></i> Filter
                 </button>
-                <a href="{{ route('admin.pengajuan.index') }}" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-xl px-6 py-2.5 font-medium">
-                    <i class="fas fa-redo mr-2"></i> Reset
+                <a href="{{ route('admin.pengajuan.index') }}" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-xl px-4 py-2.5 font-medium flex items-center justify-center">
+                    <i class="fas fa-redo"></i>
                 </a>
             </div>
         </form>

@@ -73,7 +73,7 @@ class SemesterService
     public function getActiveSemesterIds(): array
     {
         $cacheKey = 'active_semester_ids';
-        
+
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () {
             $semesters = collect();
 
@@ -117,9 +117,9 @@ class SemesterService
 
         $now = Carbon::now();
         $endDate = Carbon::parse($semester->tanggal_selesai);
-        
+
         // Has ended and within 14 days of ending
-        return $now->greaterThan($endDate) 
+        return $now->greaterThan($endDate)
             && $now->diffInDays($endDate, false) >= -self::GRACE_PERIOD_DAYS;
     }
 
@@ -151,8 +151,8 @@ class SemesterService
         $now = Carbon::now();
         $startDate = Carbon::parse($semester->tanggal_mulai);
 
-        return $now->greaterThanOrEqualTo($startDate) 
-            && !$semester->is_active 
+        return $now->greaterThanOrEqualTo($startDate)
+            && !$semester->is_active
             && $semester->status !== 'aktif';
     }
 

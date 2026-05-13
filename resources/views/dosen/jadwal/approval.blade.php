@@ -302,7 +302,7 @@
                             <div class="text-[9px] text-gray-400 uppercase tracking-wide mt-1">{{ $proposal->mataKuliah->kode_mk }} • {{ $proposal->mataKuliah->sks }} SKS</div>
                         </td>
                         <td class="px-4 py-4 text-xs font-medium text-gray-600 dark:text-slate-300">
-                            {{ $proposal->kelas->section }}
+                            Kelas {{ $proposal->kelas->resolved_kelas_name }}
                         </td>
                         <td class="px-4 py-4" style="vertical-align: middle;">
                             <div class="text-xs font-bold text-[#8B1538]">{{ $proposal->hari }}</div>
@@ -395,7 +395,7 @@
                         <td class="px-4 py-3 text-center">
                             <div class="text-xs font-bold text-[#111218] dark:text-white leading-tight mx-auto min-w-[120px]">{{ $proposal->mataKuliah->nama_mk }}</div>
                         </td>
-                        <td class="px-4 py-3 text-center text-xs font-medium text-gray-600">{{ $proposal->kelas->section }}</td>
+                        <td class="px-4 py-3 text-center text-xs font-medium text-gray-600">Kelas {{ $proposal->kelas->resolved_kelas_name }}</td>
                         <td class="px-4 py-3 text-center">
                             <div class="text-xs font-bold text-[#8B1538] leading-none mb-1">{{ $proposal->hari }}</div>
                             <div class="text-[10px] text-gray-500 font-medium whitespace-nowrap">

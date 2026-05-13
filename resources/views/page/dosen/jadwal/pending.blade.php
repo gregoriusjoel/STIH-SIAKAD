@@ -70,7 +70,7 @@
                                     {{ $jadwal->kelas->mataKuliah->nama_mk }}
                                 </h3>
                                 <span class="bg-red-50 text-red-700 px-2 py-0.5 rounded text-xs font-bold">
-                                    {{ $jadwal->kelas->section }}
+                                    {{ $jadwal->kelas->resolved_kelas_name }}
                                 </span>
                             </div>
                             <div class="flex flex-wrap gap-4 text-sm text-[#616889] dark:text-slate-400">

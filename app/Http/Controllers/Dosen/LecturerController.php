@@ -37,20 +37,20 @@ class LecturerController extends Controller
 
         // Get data from database
         // Only consider kelas that have an active jadwal assigned
-        $kelasList = Kelas::where('dosen_id', $user->id)
+        $kelasList = Kelas::where('dosen_id', $dosen->id)
             ->whereHas('jadwals', function ($q) {
                 $q->where('status', 'active');
             })
             ->with('mataKuliah')
             ->get();
-        $activeJadwals = Jadwal::whereHas('kelas', function ($q) use ($user) {
-            $q->where('dosen_id', $user->id);
+        $activeJadwals = Jadwal::whereHas('kelas', function ($q) use ($dosen) {
+            $q->where('dosen_id', $dosen->id);
         })
             ->whereIn('status', ['active', 'scheduled', 'pending']) // Include other potential statuses
-            ->orWhere(function ($query) use ($user) {
+            ->orWhere(function ($query) use ($dosen) {
                 // specific fallback: if schedule is active but status might be null or different in older records
-                $query->whereHas('kelas', function ($q) use ($user) {
-                    $q->where('dosen_id', $user->id);
+                $query->whereHas('kelas', function ($q) use ($dosen) {
+                    $q->where('dosen_id', $dosen->id);
                 });
             })
             ->with(['kelas.mataKuliah'])->get();
@@ -65,10 +65,10 @@ class LecturerController extends Controller
             return [
                 'title' => $jadwal->kelas->mataKuliah->nama_mk,
                 'code' => $jadwal->kelas->mataKuliah->kode_mk,
-                'section' => $jadwal->kelas->section,
+                'class_name' => $jadwal->kelas->resolved_kelas_name,
                 'day' => $jadwal->hari,
                 'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
-                'class' => $jadwal->kelas->section,
+                'class' => $jadwal->kelas->resolved_kelas_name,
                 'room' => $jadwal->ruangan,
                 'subject' => $jadwal->kelas->mataKuliah->nama_mk,
                 'sks' => $jadwal->kelas->mataKuliah->sks ?? 0,
@@ -85,7 +85,7 @@ class LecturerController extends Controller
                 ->whereNotNull('hari')
                 ->whereNotNull('jam_mulai')
                 ->whereNotNull('jam_selesai')
-                ->with('mataKuliah')
+                ->with(['mataKuliah', 'kelasPerkuliahan'])
                 ->get();
         }
 
@@ -94,14 +94,18 @@ class LecturerController extends Controller
             $jam_mulai = $kmk->jam_mulai;
             $jam_selesai = $kmk->jam_selesai;
             $ruang = $kmk->ruang ?? '-';
-            $section = $kmk->kode_kelas ?? $kmk->section ?? '-';
+            $kode_kelas = $kmk->kelasPerkuliahan?->nama_kelas ?? $kmk->kode_kelas ?? '-';
 
             // Find matching kelas ID for routing
             $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
-                ->where('section', $section)
+                ->when($kmk->kelas_perkuliahan_id, function($q) use ($kmk) {
+                    return $q->where('kelas_perkuliahan_id', $kmk->kelas_perkuliahan_id);
+                })
                 ->first();
             if (!$kelas) {
-                $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)->first();
+                $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
+                    ->where('dosen_id', $dosen->id)
+                    ->first();
             }
             $targetId = $kelas?->id ?? $kmk->id;
 
@@ -117,16 +121,16 @@ class LecturerController extends Controller
                 $jam_mulai = $reschedule->new_jam_mulai;
                 $jam_selesai = $reschedule->new_jam_selesai;
                 $ruang = $reschedule->new_ruang ?: $ruang;
-                $section = $reschedule->new_kelas ?: $section;
+                $kode_kelas = $reschedule->new_kelas ?: $kode_kelas;
             }
 
             return [
                 'title' => $kmk->mataKuliah->nama_mk,
                 'code' => $kmk->mataKuliah->kode_mk,
-                'section' => $section,
+                'kode_kelas' => $kode_kelas,
                 'day' => $hari,
                 'time' => substr($jam_mulai, 0, 5) . ' - ' . substr($jam_selesai, 0, 5),
-                'class' => $section,
+                'class' => $kode_kelas,
                 'room' => $ruang,
                 'subject' => $kmk->mataKuliah->nama_mk,
                 'sks' => $kmk->mataKuliah->sks ?? 0,
@@ -196,7 +200,7 @@ class LecturerController extends Controller
                 ->whereNotNull('hari')
                 ->whereNotNull('jam_mulai')
                 ->whereNotNull('jam_selesai')
-                ->with('mataKuliah')
+                ->with(['mataKuliah', 'kelasPerkuliahan'])
                 ->get();
         }
 
@@ -205,10 +209,10 @@ class LecturerController extends Controller
             return [
                 'title' => $jadwal->kelas->mataKuliah->nama_mk,
                 'code' => $jadwal->kelas->mataKuliah->kode_mk,
-                'section' => $jadwal->kelas->section,
+                'class_name' => $jadwal->kelas->resolved_kelas_name,
                 'day' => $jadwal->hari,
                 'time' => substr($jadwal->jam_mulai, 0, 5) . ' - ' . substr($jadwal->jam_selesai, 0, 5),
-                'class' => $jadwal->kelas->section,
+                'class' => $jadwal->kelas->resolved_kelas_name,
                 'room' => $jadwal->ruangan,
                 'subject' => $jadwal->kelas->mataKuliah->nama_mk,
                 'color' => 'bg-blue-100 text-blue-700',
@@ -217,22 +221,26 @@ class LecturerController extends Controller
         });
 
         $mappedKmk = $kelasMataKuliahSchedules->map(function ($kmk) {
-            $section = $kmk->kode_kelas ?? $kmk->section ?? '-';
+            $kode_kelas = $kmk->kelasPerkuliahan?->nama_kelas ?? $kmk->kode_kelas ?? '-';
             $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
-                ->where('section', $section)
+                ->when($kmk->kelas_perkuliahan_id, function($q) use ($kmk) {
+                    return $q->where('kelas_perkuliahan_id', $kmk->kelas_perkuliahan_id);
+                })
                 ->first();
             if (!$kelas) {
-                $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)->first();
+                $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
+                    ->where('dosen_id', $kmk->dosen_id)
+                    ->first();
             }
             $targetId = $kelas?->id ?? $kmk->id;
 
             return [
                 'title' => $kmk->mataKuliah->nama_mk,
                 'code' => $kmk->mataKuliah->kode_mk,
-                'section' => $section,
+                'kode_kelas' => $kode_kelas,
                 'day' => $kmk->hari,
                 'time' => substr($kmk->jam_mulai, 0, 5) . ' - ' . substr($kmk->jam_selesai, 0, 5),
-                'class' => $kmk->kode_kelas ?? '-',
+                'class' => $kode_kelas,
                 'room' => $kmk->ruang ?? '-',
                 'subject' => $kmk->mataKuliah->nama_mk,
                 'color' => 'bg-purple-100 text-purple-700',
@@ -324,7 +332,7 @@ class LecturerController extends Controller
 
         // Get classes from 'kelas_mata_kuliahs' table (primary source)
         $kmkList = KelasMataKuliah::where('dosen_id', $dosen->id)
-            ->with(['mataKuliah'])
+            ->with(['mataKuliah', 'kelasPerkuliahan', 'dosen.user'])
             ->get();
 
         \Log::info('Kelas Saya Debug', [
@@ -343,19 +351,23 @@ class LecturerController extends Controller
         ]);
 
         // Map KelasMataKuliah records
-        $classes = $kmkList->map(function ($kmk) {
+        $classes = $kmkList->map(function ($kmk) use ($dosen) {
             // Find if there's a Kelas counterpart for routing purposes
             $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
-                ->where('section', $kmk->kode_kelas)
+                ->when($kmk->kelas_perkuliahan_id, function($q) use ($kmk) {
+                    return $q->where('kelas_perkuliahan_id', $kmk->kelas_perkuliahan_id);
+                })
                 ->first();
 
-            // If exact kelas not found, attempt to fallback to any kelas with same mata_kuliah_id
+            // If exact kelas not found, attempt to fallback to any kelas with same mata_kuliah_id and dosen_id
             if (!$kelas) {
-                $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)->first();
+                $kelas = \App\Models\Kelas::where('mata_kuliah_id', $kmk->mata_kuliah_id)
+                    ->where('dosen_id', $dosen->id)
+                    ->first();
             }
 
             // Calculate student count from both possible foreign keys
-            $krsCount = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+            $krsCount = \App\Models\Krs::where('status', 'sudah submit')
                 ->where(function ($q) use ($kmk, $kelas) {
                     $q->where('kelas_mata_kuliah_id', $kmk->id);
                     if ($kelas) {
@@ -369,7 +381,7 @@ class LecturerController extends Controller
                 'source' => 'kmk',
                 'name' => $kmk->mataKuliah->nama_mk ?? 'N/A',
                 'code' => $kmk->mataKuliah->kode_mk ?? 'N/A',
-                'section' => $kmk->kode_kelas ?? '-',
+                'kode_kelas' => $kmk->kelasPerkuliahan?->nama_kelas ?? $kmk->kode_kelas ?? '-',
                 'students' => $krsCount,
                 'day' => $kmk->hari ?? '-',
                 'time' => ($kmk->jam_mulai && $kmk->jam_selesai) ? substr($kmk->jam_mulai, 0, 5) . ' - ' . substr($kmk->jam_selesai, 0, 5) : '-',
@@ -408,15 +420,16 @@ class LecturerController extends Controller
     public function inputNilai(Request $request)
     {
         $user = Auth::user();
+        $dosen = Dosen::where('user_id', $user->id)->first();
 
-        $kelasList = Kelas::where('dosen_id', $user->id)
+        $kelasList = Kelas::where('dosen_id', $dosen?->id)
             ->with('mataKuliah')
             ->get();
 
         $classes = $kelasList->map(function ($kelas) {
             return [
                 'id' => $kelas->id,
-                'name' => $kelas->mataKuliah->nama_mk . ' (' . $kelas->section . ')',
+                'name' => $kelas->mataKuliah->nama_mk . ' (' . $kelas->resolved_kelas_name . ')',
             ];
         })->toArray();
 
@@ -472,11 +485,13 @@ class LecturerController extends Controller
 
         // Fetch students from the related KelasMataKuliah
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('kode_kelas', $kelas->section)
+            ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
+            })
             ->where('dosen_id', $kelas->dosen_id)
             ->first();
 
-        $krsCollection = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+        $krsCollection = \App\Models\Krs::where('status', 'sudah submit')
             ->where(function ($q) use ($kelasMataKuliah, $kelas) {
                 $q->where('kelas_id', $kelas->id);
                 if ($kelasMataKuliah) {
@@ -485,15 +500,23 @@ class LecturerController extends Controller
             })->with('mahasiswa')
             ->get();
 
-        $students = $krsCollection->map(function ($krs) {
+        $students = $krsCollection->map(function ($krs) use ($kelasMataKuliah) {
             $m = $krs->mahasiswa;
             $userName = $m->user->name ?? ($m->nama ?? 'Mahasiswa');
+
+            // Count attendance (only those marked as 'hadir')
+            $attendanceCount = \App\Models\Presensi::where('mahasiswa_id', $m->id)
+                ->where('kelas_mata_kuliah_id', $kelasMataKuliah?->id)
+                ->where('status', 'hadir')
+                ->count();
+
             return [
                 'name' => $userName,
                 'nim' => $m->nim ?? null,
                 'prodi' => $m->prodi ?? null,
                 'semester' => $m->semester ?? null,
-                'ipk' => $m->ipk !== null ? number_format((float) $m->ipk, 2) : '-',
+                'attendance_count' => $attendanceCount,
+                'total_meetings' => 16, // Standard total meetings per semester
                 'status' => 'Aktif',
             ];
         })->toArray();
@@ -576,7 +599,7 @@ class LecturerController extends Controller
             'code' => $kelas->mataKuliah->kode_mk,
             'sks' => $kelas->mataKuliah->sks,
             'semester' => $kelas->mataKuliah->semester,
-            'section' => $kelas->section,
+            'class_name' => $kelas->resolved_kelas_name,
             'day' => $hari ?? $jadwal?->hari ?? '-',
             'hari' => $hari,
             'time' => ($kelasMataKuliah?->jam_mulai && $kelasMataKuliah?->jam_selesai)
@@ -603,11 +626,10 @@ class LecturerController extends Controller
     {
         $kelas = Kelas::with('mataKuliah')->findOrFail($id);
 
-        // Try matching by kode_kelas or nama_kelas (some records use different column names)
+        // Try matching by kelas_perkuliahan_id
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where(function ($q) use ($kelas) {
-                $q->where('kode_kelas', $kelas->section)
-                    ->orWhere('kode_kelas', $kelas->section . '');
+            ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
             })->first();
 
         // Fallback: pick first kelas_mata_kuliah for that mata_kuliah_id
@@ -674,7 +696,9 @@ class LecturerController extends Controller
         // --- Resolve meeting date (same priority as detail() page) ---
         // Early fetch of KelasMataKuliah to get hari (day-of-week) for date calculation
         $kmkForDate = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('kode_kelas', $kelas->section)
+            ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
+            })
             ->where('dosen_id', $kelas->dosen_id)
             ->first()
             ?? \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)->first();
@@ -741,7 +765,9 @@ class LecturerController extends Controller
 
         // Fetch students
         $kelasMataKuliah = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('kode_kelas', $kelas->section)
+            ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
+            })
             ->where('dosen_id', $kelas->dosen_id)
             ->first();
         
@@ -752,7 +778,7 @@ class LecturerController extends Controller
                 ->first();
         }
 
-        $krsCollection = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+        $krsCollection = \App\Models\Krs::where('status', 'sudah submit')
             ->where(function ($q) use ($kelasMataKuliah, $kelas) {
                 $q->where('kelas_id', $kelas->id);
                 if ($kelasMataKuliah) {
@@ -916,7 +942,9 @@ class LecturerController extends Controller
 
         // Find or create KelasMataKuliah
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('kode_kelas', $kelas->section)
+            ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
+            })
             ->first();
 
         if (!$kelasMataKuliah) {
@@ -955,7 +983,7 @@ class LecturerController extends Controller
                 'waktu' => now(),
                 'krs_id' => \App\Models\Krs::where('mahasiswa_id', $studentId)
                             ->where('kelas_id', $kelas->id)
-                            ->whereIn('status', ['approved', 'disetujui'])
+                            ->where('status', 'sudah submit')
                             ->value('id')
             ]
         );
@@ -1036,9 +1064,8 @@ class LecturerController extends Controller
         $kelas = Kelas::findOrFail($id);
 
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where(function ($q) use ($kelas) {
-                $q->where('kode_kelas', $kelas->section)
-                    ->orWhere('kode_kelas', $kelas->section . '');
+            ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
             })->first();
 
         if (!$kelasMataKuliah) {
@@ -1077,9 +1104,8 @@ class LecturerController extends Controller
         $kelas = Kelas::findOrFail($id);
 
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where(function ($q) use ($kelas) {
-                $q->where('kode_kelas', $kelas->section)
-                    ->orWhere('kode_kelas', $kelas->section . '');
+            ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
             })->first();
 
         if (!$kelasMataKuliah) {
@@ -1108,9 +1134,8 @@ class LecturerController extends Controller
 
         // Find the related KelasMataKuliah
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where(function ($q) use ($kelas) {
-                $q->where('kode_kelas', $kelas->section)
-                    ->orWhere('kode_kelas', $kelas->section . '');
+            ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
             })->first();
 
         if (!$kelasMataKuliah) {
@@ -1148,7 +1173,7 @@ class LecturerController extends Controller
                 'id' => $p->id,
                 'no' => $index + 1,
                 'nama' => $p->nama ?? ($p->krs->mahasiswa->user->name ?? ($p->krs->mahasiswa->nama ?? '-')),
-                'kelas' => $p->krs?->kelas?->section ?? $kelas->section ?? '-',
+                'kelas' => $p->krs?->kelas?->resolved_kelas_name ?? $kelas->resolved_kelas_name ?? '-',
                 'kontak' => $p->kontak ?? '-',
                 'waktu' => optional($p->waktu ?? $p->tanggal)->format('d M Y H:i') ?? (optional($p->tanggal)->format('d M Y') ?? '-'),
                 'created_at' => $p->created_at->toIso8601String(),
@@ -1193,7 +1218,7 @@ class LecturerController extends Controller
         
         // Get students from KRS
         $students = \App\Models\Krs::where('kelas_id', $id)
-            ->whereIn('status', ['approved', 'disetujui'])
+            ->where('status', 'sudah submit')
             ->with(['mahasiswa.user', 'nilai'])
             ->get()
             ->map(function($krs) use ($id) {
@@ -1222,7 +1247,7 @@ class LecturerController extends Controller
             'id' => $kelas->id,
             'name' => $kelas->mataKuliah->nama_mk,
             'code' => $kelas->mataKuliah->kode_mk,
-            'section' => $kelas->section,
+            'class_name' => $kelas->resolved_kelas_name,
             'sks' => $kelas->mataKuliah->sks,
         ];
         
@@ -1530,11 +1555,11 @@ class LecturerController extends Controller
         $bobot = \App\Models\BobotPenilaian::where('kelas_id', $id)->first();
 
         $students = \App\Models\Krs::where('kelas_id', $id)
-            ->whereIn('status', ['approved', 'disetujui'])
+            ->where('status', 'sudah submit')
             ->with(['mahasiswa.user', 'nilai'])
             ->get();
 
-        $filename = 'template_nilai_' . str_replace(' ', '_', $kelas->mataKuliah->kode_mk) . '_' . $kelas->section . '.csv';
+        $filename = 'template_nilai_' . str_replace(' ', '_', $kelas->mataKuliah->kode_mk) . '_' . $kelas->resolved_kelas_name . '.csv';
 
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
@@ -1591,7 +1616,7 @@ class LecturerController extends Controller
 
         // Build NIM → krs_id lookup
         $krsRecords = \App\Models\Krs::where('kelas_id', $id)
-            ->whereIn('status', ['approved', 'disetujui'])
+            ->where('status', 'sudah submit')
             ->with('mahasiswa')
             ->get();
 
@@ -1943,7 +1968,9 @@ class LecturerController extends Controller
 
         // Get the KelasMataKuliah to find pertemuans
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('kode_kelas', $kelas->section)
+            ->when($kelas->kelas_perkuliahan_id, function($q) use ($kelas) {
+                return $q->where('kelas_perkuliahan_id', $kelas->kelas_perkuliahan_id);
+            })
             ->where('dosen_id', $kelas->dosen_id)
             ->first();
 
@@ -1953,7 +1980,7 @@ class LecturerController extends Controller
             ?? Semester::latest()->first();
 
         // Count total students
-        $totalStudents = \App\Models\Krs::whereIn('status', ['approved', 'disetujui'])
+        $totalStudents = \App\Models\Krs::where('status', 'sudah submit')
             ->where(function ($q) use ($kelasMataKuliah, $kelas) {
                 $q->where('kelas_id', $kelas->id);
                 if ($kelasMataKuliah) {
@@ -2072,7 +2099,7 @@ class LecturerController extends Controller
         $data = [
             'mataKuliah' => $kelas->mataKuliah->nama_mk,
             'kodeMK' => $kelas->mataKuliah->kode_mk,
-            'kelas' => $kelas->section,
+            'kelas' => $kelas->resolved_kelas_name,
             'rows' => $rows,
             'semester' => $semesterAktif->nama_semester ?? 'Ganjil',
             'tahunAkademik' => $semesterAktif->tahun_ajaran ?? '2024/2025',
@@ -2082,7 +2109,7 @@ class LecturerController extends Controller
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.berita-acara-perkuliahan', $data)
             ->setPaper('a4', 'landscape');
 
-        $filename = 'Berita Acara Perkuliahan ' . $kelas->mataKuliah->nama_mk . ' ' . $kelas->section . '.pdf';
+        $filename = 'Berita Acara Perkuliahan ' . $kelas->mataKuliah->nama_mk . ' ' . $kelas->resolved_kelas_name . '.pdf';
 
         return $pdf->download($filename);
     }

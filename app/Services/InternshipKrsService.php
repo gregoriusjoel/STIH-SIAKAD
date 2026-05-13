@@ -64,7 +64,7 @@ class InternshipKrsService
                     ->where('mata_kuliah_id', $mapping->mata_kuliah_id)
                     ->where('semester_id', $activeSemester->id)
                     ->whereNull('internship_id')
-                    ->whereIn('status', ['approved', 'disetujui'])
+                    ->where('status', 'sudah submit')
                     ->first();
 
                 if ($existingKrs) {
@@ -90,7 +90,7 @@ class InternshipKrsService
                     'kelas_mata_kuliah_id'     => $kelasMk?->id,
                     'kelas_id'                 => $kelasMk?->kelas_id ?? null,
                     'semester_id'              => $activeSemester->id,
-                    'status'                   => 'approved',
+                    'status'                   => 'sudah submit',
                     'keterangan'               => 'Konversi Magang - ' . $internship->instansi,
                     'internship_id'            => $internship->id,
                     'is_internship_conversion' => true,

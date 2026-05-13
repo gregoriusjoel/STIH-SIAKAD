@@ -4,7 +4,7 @@
 @section('page-title', 'Tambah Dosen')
 
 @push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    {{-- Select2 CSS sudah di-bundle via resources/js/select2.js (Vite). --}}
     <style>
         :root {
             --primary: #800020;
@@ -280,7 +280,7 @@
                                     </label>
                                     <div class="relative">
                                         <input id="dosen_password" type="password" name="password"
-                                            value="{{ old('password', 'dosen123') }}" class="form-input"
+                                            value="{{ old('password') }}" class="form-input"
                                             style="padding-right: 2.75rem;" placeholder="••••••••" required>
                                         <button type="button" id="toggleDosenPw" aria-pressed="false"
                                             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 bg-transparent border-0"
@@ -524,8 +524,8 @@
 @endsection
 
 @push('scripts')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {{-- Select2 di-bundle lokal via Vite (jQuery sudah global). --}}
+    @vite('resources/js/select2.js')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize Select2 for initial dropdown

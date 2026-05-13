@@ -12,7 +12,7 @@
                 <p class="text-xs font-bold uppercase tracking-widest text-gray-400">Input Nilai Tugas</p>
                 <h1 class="text-2xl font-extrabold text-gray-900 mt-1">
                     {{ $kelas->mataKuliah->nama_mk ?? $kelas->mataKuliah->nama ?? '-' }}
-                    <span class="ml-2 text-lg font-semibold text-maroon">— Kelas {{ $kelas->section }}</span>
+                    <span class="ml-2 text-lg font-semibold text-maroon">— {{ $kelas->resolved_kelas_name }}</span>
                 </h1>
                 <div class="flex flex-wrap gap-3 mt-2 text-sm text-gray-500">
                     <span><i class="fas fa-tag mr-1"></i>{{ $kelas->mataKuliah->kode_mk ?? '-' }}</span>
@@ -78,7 +78,7 @@
                                     <span><i class="fas fa-star mr-1"></i>Max: {{ $tugas->max_score }}</span>
                                     @php 
                                         $graded = $tugas->submissions()->whereNotNull('score')->count();
-                                        $total = \App\Models\Krs::where('kelas_id', $kelas->id)->whereIn('status', ['approved', 'disetujui', 'KRS sudah di isi'])->count();
+                                        $total = \App\Models\Krs::where('kelas_id', $kelas->id)->where('status', 'sudah submit')->count();
                                     @endphp
                                     <span><i class="fas fa-check-circle mr-1"></i>Dinilai: {{ $graded }}/{{ $total }}</span>
                                     @if($tugas->deadline)

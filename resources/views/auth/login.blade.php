@@ -5,6 +5,27 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Portal Login Sistem Informasi Akademik (SIAKAD) Sekolah Tinggi Ilmu Hukum (STIH) Adhyaksa. Akses portal resmi untuk mahasiswa, dosen, dan staf.">
+    <meta name="keywords" content="SIAKAD, STIH Adhyaksa, Login SIAKAD, Sistem Informasi Akademik, Portal Akademik, Sekolah Tinggi Ilmu Hukum">
+    <meta name="author" content="STIH Adhyaksa">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="Login - STIH Adhyaksa">
+    <meta property="og:description" content="Portal Login Sistem Informasi Akademik (SIAKAD) Sekolah Tinggi Ilmu Hukum (STIH) Adhyaksa.">
+    <meta property="og:image" content="{{ asset('images/logo_stih_white.png') }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="Login - STIH Adhyaksa">
+    <meta property="twitter:description" content="Portal Login Sistem Informasi Akademik (SIAKAD) Sekolah Tinggi Ilmu Hukum (STIH) Adhyaksa.">
+    <meta property="twitter:image" content="{{ asset('images/logo_stih_white.png') }}">
+
     <title>Login - STIH Adhyaksa</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/logo_stih_white.png') }}">
@@ -479,7 +500,7 @@
         </div>
 
         <div class="footer-text">
-            &copy; 2025 STIH Adhyaksa
+            &copy; {{ date('Y') }} STIH Adhyaksa
         </div>
     </div>
 

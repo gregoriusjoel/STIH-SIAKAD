@@ -18,7 +18,8 @@
 @endpush
 
 @section('content')
-    <div class="pt-6 px-6 md:px-8 pb-8 w-full flex flex-col gap-6" x-data="dashboardApp(@js($all_schedules ?? []), @js($meeting_dates ?? []), @js($schedules ?? []), @js($upcomingSchedules ?? []))">
+    <div class="pt-6 px-6 md:px-8 pb-8 w-full flex flex-col gap-6"
+        x-data="dashboardApp(@js($all_schedules ?? []), @js($meeting_dates ?? []), @js($schedules ?? []), @js($upcomingSchedules ?? []))">
 
         <!-- Welcome Section -->
         <div class="flex flex-col gap-1">
@@ -95,11 +96,11 @@
                                     class="rounded-full flex flex-col items-center justify-center text-sm transition-all duration-200 relative group"
                                     style="width: 40px; height: 40px;"
                                     :class="{
-                                                                                                                                                    'bg-primary text-white shadow-lg shadow-primary/30 font-bold': isToday(date),
-                                                                                                                                                    'bg-primary/15 text-primary font-black border-2 border-primary/20': !isToday(date) && getEvents(date).length > 0,
-                                                                                                                                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 font-medium': !isToday(date) && getEvents(date).length === 0,
-                                                                                                                                                    'ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-900': selectedDate === date
-                                                                                                                                                }">
+                                                                                                                                                        'bg-primary text-white shadow-lg shadow-primary/30 font-bold': isToday(date),
+                                                                                                                                                        'bg-primary/15 text-primary font-black border-2 border-primary/20': !isToday(date) && getEvents(date).length > 0,
+                                                                                                                                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 font-medium': !isToday(date) && getEvents(date).length === 0,
+                                                                                                                                                        'ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-900': selectedDate === date
+                                                                                                                                                    }">
                                     <span x-text="date"></span>
 
                                     <!-- Event Indicator Label (Optional/Micro) -->
@@ -205,29 +206,31 @@
                                             x-transition:enter-end="opacity-100 transform translate-y-0">
                                             <!-- Time Column -->
                                             <div class="flex flex-col items-center min-w-12 pt-1">
-                                                <span
-                                                    class="text-sm font-bold text-[#111218] dark:text-white"
+                                                <span class="text-sm font-bold text-[#111218] dark:text-white"
                                                     x-text="schedule.time.substring(0, 5)"></span>
-                                                <span class="text-[10px] text-gray-400" x-text="schedule.time.substring(8, 5)"></span>
+                                                <span class="text-[10px] text-gray-400"
+                                                    x-text="schedule.time.substring(8, 5)"></span>
                                             </div>
 
                                             <!-- Content Column -->
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-center gap-2 mb-0.5">
                                                     <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
-                                                        x-text="schedule.subject"
-                                                        :title="schedule.subject"></h4>
+                                                        x-text="schedule.subject" :title="schedule.subject"></h4>
                                                     <template x-if="schedule.is_rescheduled">
-                                                        <span class="px-2 py-0.5 text-[10px] font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-md">RESCHEDULE</span>
+                                                        <span
+                                                            class="px-2 py-0.5 text-[10px] font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-md">RESCHEDULE</span>
                                                     </template>
                                                 </div>
                                                 <p class="text-xs text-gray-500 dark:text-slate-400 truncate mb-1.5">
-                                                    <span x-text="schedule.code"></span> • Kelas <span x-text="schedule.class"></span>
+                                                    <span x-text="schedule.code"></span> • Kelas <span
+                                                        x-text="schedule.class"></span>
                                                 </p>
                                                 <div class="flex items-center gap-4">
                                                     <div
                                                         class="flex items-center gap-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
-                                                        <span class="material-symbols-outlined text-[10px]">location_on</span>
+                                                        <span
+                                                            class="material-symbols-outlined text-[10px]">location_on</span>
                                                         <span x-text="schedule.room"></span>
                                                     </div>
                                                 </div>
@@ -239,10 +242,9 @@
                         </div>
 
                         <!-- Pagination Controls -->
-                        <div x-show="todaySchedules.length > todayPerPage" 
+                        <div x-show="todaySchedules.length > todayPerPage"
                             class="px-5 py-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50 dark:bg-slate-800/50">
-                            <button @click="todayPage = Math.max(1, todayPage - 1)"
-                                :disabled="todayPage === 1"
+                            <button @click="todayPage = Math.max(1, todayPage - 1)" :disabled="todayPage === 1"
                                 :class="todayPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-slate-700'"
                                 class="p-2 rounded-lg transition-colors text-gray-600 dark:text-slate-400">
                                 <span class="material-symbols-outlined text-lg">chevron_left</span>
@@ -281,7 +283,8 @@
                                         class="w-16 h-16 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
                                         <span class="material-symbols-outlined text-3xl text-gray-300">event_busy</span>
                                     </div>
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Tidak ada jadwal mendatang</p>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Tidak ada jadwal mendatang
+                                    </p>
                                     <p class="text-xs text-gray-500 mt-1">Jadwal mengajar minggu depan belum tersedia.</p>
                                 </div>
                             </template>
@@ -299,8 +302,7 @@
                                                 <span
                                                     class="text-[10px] font-bold text-primary uppercase tracking-wide mb-0.5"
                                                     x-text="schedule.day"></span>
-                                                <span
-                                                    class="text-sm font-bold text-[#111218] dark:text-white"
+                                                <span class="text-sm font-bold text-[#111218] dark:text-white"
                                                     x-text="schedule.time.substring(0, 5)"></span>
                                             </div>
 
@@ -308,19 +310,21 @@
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-center gap-2 mb-0.5">
                                                     <h4 class="text-base font-bold text-[#111218] dark:text-white truncate group-hover:text-primary transition-colors"
-                                                        x-text="schedule.subject"
-                                                        :title="schedule.subject"></h4>
+                                                        x-text="schedule.subject" :title="schedule.subject"></h4>
                                                     <template x-if="schedule.is_rescheduled">
-                                                        <span class="px-2 py-0.5 text-[10px] font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-md">RESCHEDULE</span>
+                                                        <span
+                                                            class="px-2 py-0.5 text-[10px] font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-md">RESCHEDULE</span>
                                                     </template>
                                                 </div>
                                                 <p class="text-xs text-gray-500 dark:text-slate-400 truncate mb-1.5">
-                                                    <span x-text="schedule.code"></span> • Kelas <span x-text="schedule.class"></span>
+                                                    <span x-text="schedule.code"></span> • Kelas <span
+                                                        x-text="schedule.class"></span>
                                                 </p>
                                                 <div class="flex items-center gap-4">
                                                     <div
                                                         class="flex items-center gap-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
-                                                        <span class="material-symbols-outlined text-[10px]">location_on</span>
+                                                        <span
+                                                            class="material-symbols-outlined text-[10px]">location_on</span>
                                                         <span x-text="schedule.room"></span>
                                                     </div>
                                                 </div>
@@ -332,10 +336,9 @@
                         </div>
 
                         <!-- Pagination Controls -->
-                        <div x-show="upcomingSchedulesList.length > upcomingPerPage" 
+                        <div x-show="upcomingSchedulesList.length > upcomingPerPage"
                             class="px-5 py-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50 dark:bg-slate-800/50">
-                            <button @click="upcomingPage = Math.max(1, upcomingPage - 1)"
-                                :disabled="upcomingPage === 1"
+                            <button @click="upcomingPage = Math.max(1, upcomingPage - 1)" :disabled="upcomingPage === 1"
                                 :class="upcomingPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-slate-700'"
                                 class="p-2 rounded-lg transition-colors text-gray-600 dark:text-slate-400">
                                 <span class="material-symbols-outlined text-lg">chevron_left</span>
@@ -364,7 +367,7 @@
                         </h3>
                         <div class="flex items-center gap-3 mt-1">
                             <span class="text-sm font-semibold text-gray-600 dark:text-slate-400"
-                                x-text="selectedEvent?.section ? ('Kelas ' + selectedEvent.section) : ''"></span>
+                                x-text="selectedEvent?.class ? ('Kelas ' + selectedEvent.class) : ''"></span>
                             <span class="text-sm text-gray-500 dark:text-slate-400"
                                 x-text="selectedEvent ? (selectedEvent.time || '') : ''"></span>
                         </div>
@@ -380,15 +383,15 @@
                         <div class="space-y-2">
                             <div><strong>Matakuliah:</strong> <span x-text="selectedEvent?.title || '-' "></span></div>
                             <div><strong>Kode:</strong> <span x-text="selectedEvent?.code || '-' "></span></div>
-                            <div><strong>Kelas:</strong> <span x-text="selectedEvent?.section || '-' "></span>
+                            <div><strong>Kelas:</strong> <span x-text="selectedEvent?.class || '-' "></span>
                             </div>
                             <div><strong>Ruangan:</strong> <span x-text="selectedEvent?.room || '-' "></span>
                             </div>
                             <div><strong>Waktu:</strong> <span x-text="selectedEvent?.time || '-' "></span>
                             </div>
                             <div class="pt-3">
-                                <a :href="selectedEvent?.url || '#'" 
-                                   class="inline-block bg-primary text-white font-bold text-xs py-2 px-4 rounded-lg shadow hover:bg-primary/90 transition-colors">
+                                <a :href="selectedEvent?.url || '#'"
+                                    class="inline-block bg-primary text-white font-bold text-xs py-2 px-4 rounded-lg shadow hover:bg-primary/90 transition-colors">
                                     Detail Kelas
                                 </a>
                             </div>
@@ -431,12 +434,12 @@
                     schedules: schedules,
                     meetingDates: meetingDates,
                     monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                    
+
                     // Today schedules pagination
                     todaySchedules: todaySchedulesData,
                     todayPage: 1,
                     todayPerPage: 3,
-                    
+
                     // Upcoming schedules pagination
                     upcomingSchedulesList: upcomingSchedulesData,
                     upcomingPage: 1,
@@ -445,23 +448,23 @@
                     get monthName() {
                         return this.monthNames[this.month];
                     },
-                    
+
                     // Today schedules computed properties
                     get todayTotalPages() {
                         return Math.ceil(this.todaySchedules.length / this.todayPerPage) || 1;
                     },
-                    
+
                     get paginatedTodaySchedules() {
                         const start = (this.todayPage - 1) * this.todayPerPage;
                         const end = start + this.todayPerPage;
                         return this.todaySchedules.slice(start, end);
                     },
-                    
+
                     // Upcoming schedules computed properties
                     get upcomingTotalPages() {
                         return Math.ceil(this.upcomingSchedulesList.length / this.upcomingPerPage) || 1;
                     },
-                    
+
                     get paginatedUpcomingSchedules() {
                         const start = (this.upcomingPage - 1) * this.upcomingPerPage;
                         const end = start + this.upcomingPerPage;
@@ -521,15 +524,15 @@
                     getEvents(date) {
                         // Only show events if this date is within the 16 meeting dates
                         const d = new Date(this.year, this.month, date);
-                        const dateStr = d.getFullYear() + '-' + 
-                                      String(d.getMonth() + 1).padStart(2, '0') + '-' + 
-                                      String(d.getDate()).padStart(2, '0');
-                        
+                        const dateStr = d.getFullYear() + '-' +
+                            String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                            String(d.getDate()).padStart(2, '0');
+
                         // Check if this date is in the meeting dates list
                         if (!this.meetingDates.includes(dateStr)) {
                             return [];
                         }
-                        
+
                         // Map date to day name for current schedule logic
                         const dayName = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][d.getDay()];
                         return this.schedules.filter(s => s.day === dayName);

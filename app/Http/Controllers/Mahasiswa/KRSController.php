@@ -251,10 +251,10 @@ class KRSController extends Controller
         $statusKrs = $existingKrs->first()->status ?? null;
         
         // Determine if form is locked based on actual KRS status
-        $isLocked = in_array($statusKrs, ['approved', 'sudah submit']);
+        $isLocked = ($statusKrs === 'sudah submit');
 
         // Map status to display status for view
-        if ($statusKrs === 'sudah submit' || $statusKrs === 'approved' || $statusKrs === 'disetujui') {
+        if ($statusKrs === 'sudah submit') {
             $displayStatusKrs = 'Sudah Mengisi KRS';
         } elseif ($statusKrs === 'draft') {
             $displayStatusKrs = 'Draft';
@@ -601,6 +601,13 @@ class KRSController extends Controller
             $action = $request->input('action', 'draft');
             $status = ($action === 'submit') ? 'sudah submit' : 'draft';
 
+            // Calculate tahun_ajaran for the KRS records
+            $baseYear = (int) $mahasiswa->angkatan;
+            $yearOffset = floor(($mahasiswaSemester - 1) / 2);
+            $academicStartYear = $baseYear + $yearOffset;
+            $academicEndYear = $academicStartYear + 1;
+            $calculatedTahunAjaran = $academicStartYear . '/' . $academicEndYear;
+
             // Create new KRS entries for selected mata kuliah
             foreach ($request->mata_kuliah as $mkId => $ambil) {
                 if ($ambil === 'ya') {
@@ -613,6 +620,7 @@ class KRSController extends Controller
                         'mata_kuliah_id' => $mkId,
                         'ambil_mk' => 'ya',
                         'status' => $status,
+                        'tahun_ajaran' => $calculatedTahunAjaran,
                     ];
 
                     if ($kelasRecord) {
@@ -661,6 +669,20 @@ class KRSController extends Controller
                     'total_mk' => count($selectedMkIds),
                     'total_sks' => $totalSks
                 ]);
+
+                // Generate invoice automatically from submitted KRS
+                try {
+                    $invoiceService = new \App\Services\GenerateInvoiceFromKrsService();
+                    $invoice = $invoiceService->execute($mahasiswa->id);
+                    
+                    if ($invoice) {
+                        \Log::info("KRS submitted for mahasiswa_id={$mahasiswa->id}, invoice #{$invoice->id} generated/updated");
+                    }
+                } catch (\Exception $e) {
+                    // Log the error but don't fail the KRS submission
+                    \Log::error("Failed to generate invoice from KRS for mahasiswa_id={$mahasiswa->id}: " . $e->getMessage());
+                }
+
                 return redirect()->route('mahasiswa.krs.confirm')->with('success', 'KRS sudah di isi. Anda tidak dapat mengubahnya kembali.');
             } else {
                 \App\Models\AuditLog::log('krs.draft_saved', $mahasiswa, [
@@ -683,7 +705,20 @@ class KRSController extends Controller
         // Update all draft KRS to approved so admin sees immediately
         Krs::where('mahasiswa_id', $mahasiswa->id)
             ->where('status', 'draft')
-            ->update(['status' => 'approved']);
+            ->update(['status' => 'sudah submit']);
+
+        // Generate invoice automatically from submitted KRS
+        try {
+            $invoiceService = new \App\Services\GenerateInvoiceFromKrsService();
+            $invoice = $invoiceService->execute($mahasiswa->id);
+            
+            if ($invoice) {
+                \Log::info("KRS submitted for mahasiswa_id={$mahasiswa->id}, invoice #{$invoice->id} generated/updated");
+            }
+        } catch (\Exception $e) {
+            // Log the error but don't fail the KRS submission
+            \Log::error("Failed to generate invoice from KRS for mahasiswa_id={$mahasiswa->id}: " . $e->getMessage());
+        }
 
         return redirect()->route('mahasiswa.krs.index')
             ->with('success', 'KRS berhasil disimpan dan tercatat.');

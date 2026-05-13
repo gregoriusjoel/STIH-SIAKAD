@@ -27,7 +27,7 @@ class SemesterTransitionService
 
             // 1. Get active semester
             $activeSemester = $this->getActiveSemester();
-            
+
             if (!$activeSemester) {
                 return [
                     'success' => false,
@@ -52,7 +52,7 @@ class SemesterTransitionService
 
             // 3. Find next semester
             $nextSemester = $this->findNextSemester($activeSemester);
-            
+
             if (!$nextSemester) {
                 return [
                     'success' => false,
@@ -84,7 +84,7 @@ class SemesterTransitionService
                     'new_semester' => "{$nextSemester->nama_semester} {$nextSemester->tahun_ajaran}",
                     'mahasiswa_updated' => $updatedCount,
                     'transition_date' => Carbon::now()->format('Y-m-d H:i:s'),
-                    'grace_period_info' => "Kelas semester lama tetap tampil hingga " . 
+                    'grace_period_info' => "Kelas semester lama tetap tampil hingga " .
                         Carbon::parse($activeSemester->tanggal_selesai)->addDays(14)->format('Y-m-d')
                 ]
             ];
@@ -92,7 +92,7 @@ class SemesterTransitionService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Semester Transition Error: ' . $e->getMessage());
-            
+
             return [
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
@@ -146,7 +146,7 @@ class SemesterTransitionService
     {
         // Ensure only one semester is active
         Semester::where('is_active', true)->update(['is_active' => false]);
-        
+
         $semester->update([
             'is_active' => true,
             'status' => 'aktif'
@@ -155,11 +155,14 @@ class SemesterTransitionService
 
     /**
      * Increment semester for all eligible mahasiswa
+     * 
+     * NOTE: After transition, mahasiswa must fill KuesionerAktivasi before accessing dashboard
+     * This is enforced by CheckSemesterKuesioner middleware which redirects to semester-aktivasi form
      */
     protected function incrementMahasiswaSemester(Semester $newSemester): int
     {
         $mahasiswas = Mahasiswa::where('status', 'aktif')
-            ->where(function($query) use ($newSemester) {
+            ->where(function ($query) use ($newSemester) {
                 $query->whereNull('last_semester_id')
                     ->orWhere('last_semester_id', '!=', $newSemester->id);
             })
@@ -169,12 +172,12 @@ class SemesterTransitionService
         foreach ($mahasiswas as $mahasiswa) {
             // Don't increment beyond semester 8 (or your max semester)
             $newSemesterValue = min($mahasiswa->semester + 1, 14);
-            
+
             $mahasiswa->update([
                 'semester' => $newSemesterValue,
                 'last_semester_id' => $newSemester->id
             ]);
-            
+
             $count++;
         }
 
@@ -214,7 +217,7 @@ class SemesterTransitionService
     public function getTransitionStatus(): array
     {
         $activeSemester = $this->getActiveSemester();
-        
+
         if (!$activeSemester) {
             return [
                 'has_active_semester' => false,

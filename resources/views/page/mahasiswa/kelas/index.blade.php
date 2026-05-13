@@ -46,7 +46,7 @@
                                 <h3 class="font-bold text-lg leading-tight mb-1 line-clamp-2" title="{{ $class['mata_kuliah'] }}">
                                     {{ $class['mata_kuliah'] }}
                                 </h3>
-                                <p class="text-red-100 text-sm">Kelas {{ $class['section'] }}</p>
+                                <p class="text-red-100 text-sm">Kelas {{ $class['kode_kelas'] }}</p>
                             </div>
                         </div>
 

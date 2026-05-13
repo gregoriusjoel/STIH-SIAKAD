@@ -36,6 +36,8 @@ Route::middleware(['auth', 'verified'])->prefix('finance')->name('finance.')->gr
     Route::get('/invoices/create', [FinanceInvoiceController::class, 'create'])->name('invoices.create');
     Route::post('/invoices', [FinanceInvoiceController::class, 'store'])->name('invoices.store');
     Route::get('/invoices/{invoice}', [FinanceInvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('/invoices/{invoice}/edit', [FinanceInvoiceController::class, 'edit'])->name('invoices.edit');
+    Route::put('/invoices/{invoice}', [FinanceInvoiceController::class, 'update'])->name('invoices.update');
     Route::post('/invoices/{invoice}/publish', [FinanceInvoiceController::class, 'publish'])->name('invoices.publish');
     Route::post('/invoices/{invoice}/cancel', [FinanceInvoiceController::class, 'cancel'])->name('invoices.cancel');
 

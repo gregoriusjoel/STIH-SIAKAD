@@ -13,12 +13,18 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\ConvertEmptyStringsToNull::class);
-        
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
+        // Override XSRF-TOKEN cookie jadi HttpOnly. Wajib di-append ke grup `web`
+        // agar jalan setelah VerifyCsrfToken yang menulis cookie tersebut.
+        $middleware->appendToGroup('web', \App\Http\Middleware\SecureCsrfCookie::class);
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'parent.role' => \App\Http\Middleware\ParentMiddleware::class,
             'mahasiswa.status' => \App\Http\Middleware\CheckMahasiswaStatus::class,
             'semester.lock' => \App\Http\Middleware\CheckSemesterLock::class,
+            'check.semester.kuesioner' => \App\Http\Middleware\CheckSemesterKuesioner::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

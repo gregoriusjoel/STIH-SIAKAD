@@ -9,10 +9,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logo_stih_white.png') }}">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-    <!-- Material Symbols -->
+    {{-- Material Symbols (Google Fonts) — masih dimuat dari CDN, tidak tersedia di npm. --}}
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
         rel="stylesheet" />
     <style>
@@ -25,11 +22,7 @@
         }
     </style>
 
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    {{-- Font Awesome, Alpine.js, SweetAlert2 (Swal), jQuery di-bundle lokal via Vite. --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>

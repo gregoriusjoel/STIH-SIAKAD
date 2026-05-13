@@ -16,7 +16,7 @@ class Krs extends Model
         'mata_kuliah_id',
         'kelas_mata_kuliah_id',
         'kelas_id',
-        'semester_id',
+        'tahun_ajaran',
         'status',
         'keterangan',
         'ambil_mk',
@@ -47,14 +47,6 @@ class Krs extends Model
     public function internship(): BelongsTo
     {
         return $this->belongsTo(Internship::class);
-    }
-
-    /**
-     * Direct semester link (used for internship conversion KRS where kelas_mata_kuliah_id is null).
-     */
-    public function semester(): BelongsTo
-    {
-        return $this->belongsTo(Semester::class);
     }
 
     public function nilai(): HasOne

@@ -4,7 +4,7 @@
 @section('page-title', 'Edit Dosen')
 
 @push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    {{-- Select2 CSS sudah di-bundle via resources/js/select2.js (Vite). --}}
     <style>
         :root {
             --primary: #800020;
@@ -571,8 +571,8 @@
 @endsection
 
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{{-- Select2 di-bundle lokal via Vite (jQuery sudah global). --}}
+@vite('resources/js/select2.js')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Initialize Select2 for existing mata kuliah dropdowns

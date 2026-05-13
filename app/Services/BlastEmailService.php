@@ -266,12 +266,18 @@ class BlastEmailService
     public function sendCredentials(
         array $filters = [],
         ?int $senderId = null,
+        string $credentialType = 'student', // 'student', 'parents', or 'both'
         bool $immediate = false,
         ?string $scheduledAt = null,
         ?string $customSubject = null,
         ?string $customGreeting = null,
         ?string $customMessage = null
     ): array {
+        // Validate credentialType
+        if (!in_array($credentialType, ['student', 'parents', 'both'])) {
+            throw new \RuntimeException('Invalid credential type. Must be: student, parents, or both');
+        }
+
         // Check rate limit
         if (!$this->checkRateLimit($senderId)) {
             throw new \RuntimeException('Blast email rate limit exceeded. Coba lagi nanti.');
@@ -298,6 +304,7 @@ class BlastEmailService
             $job = new \App\Jobs\SendCredentialsBlastJob(
                 $mahasiswaIds, 
                 $senderId,
+                $credentialType,
                 $customSubject,
                 $customGreeting,
                 $customMessage
@@ -309,26 +316,54 @@ class BlastEmailService
             $now = now();
             $schedule = $scheduledAt ? \Carbon\Carbon::parse($scheduledAt) : $now;
             
-            // Get valid emails
-            $mahasiswas = Mahasiswa::whereIn('id', $mahasiswaIds)->get(['id', 'email_pribadi', 'email_kampus']);
+            // Get valid emails dengan relasi parents
+            $mahasiswas = Mahasiswa::whereIn('id', $mahasiswaIds)
+                ->with('parents.user')
+                ->get(['id', 'email_pribadi', 'email_kampus']);
             
             foreach ($mahasiswas as $m) {
-                $target = $m->email_pribadi ?: $m->email_kampus;
-                if (!$target) continue;
-
-                $outboxData[] = [
-                    'batch_id' => $batchId,
-                    'mahasiswa_id' => $m->id,
-                    'target_email' => $target,
-                    'subject' => $customSubject,
-                    'greeting' => $customGreeting,
-                    'message_body' => $customMessage,
-                    'is_credentials_mode' => true,
-                    'status' => 'pending',
-                    'scheduled_at' => $schedule,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ];
+                // Collect recipient emails based on credentialType
+                $recipientEmails = [];
+                
+                if ($credentialType === 'student' || $credentialType === 'both') {
+                    $studentEmail = $m->email_pribadi ?: $m->email_kampus;
+                    if ($studentEmail) {
+                        $recipientEmails[] = $studentEmail;
+                    }
+                }
+                
+                if ($credentialType === 'parents' || $credentialType === 'both') {
+                    // Get parent emails from related ParentModel
+                    $parents = $m->parents;
+                    foreach ($parents as $parent) {
+                        if ($parent->user && $parent->user->email) {
+                            $recipientEmails[] = $parent->user->email;
+                        }
+                    }
+                    
+                    // Also send to student's personal email when sending to parents
+                    if ($credentialType === 'parents' && $m->email_pribadi) {
+                        $recipientEmails[] = $m->email_pribadi;
+                    }
+                }
+                
+                // Create outbox entry for each recipient
+                foreach ($recipientEmails as $email) {
+                    $outboxData[] = [
+                        'batch_id' => $batchId,
+                        'mahasiswa_id' => $m->id,
+                        'target_email' => $email,
+                        'subject' => $customSubject,
+                        'greeting' => $customGreeting,
+                        'message_body' => $customMessage,
+                        'is_credentials_mode' => true,
+                        'credential_type' => $credentialType,
+                        'status' => 'pending',
+                        'scheduled_at' => $schedule,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
             }
             
             foreach (array_chunk($outboxData, 500) as $chunk) {
@@ -343,6 +378,7 @@ class BlastEmailService
         Log::info("[CREDENTIALS BLAST] Request baru", [
             'batch_id' => $batchId,
             'recipients' => count($mahasiswaIds),
+            'credential_type' => $credentialType,
             'filters' => $filters,
             'sender_id' => $senderId,
             'immediate' => $immediate,

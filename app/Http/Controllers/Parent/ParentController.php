@@ -66,12 +66,11 @@ class ParentController extends Controller
         $activeSemester = Semester::where('is_active', true)->latest()->first();
 
         // KRS for active semester only
-        $krsQuery = Krs::where('mahasiswa_id', $mahasiswa->id)->whereIn('status', ['approved', 'KRS sudah di isi']);
+        $krsQuery = Krs::where('mahasiswa_id', $mahasiswa->id)->where('status', 'sudah submit');
         if ($activeSemester) {
             $krsQuery->where(function ($q) use ($activeSemester) {
                 $q->whereHas('kelasMataKuliah', fn($q2) => $q2->where('semester_id', $activeSemester->id))
-                  ->orWhereHas('kelas', fn($q2) => $q2->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester))
-                  ->orWhere('semester_id', $activeSemester->id);
+                  ->orWhereHas('kelas', fn($q2) => $q2->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester));
             });
         }
         $activeKrs = $krsQuery->with(['kelasMataKuliah.mataKuliah', 'mataKuliah'])->get();
@@ -92,7 +91,6 @@ class ParentController extends Controller
                 $q->whereHas('krs', fn($q2) =>
                     $q2->whereHas('kelasMataKuliah', fn($q3) => $q3->where('semester_id', $activeSemester->id))
                       ->orWhereHas('kelas', fn($q3) => $q3->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester))
-                      ->orWhere('semester_id', $activeSemester->id)
                 )
             )
             ->get();
@@ -185,8 +183,7 @@ class ParentController extends Controller
             ->when($activeSemester, fn($q) =>
                 $q->where(function ($q2) use ($activeSemester) {
                     $q2->whereHas('kelasMataKuliah', fn($q3) => $q3->where('semester_id', $activeSemester->id))
-                       ->orWhereHas('kelas', fn($q3) => $q3->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester))
-                       ->orWhere('semester_id', $activeSemester->id);
+                       ->orWhereHas('kelas', fn($q3) => $q3->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester));
                 })
             )
             ->with([
@@ -217,7 +214,6 @@ class ParentController extends Controller
                 $q->whereHas('krs', fn($q2) =>
                     $q2->whereHas('kelasMataKuliah', fn($q3) => $q3->where('semester_id', $activeSemester->id))
                       ->orWhereHas('kelas', fn($q3) => $q3->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester))
-                      ->orWhere('semester_id', $activeSemester->id)
                 )
             )
             ->with([
@@ -234,7 +230,6 @@ class ParentController extends Controller
                     $q->whereHas('krs', fn($q2) =>
                         $q2->whereHas('kelasMataKuliah', fn($q3) => $q3->where('semester_id', $activeSemester->id))
                           ->orWhereHas('kelas', fn($q3) => $q3->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester))
-                          ->orWhere('semester_id', $activeSemester->id)
                     )
                 )->count(),
             'izin'  => Presensi::where('mahasiswa_id', $mahasiswa->id)->where('status', 'izin')
@@ -242,7 +237,6 @@ class ParentController extends Controller
                     $q->whereHas('krs', fn($q2) =>
                         $q2->whereHas('kelasMataKuliah', fn($q3) => $q3->where('semester_id', $activeSemester->id))
                           ->orWhereHas('kelas', fn($q3) => $q3->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester))
-                          ->orWhere('semester_id', $activeSemester->id)
                     )
                 )->count(),
             'sakit' => Presensi::where('mahasiswa_id', $mahasiswa->id)->where('status', 'sakit')
@@ -250,7 +244,6 @@ class ParentController extends Controller
                     $q->whereHas('krs', fn($q2) =>
                         $q2->whereHas('kelasMataKuliah', fn($q3) => $q3->where('semester_id', $activeSemester->id))
                           ->orWhereHas('kelas', fn($q3) => $q3->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester))
-                          ->orWhere('semester_id', $activeSemester->id)
                     )
                 )->count(),
             'alfa'  => Presensi::where('mahasiswa_id', $mahasiswa->id)->whereIn('status', ['alfa', 'alpha', 'absen'])
@@ -258,7 +251,6 @@ class ParentController extends Controller
                     $q->whereHas('krs', fn($q2) =>
                         $q2->whereHas('kelasMataKuliah', fn($q3) => $q3->where('semester_id', $activeSemester->id))
                           ->orWhereHas('kelas', fn($q3) => $q3->where('tahun_ajaran', $activeSemester->tahun_ajaran)->where('semester_type', $activeSemester->nama_semester))
-                          ->orWhere('semester_id', $activeSemester->id)
                     )
                 )->count(),
         ];

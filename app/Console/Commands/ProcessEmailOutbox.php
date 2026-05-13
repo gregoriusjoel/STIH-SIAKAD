@@ -56,12 +56,80 @@ class ProcessEmailOutbox extends Command
                 }
 
                 if ($outbox->is_credentials_mode) {
-                    // Cek jika user login tidak ada
+                    $credentialType = $outbox->credential_type ?? 'student';
+                    
+                    if ($credentialType === 'parents' || $credentialType === 'both') {
+                        // Cek apakah target email adalah email orang tua
+                        $parentData = null;
+                        foreach ($mahasiswa->parents as $p) {
+                            if ($p->user && $p->user->email === $outbox->target_email) {
+                                $parentData = $p;
+                                break;
+                            }
+                        }
+                        
+                        // Jika target_email adalah mahasiswa (bisa jadi mode student, atau mode CC dari parent)
+                        $isStudentTarget = ($mahasiswa->email_pribadi === $outbox->target_email || $mahasiswa->email_kampus === $outbox->target_email);
+                        
+                        if ($parentData) {
+                            // Ini adalah email untuk orang tua, generate password untuk orang tua
+                            $tempPassword = \Str::random(10);
+                            $parentData->user->update([
+                                'password' => \Illuminate\Support\Facades\Hash::make($tempPassword)
+                            ]);
+                            
+                            Mail::to($outbox->target_email)->send(
+                                new \App\Mail\SendCredentialsMail(
+                                    $mahasiswa,
+                                    $tempPassword,
+                                    $outbox->subject,
+                                    $outbox->greeting,
+                                    $outbox->message_body,
+                                    $parentData->user->email,
+                                    true,
+                                    $parentData->user->name ?? 'Orang Tua'
+                                )
+                            );
+                            continue; // Skip the rest of the loop block
+                        } else if ($credentialType === 'parents' && $isStudentTarget) {
+                            // Ini adalah CC untuk mahasiswa di mode 'parents'
+                            $firstParent = null;
+                            foreach ($mahasiswa->parents as $p) {
+                                if ($p->user) {
+                                    $firstParent = $p;
+                                    break;
+                                }
+                            }
+                            
+                            if ($firstParent) {
+                                $tempPassword = \Str::random(10);
+                                $firstParent->user->update([
+                                    'password' => \Illuminate\Support\Facades\Hash::make($tempPassword)
+                                ]);
+                                
+                                Mail::to($outbox->target_email)->send(
+                                    new \App\Mail\SendCredentialsMail(
+                                        $mahasiswa,
+                                        $tempPassword,
+                                        $outbox->subject,
+                                        $outbox->greeting,
+                                        $outbox->message_body,
+                                        $firstParent->user->email,
+                                        true,
+                                        'Tembusan Akun Orang Tua'
+                                    )
+                                );
+                            }
+                            continue;
+                        }
+                    }
+                    
+                    // Fallback / Mode Student (untuk 'student' atau jika target email di mode 'both' adalah mahasiswa)
                     if (!$mahasiswa->user) {
                         throw new \Exception("Mahasiswa belum memiliki akun (user_id kosong).");
                     }
 
-                    // Buat password random baru
+                    // Buat password random baru untuk mahasiswa
                     $tempPassword = \Str::random(10);
                     $mahasiswa->user->update([
                         'password' => \Illuminate\Support\Facades\Hash::make($tempPassword)
@@ -74,7 +142,10 @@ class ProcessEmailOutbox extends Command
                             $tempPassword,
                             $outbox->subject,
                             $outbox->greeting,
-                            $outbox->message_body
+                            $outbox->message_body,
+                            $mahasiswa->email_kampus,
+                            false,
+                            $mahasiswa->user->name
                         )
                     );
                 } else {

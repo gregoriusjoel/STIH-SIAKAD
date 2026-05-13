@@ -286,7 +286,7 @@
         <div class="p-5 flex-1 overflow-y-auto">
             <div class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm text-maroon dark:text-red-300">
                 <i class="fas fa-info-circle mr-1"></i>
-                Salin daftar mata kuliah dari semester lama ke semester tujuan. MK yang sudah ada di tujuan akan dilewati.
+                Salin daftar mata kuliah dari semester lama ke semester tujuan. Mata kuliah yang <strong>sudah terdaftar</strong> di semester tujuan akan dilewati otomatis untuk mencegah duplikasi.
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-5">
@@ -328,7 +328,7 @@
                 </div>
                 <div id="cf-conflict-section" class="hidden">
                     <h4 class="text-sm font-semibold text-orange-700 dark:text-orange-400 mb-2">
-                        <i class="fas fa-exclamation-triangle text-orange-500 mr-1"></i> Konflik (sudah ada di tujuan, dilewati):
+                        <i class="fas fa-exclamation-triangle text-orange-500 mr-1"></i> Konflik (Sudah terdaftar di semester tujuan, dilewati):
                     </h4>
                     <div id="cf-conflicts" class="border dark:border-gray-700 rounded-lg divide-y divide-gray-100 dark:divide-gray-700 max-h-32 overflow-y-auto text-xs"></div>
                 </div>
@@ -468,8 +468,8 @@
 
             document.getElementById('cf-preview').classList.remove('hidden');
             document.getElementById('cf-summary').innerHTML =
-                `<strong>${data.to_copy.length}</strong> MK akan disalin dari <em>${data.source_label}</em> ke <em>${data.target_label}</em>. ` +
-                `<strong class="text-orange-600">${data.conflicts.length}</strong> konflik akan dilewati.`;
+                `<strong>${data.to_copy.length}</strong> MK akan disalin ke <em>${data.target_label}</em>. ` +
+                `<strong class="text-orange-600">${data.conflicts.length}</strong> sudah ada di tujuan (dilewati).`;
 
             // To copy
             const toCopyEl = document.getElementById('cf-to-copy');

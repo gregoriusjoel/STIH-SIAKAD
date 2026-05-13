@@ -143,7 +143,7 @@
                             <div class="flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[18px]">class</span>
                                 <span class="font-medium text-gray-700 dark:text-slate-300">Kelas
-                                    {{ $class_info['section'] }}</span>
+                                    {{ $class_info['class_name'] }}</span>
                             </div>
                             <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600"></span>
                             <div class="flex items-center gap-1.5">
@@ -436,7 +436,7 @@
                                     <th class="px-6 py-4">Mahasiswa</th>
                                     <th class="px-6 py-4">Prodi</th>
                                     <th class="px-6 py-4 text-center">Semester</th>
-                                    <th class="px-6 py-4 text-center">IPK</th>
+                                    <th class="px-6 py-4 text-center">Kehadiran</th>
                                     <th class="px-6 py-4">Status</th>
                                     <th class="px-6 py-4 text-right">Aksi</th>
                                 </tr>
@@ -470,7 +470,9 @@
 
                                             <td class="px-6 py-4 text-center">
                                                 <span
-                                                    class="text-gray-900 dark:text-white font-bold">{{ is_numeric($student['ipk']) ? number_format((float) $student['ipk'], 2) : '-' }}</span>
+                                                    class="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-xs font-bold text-blue-700 dark:text-blue-300">
+                                                    {{ $student['attendance_count'] }}/{{ $student['total_meetings'] }}
+                                                </span>
                                             </td>
 
                                             <td class="px-6 py-4">

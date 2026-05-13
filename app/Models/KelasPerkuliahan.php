@@ -18,6 +18,7 @@ class KelasPerkuliahan extends Model
     protected $fillable = [
         'nama_kelas',
         'tingkat',
+        'angkatan',
         'kode_prodi',
         'kode_kelas',
         'prodi_id',
@@ -26,6 +27,7 @@ class KelasPerkuliahan extends Model
 
     protected $casts = [
         'tingkat' => 'integer',
+        'angkatan' => 'string',
     ];
 
     /* ─── Boot: Auto-generate nama_kelas ─── */
@@ -33,7 +35,15 @@ class KelasPerkuliahan extends Model
     protected static function booted(): void
     {
         static::saving(function (KelasPerkuliahan $model) {
-            $model->nama_kelas = $model->tingkat . $model->kode_prodi . $model->kode_kelas;
+            if (empty($model->tingkat)) {
+                $model->tingkat = 0;
+            }
+
+            $prefix = $model->angkatan
+                ? substr((string) $model->angkatan, -2)
+                : $model->tingkat;
+
+            $model->nama_kelas = $prefix . strtoupper((string) $model->kode_prodi) . $model->kode_kelas;
         });
     }
 
@@ -73,13 +83,13 @@ class KelasPerkuliahan extends Model
 
     /**
      * Display label for dropdowns and UI.
-     * Format: "1HK01 - Hukum Tingkat 1 Kelas 01"
+     * Format: "25HK01 - Ilmu Hukum Kelas 01"
      */
     public function getDisplayLabelAttribute(): string
     {
         $prodiNama = $this->prodi?->nama_prodi ?? $this->kode_prodi;
 
-        return "{$this->nama_kelas} - {$prodiNama} Tingkat {$this->tingkat} Kelas {$this->kode_kelas}";
+        return "{$this->nama_kelas} - {$prodiNama} Kelas {$this->kode_kelas}";
     }
 
     /**
@@ -101,6 +111,11 @@ class KelasPerkuliahan extends Model
     public function scopeByTingkat($query, int $tingkat)
     {
         return $query->where('tingkat', $tingkat);
+    }
+
+    public function scopeByAngkatan($query, string $angkatan)
+    {
+        return $query->where('angkatan', $angkatan);
     }
 
     public function scopeByTahunAkademik($query, int $tahunAkademikId)

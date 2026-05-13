@@ -48,6 +48,12 @@
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                             <i class="fas fa-graduation-cap mr-2"></i>Prodi
                         </th>
+                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
+                            <i class="fas fa-layer-group mr-2"></i>Semester
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                            <i class="fas fa-school mr-2"></i>Kelas
+                        </th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                             <i class="fas fa-calendar mr-2"></i>Angkatan
                         </th>
@@ -67,6 +73,9 @@
                             'email' => $mahasiswa->user->email,
                             'no_hp' => $mahasiswa->no_hp ?? '-',
                             'prodi' => $mahasiswa->prodi,
+                            'semester' => $mahasiswa->semester,
+                            'tingkat' => $mahasiswa->tingkat,
+                            'kelas' => $mahasiswa->display_kelas ?? 'Belum dipilih',
                             'angkatan' => $mahasiswa->angkatan,
                             'status' => ucfirst($mahasiswa->status),
                             'foto' => $mahasiswa->foto ? \App\Helpers\FileHelper::fileUrl($mahasiswa->foto) : null,
@@ -110,6 +119,23 @@
                                                 {{ $mahasiswa->prodi }}
                                             </span>
                                         </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-400">
+                                            <span class="font-semibold text-gray-700 dark:text-gray-200">{{ $mahasiswa->semester ?? '-' }}</span>
+                                            <div class="text-xs text-gray-400 dark:text-gray-500">Tingkat {{ $mahasiswa->tingkat ?? '-' }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            @if($mahasiswa->kelas_perkuliahan_id)
+                                                <span class="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-semibold">
+                                                    {{ $mahasiswa->display_kelas }}
+                                                </span>
+                                            @elseif($mahasiswa->display_kelas)
+                                                <span class="px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold">
+                                                    {{ $mahasiswa->display_kelas }} (legacy)
+                                                </span>
+                                            @else
+                                                <span class="text-xs text-gray-400">Belum punya kelas</span>
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             <i class="fas fa-calendar-alt text-gray-400 dark:text-gray-500 mr-1"></i>
                                             {{ $mahasiswa->angkatan }}
@@ -120,9 +146,9 @@
                                                                 {{ $mahasiswa->status == 'aktif' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' : '' }}
                                                                 {{ $mahasiswa->status == 'cuti' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' : '' }}
                                                                 {{ $mahasiswa->status == 'lulus' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' : '' }}
-                                                                {{ $mahasiswa->status == 'drop-out' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' : '' }}">
+                                                                {{ $mahasiswa->status == 'do' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' : '' }}">
                                                 <i class="fas fa-circle text-xs mr-1"></i>
-                                                {{ ucfirst($mahasiswa->status) }}
+                                                {{ $mahasiswa->status === 'do' ? 'Drop Out' : ucfirst($mahasiswa->status) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -152,7 +178,7 @@
                                     </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="10" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                                 <i class="fas fa-inbox text-gray-300 dark:text-gray-600 text-5xl mb-3"></i>
                                 <p class="text-lg">Belum ada data mahasiswa</p>
                             </td>

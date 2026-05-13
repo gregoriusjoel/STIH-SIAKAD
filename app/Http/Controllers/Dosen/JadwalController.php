@@ -59,18 +59,18 @@ class JadwalController extends Controller
                 ->pluck('kelas')
                 ->filter()
                 ->map(function ($k) {
-                    return $k->mata_kuliah_id . '-' . strtolower(trim((string) $k->section));
+                    return $k->mata_kuliah_id . '-' . ($k->kelas_perkuliahan_id ?: strtolower(trim((string) $k->resolved_kelas_name)));
                 })
                 ->unique()
                 ->toArray();
 
             $kelasMataKuliahs = \App\Models\KelasMataKuliah::where('dosen_id', $dosen->id)
-                ->with(['mataKuliah', 'semester'])
+                ->with(['mataKuliah', 'semester', 'kelasPerkuliahan'])
                 ->get();
 
             // Keep only classes that are present in active jadwal and backfill display fields from jadwal.
             $kelasMataKuliahs = $kelasMataKuliahs->map(function ($kelas) use ($activeCombinations, $activeJadwals) {
-                $combo = $kelas->mata_kuliah_id . '-' . strtolower(trim((string) $kelas->kode_kelas));
+                $combo = $kelas->mata_kuliah_id . '-' . ($kelas->kelas_perkuliahan_id ?: strtolower(trim((string) $kelas->kode_kelas)));
                 if (!in_array($combo, $activeCombinations, true)) {
                     return null;
                 }
@@ -81,7 +81,10 @@ class JadwalController extends Controller
                     }
 
                     return (int) $jadwal->kelas->mata_kuliah_id === (int) $kelas->mata_kuliah_id
-                        && strtolower(trim((string) $jadwal->kelas->section)) === strtolower(trim((string) $kelas->kode_kelas));
+                        && (
+                            ($jadwal->kelas->kelas_perkuliahan_id && $jadwal->kelas->kelas_perkuliahan_id === $kelas->kelas_perkuliahan_id)
+                            || strtolower(trim((string) $jadwal->kelas->resolved_kelas_name)) === strtolower(trim((string) $kelas->kode_kelas))
+                        );
                 });
 
                 if ($matched) {
@@ -89,7 +92,7 @@ class JadwalController extends Controller
                     $kelas->jam_mulai = $kelas->jam_mulai ?: $matched->jam_mulai;
                     $kelas->jam_selesai = $kelas->jam_selesai ?: $matched->jam_selesai;
                     $kelas->ruang = $kelas->ruang ?: $matched->ruangan;
-                    $kelas->kode_kelas = $kelas->kode_kelas ?: ($matched->kelas->section ?? $kelas->kode_kelas);
+                    $kelas->kode_kelas = $kelas->kode_kelas ?: ($matched->kelas->resolved_kelas_name ?? $kelas->kode_kelas);
                 }
 
                 return $kelas;
@@ -126,7 +129,7 @@ class JadwalController extends Controller
                 $kelas->display_jam_mulai = $reschedule->new_jam_mulai;
                 $kelas->display_jam_selesai = $reschedule->new_jam_selesai;
                 $kelas->display_ruang = $reschedule->new_ruang ?: $kelas->ruang;
-                $kelas->display_kelas = $reschedule->new_kelas ?: $kelas->kode_kelas;
+                $kelas->display_kelas = $reschedule->new_kelas ?: $kelas->nama_kelas;
                 $kelas->display_metode = $reschedule->metode_pengajaran ?: $kelas->metode_pengajaran;
                 $kelas->display_online_link = $reschedule->online_link ?: $kelas->online_link;
                 $kelas->display_asynchronous_tugas = $reschedule->asynchronous_tugas ?: $kelas->asynchronous_tugas;
@@ -138,7 +141,7 @@ class JadwalController extends Controller
                 $kelas->display_jam_mulai = $kelas->jam_mulai;
                 $kelas->display_jam_selesai = $kelas->jam_selesai;
                 $kelas->display_ruang = $kelas->ruang;
-                $kelas->display_kelas = $kelas->kode_kelas;
+                $kelas->display_kelas = $kelas->nama_kelas;
                 $kelas->display_metode = $kelas->metode_pengajaran;
                 $kelas->display_online_link = $kelas->online_link;
                 $kelas->display_asynchronous_tugas = $kelas->asynchronous_tugas;
@@ -167,9 +170,9 @@ class JadwalController extends Controller
         // Source-of-truth is jadwal with status active.
         $ruanganById = Ruangan::pluck('kode_ruangan', 'id');
         $kelasMataKuliahIdByCombo = \App\Models\KelasMataKuliah::query()
-            ->get(['id', 'mata_kuliah_id', 'kode_kelas'])
+            ->get(['id', 'mata_kuliah_id', 'kode_kelas', 'kelas_perkuliahan_id'])
             ->mapWithKeys(function ($kmk) {
-                $combo = $kmk->mata_kuliah_id . '-' . strtolower(trim((string) $kmk->kode_kelas));
+                $combo = $kmk->mata_kuliah_id . '-' . ($kmk->kelas_perkuliahan_id ?: strtolower(trim((string) $kmk->kode_kelas)));
                 return [$combo => $kmk->id];
             });
 
@@ -198,7 +201,7 @@ class JadwalController extends Controller
                 $kelas = $jadwal->kelas;
                 $combo = null;
                 if ($kelas) {
-                    $combo = $kelas->mata_kuliah_id . '-' . strtolower(trim((string) $kelas->section));
+                    $combo = $kelas->mata_kuliah_id . '-' . ($kelas->kelas_perkuliahan_id ?: strtolower(trim((string) $kelas->resolved_kelas_name)));
                 }
 
                 return [

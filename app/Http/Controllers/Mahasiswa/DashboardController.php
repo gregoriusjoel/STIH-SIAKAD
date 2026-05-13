@@ -18,7 +18,7 @@ class DashboardController extends Controller
         
         // Get active KRS for current semester
         $activeKrs = Krs::where('mahasiswa_id', $mahasiswa->id)
-            ->whereIn('status', ['approved', 'disetujui', 'sudah submit'])
+            ->where('status', 'sudah submit')
             ->with(['kelasMataKuliah.mataKuliah'])
             ->get();
         

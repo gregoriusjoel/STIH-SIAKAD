@@ -229,7 +229,7 @@
                                                         @click="openRescheduleModal({
                                                                     id: {{ $kelas->id }},
                                                                     mata_kuliah: '{{ $kelas->mataKuliah->nama_mk }}',
-                                                                    kode_kelas: '{{ $kelas->kode_kelas }}',
+                                                                    kode_kelas: '{{ $kelas->nama_kelas }}',
                                                                     sks: {{ $kelas->mataKuliah->sks }},
                                                                     hari: '{{ $kelas->display_hari }}',
                                                                     metode_pengajaran: '{{ $kelas->display_metode ?? 'offline' }}',

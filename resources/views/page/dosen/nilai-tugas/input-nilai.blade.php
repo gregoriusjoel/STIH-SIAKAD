@@ -5,17 +5,20 @@
 @section('content')
 
     <div class="pt-4 px-4 md:pt-6 md:px-8 pb-12 w-full space-y-6"
-         x-data="inputNilaiApp(@js($mahasiswas->map(fn($m) => [
-             'id'    => $m->id,
-             'nama'  => $m->user?->name ?? $m->nama ?? '-',
-             'nim'   => $m->nim ?? '-',
-             'score' => $submissions->get($m->id)?->score ?? '',
-             'comments' => $submissions->get($m->id)?->comments ?? '',
-             'submitted' => $submissions->get($m->id) ? true : false,
-             'file_path' => $submissions->get($m->id)?->file_path ?? null,
-             'text_submission' => $submissions->get($m->id)?->text_submission ?? null,
-             'submission_date' => $submissions->get($m->id)?->created_at ? \Carbon\Carbon::parse($submissions->get($m->id)->created_at)->format('d M Y H:i') : null,
-         ])->values()), {{ $tugas->max_score }})">
+         x-data="inputNilaiApp(@js($mahasiswas->map(function($m) use ($submissions) {
+             $sub = $submissions->get($m->id);
+             return [
+                 'id'    => $m->id,
+                 'nama'  => $m->user?->name ?? $m->nama ?? '-',
+                 'nim'   => $m->nim ?? '-',
+                 'score' => $sub?->score ?? '',
+                 'comments' => $sub?->comments ?? '',
+                 'submitted' => $sub ? true : false,
+                 'file_path' => $sub?->file_path ?? null,
+                 'text_submission' => $sub?->text_submission ?? null,
+                 'submission_date' => $sub?->created_at ? $sub->created_at->format('d M Y H:i') : null,
+             ];
+         })->values()), {{ $tugas->max_score ?? 100 }})">
 
         {{-- Header --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

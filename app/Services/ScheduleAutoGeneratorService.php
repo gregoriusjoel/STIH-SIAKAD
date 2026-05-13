@@ -201,7 +201,7 @@ class ScheduleAutoGeneratorService
             'slots' => $fallbackSlots,
             'source' => 'fallback',
             'has_availability' => $hasAvailability,
-            'reason' => $hasAvailability ? "Ketersediaan dosen tidak mencukupi untuk {$requiredSks} SKS berturut-turut" : 'Dosen tidak mengisi ketersediaan'
+            'reason' => $hasAvailability ? "Ketersediaan dosen tidak mencukupi untuk {$requiredSks} SKS berturut-turut" : 'Dosen tidak mengisi ketersediaan Waktu'
         ];
     }
 

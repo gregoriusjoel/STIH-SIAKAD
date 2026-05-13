@@ -4,6 +4,68 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /**
+ * CSRF Token setup
+ * --------------------------------------------------------------------------
+ * XSRF-TOKEN cookie sekarang HttpOnly (lihat App\Http\Middleware\SecureCsrfCookie),
+ * jadi JS TIDAK BISA baca dari document.cookie. Sebagai gantinya kita ambil
+ * token dari meta tag <meta name="csrf-token" ...> yang ada di setiap layout,
+ * dan kirim sebagai header X-CSRF-TOKEN di setiap AJAX request.
+ *
+ * Catatan:
+ *  - Token meta tag adalah RAW token (dari csrf_token()), berbeda dengan
+ *    cookie XSRF-TOKEN yang berisi token ter-enkripsi. Laravel VerifyCsrfToken
+ *    menerima keduanya: header X-CSRF-TOKEN (raw) atau X-XSRF-TOKEN (encrypted).
+ *  - Karena cookie HttpOnly, axios tidak bisa lagi auto-set X-XSRF-TOKEN dari
+ *    cookie. Maka kita matikan mekanisme tersebut & pakai X-CSRF-TOKEN manual.
+ */
+const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : null;
+
+if (csrfToken) {
+    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
+} else if (typeof console !== 'undefined') {
+    console.warn(
+        '[CSRF] meta[name="csrf-token"] tidak ditemukan — request POST/PUT/DELETE ' +
+        'akan kena 419. Pastikan layout punya <meta name="csrf-token" content="{{ csrf_token() }}">.'
+    );
+}
+
+// Matikan auto-detection cookie XSRF-TOKEN milik axios (cookie sudah HttpOnly,
+// jadi axios tidak akan dapat apa-apa kalau coba baca). Pakai X-CSRF-TOKEN saja.
+window.axios.defaults.xsrfCookieName = null;
+window.axios.defaults.xsrfHeaderName = null;
+
+// jQuery global ajaxSetup — dipasang lazy karena jQuery di-load dari
+// resources/js/app.js setelah bootstrap.js. Dibungkus DOMContentLoaded.
+function setupJqueryCsrf() {
+    if ((window.$ || window.jQuery) && csrfToken) {
+        (window.$ || window.jQuery).ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        });
+    }
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupJqueryCsrf);
+} else {
+    setupJqueryCsrf();
+}
+
+// Expose helper agar inline blade scripts (yang pakai fetch manual) bisa pakai:
+//   fetch(url, { method: 'POST', headers: window.csrfHeaders(), body: ... })
+window.csrfHeaders = function csrfHeaders(extra = {}) {
+    return Object.assign(
+        {
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        extra
+    );
+};
+
+/**
  * Axios Global Interceptors for Loader Management
  * 
  * Automatically shows/hides loader for AJAX requests

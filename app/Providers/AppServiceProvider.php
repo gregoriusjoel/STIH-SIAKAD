@@ -13,6 +13,7 @@ use App\Services\SchedulingLogService;
 use App\Services\ConflictCheckerService;
 use App\Services\RoomMatcherService;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -46,6 +47,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Force HTTPS scheme for all generated URLs in production to prevent
+        // cleartext credential submission and mixed-content issues.
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         // Register Payment System Policies
         Gate::policy(Invoice::class, InvoicePolicy::class);
         Gate::policy(InstallmentRequest::class, InstallmentRequestPolicy::class);

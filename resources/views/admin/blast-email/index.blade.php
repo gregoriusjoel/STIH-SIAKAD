@@ -4,8 +4,7 @@
 @section('page-title', 'Blast Email')
 
 @push('styles')
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{{-- TomSelect CSS di-bundle via resources/js/tom-select.js; Flatpickr CSS sudah di app.css (global). --}}
 <style>
     /* TomSelect Premium Customization */
     .ts-wrapper.single .ts-control, .ts-wrapper.multi .ts-control {
@@ -302,30 +301,52 @@
                     <!-- Dynamic Filter Options -->
                     <div id="filterOptions" class="transition-all duration-300 relative z-40"></div>
 
-                    <!-- Send Credentials Checkbox -->
-                    <div class="pt-4 pb-2">
-                        <label class="custom-checkbox-wrapper block relative cursor-pointer group">
-                            <input type="checkbox" id="send_credentials" name="send_credentials" value="1" class="peer sr-only" {{ old('send_credentials') ? 'checked' : '' }} onchange="toggleCredentialsMode()">
-                            <div class="flex items-start gap-4 p-5 rounded-2xl bg-slate-50 border-2 border-slate-200 transition-all duration-300 group-hover:border-blue-300 group-hover:bg-blue-50/50">
-                                <div class="mt-0.5 relative flex items-center justify-center w-6 h-6 rounded border-2 border-slate-300 bg-white peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all flex-shrink-0">
-                                    <i class="fas fa-check text-white text-xs check-icon absolute"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 mb-1 w-full pr-2">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shadow-inner flex-shrink-0">
-                                                <i class="fas fa-key"></i>
-                                            </div>
-                                            <span class="font-bold text-slate-800 text-base">Kirim Kredensial Sistem</span>
+                    <!-- Send Credentials Checkbox & Dropdown -->
+                    <div class="pt-4 pb-2 relative z-20">
+                        <div class="mt-2 p-5 rounded-2xl bg-blue-50/50 border border-blue-100 relative group overflow-hidden">
+                            <div class="absolute -right-4 -top-4 text-blue-200 opacity-40 pointer-events-none transition-transform group-hover:scale-110 duration-500">
+                                <i class="fas fa-key text-8xl absolute -right-4 -top-4"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <label class="custom-checkbox-wrapper block relative cursor-pointer">
+                                    <input type="checkbox" id="send_credentials" name="send_credentials" value="1" class="peer sr-only" {{ old('send_credentials') ? 'checked' : '' }} onchange="toggleCredentialsMode()">
+                                    
+                                    <div class="flex items-center gap-4 bg-white p-4 rounded-xl border border-blue-100 shadow-sm transition-all duration-300 peer-checked:border-blue-500 peer-checked:ring-2 peer-checked:ring-blue-500/20 hover:border-blue-300">
+                                        <div class="relative flex items-center justify-center w-6 h-6 rounded border-2 border-slate-300 bg-white transition-all flex-shrink-0">
+                                            <i class="fas fa-check text-blue-600 text-lg check-icon absolute"></i>
                                         </div>
-                                        <button type="button" id="btnEditTemplate" onclick="requestTemplateEdit(event)" class="hidden text-[10px] uppercase font-bold tracking-wider text-blue-600 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-lg transition-all items-center gap-1.5 z-10 relative flex-shrink-0 border border-blue-200">
-                                            <i class="fas fa-cog"></i> Sesuaikan Template
-                                        </button>
+                                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 shadow-inner">
+                                            <i class="fas fa-key text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="font-bold text-slate-800 text-sm">Kirim Kredensial Sistem</h6>
+                                            <p class="text-xs text-slate-500 font-medium mt-0.5">Aktifkan untuk mengirim email standar berisi informasi login kepada mahasiswa baru atau untuk reset sandi.</p>
+                                        </div>
                                     </div>
-                                    <p class="text-xs text-slate-500 font-medium leading-relaxed pl-10">Aktifkan untuk mengirim email standar berisi informasi login (Email Kampus & Password default) kepada mahasiswa baru atau untuk reset sandi.</p>
+                                </label>
+                                
+                                <!-- Dropdown untuk pilih recipient -->
+                                <div id="credentialTypeContainer" class="hidden mt-3 bg-white p-4 rounded-xl border border-blue-100 shadow-sm transition-all duration-300">
+                                    <label for="credential_type" class="block text-[11px] uppercase tracking-widest font-bold text-slate-500 mb-2">
+                                        Kirim Kredensial Ke <span class="text-rose-500 text-lg leading-3">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                                            <i class="fas fa-user-tag text-slate-400"></i>
+                                        </div>
+                                        <select id="credential_type" name="credential_type" class="w-full pl-11 pr-10 py-3.5 premium-input rounded-xl text-sm text-slate-800 font-bold appearance-none cursor-pointer relative">
+                                            <option value="" class="font-normal">-- Pilih Penerima --</option>
+                                            <option value="student" {{ old('credential_type') === 'student' ? 'selected' : '' }}>Mahasiswa</option>
+                                            <option value="parents" {{ old('credential_type') === 'parents' ? 'selected' : '' }}>Orang Tua</option>
+                                            <option value="both" {{ old('credential_type') === 'both' ? 'selected' : '' }}>Mahasiswa & Orang Tua</option>
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400 z-10">
+                                            <i class="fas fa-chevron-down text-xs"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </label>
+                        </div>
                     </div>
                 </div>
 
@@ -411,10 +432,8 @@
     </div>
 </div>
 
-<!-- Flatpickr & TomSelect Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+{{-- Flatpickr (+locale ID) sudah di-bundle global. TomSelect via Vite local. --}}
+@vite('resources/js/tom-select.js')
 
 <!-- JavaScript -->
 <script>
@@ -1098,16 +1117,24 @@ function getPreview() {
 
 function toggleCredentialsMode() {
     const credentialsCheckbox = document.getElementById('send_credentials');
+    const credentialTypeContainer = document.getElementById('credentialTypeContainer');
+    const credentialTypeSelect = document.getElementById('credential_type');
     const messageSection = document.getElementById('messageSection');
     const subjectInput = document.getElementById('subject');
     const greetingInput = document.getElementById('greeting');
     const messageInput = document.getElementById('message');
     
+    // Template values
+    const templateSubject = 'Akun Login SIAKAD - Email dan Password Kampus Anda';
+    const templateGreeting = 'Selamat Datang di SIAKAD STIH';
+    const templateMessage = 'Akun SIAKAD Anda telah dibuat. Berikut adalah kredensial login Anda:';
+    
+    const overlayClass = "opacity-50 pointer-events-none grayscale-[30%]";
+    const btnEditTemplate = document.getElementById('btnEditTemplate');
+    
     if(credentialsCheckbox && credentialsCheckbox.checked) {
-        // Template values
-        const templateSubject = 'Akun Login SIAKAD - Email dan Password Kampus Anda';
-        const templateGreeting = 'Selamat Datang di SIAKAD STIH';
-        const templateMessage = 'Akun SIAKAD Anda telah dibuat. Berikut adalah kredensial login Anda:';
+        // Checkbox checked - show dropdown & enable credentials mode
+        credentialTypeContainer.classList.remove('hidden');
         
         // Fill fields with template
         subjectInput.value = templateSubject;
@@ -1115,7 +1142,6 @@ function toggleCredentialsMode() {
         messageInput.value = templateMessage;
         
         // Visual cue for disabled fields
-        const overlayClass = "opacity-50 pointer-events-none grayscale-[30%]";
         subjectInput.closest('.group').classList.add(...overlayClass.split(' '));
         greetingInput.closest('.group').classList.add(...overlayClass.split(' '));
         
@@ -1133,24 +1159,25 @@ function toggleCredentialsMode() {
         messageInput.removeAttribute('required');
         
         // Show edit template button
-        const btnEditTemplate = document.getElementById('btnEditTemplate');
         if (btnEditTemplate) {
             btnEditTemplate.classList.remove('hidden');
             btnEditTemplate.classList.add('flex');
         }
     } else {
+        // Checkbox unchecked - hide dropdown & disable credentials mode
+        credentialTypeContainer.classList.add('hidden');
+        credentialTypeSelect.value = ''; // Reset dropdown
+        
         // Hide edit template button
-        const btnEditTemplate = document.getElementById('btnEditTemplate');
         if (btnEditTemplate) {
             btnEditTemplate.classList.add('hidden');
             btnEditTemplate.classList.remove('flex');
         }
         
         // Enable visual fields
-        const overlayClass = "opacity-50 pointer-events-none grayscale-[30%]";
         subjectInput.closest('.group').classList.remove(...overlayClass.split(' '));
         greetingInput.closest('.group').classList.remove(...overlayClass.split(' '));
-        if(messageSection) messageSection.classList.remove(...overlayClass.split(' '));
+        if(messageSection) messageSection.classList.remove('hidden');
         
         // Enable editing
         subjectInput.readOnly = false;
@@ -1163,7 +1190,7 @@ function toggleCredentialsMode() {
         messageInput.setAttribute('required', 'required');
         
         // Only clear template values if they were exactly the template
-        if(subjectInput.value === 'Akun Login SIAKAD - Email dan Password Kampus Anda') {
+        if(subjectInput.value === templateSubject) {
             subjectInput.value = '';
             greetingInput.value = '';
             messageInput.value = '';

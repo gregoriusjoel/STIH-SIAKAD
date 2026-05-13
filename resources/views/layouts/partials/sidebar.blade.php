@@ -115,6 +115,18 @@
                 <p class="text-sm {{ Request::routeIs('dosen.magang.*') ? 'font-black' : 'font-semibold' }}">Bimbingan Magang</p>
             </a>
 
+            <a href="{{ route('dosen.prestasi.index') }}" 
+               @click="if(window.innerWidth < 1024) sidebarOpen = false" 
+               class="group relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ Request::routeIs('dosen.prestasi.*') ? 'bg-white shadow-md shadow-slate-200/50 text-primary active-nav-pill hover:shadow-lg hover:-translate-y-0.5' : 'text-slate-500 hover:bg-primary/5 hover:text-primary' }}">
+                @if(Request::routeIs('dosen.prestasi.*'))
+                    <div class="absolute left-2 w-1 h-5 bg-primary rounded-full shadow-[0_0_10px_rgba(139,21,56,0.3)]"></div>
+                @endif
+                <span class="material-symbols-outlined text-[23px] transition-all duration-300 group-hover:scale-110 {{ Request::routeIs('dosen.prestasi.*') ? 'fill-current' : 'text-slate-400 group-hover:text-primary' }}">
+                    workspace_premium
+                </span>
+                <p class="text-sm {{ Request::routeIs('dosen.prestasi.*') ? 'font-black' : 'font-semibold' }}">Prestasi & Kegiatan</p>
+            </a>
+
             @if(Route::has('dosen.skripsi.index'))
             <a href="{{ route('dosen.skripsi.index') }}" 
                @click="if(window.innerWidth < 1024) sidebarOpen = false" 

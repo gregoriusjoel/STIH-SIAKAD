@@ -15,7 +15,8 @@ class ParentController extends Controller
     public function index()
     {
         $parents = ParentModel::with(['user', 'mahasiswa.user'])->paginate(10);
-        return view('admin.parents.index', compact('parents'));
+        $angkatans = Mahasiswa::select('angkatan')->whereNotNull('angkatan')->distinct()->orderBy('angkatan', 'desc')->pluck('angkatan');
+        return view('admin.parents.index', compact('parents', 'angkatans'));
     }
 
     public function create()
@@ -133,9 +134,9 @@ class ParentController extends Controller
             // Handle User Account Logic
             // Jika parent sudah memiliki akun 'parent' sendiri ATAU kita akan me-link ke akun parent yang sudah ada
             if (($parent->user && $parent->user->role === 'parent') || ($userIdToIgnore !== $parent->user_id)) {
-                
+
                 $targetUser = $userIdToIgnore !== $parent->user_id ? User::find($userIdToIgnore) : $parent->user;
-                
+
                 $userData = ['name' => $request->name, 'email' => $request->email];
                 if ($request->filled('password')) {
                     $userData['password'] = Hash::make($request->password);
@@ -147,7 +148,7 @@ class ParentController extends Controller
                     $parent->user_id = $targetUser->id;
                     $parent->save();
                 }
-            } 
+            }
             // Jika parent masih menginduk ke 'mahasiswa' dan ternyata TIDAK ADA user existing dengan email tsb, buat baru.
             elseif ($parent->user && $parent->user->role === 'mahasiswa' && $request->filled('email')) {
                 $newUser = User::create([
@@ -214,6 +215,98 @@ class ParentController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
+    }
+
+    public function generateAccounts(Request $request)
+    {
+        $angkatan = $request->input('angkatan');
+
+        // Temukan data ParentModel yang saat ini user_id-nya menunjuk ke user mahasiswa
+        // atau mungkin tidak punya user_id sama sekali.
+        $query = ParentModel::where(function ($q) {
+            $q->whereHas('user', function ($sq) {
+                $sq->where('role', 'mahasiswa');
+            })->orWhereNull('user_id');
+        });
+
+        // Filter berdasarkan angkatan jika dipilih selain 'all'
+        if ($angkatan && $angkatan !== 'all') {
+            $query->whereHas('mahasiswa', function ($q) use ($angkatan) {
+                $q->where('angkatan', $angkatan);
+            });
+        }
+
+        $parentsWithoutAccounts = $query->with('mahasiswa')->get();
+
+        if ($parentsWithoutAccounts->isEmpty()) {
+            return back()->with('info', 'Semua data orang tua saat ini sudah memiliki akun yang valid.');
+        }
+
+        $generatedCount = 0;
+        $failedCount = 0;
+
+        DB::beginTransaction();
+        try {
+            foreach ($parentsWithoutAccounts as $parent) {
+                // Perlu relasi mahasiswa untuk mengambil NIM
+                if (!$parent->mahasiswa) {
+                    $failedCount++;
+                    continue;
+                }
+
+                $nim = $parent->mahasiswa->nim;
+
+                // Tentukan nama
+                $parentName = 'Orang Tua / Wali dari ' . $parent->mahasiswa->user->name;
+                if ($parent->hubungan === 'ayah' && !empty($parent->nama_ayah)) {
+                    $parentName = $parent->nama_ayah;
+                } elseif ($parent->hubungan === 'ibu' && !empty($parent->nama_ibu)) {
+                    $parentName = $parent->nama_ibu;
+                } elseif ($parent->hubungan === 'wali' && !empty($parent->nama_wali)) {
+                    $parentName = $parent->nama_wali;
+                } elseif (!empty($parent->nama_ayah)) {
+                    $parentName = $parent->nama_ayah;
+                } elseif (!empty($parent->nama_ibu)) {
+                    $parentName = $parent->nama_ibu;
+                } elseif (!empty($parent->nama_wali)) {
+                    $parentName = $parent->nama_wali;
+                }
+
+                // Tentukan email
+                $baseEmail = strtolower($nim) . '@parent.stih.ac.id';
+                $email = $baseEmail;
+                $counter = 1;
+
+                // Cek apakah email sudah ada (jika orang tua lebih dari satu / ada yang manual input)
+                while (User::where('email', $email)->exists()) {
+                    $email = strtolower($nim) . "_{$counter}@parent.stih.ac.id";
+                    $counter++;
+                }
+
+                // Password menggunakan parent(nim)
+                $password = 'parent' . $nim;
+
+                // Buat user
+                $newUser = User::create([
+                    'name' => $parentName,
+                    'email' => $email,
+                    'password' => Hash::make($password),
+                    'role' => 'parent',
+                ]);
+
+                // Update ParentModel
+                $parent->user_id = $newUser->id;
+                $parent->save();
+
+                $generatedCount++;
+            }
+
+            DB::commit();
+            return back()->with('success', "Berhasil menarik data dan men-generate {$generatedCount} akun orang tua baru.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal men-generate akun: ' . $e->getMessage());
         }
     }
 }

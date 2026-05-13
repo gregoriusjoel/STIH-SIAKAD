@@ -17,6 +17,8 @@
 
             <form id="mahasiswaForm" action="{{ route('admin.mahasiswa.store') }}" method="POST" class="p-6">
                 @csrf
+                <input type="hidden" name="status" value="{{ old('status', 'aktif') }}">
+                <input type="hidden" name="tahun_akademik_id" value="{{ old('tahun_akademik_id', $activeTahunAkademik?->id) }}">
 
                 <div class="space-y-6">
                     <!-- Data User -->
@@ -74,7 +76,7 @@
                                 </label>
                                 <div class="relative">
                                     <input id="mahasiswa_password" type="password" name="password"
-                                        value="{{ old('password', 'mahasiswa123') }}"
+                                        value="{{ old('password') }}"
                                         class="w-full pr-10 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                         placeholder="Minimal 6 karakter" required>
                                     <button type="button" id="toggleMahasiswaPw" aria-pressed="false"
@@ -108,12 +110,12 @@
                                     <i class="fas fa-book-open text-gray-400 mr-1"></i>
                                     Program Studi *
                                 </label>
-                                <select name="prodi"
+                                <select name="prodi_id" id="prodi_id"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                     required>
                                     <option value="">Pilih Program Studi</option>
                                     @foreach($prodis as $prodi)
-                                        <option value="{{ $prodi->nama_prodi }}" {{ old('prodi') == $prodi->nama_prodi ? 'selected' : '' }}>
+                                        <option value="{{ $prodi->id }}" {{ (string) old('prodi_id') === (string) $prodi->id ? 'selected' : '' }}>
                                             {{ $prodi->nama_prodi }}
                                         </option>
                                     @endforeach
@@ -126,7 +128,7 @@
                                     Angkatan *
                                 </label>
                                 
-                                <select name="angkatan" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
+                                <select name="angkatan" id="angkatan" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition" required>
                                     <option value="">Pilih Angkatan</option>
                                     @for ($year = date('Y'); $year >= 1960; $year--)
                                         <option value="{{ $year }}" {{ old('angkatan', date('Y')) == $year ? 'selected' : '' }}>{{ $year }}</option>
@@ -139,13 +141,35 @@
                                     <i class="fas fa-layer-group text-gray-400 mr-1"></i>
                                     Semester *
                                 </label>
-                                <select name="semester" required
+                                <select name="semester" id="semester" required
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
                                     @for($i = 1; $i <= 8; $i++)
                                         <option value="{{ $i }}" {{ old('semester', 1) == $i ? 'selected' : '' }}>Semester
                                             {{ $i }}</option>
                                     @endfor
                                 </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-school text-gray-400 mr-1"></i>
+                                    Kelas Perkuliahan
+                                </label>
+                                <select name="kelas_perkuliahan_id" id="kelas_perkuliahan_id"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition">
+                                    <option value="">Pilih prodi dan angkatan terlebih dahulu</option>
+                                    @if($selectedKelasPerkuliahan)
+                                        <option value="{{ $selectedKelasPerkuliahan->id }}" selected>
+                                            {{ $selectedKelasPerkuliahan->display_label }}
+                                        </option>
+                                    @endif
+                                </select>
+                                <small class="text-gray-500 mt-1 block">
+                                    Kelas difilter berdasarkan prodi, angkatan, dan tahun akademik.
+                                </small>
+                                <small class="text-maroon mt-1 block" id="kelas_option_message">
+                                    {{ $activeTahunAkademik ? 'Tahun akademik aktif: ' . $activeTahunAkademik->display_label : 'Tahun akademik aktif belum diatur.' }}
+                                </small>
                             </div>
 
                             <div>
@@ -268,6 +292,89 @@
                     });
                 });
             }
+
+            const prodiSelect = document.getElementById('prodi_id');
+            const angkatanSelect = document.getElementById('angkatan');
+            const kelasSelect = document.getElementById('kelas_perkuliahan_id');
+            const kelasMessage = document.getElementById('kelas_option_message');
+            const tahunAkademikId = @json(old('tahun_akademik_id', $activeTahunAkademik?->id));
+            const selectedKelasId = @json((string) old('kelas_perkuliahan_id', $selectedKelasPerkuliahan?->id));
+            const optionsUrl = @json(route('kelas-perkuliahan.options'));
+
+            async function loadKelasOptions() {
+                if (!prodiSelect.value || !angkatanSelect.value) {
+                    kelasSelect.innerHTML = '<option value="">Pilih prodi dan angkatan terlebih dahulu</option>';
+                    kelasSelect.disabled = true;
+                    kelasMessage.textContent = 'Kelas difilter berdasarkan prodi, angkatan, dan tahun akademik.';
+                    return;
+                }
+
+                kelasSelect.disabled = true;
+                kelasSelect.innerHTML = '<option value="">Memuat data kelas...</option>';
+
+                try {
+                    const params = new URLSearchParams({
+                        prodi_id: prodiSelect.value,
+                        angkatan: angkatanSelect.value,
+                    });
+
+                    if (tahunAkademikId) {
+                        params.set('tahun_akademik_id', tahunAkademikId);
+                    }
+
+                    const response = await fetch(`${optionsUrl}?${params.toString()}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    const payload = await response.json();
+                    const options = payload.data || [];
+                    const currentValue = kelasSelect.dataset.currentValue || selectedKelasId || '';
+
+                    kelasSelect.innerHTML = '<option value="">Pilih Kelas Perkuliahan</option>';
+
+                    if (options.length === 0) {
+                        kelasSelect.innerHTML = '<option value="">Belum ada kelas tersedia</option>';
+                        kelasSelect.disabled = true;
+                    } else {
+                        options.forEach((option) => {
+                            const item = document.createElement('option');
+                            item.value = option.id;
+                            item.textContent = option.display_label;
+                            if (String(currentValue) === String(option.id)) {
+                                item.selected = true;
+                            }
+                            kelasSelect.appendChild(item);
+                        });
+                        kelasSelect.disabled = false;
+                    }
+
+                    kelasMessage.textContent = payload.meta?.message || 'Kelas difilter berdasarkan prodi, angkatan, dan tahun akademik.';
+                    kelasSelect.dataset.currentValue = kelasSelect.value;
+                } catch (error) {
+                    kelasSelect.innerHTML = '<option value="">Gagal memuat kelas</option>';
+                    kelasSelect.disabled = true;
+                    kelasMessage.textContent = 'Gagal memuat kelas. Silakan coba lagi.';
+                }
+            }
+
+            if (kelasSelect) {
+                kelasSelect.dataset.currentValue = selectedKelasId || '';
+            }
+
+            prodiSelect?.addEventListener('change', () => {
+                kelasSelect.dataset.currentValue = '';
+                loadKelasOptions();
+            });
+
+            angkatanSelect?.addEventListener('change', () => {
+                kelasSelect.dataset.currentValue = '';
+                loadKelasOptions();
+            });
+
+            loadKelasOptions();
         });
     </script>
 @endpush

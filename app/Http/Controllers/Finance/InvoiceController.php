@@ -104,12 +104,13 @@ class InvoiceController extends Controller
             'sks_ambil' => $request->sks_ambil,
             'paket_sks_bayar' => $request->paket_sks_bayar,
             'total_tagihan' => $request->total_tagihan,
+            'status' => 'DRAFT',
+            'auto_generated_from_krs' => false,
             'allow_partial' => $request->allow_partial ?? false,
             'notes' => $request->notes,
             'bank_name' => $request->bank_name,
             'va_number' => $request->va_number,
             'created_by' => auth()->id(),
-            'status' => 'DRAFT',
         ]);
 
         return redirect()
@@ -142,6 +143,83 @@ class InvoiceController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Tagihan berhasil dipublish');
+    }
+
+    /**
+     * Show form to edit invoice (for confirming/editing draft invoices)
+     */
+    public function edit(Invoice $invoice)
+    {
+        $this->authorize('update', $invoice);
+
+        // Only allow editing DRAFT invoices
+        if ($invoice->status !== 'DRAFT') {
+            return redirect()->route('finance.invoices.show', $invoice)
+                ->with('error', 'Hanya tagihan dengan status DRAFT yang dapat diedit.');
+        }
+
+        $activeSemester = Semester::where('status', 'aktif')
+            ->orderByDesc('tanggal_mulai')
+            ->first()
+            ?? Semester::where('is_active', true)->orderByDesc('tanggal_mulai')->first()
+            ?? Semester::orderByDesc('tanggal_mulai')->first();
+
+        $students = Mahasiswa::with('user')
+            ->whereHas('user')
+            ->get()
+            ->sortBy(fn($s) => $s->user->name)
+            ->values();
+
+        $studentDefaults = [];
+        foreach ($students as $student) {
+            $currentSemester = (int) $student->getCurrentSemester();
+            $studentDefaults[$student->id] = [
+                'semester' => $currentSemester,
+                'tahun_ajaran' => $activeSemester?->tahun_ajaran ?? '',
+            ];
+        }
+
+        return view('finance.invoices.edit', compact('invoice', 'students', 'studentDefaults', 'activeSemester'));
+    }
+
+    /**
+     * Update invoice
+     */
+    public function update(StoreInvoiceRequest $request, Invoice $invoice)
+    {
+        $this->authorize('update', $invoice);
+
+        // Only allow updating DRAFT invoices
+        if ($invoice->status !== 'DRAFT') {
+            return redirect()->route('finance.invoices.show', $invoice)
+                ->with('error', 'Hanya tagihan dengan status DRAFT yang dapat diubah.');
+        }
+
+        // If invoice is auto-generated from KRS, don't allow changing student/semester/tahun_ajaran/sks fields
+        $updateData = [
+            'total_tagihan' => $request->total_tagihan,
+            'allow_partial' => $request->allow_partial ?? false,
+            'notes' => $request->notes,
+            'bank_name' => $request->bank_name,
+            'va_number' => $request->va_number,
+        ];
+
+        // Only allow changing student/semester fields if NOT auto-generated from KRS
+        if (!$invoice->auto_generated_from_krs) {
+            $updateData = array_merge($updateData, [
+                'student_id' => $request->student_id,
+                'semester' => $request->semester,
+                'tahun_ajaran' => $request->tahun_ajaran,
+                'sks_ambil' => $request->sks_ambil,
+                'paket_sks_bayar' => $request->paket_sks_bayar,
+            ]);
+        }
+
+        $invoice->update($updateData);
+
+        return redirect()
+            ->route('finance.invoices.show', $invoice)
+            ->with('success', 'Tagihan berhasil diperbarui');
     }
 
     /**

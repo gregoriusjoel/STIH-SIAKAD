@@ -28,7 +28,7 @@ class DosenAttendanceController extends Controller
         $kelas = Kelas::findOrFail($id);
 
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('kode_kelas', $kelas->section)
+            ->where('kode_kelas', $kelas->kelasPerkuliahan?->kode_kelas)
             ->where('dosen_id', $kelas->dosen_id)
             ->first();
 
@@ -99,7 +99,7 @@ class DosenAttendanceController extends Controller
         $kelas = Kelas::findOrFail($id);
 
         $kelasMataKuliah = KelasMataKuliah::where('mata_kuliah_id', $kelas->mata_kuliah_id)
-            ->where('kode_kelas', $kelas->section)
+            ->where('kode_kelas', $kelas->kelasPerkuliahan?->kode_kelas)
             ->where('dosen_id', $kelas->dosen_id)
             ->first();
 

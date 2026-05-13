@@ -107,7 +107,8 @@
         </article>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    {{-- html-to-image di-bundle lokal via Vite (akses lewat window.htmlToImage). --}}
+    @vite('resources/js/html-to-image.js')
     <script>
         document.getElementById('btn-share').addEventListener('click', async function() {
             const btn = this;

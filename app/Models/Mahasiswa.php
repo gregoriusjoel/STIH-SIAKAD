@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 use App\Traits\Auditable;
@@ -56,8 +57,10 @@ class Mahasiswa extends Model
         'nim',
         'nim',
         'prodi',
+        'prodi_id',
         'angkatan',
         'semester',
+        'tahun_akademik_id',
         'last_semester_id',
         'phone',
         'address',
@@ -315,12 +318,57 @@ class Mahasiswa extends Model
         return $this->hasMany(Internship::class);
     }
 
+    public function prestasis()
+    {
+        return $this->morphMany(Prestasi::class, 'pengaju');
+    }
+
+    public function prodiData(): BelongsTo
+    {
+        return $this->belongsTo(Prodi::class, 'prodi_id');
+    }
+
+    public function tahunAkademik(): BelongsTo
+    {
+        return $this->belongsTo(Semester::class, 'tahun_akademik_id');
+    }
+
     /**
      * Get the Kelas Perkuliahan master data (new dynamic system)
      */
     public function kelasPerkuliahan(): BelongsTo
     {
         return $this->belongsTo(KelasPerkuliahan::class);
+    }
+
+    public function latestSubmittedKrs(): HasOne
+    {
+        return $this->hasOne(Krs::class)->where('status', 'sudah submit')->latestOfMany();
+    }
+
+    public function calculateTingkatFromSemester(?int $semester = null): ?int
+    {
+        $semester ??= $this->semester;
+
+        if (!$semester) {
+            return null;
+        }
+
+        return (int) ceil(((int) $semester) / 2);
+    }
+
+    public function getTingkatAttribute(): ?int
+    {
+        return $this->calculateTingkatFromSemester();
+    }
+
+    public function getDisplayKelasAttribute(): ?string
+    {
+        if ($this->kelasPerkuliahan) {
+            return $this->kelasPerkuliahan->nama_kelas;
+        }
+
+        return $this->latestSubmittedKrs?->kelas?->kelasPerkuliahan?->nama_kelas;
     }
 
     /* ─── EMAIL AUTOMATION HELPER METHODS ─── */

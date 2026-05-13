@@ -28,13 +28,31 @@ class DosenController extends Controller
 
         $tab = $request->input('tab', 'master');
         $search = trim($request->input('search', ''));
-        $sortBy = $request->input('sort_by', 'name');
-        $sortDir = $request->input('sort_direction', 'asc');
+
+        // Whitelist validation for sort parameters to prevent injection (XPath/SQL/XSS reflection)
+        $allowedSortBy = ['name', 'nidn', 'pendidikan', 'status', 'mk_aktif'];
+        $allowedSortDir = ['asc', 'desc'];
+
+        $sortBy = in_array($request->input('sort_by'), $allowedSortBy, true)
+            ? $request->input('sort_by')
+            : 'name';
+        $sortDir = in_array(strtolower((string) $request->input('sort_direction')), $allowedSortDir, true)
+            ? strtolower($request->input('sort_direction'))
+            : 'asc';
 
         // ── Tab: Master Dosen ────────────────────────────────────────────────
         $dosens = null;
         if ($tab === 'master') {
-            $query = Dosen::with(['user', 'kelasMataKuliahs.mataKuliah', 'kelasMataKuliahs.semester'])
+            $query = Dosen::with(['user'])
+                ->withCount([
+                    'mataKuliahs as mk_aktif_count' => function ($q) use ($selectedSemester) {
+                        if ($selectedSemester) {
+                            $q->where('semester_id', $selectedSemester->id);
+                        } else {
+                            $q->where('semester_id', 0);
+                        }
+                    }
+                ])
                 ->when($search, function ($q) use ($search) {
                     $q->whereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"))
                         ->orWhere('nidn', 'like', "%{$search}%");
@@ -50,15 +68,7 @@ class DosenController extends Controller
             } elseif ($sortBy === 'status') {
                 $query->orderBy('status', $sortDir);
             } elseif ($sortBy === 'mk_aktif') {
-                $query->withCount([
-                    'kelasMataKuliahs as mk_aktif_count' => function ($q) use ($activeSemester) {
-                        if ($activeSemester) {
-                            $q->where('semester_id', $activeSemester->id);
-                        } else {
-                            $q->where('id', 0);
-                        }
-                    }
-                ])->orderBy('mk_aktif_count', $sortDir);
+                $query->orderBy('mk_aktif_count', $sortDir);
             } else {
                 $query->orderBy(User::select('name')->whereColumn('users.id', 'dosens.user_id'), 'asc');
             }

@@ -133,7 +133,7 @@
                                 </label>
                                 <div class="relative">
                                     <input id="parent_password" type="password" name="password"
-                                        value="{{ old('password', 'parent123') }}"
+                                        value="{{ old('password') }}"
                                         class="w-full pr-10 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                         required>
                                     <button type="button" id="toggleParentPw" aria-pressed="false"
