@@ -176,7 +176,8 @@
 
                 {{-- Generate Surat Form --}}
                 <div id="pdf-panel" x-show="showPdfPanel" x-cloak class="mt-5 p-5 bg-indigo-50/80 border border-indigo-200/60 rounded-2xl space-y-4"
-                     x-data="{ jenis: 'surat_tugas', updateNomor() { fetch(`{{ route('admin.prestasi.preview-nomor') }}?jenis_surat=${this.jenis}`).then(r=>r.json()).then(d=>{ $refs.nomor.value = d.nomor_surat; }) } }">
+                     x-data="{ jenis: 'tugas', previewNomor: '', updateNomor() { fetch(`{{ route('admin.prestasi.preview-nomor') }}?jenis_surat=${this.jenis}`).then(r=>r.json()).then(d=>{ this.previewNomor = d.nomor_surat; }) } }"
+                     x-init="updateNomor()">
                     <h4 class="text-xs font-bold text-indigo-600 uppercase tracking-widest flex items-center gap-2 mb-2">
                         <span class="material-symbols-outlined text-[15px]">picture_as_pdf</span> Form Generate Surat
                     </h4>
@@ -197,8 +198,10 @@
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-xs font-bold text-gray-600 mb-1">Nomor Surat (Auto-preview)</label>
-                                <input type="text" name="nomor_surat_manual" x-ref="nomor" value="{{ $previewNomors['surat_tugas'] ?? '' }}" class="w-full rounded-xl border-gray-300 bg-white text-sm px-4 py-2 focus:ring-[#7a1621] focus:border-[#7a1621]">
-                                <p class="text-[10px] text-gray-500 mt-1">Bisa diubah manual jika diperlukan (misal untuk surat mundur/backdate).</p>
+                                <input type="text" x-model="previewNomor" readonly class="w-full rounded-xl border-gray-300 bg-gray-50 text-sm px-4 py-2 focus:ring-[#7a1621] focus:border-[#7a1621] cursor-not-allowed opacity-75">
+                                <!-- Hidden input untuk auto-generate (kosong = trigger counter increment) -->
+                                <input type="hidden" name="nomor_surat_manual" value="">
+                                <p class="text-[10px] text-gray-500 mt-1">Nomor akan di-generate otomatis. Jika perlu manual, hubungi admin.</p>
                             </div>
                         </div>
 
@@ -210,12 +213,13 @@
                                         if(this.value){
                                             const opt = this.options[this.selectedIndex];
                                             document.getElementById('p_nama').value = opt.dataset.nama;
+                                            document.getElementById('p_jabatan').value = opt.dataset.jabatan;
                                             document.getElementById('p_nip').value = opt.dataset.nip;
                                         }
                                     " class="w-full rounded-xl border-gray-300 text-sm px-4 py-2 mb-2">
                                         <option value="">-- Pilih Template Pejabat (Opsional) --</option>
                                         @foreach($dosens as $d)
-                                            <option value="{{ $d->id }}" data-nama="{{ $d->user?->name }}" data-nip="{{ $d->nidn }}">{{ $d->user?->name }} ({{ $d->nidn }})</option>
+                                            <option value="{{ $d->id }}" data-nama="{{ $d->user?->name }}" data-jabatan="{{ $d->jabatan_fungsional[0] ?? '' }}" data-nip="{{ $d->nidn }}">{{ $d->user?->name }} ({{ $d->nidn }})</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -223,11 +227,19 @@
                                     <input type="text" name="penandatangan_nama" id="p_nama" placeholder="Nama Lengkap & Gelar" required class="w-full rounded-xl border-gray-300 text-sm px-4 py-2 focus:ring-[#7a1621] focus:border-[#7a1621]">
                                 </div>
                                 <div>
-                                    <input type="text" name="penandatangan_jabatan" placeholder="Jabatan (Ketua STIH / Kaprodi)" required class="w-full rounded-xl border-gray-300 text-sm px-4 py-2 focus:ring-[#7a1621] focus:border-[#7a1621]">
+                                    <input type="text" name="penandatangan_jabatan" id="p_jabatan" placeholder="Jabatan (Ketua STIH / Kaprodi)" required class="w-full rounded-xl border-gray-300 text-sm px-4 py-2 focus:ring-[#7a1621] focus:border-[#7a1621]">
                                 </div>
                                 <div class="md:col-span-2">
                                     <input type="text" name="penandatangan_nip" id="p_nip" placeholder="NIP / NIDN (Opsional)" class="w-full rounded-xl border-gray-300 text-sm px-4 py-2 focus:ring-[#7a1621] focus:border-[#7a1621]">
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-white border border-gray-200 rounded-xl space-y-3">
+                            <p class="text-xs font-bold text-gray-600">Lokasi Tanda Tangan</p>
+                            <div>
+                                <input type="text" name="lokasi_ttd" placeholder="Lokasi tanda tangan (misal: Baubau, Jakarta, Surabaya)" required class="w-full rounded-xl border-gray-300 text-sm px-4 py-2 focus:ring-[#7a1621] focus:border-[#7a1621]">
+                                <p class="text-[10px] text-gray-500 mt-1">Nama kota/lokasi yang akan muncul di surat</p>
                             </div>
                         </div>
 
@@ -252,9 +264,17 @@
                                 <p class="text-xs text-gray-500 font-mono">{{ $surat->nomor_surat }}</p>
                                 <p class="text-[10px] text-gray-400 mt-1">Digenerate: {{ $surat->created_at->format('d M Y H:i') }} oleh {{ $surat->generator?->name ?? 'Admin' }}</p>
                             </div>
-                            <a href="{{ route('admin.prestasi.surat.download', [$prestasi, $surat]) }}" class="shrink-0 w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center text-gray-600 hover:text-[#7a1621] hover:border-[#7a1621] transition-colors shadow-sm" title="Unduh PDF">
-                                <i class="fas fa-download"></i>
-                            </a>
+                            <div class="flex items-center gap-2">
+                                <form method="POST" action="{{ route('admin.prestasi.surat.regenerate', [$prestasi, $surat]) }}" class="inline" onsubmit="return confirm('Regenerate surat ini dengan template terbaru?')">
+                                    @csrf
+                                    <button type="submit" class="shrink-0 w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center text-gray-600 hover:text-indigo-600 hover:border-indigo-400 transition-colors shadow-sm" title="Regenerate PDF">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </form>
+                                <a href="{{ route('admin.prestasi.surat.download', [$prestasi, $surat]) }}" class="shrink-0 w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center text-gray-600 hover:text-[#7a1621] hover:border-[#7a1621] transition-colors shadow-sm" title="Unduh PDF">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -302,4 +322,8 @@
 
     </div>
 </div>
+
+{{-- Tailwind Safelist for Dynamic Action Colors --}}
+<div class="hidden bg-blue-50 border-blue-100 text-blue-600 bg-indigo-50 border-indigo-100 text-indigo-600 bg-amber-50 border-amber-100 text-amber-600 bg-green-50 border-green-100 text-green-600 bg-red-50 border-red-100 text-red-600 bg-gray-50 border-gray-100 text-gray-600 bg-teal-50 border-teal-100 text-teal-600 bg-sky-50 border-sky-100 text-sky-600 bg-emerald-50 border-emerald-100 text-emerald-600 bg-orange-50 border-orange-100 text-orange-600"></div>
+
 @endsection

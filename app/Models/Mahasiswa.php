@@ -443,9 +443,13 @@ class Mahasiswa extends Model
             'status_sipil',
             'kota',
             'kecamatan',
-            'kecamatan_ktp',
             'provinsi',
             'desa',
+            'alamat_ktp',
+            'provinsi_ktp',
+            'kota_ktp',
+            'kecamatan_ktp',
+            'desa_ktp',
             'jenis_sekolah',
             'jurusan_sekolah',
             'tahun_lulus',
@@ -478,22 +482,26 @@ class Mahasiswa extends Model
             return false;
         }
 
-        // Required Parent (Orang Tua) fields
-        $requiredParentFields = [
+        // Required Father fields
+        $requiredFatherFields = [
             'nama_ayah',
             'pendidikan_ayah',
             'pekerjaan_ayah',
             'agama_ayah',
-            'nama_ibu',
-            'pendidikan_ibu',
-            'pekerjaan_ibu',
-            'agama_ibu',
             'alamat_ayah',
             'kota_ayah',
             'kecamatan_ayah',
             'propinsi_ayah',
             'desa_ayah',
             'handphone_ayah',
+        ];
+
+        // Required Mother fields
+        $requiredMotherFields = [
+            'nama_ibu',
+            'pendidikan_ibu',
+            'pekerjaan_ibu',
+            'agama_ibu',
             'alamat_ibu',
             'kota_ibu',
             'kecamatan_ibu',
@@ -517,18 +525,27 @@ class Mahasiswa extends Model
             'handphone_wali',
         ];
 
-        // Check if Parent has ANY data filled
-        $parentHasAnyData = false;
-        $parentComplete = true;
-        foreach ($requiredParentFields as $field) {
+        // Determine which sections have data
+        $fatherHasAnyData = false;
+        $fatherComplete = true;
+        foreach ($requiredFatherFields as $field) {
             if (!empty($parent->$field)) {
-                $parentHasAnyData = true;
+                $fatherHasAnyData = true;
             } else {
-                $parentComplete = false;
+                $fatherComplete = false;
             }
         }
 
-        // Check if Wali has ANY data filled (at least one field)
+        $motherHasAnyData = false;
+        $motherComplete = true;
+        foreach ($requiredMotherFields as $field) {
+            if (!empty($parent->$field)) {
+                $motherHasAnyData = true;
+            } else {
+                $motherComplete = false;
+            }
+        }
+
         $waliHasAnyData = false;
         $waliComplete = true;
         foreach ($requiredWaliFields as $field) {
@@ -539,19 +556,28 @@ class Mahasiswa extends Model
             }
         }
 
-        // Independent validation logic:
-        // - If Parent started but incomplete -> False
-        // - If Wali started but incomplete -> False
-        // - If neither started -> False (must fill at least one)
-        // - If (Parent complete OR empty) AND (Wali complete OR empty) AND (at least one is complete) -> True
+        // Section completeness validations:
+        // - If Father section has data, it must be complete
+        // - If Mother section has data, it must be complete
+        // - If Wali section has data, it must be complete
+        if ($fatherHasAnyData && !$fatherComplete) {
+            return false;
+        }
+        if ($motherHasAnyData && !$motherComplete) {
+            return false;
+        }
+        if ($waliHasAnyData && !$waliComplete) {
+            return false;
+        }
 
-        if ($parentHasAnyData && !$parentComplete)
-            return false;
-        if ($waliHasAnyData && !$waliComplete)
-            return false;
+        // Must have at least one complete section
+        $hasCompleteFather = ($fatherHasAnyData && $fatherComplete);
+        $hasCompleteMother = ($motherHasAnyData && $motherComplete);
+        $hasCompleteWali = ($waliHasAnyData && $waliComplete);
 
-        if (!$parentHasAnyData && !$waliHasAnyData)
+        if (!$hasCompleteFather && !$hasCompleteMother && !$hasCompleteWali) {
             return false;
+        }
 
         return true;
     }
@@ -568,8 +594,6 @@ class Mahasiswa extends Model
         $requiredMahasiswaFields = [
             'no_hp' => ['label' => 'No. HP', 'tab' => 'akademik'],
             'alamat' => ['label' => 'Alamat Domisili', 'tab' => 'data_pribadi'],
-            'rt' => ['label' => 'RT', 'tab' => 'data_pribadi'],
-            'rw' => ['label' => 'RW', 'tab' => 'data_pribadi'],
             'tempat_lahir' => ['label' => 'Tempat Lahir', 'tab' => 'data_pribadi'],
             'tanggal_lahir' => ['label' => 'Tanggal Lahir', 'tab' => 'data_pribadi'],
             'jenis_kelamin' => ['label' => 'Jenis Kelamin', 'tab' => 'data_pribadi'],
@@ -579,19 +603,15 @@ class Mahasiswa extends Model
             'provinsi' => ['label' => 'Provinsi', 'tab' => 'data_pribadi'],
             'kecamatan' => ['label' => 'Kecamatan', 'tab' => 'data_pribadi'],
             'desa' => ['label' => 'Desa/Kelurahan', 'tab' => 'data_pribadi'],
-            // Alamat Sesuai KTP fields
             'alamat_ktp' => ['label' => 'Alamat KTP', 'tab' => 'data_pribadi'],
-            'rt_ktp' => ['label' => 'RT KTP', 'tab' => 'data_pribadi'],
-            'rw_ktp' => ['label' => 'RW KTP', 'tab' => 'data_pribadi'],
             'provinsi_ktp' => ['label' => 'Provinsi KTP', 'tab' => 'data_pribadi'],
             'kota_ktp' => ['label' => 'Kota/Kab. KTP', 'tab' => 'data_pribadi'],
             'kecamatan_ktp' => ['label' => 'Kecamatan KTP', 'tab' => 'data_pribadi'],
             'desa_ktp' => ['label' => 'Desa KTP', 'tab' => 'data_pribadi'],
-            // Asal Sekolah fields
-            'jenis_sekolah' => ['label' => 'Jenis Sekolah', 'tab' => 'asal_sekolah'],
-            'jurusan_sekolah' => ['label' => 'Jurusan Sekolah', 'tab' => 'asal_sekolah'],
-            'tahun_lulus' => ['label' => 'Tahun Lulus', 'tab' => 'asal_sekolah'],
-            'nilai_kelulusan' => ['label' => 'Nilai Kelulusan', 'tab' => 'asal_sekolah'],
+            'jenis_sekolah' => ['label' => 'Jenis Sekolah', 'tab' => 'data_pribadi'],
+            'jurusan_sekolah' => ['label' => 'Jurusan Sekolah', 'tab' => 'data_pribadi'],
+            'tahun_lulus' => ['label' => 'Tahun Lulus', 'tab' => 'data_pribadi'],
+            'nilai_kelulusan' => ['label' => 'Nilai Kelulusan', 'tab' => 'data_pribadi'],
         ];
 
         foreach ($requiredMahasiswaFields as $field => $info) {
@@ -614,25 +634,28 @@ class Mahasiswa extends Model
             }
         }
 
-        // Required parent/wali fields - conditional validation
         $parent = $this->parents()->first();
 
-        // Define required fields for Parent (Orang Tua)
-        $requiredParentFields = [
+        // Define required fields for Father (Ayah)
+        $requiredFatherFields = [
             'nama_ayah' => ['label' => 'Nama Ayah', 'tab' => 'orang_tua'],
             'pendidikan_ayah' => ['label' => 'Pendidikan Ayah', 'tab' => 'orang_tua'],
             'pekerjaan_ayah' => ['label' => 'Pekerjaan Ayah', 'tab' => 'orang_tua'],
             'agama_ayah' => ['label' => 'Agama Ayah', 'tab' => 'orang_tua'],
-            'nama_ibu' => ['label' => 'Nama Ibu', 'tab' => 'orang_tua'],
-            'pendidikan_ibu' => ['label' => 'Pendidikan Ibu', 'tab' => 'orang_tua'],
-            'pekerjaan_ibu' => ['label' => 'Pekerjaan Ibu', 'tab' => 'orang_tua'],
-            'agama_ibu' => ['label' => 'Agama Ibu', 'tab' => 'orang_tua'],
             'alamat_ayah' => ['label' => 'Alamat Ayah', 'tab' => 'orang_tua'],
             'kota_ayah' => ['label' => 'Kota Ayah', 'tab' => 'orang_tua'],
             'propinsi_ayah' => ['label' => 'Provinsi Ayah', 'tab' => 'orang_tua'],
             'kecamatan_ayah' => ['label' => 'Kecamatan Ayah', 'tab' => 'orang_tua'],
             'desa_ayah' => ['label' => 'Desa Ayah', 'tab' => 'orang_tua'],
             'handphone_ayah' => ['label' => 'Handphone Ayah', 'tab' => 'orang_tua'],
+        ];
+
+        // Define required fields for Mother (Ibu)
+        $requiredMotherFields = [
+            'nama_ibu' => ['label' => 'Nama Ibu', 'tab' => 'orang_tua'],
+            'pendidikan_ibu' => ['label' => 'Pendidikan Ibu', 'tab' => 'orang_tua'],
+            'pekerjaan_ibu' => ['label' => 'Pekerjaan Ibu', 'tab' => 'orang_tua'],
+            'agama_ibu' => ['label' => 'Agama Ibu', 'tab' => 'orang_tua'],
             'alamat_ibu' => ['label' => 'Alamat Ibu', 'tab' => 'orang_tua'],
             'kota_ibu' => ['label' => 'Kota Ibu', 'tab' => 'orang_tua'],
             'propinsi_ibu' => ['label' => 'Provinsi Ibu', 'tab' => 'orang_tua'],
@@ -657,31 +680,34 @@ class Mahasiswa extends Model
         ];
 
         if (!$parent) {
-            // No parent record exists - show Parent fields as missing (default)
-            foreach ($requiredParentFields as $field => $info) {
+            // Default to listing father & mother missing
+            foreach ($requiredFatherFields as $field => $info) {
+                $missing[$field] = $info;
+            }
+            foreach ($requiredMotherFields as $field => $info) {
                 $missing[$field] = $info;
             }
         } else {
-            // Check if Parent data is complete
-            $parentComplete = true;
-            $parentMissing = [];
-            foreach ($requiredParentFields as $field => $info) {
-                if (empty($parent->$field)) {
-                    $parentComplete = false;
-                    $parentMissing[$field] = $info;
-                }
-            }
-
-            // Check if Parent has ANY data filled (at least one field)
-            $parentHasAnyData = false;
-            foreach (array_keys($requiredParentFields) as $field) {
+            $fatherHasAnyData = false;
+            $fatherMissing = [];
+            foreach ($requiredFatherFields as $field => $info) {
                 if (!empty($parent->$field)) {
-                    $parentHasAnyData = true;
-                    break;
+                    $fatherHasAnyData = true;
+                } else {
+                    $fatherMissing[$field] = $info;
                 }
             }
 
-            // Check if Wali has ANY data filled (at least one field) and collect missing
+            $motherHasAnyData = false;
+            $motherMissing = [];
+            foreach ($requiredMotherFields as $field => $info) {
+                if (!empty($parent->$field)) {
+                    $motherHasAnyData = true;
+                } else {
+                    $motherMissing[$field] = $info;
+                }
+            }
+
             $waliHasAnyData = false;
             $waliMissing = [];
             foreach ($requiredWaliFields as $field => $info) {
@@ -692,26 +718,23 @@ class Mahasiswa extends Model
                 }
             }
 
-            // Independent validation logic:
-            // - If Parent has ANY data filled → show Parent missing fields
-            // - If Wali has ANY data filled → show Wali missing fields
-            // - If NEITHER has data → show Parent missing (default)
-            if ($parentHasAnyData) {
-                foreach ($parentMissing as $field => $info) {
-                    $missing[$field] = $info;
-                }
+            $fatherComplete = $fatherHasAnyData && empty($fatherMissing);
+            $motherComplete = $motherHasAnyData && empty($motherMissing);
+            $waliComplete = $waliHasAnyData && empty($waliMissing);
+
+            if ($fatherHasAnyData && !$fatherComplete) {
+                $missing = array_merge($missing, $fatherMissing);
+            }
+            if ($motherHasAnyData && !$motherComplete) {
+                $missing = array_merge($missing, $motherMissing);
+            }
+            if ($waliHasAnyData && !$waliComplete) {
+                $missing = array_merge($missing, $waliMissing);
             }
 
-            if ($waliHasAnyData) {
-                foreach ($waliMissing as $field => $info) {
-                    $missing[$field] = $info;
-                }
-            }
-
-            // If neither section has been started, show Parent missing as default
-            if (!$parentHasAnyData && !$waliHasAnyData) {
-                foreach ($parentMissing as $field => $info) {
-                    $missing[$field] = $info;
+            if (!$fatherComplete && !$motherComplete && !$waliComplete) {
+                if (!$fatherHasAnyData && !$motherHasAnyData && !$waliHasAnyData) {
+                    $missing = array_merge($missing, $requiredFatherFields, $requiredMotherFields);
                 }
             }
 

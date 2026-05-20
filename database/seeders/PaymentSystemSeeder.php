@@ -33,8 +33,7 @@ class PaymentSystemSeeder extends Seeder
 
         Student::create([
             'user_id' => $student1->id,
-            'npm' => '2024001',
-            'nama' => 'Ahmad Mahasiswa',
+            'nim' => '2024001',
             'prodi' => 'Ilmu Hukum',
             'angkatan' => '2024',
         ]);
@@ -50,8 +49,7 @@ class PaymentSystemSeeder extends Seeder
 
         Student::create([
             'user_id' => $student2->id,
-            'npm' => '2024002',
-            'nama' => 'Siti Mahasiswi',
+            'nim' => '2024002',
             'prodi' => 'Hukum Bisnis',
             'angkatan' => '2024',
         ]);

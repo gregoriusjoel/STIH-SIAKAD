@@ -689,16 +689,14 @@
             }
 
             .fc-prev-button::after {
-                font-family: "Font Awesome 6 Free";
-                font-weight: 900;
+                font: var(--fa-font-solid);
                 content: "\f053";
                 /* fa-chevron-left */
                 font-size: 0.9rem;
             }
 
             .fc-next-button::after {
-                font-family: "Font Awesome 6 Free";
-                font-weight: 900;
+                font: var(--fa-font-solid);
                 content: "\f054";
                 /* fa-chevron-right */
                 font-size: 0.9rem;
@@ -718,6 +716,7 @@
 
             .fc-today-button:hover {
                 background-color: #70102d !important;
+                color: white !important;
                 opacity: 1;
             }
 
@@ -873,7 +872,8 @@
                     color: #1e293b !important;
                 }
 
-                .fc-button-active {
+                .fc-button-active,
+                .fc-button-active:hover {
                     background-color: #8B1538 !important;
                     /* Active View Button */
                     border-color: #8B1538 !important;
@@ -956,6 +956,11 @@
                         center: 'prev title next',
                         right: 'dayGridMonth,timeGridWeek,listMonth'
                     },
+                    views: {
+                        dayGridMonth: {
+                            titleFormat: { year: 'numeric', month: 'long' }
+                        }
+                    },
                     buttonText: {
                         today: 'Hari Ini',
                         month: 'Bulan',
@@ -964,6 +969,19 @@
                     },
                     themeSystem: 'standard',
                     locale: 'id',
+                    datesSet: function (info) {
+                        const titleEl = document.querySelector('.fc-toolbar-title');
+                        if (titleEl && (info.view.type === 'dayGridMonth' || info.view.type === 'listMonth')) {
+                            const monthNames = [
+                                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                            ];
+                            const date = info.view.currentStart;
+                            const month = monthNames[date.getMonth()];
+                            const year = date.getFullYear();
+                            titleEl.textContent = `${month} ${year}`;
+                        }
+                    },
                     fixedWeekCount: false, // Don't always show 6 weeks (saves space)
                     dayMaxEvents: false, // Show all events, auto-expand rows
                     events: function (info, successCallback, failureCallback) {

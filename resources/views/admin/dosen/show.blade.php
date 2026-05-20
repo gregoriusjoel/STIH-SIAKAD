@@ -9,6 +9,13 @@
     $totalSemester   = $historySemesters->count();
     $mkSemesterIni   = $currentAssignments->count();
     $sksSemesterIni  = $currentAssignments->sum('sks');
+
+    $currentJabatan = old('jabatan_fungsional', (is_array($dosen->jabatan_fungsional) && count($dosen->jabatan_fungsional) ? $dosen->jabatan_fungsional[0] : ''));
+    $standardJabatans = ['Lektor', 'Lektor Kepala', 'Profesor', 'Asisten Ahli', 'Tenaga Pengajar'];
+    $isCustomJabatan = !empty($currentJabatan) && !in_array($currentJabatan, $standardJabatans);
+    
+    $initialDropdown = $isCustomJabatan ? 'lainnya' : $currentJabatan;
+    $initialCustom = $isCustomJabatan ? $currentJabatan : old('jabatan_fungsional_custom', '');
 @endphp
 
 <div x-data="dosenDetail()" class="w-full space-y-6">
@@ -702,11 +709,28 @@
                             <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
                                 Jabatan Fungsional *
                             </label>
-                            <input type="text" name="jabatan_fungsional"
-                                value="{{ old('jabatan_fungsional', is_array($dosen->jabatan_fungsional) && count($dosen->jabatan_fungsional) ? $dosen->jabatan_fungsional[0] : '') }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
-                                placeholder="Lektor, Asisten Ahli, etc" required>
+                            <select name="jabatan_fungsional" x-model="jabatanDropdown"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition" required>
+                                <option value="">-- Pilih Jabatan --</option>
+                                <option value="Lektor">Lektor</option>
+                                <option value="Lektor Kepala">Lektor Kepala</option>
+                                <option value="Profesor">Profesor</option>
+                                <option value="Asisten Ahli">Asisten Ahli</option>
+                                <option value="Tenaga Pengajar">Tenaga Pengajar</option>
+                                <option value="lainnya">Lainnya</option>
+                            </select>
                             @error('jabatan_fungsional')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div x-show="jabatanDropdown === 'lainnya'" x-transition class="mt-3">
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Jabatan Lainnya
+                            </label>
+                            <input type="text" name="jabatan_fungsional_custom" x-model="jabatanCustom"
+                                :required="jabatanDropdown === 'lainnya'"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon/20 focus:border-maroon transition"
+                                placeholder="Contoh: Dosen Senior">
+                            @error('jabatan_fungsional_custom')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                         </div>
                     </div>
                 </div>
@@ -818,6 +842,8 @@ function dosenDetail() {
         historyData: null,
         historyLoading: false,
         showEditModal: false,
+        jabatanDropdown: '{{ $initialDropdown }}',
+        jabatanCustom: '{{ $initialCustom }}',
 
         allMataKuliah: {!! json_encode($availableMataKuliah->map(function($mk) {
             return [

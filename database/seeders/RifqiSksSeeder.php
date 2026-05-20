@@ -41,7 +41,6 @@ class RifqiSksSeeder extends Seeder
                 'mahasiswa_id'   => $mahasiswaId,
                 'mata_kuliah_id' => $mk->id,
                 'kelas_id'       => null,
-                'semester_id'    => null,
                 'status'         => 'approved',
                 'ambil_mk'       => 'ya',
             ]);
@@ -61,7 +60,7 @@ class RifqiSksSeeder extends Seeder
 
     private function nilaiRow($now): array
     {
-        $kelasId = (int) \DB::table('kelas')->min('id');
+        $kelasId = \DB::table('kelas')->min('id');
         return [
             'kelas_id'            => $kelasId,
             'grade'               => 'A',

@@ -197,6 +197,22 @@
                     class="flex-1 overflow-y-auto">
                     @csrf
                     <div class="p-6 space-y-8">
+                        {{-- Validation Errors Display --}}
+                        @if ($errors->any())
+                            <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        @foreach ($errors->all() as $error)
+                                            <p class="text-sm font-medium text-red-700">• {{ $error }}</p>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Basic Info Section -->
                         <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
                             <h4 class="text-xs font-black text-gray-400 mb-4 uppercase tracking-wider flex items-center gap-2">
@@ -206,36 +222,107 @@
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1.5">Program Studi <span class="text-red-500">*</span></label>
                                     <select name="prodi_id" required
-                                        class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-4 focus:ring-maroon/10 focus:border-maroon transition-all shadow-sm">
+                                        class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-4 focus:ring-maroon/10 focus:border-maroon transition-all shadow-sm @error('prodi_id') border-red-500 @enderror"
+                                        value="{{ old('prodi_id') }}">
                                         <option value="">Pilih Prodi</option>
                                         @foreach($prodis as $prodi)
-                                            <option value="{{ $prodi->id }}">{{ $prodi->nama_prodi }}</option>
+                                            <option value="{{ $prodi->id }}" {{ old('prodi_id') == $prodi->id ? 'selected' : '' }}>{{ $prodi->nama_prodi }}</option>
                                         @endforeach
                                     </select>
+                                    @error('prodi_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
+                                <div x-data="angkatanMultiSelect()" class="relative">
+                                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Angkatan <span class="text-red-500">*</span></label>
+                                    
+                                    <!-- Hidden Select for Form Submission -->
+                                    <select name="angkatan[]" multiple required x-model="selected" class="hidden">
+                                        @php
+                                            $currentYear = (int) date('Y');
+                                            $startYear = 2000;
+                                            $selectedAngkatans = is_array(old('angkatan')) ? old('angkatan') : [];
+                                        @endphp
+                                        @for($year = $currentYear; $year >= $startYear; $year--)
+                                            <option value="{{ $year }}" {{ in_array($year, $selectedAngkatans) || (empty($selectedAngkatans) && $year == $currentYear) ? 'selected' : '' }}>{{ $year }}</option>
+                                        @endfor
+                                    </select>
+
+                                    <!-- Custom Dropdown UI -->
+                                    <div class="relative">
+                                        <!-- Display Button -->
+                                        <button type="button" @click="open = !open" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-4 focus:ring-maroon/10 focus:border-maroon transition-all shadow-sm text-left flex items-center justify-between @error('angkatan') border-red-500 @enderror" :class="{ 'border-red-500 ring-4 ring-red-500/10': error && !selected.length }">
+                                            <div class="flex flex-wrap gap-1.5 flex-1">
+                                                <template x-if="selected.length === 0">
+                                                    <span class="text-gray-400">Pilih Angkatan</span>
+                                                </template>
+                                                <template x-if="selected.length > 0">
+                                                    <template x-for="(year, idx) in selected.slice(0, 2)" :key="idx">
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-maroon/10 text-maroon text-xs font-bold border border-maroon/20">
+                                                            <span x-text="year"></span>
+                                                            <button type="button" @click.stop="removeYear(year)" class="hover:text-maroon/70">
+                                                                <i class="fas fa-times text-xs"></i>
+                                                            </button>
+                                                        </span>
+                                                    </template>
+                                                </template>
+                                                <template x-if="selected.length > 2">
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
+                                                        <span x-text="`+${selected.length - 2} lagi`"></span>
+                                                    </span>
+                                                </template>
+                                            </div>
+                                            <div class="flex-shrink-0 text-gray-400 transition-transform" :class="{ 'rotate-180': open }">
+                                                <i class="fas fa-chevron-down text-xs"></i>
+                                            </div>
+                                        </button>
+
+                                        <!-- Dropdown Menu -->
+                                        <div x-show="open" @click.away="open = false" x-transition class="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-64 overflow-y-auto">
+                                            <div class="p-2 border-b border-gray-100 sticky top-0 bg-white">
+                                                <input type="text" x-model="search" placeholder="Cari tahun..." class="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-maroon/10 focus:border-maroon outline-none">
+                                            </div>
+                                            
+                                            <div class="divide-y divide-gray-100 max-h-56 overflow-y-auto">
+                                                <template x-for="year in filteredYears" :key="year">
+                                                    <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 cursor-pointer transition-colors group">
+                                                        <input type="checkbox" :value="String(year)" :checked="selected.includes(String(year))" @change="toggleYear(String(year))" class="w-4 h-4 text-maroon rounded border-gray-300 focus:ring-maroon cursor-pointer">
+                                                        <span class="flex-1 text-sm font-medium text-gray-700 group-hover:text-gray-900" x-text="year"></span>
+                                                        <span x-show="selected.includes(String(year))" class="text-maroon text-sm">
+                                                            <i class="fas fa-check"></i>
+                                                        </span>
+                                                    </label>
+                                                </template>
+                                            </div>
+
+                                            <!-- Select All / Clear All -->
+                                            <div class="p-2 border-t border-gray-100 sticky bottom-0 bg-gray-50 flex gap-2">
+                                                <button type="button" @click.stop="selectAll()" class="flex-1 px-2 py-1.5 text-xs font-bold text-maroon bg-maroon/10 hover:bg-maroon/20 rounded-lg transition-colors">
+                                                    Pilih Semua
+                                                </button>
+                                                <button type="button" @click.stop="clearAll()" class="flex-1 px-2 py-1.5 text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                                                    Bersihkan
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @error('angkatan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1.5">Tahun Akademik</label>
                                     <select name="tahun_akademik_id"
-                                        class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-4 focus:ring-maroon/10 focus:border-maroon transition-all shadow-sm">
+                                        class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-4 focus:ring-maroon/10 focus:border-maroon transition-all shadow-sm @error('tahun_akademik_id') border-red-500 @enderror">
                                         <option value="">Tidak terikat</option>
                                         @foreach($semesters as $sem)
-                                            <option value="{{ $sem->id }}">{{ $sem->nama_semester }} {{ $sem->tahun_ajaran }}</option>
+                                            <option value="{{ $sem->id }}" {{ old('tahun_akademik_id') == $sem->id ? 'selected' : '' }}>{{ $sem->nama_semester }} {{ $sem->tahun_ajaran }}</option>
                                         @endforeach
                                     </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Jumlah Tingkat <span class="text-red-500">*</span></label>
-                                    <div class="relative">
-                                        <input type="number" name="max_tingkat" value="4" min="1" max="8" required
-                                            @change="updateTingkatCount"
-                                            class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-4 focus:ring-maroon/10 focus:border-maroon transition-all shadow-sm">
-                                    </div>
+                                    @error('tahun_akademik_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
                             </div>
                         </div>
 
                         <!-- Generation Mode Section -->
-                        <div x-data="{ mode: 'manual', maxPerKelas: 40 }" class="space-y-5">
+                        <div x-data="{ mode: 'manual', maxPerKelas: 40, jumlahMahasiswa: 0 }" x-effect="triggerCalculationOnModeChange(mode)" class="space-y-5">
                             <h4 class="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-2">
                                 <i class="fas fa-cogs"></i> Mode Generate
                             </h4>
@@ -285,14 +372,15 @@
                             <!-- Manual Mode -->
                             <div x-show="mode === 'manual'" x-collapse class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
                                 <div class="max-w-xs">
-                                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Kelas per Tingkat <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Kelas per Angkatan <span class="text-red-500">*</span></label>
                                     <div class="relative">
-                                        <input type="number" name="kelas_per_tingkat" value="1" min="1" max="10"
-                                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:ring-4 focus:ring-maroon/10 focus:border-maroon focus:bg-white transition-all shadow-inner [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                        <input type="number" name="kelas_per_angkatan" value="{{ old('kelas_per_angkatan', 1) }}" min="1" max="20"
+                                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:ring-4 focus:ring-maroon/10 focus:border-maroon focus:bg-white transition-all shadow-inner [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none @error('kelas_per_angkatan') border-red-500 @enderror">
                                         <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                                             <span class="text-gray-400 text-xs font-bold uppercase tracking-wider">Kelas</span>
                                         </div>
                                     </div>
+                                    @error('kelas_per_angkatan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
                             </div>
 
@@ -300,26 +388,29 @@
                             <div x-show="mode === 'auto'" x-collapse class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm space-y-6">
                                 <div class="flex flex-wrap items-end gap-4">
                                     <div class="w-full max-w-[200px]">
+                                        <label class="block text-sm font-bold text-gray-700 mb-1.5">Jumlah Mahasiswa <span class="text-red-500">*</span></label>
+                                        <div class="relative">
+                                            <input type="number" name="jumlah_mahasiswa" x-model="jumlahMahasiswa" min="0" max="10000" value="{{ old('jumlah_mahasiswa', 0) }}"
+                                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:ring-4 focus:ring-maroon/10 focus:border-maroon focus:bg-white transition-all shadow-inner text-blue-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none @error('jumlah_mahasiswa') border-red-500 @enderror">
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                                <span class="text-gray-400 text-xs font-bold uppercase tracking-wider">MHS</span>
+                                            </div>
+                                        </div>
+                                        @error('jumlah_mahasiswa') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                    </div>
+                                    <div class="w-full max-w-[200px]">
                                         <label class="block text-sm font-bold text-gray-700 mb-1.5">Maks Siswa/Kelas <span class="text-red-500">*</span></label>
                                         <div class="relative">
-                                            <input type="number" name="max_students_per_class" x-model="maxPerKelas" min="1" max="100" value="40"
-                                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:ring-4 focus:ring-maroon/10 focus:border-maroon focus:bg-white transition-all shadow-inner text-blue-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                            <input type="number" name="max_students_per_class" x-model="maxPerKelas" min="1" max="100" value="{{ old('max_students_per_class', 40) }}"
+                                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:ring-4 focus:ring-maroon/10 focus:border-maroon focus:bg-white transition-all shadow-inner text-blue-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none @error('max_students_per_class') border-red-500 @enderror">
                                             <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                                                 <span class="text-gray-400 text-xs font-bold uppercase tracking-wider">Siswa</span>
                                             </div>
                                         </div>
+                                        @error('max_students_per_class') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                     </div>
                                     <div class="pb-3 text-xs font-medium text-gray-500 flex items-center bg-blue-50/50 px-3 py-1.5 rounded-lg border border-blue-100">
-                                        <i class="fas fa-info-circle mr-2 text-blue-500"></i> Angka pembagi dasar perhitungan
-                                    </div>
-                                </div>
-                                
-                                <div class="border-t border-gray-200/60 pt-5">
-                                    <label class="block text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                        <i class="fas fa-users text-gray-400"></i> Kuota Mahasiswa per Tingkat
-                                    </label>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="tingkatContainer">
-                                        <!-- Dinamis form per tingkat akan ditambahkan di sini -->
+                                        <i class="fas fa-info-circle mr-2 text-blue-500"></i> Pembagi dasar perhitungan jumlah kelas
                                     </div>
                                 </div>
                             </div>
@@ -385,92 +476,189 @@
         </div>
 
         <script>
+            // Angkatan Multi-Select Component
+            function angkatanMultiSelect() {
+                return {
+                    open: false,
+                    search: '',
+                    selected: @json(is_array(old('angkatan')) ? old('angkatan') : [date('Y')]),
+                    allYears: [
+                        @php
+                            $currentYear = (int) date('Y');
+                            $startYear = 2000;
+                            $years = [];
+                            for ($year = $currentYear; $year >= $startYear; $year--) {
+                                $years[] = $year;
+                            }
+                            echo implode(',', $years);
+                        @endphp
+                    ],
+                    error: false,
+
+                    get filteredYears() {
+                        if (!this.search) return this.allYears;
+                        return this.allYears.filter(year => String(year).includes(this.search));
+                    },
+
+                    toggleYear(year) {
+                        const index = this.selected.indexOf(String(year));
+                        if (index > -1) {
+                            this.selected.splice(index, 1);
+                        } else {
+                            this.selected.push(String(year));
+                        }
+                        this.updateHiddenSelect();
+                        this.validateSelection();
+                    },
+
+                    removeYear(year) {
+                        const index = this.selected.indexOf(String(year));
+                        if (index > -1) {
+                            this.selected.splice(index, 1);
+                        }
+                        this.updateHiddenSelect();
+                        this.validateSelection();
+                    },
+
+                    selectAll() {
+                        this.selected = this.allYears.map(y => String(y));
+                        this.updateHiddenSelect();
+                        this.validateSelection();
+                    },
+
+                    clearAll() {
+                        this.selected = [];
+                        this.updateHiddenSelect();
+                        this.validateSelection();
+                    },
+
+                    updateHiddenSelect() {
+                        const hiddenSelect = document.querySelector('select[name="angkatan[]"]');
+                        if (hiddenSelect) {
+                            Array.from(hiddenSelect.options).forEach(option => {
+                                option.selected = this.selected.includes(option.value);
+                            });
+                            // Trigger change event to update calculation
+                            hiddenSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                        // Trigger calculation update
+                        this.triggerCalculationUpdate();
+                    },
+
+                    triggerCalculationUpdate() {
+                        // Trigger the updateCalculation function
+                        const form = document.querySelector('form[action*="generate-bulk"]');
+                        if (form) {
+                            const modeInputs = form.querySelectorAll('input[name="mode"]');
+                            const summary = document.getElementById('calculationSummary');
+                            const summaryBox = document.getElementById('summaryBox');
+                            const hiddenSelect = form.querySelector('select[name="angkatan[]"]');
+                            
+                            const selectedAngkatans = Array.from(hiddenSelect.selectedOptions).length;
+                            const mode = form.querySelector('input[name="mode"]:checked').value;
+                            let summaryText = '';
+
+                            if (mode === 'manual') {
+                                const kelasPerAngkatan = parseInt(form.querySelector('input[name="kelas_per_angkatan"]')?.value) || 0;
+                                
+                                if (selectedAngkatans > 0 && kelasPerAngkatan > 0) {
+                                    const totalKelas = selectedAngkatans * kelasPerAngkatan;
+                                    summaryText = `<strong>Total ${totalKelas} kelas:</strong> ${selectedAngkatans} angkatan × ${kelasPerAngkatan} kelas per angkatan`;
+                                }
+                            } else if (mode === 'auto') {
+                                const jumlahMahasiswa = parseInt(form.querySelector('input[name="jumlah_mahasiswa"]')?.value) || 0;
+                                const maxPerKelas = parseInt(form.querySelector('input[name="max_students_per_class"]')?.value) || 40;
+
+                                if (selectedAngkatans > 0 && jumlahMahasiswa > 0) {
+                                    const kelasPerAngkatan = Math.ceil(jumlahMahasiswa / maxPerKelas);
+                                    const totalKelas = selectedAngkatans * kelasPerAngkatan;
+                                    const avgMahasiswaPerKelas = Math.ceil(jumlahMahasiswa / kelasPerAngkatan);
+                                    summaryText = `<strong>Total ${totalKelas} kelas:</strong> ${selectedAngkatans} angkatan × ${kelasPerAngkatan} kelas/angkatan (${jumlahMahasiswa} MHS / 40 siswa/kelas)<br><span class="text-red-100 text-xs mt-1 inline-block">Perkiraan ~ ${avgMahasiswaPerKelas} mahasiswa per kelas</span>`;
+                                }
+                            }
+
+                            summary.innerHTML = summaryText || '-';
+                            summaryBox.style.display = summaryText ? 'block' : 'none';
+                        }
+                    },
+
+                    validateSelection() {
+                        this.error = this.selected.length === 0;
+                    }
+                };
+            }
+        </script>
+
+        <script>
+            // Global helper function for Alpine
+            window.triggerCalculationOnModeChange = function(mode) {
+                // Trigger the calculation whenever mode changes
+                const form = document.querySelector('form[action*="generate-bulk"]');
+                if (form) {
+                    const event = new Event('change', { bubbles: true });
+                    const hiddenSelect = form.querySelector('select[name="angkatan[]"]');
+                    if (hiddenSelect) {
+                        hiddenSelect.dispatchEvent(event);
+                    }
+                }
+            };
+
             document.addEventListener('DOMContentLoaded', function () {
                 const form = document.querySelector('form[action*="generate-bulk"]');
                 if (!form) return;
 
-                const maxTingkatInput = form.querySelector('input[name="max_tingkat"]');
                 const modeInputs = form.querySelectorAll('input[name="mode"]');
-                const container = document.getElementById('tingkatContainer');
                 const summary = document.getElementById('calculationSummary');
                 const summaryBox = document.getElementById('summaryBox');
-                const maxStudentsInput = form.querySelector('input[name="max_students_per_class"]');
+                const hiddenSelect = form.querySelector('select[name="angkatan[]"]');
 
-                function getSemesterLabel(tingkat) {
-                    const semesterAwal = (tingkat * 2) - 1;
-                    const semesterAkhir = tingkat * 2;
-                    return `Sms ${semesterAwal} & ${semesterAkhir}`;
-                }
-
-                function updateTingkatForm() {
-                    const maxTingkat = parseInt(maxTingkatInput.value) || 4;
-                    container.innerHTML = '';
-                    const maxPerKelas = parseInt(maxStudentsInput.value) || 40;
-
-                    for (let i = 1; i <= maxTingkat; i++) {
-                        const div = document.createElement('div');
-                        div.innerHTML = `
-                                <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:border-gray-300 transition-colors">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div>
-                                            <label class="text-sm font-black text-gray-800">Tingkat ${i}</label>
-                                            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">${getSemesterLabel(i)}</div>
-                                        </div>
-                                        <div class="text-[11px] font-bold text-maroon bg-maroon/10 px-2 py-1 rounded border border-maroon/10" data-kelas-count="0">0 KLS</div>
-                                    </div>
-                                    <div class="relative">
-                                        <input type="number" name="siswa_tingkat_${i}" placeholder="0" value="0" min="0" max="10000" onfocus="this.select()" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-maroon/20 focus:border-maroon focus:bg-white transition-all shadow-inner siswa-input font-bold text-gray-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" data-tingkat="${i}">
-                                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                                            <span class="text-gray-400 text-[10px] font-bold uppercase">MHS</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        container.appendChild(div);
-                    }
-
-                    // Attach event listeners
-                    container.querySelectorAll('.siswa-input').forEach(input => {
-                        input.addEventListener('input', updateCalculation);
-                    });
-                    maxStudentsInput.addEventListener('input', updateCalculation);
-
-                    // Trigger calculation to show initial values
-                    updateCalculation();
+                function getSelectedAngkatanCount() {
+                    // Count selected options in the hidden select
+                    return Array.from(hiddenSelect.selectedOptions).length;
                 }
 
                 function updateCalculation() {
-                    const maxPerKelas = parseInt(maxStudentsInput.value) || 40;
-                    let totalKelas = 0;
-                    const maxTingkat = parseInt(maxTingkatInput.value) || 4;
-                    let breakdown = [];
+                    const mode = form.querySelector('input[name="mode"]:checked').value;
+                    let summaryText = '';
+                    const selectedAngkatans = getSelectedAngkatanCount();
 
-                    for (let i = 1; i <= maxTingkat; i++) {
-                        const siswaInput = form.querySelector(`input[name="siswa_tingkat_${i}"]`);
-                        const siswa = parseInt(siswaInput.value) || 0;
-                        const kelasNeeded = siswa > 0 ? Math.ceil(siswa / maxPerKelas) : 0;
-                        totalKelas += kelasNeeded;
-
-                        const span = siswaInput.parentElement.querySelector('[data-kelas-count]');
-                        if (span) {
-                            span.textContent = `${kelasNeeded} Kelas`;
+                    if (mode === 'manual') {
+                        const kelasPerAngkatan = parseInt(form.querySelector('input[name="kelas_per_angkatan"]')?.value) || 0;
+                        
+                        if (selectedAngkatans > 0 && kelasPerAngkatan > 0) {
+                            const totalKelas = selectedAngkatans * kelasPerAngkatan;
+                            summaryText = `<strong>Total ${totalKelas} kelas:</strong> ${selectedAngkatans} angkatan × ${kelasPerAngkatan} kelas per angkatan`;
                         }
+                    } else if (mode === 'auto') {
+                        const jumlahMahasiswa = parseInt(form.querySelector('input[name="jumlah_mahasiswa"]')?.value) || 0;
+                        const maxPerKelas = parseInt(form.querySelector('input[name="max_students_per_class"]')?.value) || 40;
 
-                        if (siswa > 0) {
-                            breakdown.push(`Tingkat ${i}: ${kelasNeeded} Kelas`);
+                        if (selectedAngkatans > 0 && jumlahMahasiswa > 0) {
+                            const kelasPerAngkatan = Math.ceil(jumlahMahasiswa / maxPerKelas);
+                            const totalKelas = selectedAngkatans * kelasPerAngkatan;
+                            const avgMahasiswaPerKelas = Math.ceil(jumlahMahasiswa / kelasPerAngkatan);
+                            summaryText = `<strong>Total ${totalKelas} kelas:</strong> ${selectedAngkatans} angkatan × ${kelasPerAngkatan} kelas/angkatan (${jumlahMahasiswa} MHS / 40 siswa/kelas)<br><span class="text-red-100 text-xs mt-1 inline-block">Perkiraan ~ ${avgMahasiswaPerKelas} mahasiswa per kelas</span>`;
                         }
                     }
 
-                    const breakdownText = breakdown.length > 0 ? breakdown.join(', ') : '-';
-                    summary.innerHTML = `<strong>Total ${totalKelas} kelas:</strong> ${breakdownText}`;
-                    summaryBox.style.display = 'block';
+                    summary.innerHTML = summaryText || '-';
+                    summaryBox.style.display = summaryText ? 'block' : 'none';
                 }
 
-                // Event listener untuk perubahan max_tingkat
-                maxTingkatInput.addEventListener('change', updateTingkatForm);
+                // Event listeners
+                form.querySelectorAll('input[name="kelas_per_angkatan"], input[name="jumlah_mahasiswa"], input[name="max_students_per_class"]').forEach(el => {
+                    el.addEventListener('change', updateCalculation);
+                    el.addEventListener('input', updateCalculation);
+                });
 
-                // Inisialisasi form
-                updateTingkatForm();
+                hiddenSelect.addEventListener('change', updateCalculation);
+
+                modeInputs.forEach(input => {
+                    input.addEventListener('change', updateCalculation);
+                });
+
+                // Initial calculation with slight delay to ensure Alpine has initialized
+                setTimeout(updateCalculation, 100);
             });
         </script>
 

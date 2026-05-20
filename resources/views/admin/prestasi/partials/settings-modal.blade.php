@@ -44,36 +44,50 @@
                             'keterangan' => 'Surat Keterangan',
                             'penghargaan' => 'Surat Penghargaan'
                         ][$jenis];
+                        
+                        // Extract custom code from format
+                        // Expected format: {counter}/[custom_code]/{month}/{year}
+                        $customCode = 'STIH/ST'; // default
+                        if (preg_match('/\{counter\}\/(.+?)\/\{month\}/', $setting['format'], $matches)) {
+                            $customCode = $matches[1];
+                        }
                     @endphp
                     <div class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <div class="font-bold text-sm text-[#8B1538] uppercase tracking-wider">{{ $label }}</div>
                         
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Format Nomor</label>
-                            <input type="text" name="settings[{{ $jenis }}][format]" value="{{ $setting['format'] }}" 
-                                   class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-primary focus:border-primary text-sm" required>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-2">Format Nomor Surat</label>
+                            <div class="bg-white px-3 py-2.5 rounded-lg border border-gray-200 text-sm space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-600 font-mono">001</span>
+                                    <span class="text-gray-400">/</span>
+                                    <input type="text" name="settings[{{ $jenis }}][custom_code]" 
+                                           value="{{ $customCode }}"
+                                           placeholder="STIH/ST"
+                                           maxlength="20"
+                                           class="flex-1 px-2 py-1 rounded border border-gray-300 text-sm focus:ring-primary focus:border-primary"
+                                           required>
+                                    <span class="text-gray-400">/5/2026</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Kode institusi dan surat (misal: STIH/ST)</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="text-xs text-blue-600 font-semibold mb-1">📋 Contoh Nomor Surat:</div>
+                            <div class="font-mono text-sm text-blue-700 font-bold" data-jenis-surat="{{ $jenis }}" data-preview-target="{{ $jenis }}">
+                                Memuat preview...
+                            </div>
                         </div>
                         
-                        <div class="flex gap-4">
-                            <div class="flex-1">
-                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Counter Saat Ini</label>
-                                <input type="number" name="settings[{{ $jenis }}][counter]" value="{{ $setting['counter'] }}" 
-                                       class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-primary focus:border-primary text-sm" required>
-                            </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Counter Saat Ini</label>
+                            <input type="number" name="settings[{{ $jenis }}][counter]" value="{{ $setting['counter'] }}" 
+                                   class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-primary focus:border-primary text-sm" required>
+                            <p class="text-xs text-gray-500 mt-1">⚠️ Counter akan otomatis +1 setiap kali surat dibuat (bukan saat refresh)</p>
                         </div>
                     </div>
                 @endforeach
-
-                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                    <p class="text-xs text-blue-700 font-medium leading-relaxed">
-                        <i class="fas fa-info-circle mr-1"></i> <strong>Variabel Tersedia:</strong><br>
-                        <code>{counter}</code>: Nomor urut (auto reset tiap tahun)<br>
-                        <code>{tipe}</code>: Kode surat (ST, SR, SK, PP)<br>
-                        <code>{month}</code>: Bulan (angka)<br>
-                        <code>{roman_month}</code>: Bulan (romawi)<br>
-                        <code>{year}</code>: Tahun 4 digit
-                    </p>
-                </div>
 
             </div>
 
@@ -87,3 +101,36 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadPreviewNomor = async () => {
+        const previewElements = document.querySelectorAll('[data-jenis-surat]');
+        
+        for (const elem of previewElements) {
+            const jenisSurat = elem.getAttribute('data-jenis-surat');
+            const target = elem.getAttribute('data-preview-target');
+            
+            try {
+                const response = await fetch(`{{ route('admin.prestasi.preview-nomor') }}?jenis_surat=${jenisSurat}`);
+                const data = await response.json();
+                
+                if (data.nomor_surat) {
+                    elem.textContent = data.nomor_surat;
+                } else {
+                    elem.textContent = 'Gagal memuat preview';
+                }
+            } catch (error) {
+                console.error('Error loading preview:', error);
+                elem.textContent = 'Gagal memuat preview';
+            }
+        }
+    };
+
+    // Load preview saat modal dibuka
+    document.addEventListener('open-settings-modal', loadPreviewNomor);
+    
+    // Atau load langsung
+    loadPreviewNomor();
+});
+</script>

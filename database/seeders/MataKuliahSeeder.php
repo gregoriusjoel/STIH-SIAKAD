@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\MataKuliah;
+use App\Models\Prodi;
+use App\Models\Fakultas;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -13,6 +15,25 @@ class MataKuliahSeeder extends Seeder
      */
     public function run(): void
     {
+        // Get Prodi ID for Ilmu Hukum
+        $prodi = Prodi::where('nama_prodi', 'Ilmu Hukum')->first();
+        if (!$prodi) {
+            $this->command->error('Prodi Ilmu Hukum tidak ditemukan!');
+            return;
+        }
+        $prodiId = $prodi->id;
+        
+        // Get fakultas_id from prodi, or get default Fakultas Hukum
+        $fakultasId = $prodi->fakultas_id;
+        if (!$fakultasId) {
+            $fakultas = Fakultas::where('nama_fakultas', 'Fakultas Hukum')->first();
+            if (!$fakultas) {
+                $this->command->error('Fakultas Hukum tidak ditemukan!');
+                return;
+            }
+            $fakultasId = $fakultas->id;
+        }
+        
         $csvFile = base_path('master/matkul_stih.csv');
         
         if (!file_exists($csvFile)) {
@@ -71,7 +92,8 @@ class MataKuliahSeeder extends Seeder
                         'sks' => $sks,
                         'semester' => $semester,
                         'jenis' => $jenis,
-                        'prodi' => 'Ilmu Hukum',
+                        'prodi_id' => $prodiId,
+                        'fakultas_id' => $fakultasId,
                         'deskripsi' => $deskripsi,
                     ]);
                     $imported++;

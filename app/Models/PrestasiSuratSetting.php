@@ -15,9 +15,7 @@ class PrestasiSuratSetting extends Model
      */
     public static function getForJenis(string $jenis): ?static
     {
-        // Normalize 'surat_tugas' -> 'tugas' etc.
-        $key = str_replace('surat_', '', $jenis);
-        return static::where('jenis_surat', $key)->first();
+        return static::where('jenis_surat', $jenis)->first();
     }
 
     /**

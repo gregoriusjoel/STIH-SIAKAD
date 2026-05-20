@@ -45,5 +45,34 @@ export default defineConfig(({ mode }) => {
                 ignored: ['**/storage/framework/views/**'],
             },
         },
+        build: {
+            chunkSizeWarningLimit: 1500,
+            rollupOptions: {
+                output: {
+                    manualChunks(id) {
+                        if (id.includes('node_modules')) {
+                            if (id.includes('tinymce')) {
+                                return 'vendor-tinymce';
+                            }
+                            if (id.includes('ckeditor5')) {
+                                return 'vendor-ckeditor';
+                            }
+                            if (id.includes('pdfjs-dist')) {
+                                return 'vendor-pdfjs';
+                            }
+                            if (id.includes('apexcharts')) {
+                                return 'vendor-apexcharts';
+                            }
+                            if (id.includes('jquery')) {
+                                return 'vendor-jquery';
+                            }
+                            if (id.includes('sweetalert2')) {
+                                return 'vendor-sweetalert2';
+                            }
+                        }
+                    },
+                },
+            },
+        },
     };
 });

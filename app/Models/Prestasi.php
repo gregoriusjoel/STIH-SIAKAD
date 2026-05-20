@@ -52,11 +52,11 @@ class Prestasi extends Model
     ];
 
     const JENIS_SURAT_LABELS = [
-        'surat_tugas'       => 'Surat Tugas',
-        'surat_rekomendasi' => 'Surat Rekomendasi',
-        'surat_keterangan'  => 'Surat Keterangan Prestasi',
-        'surat_penghargaan' => 'Surat Penghargaan',
-        'surat_arsip'       => 'Surat Arsip',
+        'tugas'       => 'Surat Tugas',
+        'rekomendasi' => 'Surat Rekomendasi',
+        'keterangan'  => 'Surat Keterangan Prestasi',
+        'penghargaan' => 'Surat Penghargaan',
+        'arsip'       => 'Surat Arsip',
     ];
 
     protected $fillable = [

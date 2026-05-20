@@ -18,8 +18,8 @@ use App\Http\Controllers\StorageController;
 use Illuminate\Support\Facades\Storage;
 
 // Authentication Routes
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Secure Private File Access
@@ -31,23 +31,6 @@ Route::get('/test-500', function () {
     abort(500);
 });
 
-// Root redirect
-Route::get('/', function () {
-    if (Auth::check()) {
-        $user = Auth::user();
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->role === 'mahasiswa') {
-            return redirect()->route('mahasiswa.dashboard');
-        } elseif ($user->role === 'parent') {
-            return redirect()->route('parent.dashboard');
-        } elseif (in_array($user->role, ['finance', 'keuangan'])) {
-            return redirect()->route('finance.invoices.index');
-        }
-        return redirect()->route('dosen.dashboard');
-    }
-    return redirect('/login');
-});
 
 // Public QR image and redirect routes
 Route::get('/qrcode/kelas/{token}/image', [App\Http\Controllers\QrController::class, 'image'])->name('qrcode.kelas.image');
@@ -379,6 +362,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/{prestasi}/generate-surat', [\App\Http\Controllers\Admin\PrestasiController::class, 'generateSurat'])->name('generate-surat');
         Route::get('/{prestasi}/surat/{surat}/download', [\App\Http\Controllers\Admin\PrestasiController::class, 'downloadSurat'])->name('surat.download');
         Route::get('/{prestasi}/surat/{surat}/preview', [\App\Http\Controllers\Admin\PrestasiController::class, 'previewSurat'])->name('surat.preview');
+        Route::post('/{prestasi}/surat/{surat}/regenerate', [\App\Http\Controllers\Admin\PrestasiController::class, 'regenerateSurat'])->name('surat.regenerate');
         Route::post('/{prestasi}/verify-sertifikat', [\App\Http\Controllers\Admin\PrestasiController::class, 'verifySertifikat'])->name('verify-sertifikat');
     });
 

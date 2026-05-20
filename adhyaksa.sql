@@ -1,0 +1,4188 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost
+-- Generation Time: May 20, 2026 at 12:07 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `krs`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `academic_events`
+--
+
+CREATE TABLE `academic_events` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `event_type` enum('krs','krs_perubahan','perkuliahan','uts','uas','libur_akademik','lainnya') NOT NULL DEFAULT 'lainnya',
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `semester_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `color` varchar(7) NOT NULL DEFAULT '#3788d8',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `updated_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `academic_events`
+--
+
+INSERT INTO `academic_events` (`id`, `title`, `description`, `event_type`, `start_date`, `end_date`, `semester_id`, `color`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 'Bimbingan akademik', 'Imported from PDF', 'lainnya', '2025-09-15', '2025-09-17', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(2, 'KRS online mahasiswa', 'Imported from PDF', 'krs', '2025-09-15', '2025-09-17', NULL, '#10b981', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(3, 'Batas waktu pengajuan Judul Skripsi', 'Imported from PDF', 'lainnya', '2025-09-18', '2025-09-19', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(4, 'Perkenalan Kehidupan Kampus Bagi Mahasiswa Baru (PKKMB) dan Pelantikan Mahasiswa baru', 'Imported from PDF', 'lainnya', '2025-10-02', '2025-10-03', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(5, 'Awal Perkuliahaan', 'Imported from PDF', 'perkuliahan', '2025-10-06', '2025-10-06', NULL, '#3b82f6', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(6, 'Masa Perkuliahaan efektif sebelum UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2025-10-06', '2025-11-21', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(7, 'Ujian Tengah Semester (UTS)', 'Imported from PDF', 'uts', '2025-11-24', '2025-11-28', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(8, 'Masa Perkuliahaan efektif setelah UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2025-12-01', '2026-02-06', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(9, 'Libur Hari Raya Natal dan Tahun Baru 2025/2026', 'Imported from PDF', 'libur_akademik', '2025-12-22', '2026-01-06', NULL, '#ef4444', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(10, 'Perkuliahaan Setelah Libur Hari Raya Natal dan Tahun Baru 2025/2026', 'Imported from PDF', 'libur_akademik', '2026-01-09', '2026-02-13', NULL, '#ef4444', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(11, 'Masa Pendaftaran Sidang Skripsi', 'Imported from PDF', 'lainnya', '2025-11-24', '2025-02-13', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(12, 'Ujian Akhir Semester (UAS)', 'Imported from PDF', 'uas', '2026-02-09', '2026-02-13', NULL, '#d97706', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(13, 'Penginputan Nilai Mahasiswa', 'Imported from PDF', 'lainnya', '2026-02-16', '2026-02-20', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(14, 'Cetak Kartu Hasil Studi (KHS)', 'Imported from PDF', 'lainnya', '2026-02-27', '2026-02-27', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
+(16, 'Bimbingan akademik', 'Imported from PDF', 'lainnya', '2026-03-09', '2026-03-11', NULL, '#6b7280', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(17, 'KRS online mahasiswa', 'Imported from PDF', 'krs', '2026-03-09', '2026-03-11', NULL, '#10b981', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(18, 'Libur Idul Fitri', 'Imported from PDF', 'libur_akademik', '2026-03-16', '2026-03-27', NULL, '#ef4444', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(19, 'Awal Perkuliahaan', 'Imported from PDF', 'perkuliahan', '2026-03-30', '2026-03-30', NULL, '#3b82f6', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(20, 'Masa Perkuliahaan efektif sebelum UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2026-03-30', '2026-05-15', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(21, 'Ujian Tengah Semester (UTS)', 'Imported from PDF', 'uts', '2026-05-18', '2026-05-22', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(22, 'Libur Idul Adha', 'Imported from PDF', 'libur_akademik', '2026-05-27', '2026-05-27', NULL, '#ef4444', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(23, 'Masa Perkuliahaan efektif setelah UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2026-05-25', '2026-07-10', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(24, 'Ujian Akhir Semester (UAS)', 'Imported from PDF', 'uas', '2026-07-13', '2026-07-17', NULL, '#d97706', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(25, 'Penginputan Nilai Mahasiswa', 'Imported from PDF', 'lainnya', '2026-07-20', '2026-07-24', NULL, '#6b7280', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
+(26, 'Cetak Kartu Hasil Studi (KHS)', 'Imported from PDF', 'lainnya', '2026-07-27', '2026-07-30', NULL, '#6b7280', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `activity_logs`
+--
+
+CREATE TABLE `activity_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `activity` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `ip_address` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admins`
+--
+
+CREATE TABLE `admins` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `nip` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `admins`
+--
+
+INSERT INTO `admins` (`id`, `user_id`, `nip`, `phone`, `address`, `created_at`, `updated_at`) VALUES
+(1, 1, '198501012010011001', '081234567890', 'Jl. Kampus STIH No. 1', '2026-05-20 05:16:19', '2026-05-20 05:16:19');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `audit_logs`
+--
+
+CREATE TABLE `audit_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `actor_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `actor_role` varchar(50) DEFAULT NULL,
+  `action` varchar(100) NOT NULL,
+  `auditable_type` varchar(255) NOT NULL,
+  `auditable_id` bigint(20) UNSIGNED NOT NULL,
+  `meta` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`meta`)),
+  `before` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`before`)),
+  `after` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`after`)),
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `audit_logs`
+--
+
+INSERT INTO `audit_logs` (`id`, `actor_id`, `actor_role`, `action`, `auditable_type`, `auditable_id`, `meta`, `before`, `after`, `ip_address`, `user_agent`, `created_at`) VALUES
+(1, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 1, NULL, NULL, '{\"nama_semester\":\"Ganjil\",\"tahun_ajaran\":\"2025\\/2026\",\"tanggal_mulai\":\"2026-05-19T17:00:00.000000Z\",\"tanggal_selesai\":\"2026-11-19T17:00:00.000000Z\",\"status\":\"aktif\",\"id\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:17:57'),
+(2, 1, 'user', 'academic_event.created', 'App\\Models\\AcademicEvent', 15, NULL, NULL, '{\"title\":\"Kuliah\",\"description\":null,\"event_type\":\"perkuliahan\",\"start_date\":\"2026-05-20T17:00:00.000000Z\",\"end_date\":\"2026-05-20T17:00:00.000000Z\",\"semester_id\":\"1\",\"color\":\"#3b82f6\",\"created_by\":1,\"updated_by\":1,\"updated_at\":\"2026-05-20T05:34:46.000000Z\",\"created_at\":\"2026-05-20T05:34:46.000000Z\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:34:46'),
+(3, 1, 'admin', 'prodi.updated', 'App\\Models\\Prodi', 1, NULL, '{\"fakultas_id\":null}', '{\"fakultas_id\":\"1\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:35:39'),
+(4, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 13, NULL, '{\"id\":13,\"kode_ruangan\":\"AULA.01\",\"nama_ruangan\":\"Aula Utama\",\"gedung\":\"Gedung C\",\"lantai\":1,\"kapasitas\":200,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:20'),
+(5, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 9, NULL, '{\"id\":9,\"kode_ruangan\":\"LAB.01\",\"nama_ruangan\":\"Lab Komputer 1\",\"gedung\":\"Gedung B\",\"lantai\":1,\"kapasitas\":30,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:22'),
+(6, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 10, NULL, '{\"id\":10,\"kode_ruangan\":\"LAB.02\",\"nama_ruangan\":\"Lab Komputer 2\",\"gedung\":\"Gedung B\",\"lantai\":1,\"kapasitas\":25,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:23'),
+(7, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 11, NULL, '{\"id\":11,\"kode_ruangan\":\"PRAK.01\",\"nama_ruangan\":\"Ruang Praktikum Hukum 1\",\"gedung\":\"Gedung B\",\"lantai\":2,\"kapasitas\":35,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:25'),
+(8, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 12, NULL, '{\"id\":12,\"kode_ruangan\":\"PRAK.02\",\"nama_ruangan\":\"Ruang Praktikum Hukum 2\",\"gedung\":\"Gedung B\",\"lantai\":2,\"kapasitas\":30,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:27'),
+(9, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 1, NULL, '{\"id\":1,\"kode_ruangan\":\"R.101\",\"nama_ruangan\":\"Ruang Kelas A1\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":40,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:28'),
+(10, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 2, NULL, '{\"id\":2,\"kode_ruangan\":\"R.102\",\"nama_ruangan\":\"Ruang Kelas A2\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":35,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:31'),
+(11, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 3, NULL, '{\"id\":3,\"kode_ruangan\":\"R.103\",\"nama_ruangan\":\"Ruang Kelas A3\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":30,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:33'),
+(12, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 4, NULL, '{\"id\":4,\"kode_ruangan\":\"R.104\",\"nama_ruangan\":\"Ruang Kelas A4\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":45,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:34'),
+(13, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 5, NULL, '{\"id\":5,\"kode_ruangan\":\"R.105\",\"nama_ruangan\":\"Ruang Kelas A5\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":40,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:36'),
+(14, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 6, NULL, '{\"id\":6,\"kode_ruangan\":\"R.201\",\"nama_ruangan\":\"Ruang Kelas B1\",\"gedung\":\"Gedung A\",\"lantai\":2,\"kapasitas\":50,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:37'),
+(15, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 7, NULL, '{\"id\":7,\"kode_ruangan\":\"R.202\",\"nama_ruangan\":\"Ruang Kelas B2\",\"gedung\":\"Gedung A\",\"lantai\":2,\"kapasitas\":45,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:40'),
+(16, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 8, NULL, '{\"id\":8,\"kode_ruangan\":\"R.203\",\"nama_ruangan\":\"Ruang Kelas B3\",\"gedung\":\"Gedung A\",\"lantai\":2,\"kapasitas\":40,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:41'),
+(17, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 14, NULL, '{\"id\":14,\"kode_ruangan\":\"SEMINAR.01\",\"nama_ruangan\":\"Ruang Seminar\",\"gedung\":\"Gedung C\",\"lantai\":1,\"kapasitas\":80,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:43'),
+(18, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 15, NULL, NULL, '{\"kode_ruangan\":\"RI 1\",\"nama_ruangan\":\"Ruang Kelas Internasional 1\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":1,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
+(19, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 16, NULL, NULL, '{\"kode_ruangan\":\"RI 2\",\"nama_ruangan\":\"Ruang Kelas Internasional 2\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":1,\"kapasitas\":30,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
+(20, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 17, NULL, NULL, '{\"kode_ruangan\":\"RI 3\",\"nama_ruangan\":\"Ruang Kelas Internasional 3\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":1,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
+(21, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 18, NULL, NULL, '{\"kode_ruangan\":\"R 1\",\"nama_ruangan\":\"Ruang Kelas R 1\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
+(22, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 19, NULL, NULL, '{\"kode_ruangan\":\"R 2\",\"nama_ruangan\":\"Ruang Kelas R 2\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
+(23, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 20, NULL, NULL, '{\"kode_ruangan\":\"R 3\",\"nama_ruangan\":\"Ruang Kelas R 3\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
+(24, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 21, NULL, NULL, '{\"kode_ruangan\":\"R 4\",\"nama_ruangan\":\"Ruang Kelas R 4\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":21}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
+(25, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 1, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0101\",\"id\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:07'),
+(26, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 2, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0102\",\"id\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:07'),
+(27, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 3, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0103\",\"id\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:07'),
+(28, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 4, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0104\",\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:07'),
+(29, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 1, NULL, '{\"id\":1,\"nama_kelas\":\"26HK0101\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:56'),
+(30, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 2, NULL, '{\"id\":2,\"nama_kelas\":\"26HK0102\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:00'),
+(31, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 3, NULL, '{\"id\":3,\"nama_kelas\":\"26HK0103\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:02'),
+(32, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 4, NULL, '{\"id\":4,\"nama_kelas\":\"26HK0104\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:03'),
+(33, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 7, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"INF\",\"kode_kelas\":\"01\",\"prodi_id\":2,\"tahun_akademik_id\":1,\"nama_kelas\":\"26INF01\",\"id\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:56'),
+(34, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 8, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"INF\",\"kode_kelas\":\"02\",\"prodi_id\":2,\"tahun_akademik_id\":1,\"nama_kelas\":\"26INF02\",\"id\":8}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:56'),
+(35, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 9, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"INF\",\"kode_kelas\":\"03\",\"prodi_id\":2,\"tahun_akademik_id\":1,\"nama_kelas\":\"26INF03\",\"id\":9}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:56'),
+(36, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 10, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"INF\",\"kode_kelas\":\"04\",\"prodi_id\":2,\"tahun_akademik_id\":1,\"nama_kelas\":\"26INF04\",\"id\":10}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:56'),
+(37, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 12, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0101\",\"id\":12}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:49:36'),
+(38, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 13, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0102\",\"id\":13}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:49:36'),
+(39, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 14, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0103\",\"id\":14}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:49:36'),
+(40, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 15, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0104\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:49:36'),
+(41, 1, 'admin', 'prodi.updated', 'App\\Models\\Prodi', 1, NULL, '{\"kode_prodi\":\"HK01\"}', '{\"kode_prodi\":\"HK\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:51:24'),
+(42, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 12, NULL, '{\"id\":12,\"nama_kelas\":\"26HK0101\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:51:56'),
+(43, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 13, NULL, '{\"id\":13,\"nama_kelas\":\"26HK0102\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:52:06'),
+(44, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 14, NULL, '{\"id\":14,\"nama_kelas\":\"26HK0103\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:52:08'),
+(45, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 15, NULL, '{\"id\":15,\"nama_kelas\":\"26HK0104\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:52:11'),
+(46, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 16, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK01\",\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:53:01'),
+(47, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 17, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK02\",\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:53:01'),
+(48, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 18, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK03\",\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:53:01'),
+(49, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 19, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK04\",\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:53:01'),
+(50, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 20, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"01\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"26AKT01\",\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(51, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 21, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"02\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"26AKT02\",\"id\":21}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(52, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 22, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"03\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"26AKT03\",\"id\":22}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(53, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 23, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"04\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"26AKT04\",\"id\":23}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(54, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 24, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"01\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"25AKT01\",\"id\":24}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(55, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 25, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"02\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"25AKT02\",\"id\":25}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(56, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 26, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"03\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"25AKT03\",\"id\":26}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(57, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 27, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"04\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"25AKT04\",\"id\":27}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(58, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 28, NULL, NULL, '{\"angkatan\":\"2024\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"01\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"24AKT01\",\"id\":28}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(59, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 29, NULL, NULL, '{\"angkatan\":\"2024\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"02\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"24AKT02\",\"id\":29}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(60, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 30, NULL, NULL, '{\"angkatan\":\"2024\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"03\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"24AKT03\",\"id\":30}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(61, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 31, NULL, NULL, '{\"angkatan\":\"2024\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"04\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"24AKT04\",\"id\":31}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
+(62, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 32, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"26HK01\",\"id\":32}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
+(63, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 33, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"26HK02\",\"id\":33}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
+(64, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 34, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"26HK03\",\"id\":34}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
+(65, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 35, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"26HK04\",\"id\":35}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
+(66, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 36, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"25HK01\",\"id\":36}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
+(67, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 37, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"25HK02\",\"id\":37}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
+(68, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 38, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"25HK03\",\"id\":38}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
+(69, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 39, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"25HK04\",\"id\":39}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
+(70, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:13:09'),
+(71, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:17:26'),
+(72, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:17:37'),
+(73, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:17:45'),
+(74, 1, 'user', 'academic_event.deleted', 'App\\Models\\AcademicEvent', 15, '{\"deleted_by\":1}', '{\"id\":15,\"title\":\"Kuliah\",\"description\":null,\"event_type\":\"perkuliahan\",\"start_date\":\"2026-05-20T17:00:00.000000Z\",\"end_date\":\"2026-05-20T17:00:00.000000Z\",\"semester_id\":1,\"color\":\"#3b82f6\",\"is_active\":true,\"created_by\":1,\"updated_by\":1,\"created_at\":\"2026-05-20T05:34:46.000000Z\",\"updated_at\":\"2026-05-20T05:34:46.000000Z\"}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:18:21'),
+(75, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 2, NULL, NULL, '{\"nama_semester\":\"Genap\",\"tahun_ajaran\":\"2025\\/2026\",\"tanggal_mulai\":\"2026-11-20T17:00:00.000000Z\",\"tanggal_selesai\":\"2027-05-20T17:00:00.000000Z\",\"status\":\"non-aktif\",\"id\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:18:35'),
+(76, 1, 'admin', 'user.created', 'App\\Models\\User', 12, NULL, NULL, '{\"name\":\"Dr. R Muhamad Ibnu Mazjah, S.H., M.H.\",\"email\":\"417017906@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":12}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:26'),
+(77, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 4, NULL, NULL, '{\"user_id\":12,\"nidn\":\"417017906\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Trisakti\",\"Doktor Ilmu Hukum Universitas Airlangga\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:26'),
+(78, 1, 'admin', 'user.created', 'App\\Models\\User', 13, NULL, NULL, '{\"name\":\"Dr. Armansyah, S.H., M.H.\",\"email\":\"301067501@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":13}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
+(79, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 5, NULL, NULL, '{\"user_id\":13,\"nidn\":\"301067501\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Muhammadiyah Jakarta\",\"Universitas Muhammadiyah Jakarta\",\"Universitas Islam Bandung\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":5}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
+(80, 1, 'admin', 'user.created', 'App\\Models\\User', 14, NULL, NULL, '{\"name\":\"Dr. Mukhlis, S.H., M.H.\",\"email\":\"3146747648130140@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":14}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
+(81, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 6, NULL, NULL, '{\"user_id\":14,\"nidn\":\"3146747648130140\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Andalas\",\"Universitas Andalas\",\"Universitas Jayabaya\"],\"dosen_tetap\":false,\"jabatan_fungsional\":[\"Lektor\"],\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
+(82, 1, 'admin', 'user.created', 'App\\Models\\User', 15, NULL, NULL, '{\"name\":\"Dr. Joko Cahyono, SH., MH.\",\"email\":\"714076601@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
+(83, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 7, NULL, NULL, '{\"user_id\":15,\"nidn\":\"714076601\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Bhayangkara Surabaya\",\"Universitas Airlangga\",\"Universitas Brawijaya\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
+(84, 1, 'admin', 'user.created', 'App\\Models\\User', 16, NULL, NULL, '{\"name\":\"Sandi Yudha Prayoga, S.H., M.H.\",\"email\":\"302129701@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
+(85, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 8, NULL, NULL, '{\"user_id\":16,\"nidn\":\"302129701\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":8}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
+(86, 1, 'admin', 'user.created', 'App\\Models\\User', 17, NULL, NULL, '{\"name\":\"Adilla Meytiara Intan, S.H., LL.M.\",\"email\":\"302059501@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(87, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 9, NULL, NULL, '{\"user_id\":17,\"nidn\":\"302059501\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Master of Laws Lancaster University\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":9}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(88, 1, 'admin', 'user.created', 'App\\Models\\User', 18, NULL, NULL, '{\"name\":\"Adery Ardhan Saputro, S.H., LL.M.\",\"email\":\"313089202@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(89, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 10, NULL, NULL, '{\"user_id\":18,\"nidn\":\"313089202\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Master of Laws Vrije Universiteit Amsterdam\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":10}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(90, 1, 'admin', 'user.created', 'App\\Models\\User', 19, NULL, NULL, '{\"name\":\"Dio Ashar Wicaksana, S.H., M.A.\",\"email\":\"307089005@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(91, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 11, NULL, NULL, '{\"user_id\":19,\"nidn\":\"307089005\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Master of Laws University of Basque Country\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":11}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(92, 1, 'admin', 'user.created', 'App\\Models\\User', 20, NULL, NULL, '{\"name\":\"Prof. Dr. Bambang Sugeng Rukmono, S.H.,M.M., M.H.\",\"email\":\"8918290024@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(93, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 12, NULL, NULL, '{\"user_id\":20,\"nidn\":\"8918290024\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Sebelas Maret\",\"Universitas Padjajaran\",\"Universitas Hasanuddin Makassar\"],\"dosen_tetap\":false,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":12}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(94, 1, 'admin', 'user.created', 'App\\Models\\User', 21, NULL, NULL, '{\"name\":\"Maydika Ramadani, S.H., M.H.\",\"email\":\"3860765666130310@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":21}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(95, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 13, NULL, NULL, '{\"user_id\":21,\"nidn\":\"3860765666130310\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Muhammadiyah Aceh Banda Aceh\",\"Universitas Pembangunan Nasional Veteran Jakarta\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":13}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
+(96, 1, 'admin', 'user.created', 'App\\Models\\User', 22, NULL, NULL, '{\"name\":\"Raul Gindo cahyono, S.H., M.H.\",\"email\":\"1956751652130120@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":22}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
+(97, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 14, NULL, NULL, '{\"user_id\":22,\"nidn\":\"1956751652130120\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Islam Attahiriyah\",\"Universitas Pancasila\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":14}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
+(98, 1, 'admin', 'user.created', 'App\\Models\\User', 23, NULL, NULL, '{\"name\":\"Muhammad Arbani, S.H., M.Kn.\",\"email\":\"3345774675130210@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":23}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
+(99, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 15, NULL, NULL, '{\"user_id\":23,\"nidn\":\"3345774675130210\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Universitas Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
+(100, 1, 'admin', 'user.created', 'App\\Models\\User', 24, NULL, NULL, '{\"name\":\"Muhammad Rizqi Alfarizi, S.H., LL.M.\",\"email\":\"4434778679130070@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":24}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
+(101, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 16, NULL, NULL, '{\"user_id\":24,\"nidn\":\"4434778679130070\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Universitas Malaya\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Asisten Ahli\"],\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
+(102, 1, 'admin', 'user.created', 'App\\Models\\User', 25, NULL, NULL, '{\"name\":\"Amir Firmansyah, S.H. M.H\",\"email\":\"7641763664130240@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":25}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
+(103, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 17, NULL, NULL, '{\"user_id\":25,\"nidn\":\"7641763664130240\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Wiraswasta Indonesia\",\"Universitas Al Azhar Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Asisten Ahli\"],\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
+(104, 1, 'admin', 'user.created', 'App\\Models\\User', 26, NULL, NULL, '{\"name\":\"Akhmad Ikraam, S.H., M.H.\",\"email\":\"2150767668137030@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":26}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
+(105, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 18, NULL, NULL, '{\"user_id\":26,\"nidn\":\"2150767668137030\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Islam Indonesia\",\"Universitas Al Azhar Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Asisten Ahli\"],\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
+(106, 1, 'admin', 'user.created', 'App\\Models\\User', 27, NULL, NULL, '{\"name\":\"Zul Karnen, S.S., M.Si.\",\"email\":\"3454762663130160@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":27}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
+(107, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 19, NULL, NULL, '{\"user_id\":27,\"nidn\":\"3454762663130160\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Al-Azhar Indonesia\",\"Universitas Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
+(108, 1, 'admin', 'user.created', 'App\\Models\\User', 28, NULL, NULL, '{\"name\":\"Dr. Rudi Pradisetia Sudirdja., S.H., M.H.\",\"email\":\"3204070406910000@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":28}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
+(109, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 20, NULL, NULL, '{\"user_id\":28,\"nidn\":\"3204070406910000\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Pasundan\",\"Universitas Padjajaran\",\"Universitas Indonesia\"],\"dosen_tetap\":false,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
+(110, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 40, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK01\",\"id\":40}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
+(111, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 41, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK02\",\"id\":41}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
+(112, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 42, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK03\",\"id\":42}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
+(113, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 43, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK04\",\"id\":43}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
+(114, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 44, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"25HK01\",\"id\":44}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
+(115, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 45, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"25HK02\",\"id\":45}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
+(116, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 46, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"25HK03\",\"id\":46}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02');
+INSERT INTO `audit_logs` (`id`, `actor_id`, `actor_role`, `action`, `auditable_type`, `auditable_id`, `meta`, `before`, `after`, `ip_address`, `user_agent`, `created_at`) VALUES
+(117, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 47, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"25HK04\",\"id\":47}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
+(118, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 32, NULL, '{\"id\":32,\"nama_kelas\":\"26HK01\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:11'),
+(119, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 33, NULL, '{\"id\":33,\"nama_kelas\":\"26HK02\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:14'),
+(120, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 34, NULL, '{\"id\":34,\"nama_kelas\":\"26HK03\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:16'),
+(121, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 35, NULL, '{\"id\":35,\"nama_kelas\":\"26HK04\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:18'),
+(122, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 36, NULL, '{\"id\":36,\"nama_kelas\":\"25HK01\",\"tingkat\":0,\"angkatan\":\"2025\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:20'),
+(123, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 37, NULL, '{\"id\":37,\"nama_kelas\":\"25HK02\",\"tingkat\":0,\"angkatan\":\"2025\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:23'),
+(124, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 38, NULL, '{\"id\":38,\"nama_kelas\":\"25HK03\",\"tingkat\":0,\"angkatan\":\"2025\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:27'),
+(125, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 39, NULL, '{\"id\":39,\"nama_kelas\":\"25HK04\",\"tingkat\":0,\"angkatan\":\"2025\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:31'),
+(126, 1, 'admin', 'user.updated', 'App\\Models\\User', 11, NULL, '{\"email\":\"student2@stih.ac.id\"}', '{\"email\":\"sitimahasiswi@student.stih.ac.id\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:52:09'),
+(127, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 5, NULL, '{\"prodi\":\"Hukum Bisnis\",\"prodi_id\":null,\"angkatan\":\"2024\",\"tahun_akademik_id\":null,\"kelas_perkuliahan_id\":null,\"email_kampus\":null,\"email_aktif\":\"pribadi\"}', '{\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"angkatan\":\"2025\",\"tahun_akademik_id\":1,\"kelas_perkuliahan_id\":44,\"email_kampus\":\"sitimahasiswi@student.stih.ac.id\",\"email_aktif\":\"kampus\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:52:09'),
+(128, 1, 'user', 'mahasiswa.class_assignment_updated', 'App\\Models\\Mahasiswa', 5, '{\"mahasiswa_id\":5,\"mahasiswa_nim\":\"2024002\",\"mahasiswa_nama\":\"Siti Mahasiswi\"}', NULL, '{\"id\":44,\"nama_kelas\":\"25HK01\",\"display_label\":\"25HK01 - Ilmu Hukum Kelas 01\",\"prodi_id\":1,\"prodi\":\"Ilmu Hukum\",\"angkatan\":\"2025\",\"tingkat\":0,\"tahun_akademik_id\":1,\"tahun_akademik\":\"Ganjil 2025\\/2026\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:52:09'),
+(129, 1, 'admin', 'user.created', 'App\\Models\\User', 29, NULL, NULL, '{\"name\":\"Jojo\",\"email\":\"jojo@student.stih.ac.id\",\"role\":\"mahasiswa\",\"id\":29}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:56:46'),
+(130, 1, 'admin', 'mahasiswa.created', 'App\\Models\\Mahasiswa', 6, NULL, NULL, '{\"nim\":\"12345678\",\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"angkatan\":\"2026\",\"semester\":1,\"jenis_kelamin\":\"Laki-Laki\",\"phone\":null,\"address\":null,\"email_pribadi\":\"gregoriusjoell@gmail.com\",\"email_kampus\":\"jojo@student.stih.ac.id\",\"email_aktif\":\"kampus\",\"status\":\"aktif\",\"tahun_akademik_id\":1,\"kelas_perkuliahan_id\":40,\"user_id\":29,\"status_akun\":\"baru\",\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:56:46'),
+(131, 1, 'user', 'mahasiswa.class_assignment_created', 'App\\Models\\Mahasiswa', 6, '{\"mahasiswa_id\":6,\"mahasiswa_nim\":\"12345678\",\"mahasiswa_nama\":\"Jojo\"}', NULL, '{\"id\":40,\"nama_kelas\":\"26HK01\",\"display_label\":\"26HK01 - Ilmu Hukum Kelas 01\",\"prodi_id\":1,\"prodi\":\"Ilmu Hukum\",\"angkatan\":\"2026\",\"tingkat\":0,\"tahun_akademik_id\":1,\"tahun_akademik\":\"Ganjil 2025\\/2026\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:56:46'),
+(132, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:58:40'),
+(133, 29, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"new_survey_completed\":0}', '{\"new_survey_completed\":true}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:58:54'),
+(134, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:43:58'),
+(135, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:46:16'),
+(136, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:58:55'),
+(137, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:59:21'),
+(138, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:59:58'),
+(139, 1, 'admin', 'user.updated', 'App\\Models\\User', 6, NULL, '{\"email\":\"dewi.lestari@student.stih.ac.id\"}', '{\"email\":\"dewilestari@student.stih.ac.id\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:00:41'),
+(140, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 2, NULL, '{\"prodi\":\"Hukum Bisnis\",\"prodi_id\":null,\"angkatan\":\"2024\",\"tahun_akademik_id\":null,\"kelas_perkuliahan_id\":null,\"email_kampus\":null,\"email_aktif\":\"pribadi\"}', '{\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"angkatan\":\"2026\",\"tahun_akademik_id\":1,\"kelas_perkuliahan_id\":40,\"email_kampus\":\"dewilestari@student.stih.ac.id\",\"email_aktif\":\"kampus\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:00:41'),
+(141, 1, 'user', 'mahasiswa.class_assignment_updated', 'App\\Models\\Mahasiswa', 2, '{\"mahasiswa_id\":2,\"mahasiswa_nim\":\"2024010002\",\"mahasiswa_nama\":\"Dewi Lestari\"}', NULL, '{\"id\":40,\"nama_kelas\":\"26HK01\",\"display_label\":\"26HK01 - Ilmu Hukum Kelas 01\",\"prodi_id\":1,\"prodi\":\"Ilmu Hukum\",\"angkatan\":\"2026\",\"tingkat\":0,\"tahun_akademik_id\":1,\"tahun_akademik\":\"Ganjil 2025\\/2026\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:00:41'),
+(142, 6, 'mahasiswa', 'user.login', 'App\\Models\\User', 6, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:01:05'),
+(143, 6, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 2, NULL, '{\"new_survey_completed\":0}', '{\"new_survey_completed\":true}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:01:18'),
+(144, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:07:29'),
+(145, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:07:58'),
+(146, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:10:07'),
+(147, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:22:45'),
+(148, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:23:03'),
+(149, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-20 08:55:56'),
+(150, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:10:31'),
+(151, NULL, 'system', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"no_hp\":null}', '{\"no_hp\":\"08123456789\"}', '127.0.0.1', 'Symfony', '2026-05-20 09:28:25'),
+(152, NULL, 'system', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"no_hp\":\"08123456789\"}', '{\"no_hp\":null}', '127.0.0.1', 'Symfony', '2026-05-20 09:28:31'),
+(168, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:11'),
+(169, 1, 'admin', 'user.updated', 'App\\Models\\User', 5, NULL, '{\"email\":\"andi.pratama@student.stih.ac.id\"}', '{\"email\":\"andipratama@student.stih.ac.id\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:33'),
+(170, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"prodi\":\"Hukum Tata Kabupaten\",\"prodi_id\":null,\"tahun_akademik_id\":null,\"email_kampus\":null,\"email_aktif\":\"pribadi\"}', '{\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"email_kampus\":\"andipratama@student.stih.ac.id\",\"email_aktif\":\"kampus\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:33'),
+(171, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:48'),
+(172, 5, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"new_survey_completed\":0}', '{\"new_survey_completed\":true}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:56'),
+(176, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:59:44'),
+(177, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:59:55'),
+(179, 5, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"no_hp\":null,\"alamat\":null,\"kota\":null,\"kecamatan\":null,\"desa\":null,\"provinsi\":null,\"jenis_sekolah\":null,\"jurusan_sekolah\":null,\"tahun_lulus\":null,\"nilai_kelulusan\":null,\"tempat_lahir\":null,\"tanggal_lahir\":null,\"jenis_kelamin\":null,\"agama\":null,\"status_sipil\":null,\"email_pribadi\":null}', '{\"no_hp\":\"081234567890\",\"alamat\":\"Jl. Test No. 123\",\"kota\":\"Jakarta Selatan\",\"kecamatan\":\"Kebayoran Baru\",\"desa\":\"Senayan\",\"provinsi\":\"DKI Jakarta\",\"jenis_sekolah\":\"1 - Umum\",\"jurusan_sekolah\":\"SMA\",\"tahun_lulus\":\"2024\",\"nilai_kelulusan\":\"85.50\",\"tempat_lahir\":\"Jakarta\",\"tanggal_lahir\":\"2000-01-15\",\"jenis_kelamin\":\"Laki-Laki\",\"agama\":\"Islam\",\"status_sipil\":\"Belum Menikah\",\"email_pribadi\":\"\"}', '127.0.0.1', 'Symfony', '2026-05-20 10:02:50'),
+(182, 5, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"rt\":null,\"rw\":null,\"kota\":\"Jakarta Selatan\",\"kecamatan\":\"Kebayoran Baru\",\"desa\":\"Senayan\",\"alamat_ktp\":null,\"rt_ktp\":null,\"rw_ktp\":null,\"provinsi_ktp\":null,\"kota_ktp\":null,\"kecamatan_ktp\":null,\"desa_ktp\":null,\"provinsi\":\"DKI Jakarta\",\"email_pribadi\":\"\"}', '{\"rt\":\"12\",\"rw\":\"12\",\"kota\":\"KAB. ACEH BARAT\",\"kecamatan\":\"ARONGAN LAMBALEK\",\"desa\":\"ALUE BAGOK\",\"alamat_ktp\":\"Jl. Test No. 123\",\"rt_ktp\":\"12\",\"rw_ktp\":\"12\",\"provinsi_ktp\":\"ACEH\",\"kota_ktp\":\"KAB. ACEH BARAT\",\"kecamatan_ktp\":\"ARONGAN LAMBALEK\",\"desa_ktp\":\"ALUE BAGOK\",\"provinsi\":\"ACEH\",\"email_pribadi\":null}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 10:04:06'),
+(183, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 10:04:18'),
+(184, 29, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"no_hp\":null,\"alamat\":null,\"rt\":null,\"rw\":null,\"kota\":null,\"kecamatan\":null,\"desa\":null,\"alamat_ktp\":null,\"rt_ktp\":null,\"rw_ktp\":null,\"provinsi_ktp\":null,\"kota_ktp\":null,\"kecamatan_ktp\":null,\"desa_ktp\":null,\"provinsi\":null,\"jenis_sekolah\":null,\"jurusan_sekolah\":null,\"tahun_lulus\":null,\"nilai_kelulusan\":null,\"tempat_lahir\":null,\"tanggal_lahir\":null,\"agama\":null,\"status_sipil\":null}', '{\"no_hp\":\"8111111111111\",\"alamat\":\"qwe\",\"rt\":\"123\",\"rw\":\"123\",\"kota\":\"KAB. ACEH BARAT DAYA\",\"kecamatan\":\"BLANGPIDIE\",\"desa\":\"GUDANG\",\"alamat_ktp\":\"qwe\",\"rt_ktp\":\"123\",\"rw_ktp\":\"123\",\"provinsi_ktp\":\"ACEH\",\"kota_ktp\":\"KAB. ACEH BARAT DAYA\",\"kecamatan_ktp\":\"BLANGPIDIE\",\"desa_ktp\":\"GUDANG\",\"provinsi\":\"ACEH\",\"jenis_sekolah\":\"1 - Umum\",\"jurusan_sekolah\":\"SMA\",\"tahun_lulus\":\"2025\",\"nilai_kelulusan\":\"100\",\"tempat_lahir\":\"Jakarta\",\"tanggal_lahir\":\"2000-10-10\",\"agama\":\"Katolik\",\"status_sipil\":\"Cerai\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 10:05:27'),
+(185, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 10:06:59');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bobot_penilaian`
+--
+
+CREATE TABLE `bobot_penilaian` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kelas_id` bigint(20) UNSIGNED NOT NULL,
+  `bobot_partisipatif` decimal(5,2) NOT NULL DEFAULT 25.00,
+  `bobot_proyek` decimal(5,2) NOT NULL DEFAULT 25.00,
+  `bobot_quiz` decimal(5,2) NOT NULL DEFAULT 5.00,
+  `bobot_tugas` decimal(5,2) NOT NULL DEFAULT 5.00,
+  `bobot_uts` decimal(5,2) NOT NULL DEFAULT 20.00,
+  `bobot_uas` decimal(5,2) NOT NULL DEFAULT 20.00,
+  `is_locked` tinyint(1) NOT NULL DEFAULT 0,
+  `locked_at` timestamp NULL DEFAULT NULL,
+  `locked_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache`
+--
+
+CREATE TABLE `cache` (
+  `key` varchar(255) NOT NULL,
+  `value` mediumtext NOT NULL,
+  `expiration` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('academic_period_current_types:1:2026-05-20', 'a:1:{i:0;a:8:{s:4:\"type\";s:3:\"uts\";s:5:\"label\";s:21:\"Ujian Tengah Semester\";s:4:\"icon\";s:11:\"fas fa-edit\";s:6:\"colors\";a:3:{s:2:\"bg\";s:12:\"bg-amber-100\";s:4:\"text\";s:14:\"text-amber-800\";s:6:\"border\";s:16:\"border-amber-300\";}s:5:\"title\";s:27:\"Ujian Tengah Semester (UTS)\";s:10:\"start_date\";s:10:\"2026-05-18\";s:8:\"end_date\";s:10:\"2026-05-22\";s:9:\"days_left\";i:2;}}', 1779271739),
+('academic_periods:1', 'O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:6:{i:0;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:21;s:5:\"title\";s:27:\"Ujian Tengah Semester (UTS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2026-05-18\";s:8:\"end_date\";s:10:\"2026-05-22\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:21;s:5:\"title\";s:27:\"Ujian Tengah Semester (UTS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2026-05-18\";s:8:\"end_date\";s:10:\"2026-05-22\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:23;s:5:\"title\";s:52:\"Masa Perkuliahaan efektif setelah UTS (7x pertemuan)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2026-05-25\";s:8:\"end_date\";s:10:\"2026-07-10\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:23;s:5:\"title\";s:52:\"Masa Perkuliahaan efektif setelah UTS (7x pertemuan)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2026-05-25\";s:8:\"end_date\";s:10:\"2026-07-10\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:2;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:22;s:5:\"title\";s:15:\"Libur Idul Adha\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:14:\"libur_akademik\";s:10:\"start_date\";s:10:\"2026-05-27\";s:8:\"end_date\";s:10:\"2026-05-27\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#ef4444\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:22;s:5:\"title\";s:15:\"Libur Idul Adha\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:14:\"libur_akademik\";s:10:\"start_date\";s:10:\"2026-05-27\";s:8:\"end_date\";s:10:\"2026-05-27\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#ef4444\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:3;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:24;s:5:\"title\";s:26:\"Ujian Akhir Semester (UAS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uas\";s:10:\"start_date\";s:10:\"2026-07-13\";s:8:\"end_date\";s:10:\"2026-07-17\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#d97706\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:24;s:5:\"title\";s:26:\"Ujian Akhir Semester (UAS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uas\";s:10:\"start_date\";s:10:\"2026-07-13\";s:8:\"end_date\";s:10:\"2026-07-17\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#d97706\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:4;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:25;s:5:\"title\";s:27:\"Penginputan Nilai Mahasiswa\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-07-20\";s:8:\"end_date\";s:10:\"2026-07-24\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:25;s:5:\"title\";s:27:\"Penginputan Nilai Mahasiswa\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-07-20\";s:8:\"end_date\";s:10:\"2026-07-24\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:5;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:26;s:5:\"title\";s:29:\"Cetak Kartu Hasil Studi (KHS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-07-27\";s:8:\"end_date\";s:10:\"2026-07-30\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:26;s:5:\"title\";s:29:\"Cetak Kartu Hasil Studi (KHS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-07-27\";s:8:\"end_date\";s:10:\"2026-07-30\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}', 1779271631),
+('active_semester', 'O:19:\"App\\Models\\Semester\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:9:\"semesters\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:18:{s:2:\"id\";i:1;s:13:\"nama_semester\";s:6:\"Ganjil\";s:17:\"nama_semester_old\";N;s:12:\"tahun_ajaran\";s:9:\"2025/2026\";s:6:\"status\";s:5:\"aktif\";s:9:\"is_active\";i:0;s:9:\"is_locked\";i:0;s:9:\"locked_at\";N;s:9:\"locked_by\";N;s:15:\"krs_dapat_diisi\";i:0;s:14:\"max_sks_rendah\";i:20;s:14:\"max_sks_tinggi\";i:24;s:9:\"krs_mulai\";N;s:11:\"krs_selesai\";N;s:13:\"tanggal_mulai\";s:10:\"2026-05-20\";s:15:\"tanggal_selesai\";s:10:\"2026-11-20\";s:10:\"created_at\";s:19:\"2026-05-20 12:17:57\";s:10:\"updated_at\";s:19:\"2026-05-20 12:17:57\";}s:11:\"\0*\0original\";a:18:{s:2:\"id\";i:1;s:13:\"nama_semester\";s:6:\"Ganjil\";s:17:\"nama_semester_old\";N;s:12:\"tahun_ajaran\";s:9:\"2025/2026\";s:6:\"status\";s:5:\"aktif\";s:9:\"is_active\";i:0;s:9:\"is_locked\";i:0;s:9:\"locked_at\";N;s:9:\"locked_by\";N;s:15:\"krs_dapat_diisi\";i:0;s:14:\"max_sks_rendah\";i:20;s:14:\"max_sks_tinggi\";i:24;s:9:\"krs_mulai\";N;s:11:\"krs_selesai\";N;s:13:\"tanggal_mulai\";s:10:\"2026-05-20\";s:15:\"tanggal_selesai\";s:10:\"2026-11-20\";s:10:\"created_at\";s:19:\"2026-05-20 12:17:57\";s:10:\"updated_at\";s:19:\"2026-05-20 12:17:57\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:8:{s:13:\"tanggal_mulai\";s:4:\"date\";s:15:\"tanggal_selesai\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";s:9:\"is_locked\";s:7:\"boolean\";s:9:\"locked_at\";s:8:\"datetime\";s:15:\"krs_dapat_diisi\";s:7:\"boolean\";s:9:\"krs_mulai\";s:4:\"date\";s:11:\"krs_selesai\";s:4:\"date\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:12:{i:0;s:13:\"nama_semester\";i:1;s:12:\"tahun_ajaran\";i:2;s:6:\"status\";i:3;s:13:\"tanggal_mulai\";i:4;s:15:\"tanggal_selesai\";i:5;s:9:\"is_active\";i:6;s:9:\"is_locked\";i:7;s:9:\"locked_at\";i:8;s:9:\"locked_by\";i:9;s:15:\"krs_dapat_diisi\";i:10;s:9:\"krs_mulai\";i:11;s:11:\"krs_selesai\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}', 1779271758);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache_locks`
+--
+
+CREATE TABLE `cache_locks` (
+  `key` varchar(255) NOT NULL,
+  `owner` varchar(255) NOT NULL,
+  `expiration` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dokumen_kelas`
+--
+
+CREATE TABLE `dokumen_kelas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kelas_id` bigint(20) UNSIGNED NOT NULL,
+  `tipe_dokumen` enum('silabus','rps') NOT NULL,
+  `nama_file` varchar(255) NOT NULL,
+  `path_file` varchar(255) NOT NULL,
+  `uploaded_by` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dosens`
+--
+
+CREATE TABLE `dosens` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `fakultas_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `nidn` varchar(255) NOT NULL,
+  `pendidikan_terakhir` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'Multiple education levels: S1, S2, S3' CHECK (json_valid(`pendidikan_terakhir`)),
+  `universitas` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'Array of universities for each education level' CHECK (json_valid(`universitas`)),
+  `dosen_tetap` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Is permanent lecturer',
+  `jabatan_fungsional` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'Functional positions' CHECK (json_valid(`jabatan_fungsional`)),
+  `pendidikan` varchar(255) DEFAULT NULL,
+  `prodi` varchar(255) NOT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `mata_kuliah_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`mata_kuliah_ids`)),
+  `status` enum('aktif','non-aktif') NOT NULL DEFAULT 'aktif',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `kuota` int(11) NOT NULL DEFAULT 6,
+  `absen_password_hash` varchar(255) DEFAULT NULL COMMENT 'Bcrypt hash for dosen QR attendance activation password'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `dosens`
+--
+
+INSERT INTO `dosens` (`id`, `user_id`, `fakultas_id`, `nidn`, `pendidikan_terakhir`, `universitas`, `dosen_tetap`, `jabatan_fungsional`, `pendidikan`, `prodi`, `phone`, `address`, `mata_kuliah_ids`, `status`, `created_at`, `updated_at`, `kuota`, `absen_password_hash`) VALUES
+(1, 2, NULL, '0101018501', NULL, NULL, 0, NULL, NULL, '\"Hukum Tata Kabupaten\"', '081234567891', 'Jl. Dosen No. 1', NULL, 'aktif', '2026-05-20 05:16:19', '2026-05-20 05:16:19', 6, NULL),
+(2, 3, NULL, '0102028601', NULL, NULL, 0, NULL, NULL, '\"Hukum Bisnis\"', '081234567892', 'Jl. Dosen No. 2', NULL, 'aktif', '2026-05-20 05:16:19', '2026-05-20 05:16:19', 6, NULL),
+(3, 4, NULL, '0103038701', NULL, NULL, 0, NULL, NULL, '\"Hukum Pidana\"', '081234567893', 'Jl. Dosen No. 3', NULL, 'aktif', '2026-05-20 05:16:19', '2026-05-20 05:16:19', 6, NULL),
+(4, 12, NULL, '417017906', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Trisakti\",\"Doktor Ilmu Hukum Universitas Airlangga\"]', 1, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:26', '2026-05-20 06:36:26', 6, NULL),
+(5, 13, NULL, '301067501', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Muhammadiyah Jakarta\",\"Universitas Muhammadiyah Jakarta\",\"Universitas Islam Bandung\"]', 1, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:27', '2026-05-20 06:36:27', 6, NULL),
+(6, 14, NULL, '3146747648130140', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Andalas\",\"Universitas Andalas\",\"Universitas Jayabaya\"]', 0, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:27', '2026-05-20 06:36:27', 6, NULL),
+(7, 15, NULL, '714076601', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Bhayangkara Surabaya\",\"Universitas Airlangga\",\"Universitas Brawijaya\"]', 1, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:27', '2026-05-20 06:36:27', 6, NULL),
+(8, 16, NULL, '302129701', '[\"S1\",\"S2\"]', '[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Indonesia\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:27', '2026-05-20 06:36:27', 6, NULL),
+(9, 17, NULL, '302059501', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Master of Laws Lancaster University\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
+(10, 18, NULL, '313089202', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Master of Laws Vrije Universiteit Amsterdam\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
+(11, 19, NULL, '307089005', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Master of Laws University of Basque Country\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
+(12, 20, NULL, '8918290024', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Sebelas Maret\",\"Universitas Padjajaran\",\"Universitas Hasanuddin Makassar\"]', 0, '[\"Tenaga Pengajar\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
+(13, 21, NULL, '3860765666130310', '[\"S1\",\"S2\"]', '[\"Universitas Muhammadiyah Aceh Banda Aceh\",\"Universitas Pembangunan Nasional Veteran Jakarta\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
+(14, 22, NULL, '1956751652130120', '[\"S1\",\"S2\"]', '[\"Universitas Islam Attahiriyah\",\"Universitas Pancasila\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:29', '2026-05-20 06:36:29', 6, NULL),
+(15, 23, NULL, '3345774675130210', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Universitas Indonesia\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:29', '2026-05-20 06:36:29', 6, NULL),
+(16, 24, NULL, '4434778679130070', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Universitas Malaya\"]', 1, '[\"Asisten Ahli\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:29', '2026-05-20 06:36:29', 6, NULL),
+(17, 25, NULL, '7641763664130240', '[\"S1\",\"S2\"]', '[\"Universitas Wiraswasta Indonesia\",\"Universitas Al Azhar Indonesia\"]', 1, '[\"Asisten Ahli\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:29', '2026-05-20 06:36:29', 6, NULL),
+(18, 26, NULL, '2150767668137030', '[\"S1\",\"S2\"]', '[\"Universitas Islam Indonesia\",\"Universitas Al Azhar Indonesia\"]', 1, '[\"Asisten Ahli\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:30', '2026-05-20 06:36:30', 6, NULL),
+(19, 27, NULL, '3454762663130160', '[\"S1\",\"S2\"]', '[\"Universitas Al-Azhar Indonesia\",\"Universitas Indonesia\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:30', '2026-05-20 06:36:30', 6, NULL),
+(20, 28, NULL, '3204070406910000', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Pasundan\",\"Universitas Padjajaran\",\"Universitas Indonesia\"]', 0, '[\"Tenaga Pengajar\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:30', '2026-05-20 06:36:30', 6, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dosen_attendances`
+--
+
+CREATE TABLE `dosen_attendances` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `kelas_mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `pertemuan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `metode_pengajaran` enum('offline','online','asynchronous') NOT NULL DEFAULT 'offline',
+  `jam_kelas_mulai` time DEFAULT NULL COMMENT 'Scheduled class start time',
+  `jam_kelas_selesai` time DEFAULT NULL COMMENT 'Scheduled class end time',
+  `jam_absen_dosen` datetime NOT NULL COMMENT 'When dosen tapped activate QR',
+  `lokasi_dosen` varchar(500) DEFAULT NULL COMMENT 'GPS coords or address',
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dosen_availabilities`
+--
+
+CREATE TABLE `dosen_availabilities` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `semester_id` bigint(20) UNSIGNED NOT NULL,
+  `hari` enum('Senin','Selasa','Rabu','Kamis','Jumat','Sabtu') NOT NULL COMMENT 'Hari tersedia',
+  `jam_perkuliahan_id` bigint(20) UNSIGNED NOT NULL,
+  `status` enum('available','booked','blocked') NOT NULL DEFAULT 'available' COMMENT 'Status ketersediaan',
+  `notes` text DEFAULT NULL COMMENT 'Catatan dari dosen',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dosen_availability_checks`
+--
+
+CREATE TABLE `dosen_availability_checks` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `hari` varchar(255) NOT NULL,
+  `jam_mulai` time NOT NULL,
+  `jam_selesai` time NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dosen_mata_kuliah`
+--
+
+CREATE TABLE `dosen_mata_kuliah` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `semester_id` bigint(20) UNSIGNED NOT NULL,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dosen_pa`
+--
+
+CREATE TABLE `dosen_pa` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `email_blast_logs`
+--
+
+CREATE TABLE `email_blast_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `batch_id` varchar(50) NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `email_sent_to` varchar(255) DEFAULT NULL,
+  `subject` varchar(255) NOT NULL,
+  `success` tinyint(1) NOT NULL DEFAULT 0,
+  `error_message` text DEFAULT NULL,
+  `recipient_type` enum('student','parent') NOT NULL DEFAULT 'student',
+  `credential_type` enum('none','student','parents','both') NOT NULL DEFAULT 'none',
+  `sent_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `email_blast_logs`
+--
+
+INSERT INTO `email_blast_logs` (`id`, `batch_id`, `mahasiswa_id`, `email_sent_to`, `subject`, `success`, `error_message`, `recipient_type`, `credential_type`, `sent_by`, `created_at`, `updated_at`) VALUES
+(1, 'credentials_blast_6a0d5b6f0fd0a', 6, 'gregoriusjoell@gmail.com', 'Akun Login SIAKAD - Email dan Password Kampus Anda', 1, NULL, 'student', 'none', 1, '2026-05-20 06:57:54', '2026-05-20 06:57:54');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `email_outboxes`
+--
+
+CREATE TABLE `email_outboxes` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `batch_id` varchar(255) DEFAULT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `target_email` varchar(255) NOT NULL,
+  `subject` varchar(255) DEFAULT NULL,
+  `greeting` varchar(255) DEFAULT NULL,
+  `message_body` text DEFAULT NULL,
+  `is_credentials_mode` tinyint(1) NOT NULL DEFAULT 0,
+  `credential_type` enum('none','student','parents','both') NOT NULL DEFAULT 'none',
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `scheduled_at` timestamp NULL DEFAULT NULL,
+  `sent_at` timestamp NULL DEFAULT NULL,
+  `error_message` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `failed_jobs`
+--
+
+CREATE TABLE `failed_jobs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `uuid` varchar(255) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fakultas`
+--
+
+CREATE TABLE `fakultas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kode_fakultas` varchar(10) NOT NULL,
+  `nama_fakultas` varchar(255) NOT NULL,
+  `status` enum('aktif','nonaktif') NOT NULL DEFAULT 'aktif',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `fakultas`
+--
+
+INSERT INTO `fakultas` (`id`, `kode_fakultas`, `nama_fakultas`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'FH', 'Fakultas Hukum', 'aktif', '2026-05-20 05:16:15', '2026-05-20 05:16:15');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `import_logs`
+--
+
+CREATE TABLE `import_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `type` varchar(50) NOT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  `total_rows` int(11) NOT NULL DEFAULT 0,
+  `success_count` int(11) NOT NULL DEFAULT 0,
+  `failed_count` int(11) NOT NULL DEFAULT 0,
+  `skipped_count` int(11) NOT NULL DEFAULT 0,
+  `details` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`details`)),
+  `imported_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `import_logs`
+--
+
+INSERT INTO `import_logs` (`id`, `user_id`, `type`, `filename`, `total_rows`, `success_count`, `failed_count`, `skipped_count`, `details`, `imported_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 'ruangan', 'template_ruangan (1).xlsx', 7, 7, 0, 0, '\"{\\\"success\\\":[5,6,7,8,9,10,11],\\\"failed\\\":[],\\\"skipped\\\":[]}\"', '2026-05-20 05:38:05', '2026-05-20 05:38:05', '2026-05-20 05:38:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `installments`
+--
+
+CREATE TABLE `installments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_id` bigint(20) UNSIGNED NOT NULL,
+  `installment_no` int(11) NOT NULL,
+  `amount` bigint(20) UNSIGNED NOT NULL,
+  `due_date` date DEFAULT NULL,
+  `status` enum('UNPAID','WAITING_VERIFICATION','PAID','REJECTED_PAYMENT') NOT NULL DEFAULT 'UNPAID',
+  `paid_at` datetime DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `installment_requests`
+--
+
+CREATE TABLE `installment_requests` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_id` bigint(20) UNSIGNED NOT NULL,
+  `student_id` bigint(20) UNSIGNED NOT NULL,
+  `requested_terms` int(11) NOT NULL,
+  `approved_terms` int(11) DEFAULT NULL,
+  `alasan` text DEFAULT NULL,
+  `status` enum('SUBMITTED','APPROVED','REJECTED','CANCELLED') NOT NULL DEFAULT 'SUBMITTED',
+  `reviewed_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `reviewed_at` datetime DEFAULT NULL,
+  `rejection_reason` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `internships`
+--
+
+CREATE TABLE `internships` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `semester_id` bigint(20) UNSIGNED NOT NULL,
+  `semester_mahasiswa` int(11) DEFAULT NULL COMMENT 'Semester mahasiswa saat mendaftar magang',
+  `instansi` varchar(255) NOT NULL,
+  `alamat_instansi` text NOT NULL,
+  `posisi` varchar(255) DEFAULT NULL,
+  `periode_mulai` date NOT NULL,
+  `periode_selesai` date NOT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `pembimbing_lapangan_nama` varchar(255) DEFAULT NULL,
+  `pembimbing_lapangan_email` varchar(255) DEFAULT NULL,
+  `pembimbing_lapangan_phone` varchar(255) DEFAULT NULL,
+  `dokumen_pendukung_path` varchar(255) DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'draft',
+  `supervisor_dosen_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `supervisor_assigned_at` timestamp NULL DEFAULT NULL,
+  `converted_sks` tinyint(3) UNSIGNED NOT NULL DEFAULT 16,
+  `request_letter_generated_path` varchar(255) DEFAULT NULL,
+  `request_letter_signed_path` varchar(255) DEFAULT NULL,
+  `acceptance_letter_path` varchar(255) DEFAULT NULL,
+  `approved_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `rejected_reason` text DEFAULT NULL,
+  `rejected_at` timestamp NULL DEFAULT NULL,
+  `revision_no` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
+  `admin_note` text DEFAULT NULL,
+  `nomor_surat` varchar(255) DEFAULT NULL,
+  `admin_final_pdf_path` varchar(255) DEFAULT NULL,
+  `admin_signed_pdf_path` varchar(255) DEFAULT NULL,
+  `sent_to_student_at` timestamp NULL DEFAULT NULL,
+  `sent_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `date_changed_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `date_changed_at` timestamp NULL DEFAULT NULL,
+  `date_change_reason` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `internship_course_mappings`
+--
+
+CREATE TABLE `internship_course_mappings` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `internship_id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `sks` tinyint(3) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `internship_logbooks`
+--
+
+CREATE TABLE `internship_logbooks` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `internship_id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal` date NOT NULL,
+  `kegiatan` text NOT NULL,
+  `catatan_dosen` text DEFAULT NULL,
+  `created_by_role` varchar(255) NOT NULL DEFAULT 'mahasiswa',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `internship_revisions`
+--
+
+CREATE TABLE `internship_revisions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `internship_id` bigint(20) UNSIGNED NOT NULL,
+  `revision_no` smallint(5) UNSIGNED NOT NULL,
+  `request_letter_signed_path` varchar(255) DEFAULT NULL,
+  `note_from_admin` text DEFAULT NULL,
+  `note_from_mahasiswa` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `invoices`
+--
+
+CREATE TABLE `invoices` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `student_id` bigint(20) UNSIGNED NOT NULL,
+  `semester` int(11) NOT NULL,
+  `tahun_ajaran` varchar(20) NOT NULL,
+  `sks_ambil` int(11) DEFAULT NULL,
+  `paket_sks_bayar` int(11) DEFAULT NULL,
+  `total_tagihan` bigint(20) UNSIGNED NOT NULL,
+  `status` enum('DRAFT','PUBLISHED','IN_INSTALLMENT','LUNAS','CANCELLED') NOT NULL DEFAULT 'DRAFT',
+  `auto_generated_from_krs` tinyint(1) NOT NULL DEFAULT 0,
+  `allow_partial` tinyint(1) NOT NULL DEFAULT 0,
+  `notes` text DEFAULT NULL,
+  `bank_name` varchar(50) DEFAULT NULL,
+  `va_number` varchar(50) DEFAULT NULL,
+  `created_by` bigint(20) UNSIGNED NOT NULL,
+  `published_at` datetime DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwals`
+--
+
+CREATE TABLE `jadwals` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kelas_id` bigint(20) UNSIGNED NOT NULL,
+  `hari` enum('Senin','Selasa','Rabu','Kamis','Jumat','Sabtu') NOT NULL,
+  `jam_mulai` time NOT NULL,
+  `jam_selesai` time NOT NULL,
+  `ruangan` varchar(100) DEFAULT NULL,
+  `is_outside_availability` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'True jika jadwal dibuat di luar ketersediaan waktu dosen',
+  `outside_reason` varchar(255) DEFAULT NULL COMMENT 'Alasan jadwal di luar availability: tidak mengisi / tidak cukup / bentrok',
+  `kelas_perkuliahan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `ruangan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `status` enum('pending','approved','rejected','active') NOT NULL DEFAULT 'pending',
+  `catatan_dosen` text DEFAULT NULL,
+  `catatan_admin` text DEFAULT NULL,
+  `approved_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwal_approvals`
+--
+
+CREATE TABLE `jadwal_approvals` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `jadwal_proposal_id` bigint(20) UNSIGNED NOT NULL,
+  `approved_by` bigint(20) UNSIGNED NOT NULL,
+  `role` enum('dosen','admin') NOT NULL,
+  `action` enum('approve','reject') NOT NULL,
+  `alasan_penolakan` text DEFAULT NULL,
+  `hari_pengganti` enum('Senin','Selasa','Rabu','Kamis','Jumat','Sabtu') DEFAULT NULL,
+  `jam_mulai_pengganti` time DEFAULT NULL,
+  `jam_selesai_pengganti` time DEFAULT NULL,
+  `ruangan_pengganti` varchar(100) DEFAULT NULL,
+  `approved_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwal_exceptions`
+--
+
+CREATE TABLE `jadwal_exceptions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `jadwal_id` bigint(20) UNSIGNED NOT NULL,
+  `date` date NOT NULL,
+  `hari` varchar(255) NOT NULL,
+  `jam_mulai` time NOT NULL,
+  `jam_selesai` time NOT NULL,
+  `ruangan` varchar(255) DEFAULT NULL,
+  `catatan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwal_generate_logs`
+--
+
+CREATE TABLE `jadwal_generate_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `total_generated` int(11) NOT NULL DEFAULT 0,
+  `total_failed` int(11) NOT NULL DEFAULT 0,
+  `failed_items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`failed_items`)),
+  `status` varchar(255) NOT NULL DEFAULT 'completed',
+  `error_message` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwal_proposals`
+--
+
+CREATE TABLE `jadwal_proposals` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `kelas_id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `hari` enum('Senin','Selasa','Rabu','Kamis','Jumat','Sabtu') NOT NULL,
+  `jam_mulai` time NOT NULL,
+  `jam_selesai` time NOT NULL,
+  `ruangan` varchar(100) DEFAULT NULL,
+  `is_outside_availability` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'True jika jadwal dibuat di luar ketersediaan waktu dosen',
+  `outside_reason` varchar(255) DEFAULT NULL COMMENT 'Alasan jadwal di luar availability: tidak mengisi / tidak cukup / bentrok',
+  `ruangan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `status` enum('pending_dosen','approved_dosen','rejected_dosen','pending_admin','approved_admin','rejected_admin') NOT NULL DEFAULT 'pending_dosen',
+  `catatan_generate` text DEFAULT NULL COMMENT 'Catatan dari sistem auto generate',
+  `generated_by` bigint(20) UNSIGNED NOT NULL,
+  `generated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwal_reschedules`
+--
+
+CREATE TABLE `jadwal_reschedules` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `jadwal_id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `old_hari` varchar(255) NOT NULL,
+  `old_jam_mulai` time DEFAULT NULL,
+  `old_jam_selesai` time DEFAULT NULL,
+  `new_hari` varchar(255) NOT NULL,
+  `new_jam_mulai` time NOT NULL,
+  `new_jam_selesai` time NOT NULL,
+  `catatan` text DEFAULT NULL,
+  `apply_date` date DEFAULT NULL,
+  `one_week_only` tinyint(1) NOT NULL DEFAULT 1,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jam_perkuliahan`
+--
+
+CREATE TABLE `jam_perkuliahan` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `jam_ke` int(11) NOT NULL COMMENT 'Jam ke berapa (1-14)',
+  `jam_mulai` time NOT NULL COMMENT 'Waktu mulai',
+  `jam_selesai` time NOT NULL COMMENT 'Waktu selesai',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Status aktif',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `jam_perkuliahan`
+--
+
+INSERT INTO `jam_perkuliahan` (`id`, `jam_ke`, `jam_mulai`, `jam_selesai`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 1, '09:00:00', '09:45:00', 1, NULL, NULL),
+(2, 2, '09:45:00', '10:30:00', 1, NULL, NULL),
+(3, 3, '10:30:00', '11:15:00', 1, NULL, NULL),
+(4, 4, '11:15:00', '12:00:00', 1, NULL, NULL),
+(5, 5, '13:00:00', '13:45:00', 1, NULL, NULL),
+(6, 6, '13:45:00', '14:30:00', 1, NULL, NULL),
+(7, 7, '14:30:00', '15:15:00', 1, NULL, NULL),
+(8, 8, '15:30:00', '16:15:00', 1, NULL, NULL),
+(9, 9, '16:15:00', '16:55:00', 1, NULL, NULL),
+(10, 10, '16:55:00', '17:45:00', 1, NULL, NULL),
+(11, 11, '17:45:00', '18:30:00', 1, NULL, NULL),
+(12, 12, '18:30:00', '19:15:00', 1, NULL, NULL),
+(13, 13, '19:15:00', '19:55:00', 1, NULL, NULL),
+(14, 14, '19:55:00', '20:40:00', 1, NULL, NULL),
+(15, 15, '20:40:00', '21:25:00', 1, NULL, NULL),
+(16, 16, '21:25:00', '22:10:00', 1, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jobs`
+--
+
+CREATE TABLE `jobs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `queue` varchar(255) NOT NULL,
+  `payload` longtext NOT NULL,
+  `attempts` tinyint(3) UNSIGNED NOT NULL,
+  `reserved_at` int(10) UNSIGNED DEFAULT NULL,
+  `available_at` int(10) UNSIGNED NOT NULL,
+  `created_at` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `job_batches`
+--
+
+CREATE TABLE `job_batches` (
+  `id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `total_jobs` int(11) NOT NULL,
+  `pending_jobs` int(11) NOT NULL,
+  `failed_jobs` int(11) NOT NULL,
+  `failed_job_ids` longtext NOT NULL,
+  `options` mediumtext DEFAULT NULL,
+  `cancelled_at` int(11) DEFAULT NULL,
+  `created_at` int(11) NOT NULL,
+  `finished_at` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kategori_ruangans`
+--
+
+CREATE TABLE `kategori_ruangans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama_kategori` varchar(50) NOT NULL,
+  `deskripsi` varchar(255) DEFAULT NULL,
+  `warna_badge` varchar(20) NOT NULL DEFAULT 'gray' COMMENT 'Warna untuk badge di UI (blue, yellow, purple, green, gray)',
+  `urutan` int(11) NOT NULL DEFAULT 0,
+  `status` enum('aktif','nonaktif') NOT NULL DEFAULT 'aktif',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `kategori_ruangans`
+--
+
+INSERT INTO `kategori_ruangans` (`id`, `nama_kategori`, `deskripsi`, `warna_badge`, `urutan`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Kelas', 'Ruangan untuk pembelajaran teori di kelas', 'blue', 1, 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(2, 'Praktikum', 'Ruangan untuk praktikum dan latihan keterampilan', 'yellow', 2, 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(3, 'Sidang', 'Ruangan untuk sidang dan ujian skripsi', 'purple', 3, 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(4, 'Laboratorium', 'Ruangan untuk laboratorium dan penelitian', 'green', 4, 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kelas`
+--
+
+CREATE TABLE `kelas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `kapasitas` int(11) NOT NULL DEFAULT 40,
+  `tahun_ajaran` varchar(20) NOT NULL,
+  `semester_type` enum('Ganjil','Genap') NOT NULL DEFAULT 'Ganjil',
+  `kelas_perkuliahan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kelas_mata_kuliahs`
+--
+
+CREATE TABLE `kelas_mata_kuliahs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `semester_id` bigint(20) UNSIGNED NOT NULL,
+  `kode_kelas` varchar(255) NOT NULL,
+  `kapasitas` int(11) NOT NULL,
+  `ruang` varchar(255) NOT NULL,
+  `ruangan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `hari` varchar(255) DEFAULT NULL,
+  `jam_mulai` time DEFAULT NULL,
+  `jam_selesai` time DEFAULT NULL,
+  `metode_pengajaran` enum('offline','online','asynchronous') DEFAULT NULL,
+  `online_meeting_link` varchar(255) DEFAULT NULL,
+  `online_link` varchar(255) DEFAULT NULL,
+  `asynchronous_tugas` text DEFAULT NULL,
+  `asynchronous_file` varchar(255) DEFAULT NULL,
+  `qr_token` varchar(255) DEFAULT NULL,
+  `qr_enabled` tinyint(1) NOT NULL DEFAULT 0,
+  `qr_current_pertemuan` int(11) DEFAULT NULL,
+  `kelas_perkuliahan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `qr_expires_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kelas_perkuliahans`
+--
+
+CREATE TABLE `kelas_perkuliahans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama_kelas` varchar(20) NOT NULL,
+  `tingkat` tinyint(3) UNSIGNED NOT NULL,
+  `angkatan` varchar(4) NOT NULL,
+  `kode_prodi` varchar(10) NOT NULL,
+  `kode_kelas` varchar(5) NOT NULL,
+  `prodi_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tahun_akademik_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `kelas_perkuliahans`
+--
+
+INSERT INTO `kelas_perkuliahans` (`id`, `nama_kelas`, `tingkat`, `angkatan`, `kode_prodi`, `kode_kelas`, `prodi_id`, `tahun_akademik_id`, `deleted_at`, `created_at`, `updated_at`) VALUES
+(40, '26HK01', 0, '2026', 'HK', '01', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
+(41, '26HK02', 0, '2026', 'HK', '02', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
+(42, '26HK03', 0, '2026', 'HK', '03', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
+(43, '26HK04', 0, '2026', 'HK', '04', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
+(44, '25HK01', 0, '2025', 'HK', '01', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
+(45, '25HK02', 0, '2025', 'HK', '02', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
+(46, '25HK03', 0, '2025', 'HK', '03', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
+(47, '25HK04', 0, '2025', 'HK', '04', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kelas_reschedules`
+--
+
+CREATE TABLE `kelas_reschedules` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kelas_mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `old_hari` varchar(255) NOT NULL,
+  `old_jam_mulai` time DEFAULT NULL,
+  `old_jam_selesai` time DEFAULT NULL,
+  `new_hari` varchar(255) NOT NULL,
+  `new_jam_mulai` time NOT NULL,
+  `new_jam_selesai` time NOT NULL,
+  `new_ruang` varchar(255) DEFAULT NULL,
+  `new_kelas` varchar(50) DEFAULT NULL,
+  `metode_pengajaran` varchar(255) DEFAULT NULL,
+  `online_link` varchar(255) DEFAULT NULL,
+  `asynchronous_tugas` text DEFAULT NULL,
+  `asynchronous_file` varchar(255) DEFAULT NULL,
+  `week_start` date NOT NULL,
+  `week_end` date NOT NULL,
+  `status` enum('pending','approved','room_assigned','rejected') NOT NULL DEFAULT 'pending',
+  `catatan_dosen` text DEFAULT NULL,
+  `catatan_admin` text DEFAULT NULL,
+  `approved_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `krs`
+--
+
+CREATE TABLE `krs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `kelas_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tahun_ajaran` varchar(9) DEFAULT NULL,
+  `status` enum('draft','sudah submit','approved','rejected') NOT NULL DEFAULT 'draft',
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `ambil_mk` enum('ya','tidak') NOT NULL DEFAULT 'ya',
+  `internship_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `is_internship_conversion` tinyint(1) NOT NULL DEFAULT 0,
+  `kelas_mata_kuliah_id` bigint(20) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `krs`
+--
+
+INSERT INTO `krs` (`id`, `mahasiswa_id`, `mata_kuliah_id`, `kelas_id`, `tahun_ajaran`, `status`, `keterangan`, `created_at`, `updated_at`, `ambil_mk`, `internship_id`, `is_internship_conversion`, `kelas_mata_kuliah_id`) VALUES
+(1, 4, 1, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(2, 4, 2, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(3, 4, 3, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(4, 4, 4, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(5, 4, 5, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(6, 4, 6, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(7, 4, 7, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(8, 4, 8, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(9, 4, 9, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(10, 4, 10, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(11, 4, 11, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(12, 4, 12, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(13, 4, 13, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(14, 4, 14, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(15, 4, 15, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(16, 4, 16, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(17, 4, 17, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(18, 4, 18, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(19, 4, 19, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(20, 4, 20, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(21, 4, 21, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(22, 4, 22, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(23, 4, 23, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(24, 4, 24, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(25, 4, 25, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(26, 4, 26, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(27, 4, 27, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(28, 4, 28, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(29, 4, 29, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(30, 4, 30, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(31, 4, 31, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(32, 4, 32, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(33, 4, 33, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(34, 4, 34, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(35, 4, 35, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(36, 4, 36, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(37, 4, 37, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(38, 4, 38, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(39, 4, 39, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(40, 4, 40, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(41, 4, 41, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(42, 4, 42, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(43, 4, 43, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(44, 4, 44, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(45, 4, 45, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(46, 4, 46, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(47, 4, 47, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(48, 4, 48, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(49, 4, 49, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(50, 4, 50, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(51, 4, 51, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
+(52, 4, 52, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kuesioner_aktivasi`
+--
+
+CREATE TABLE `kuesioner_aktivasi` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `semester_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `fasilitas_kampus` int(11) NOT NULL COMMENT '1-5',
+  `sistem_akademik` int(11) NOT NULL COMMENT '1-5',
+  `kualitas_dosen` int(11) NOT NULL COMMENT '1-5',
+  `layanan_administrasi` int(11) NOT NULL COMMENT '1-5',
+  `kepuasan_keseluruhan` int(11) NOT NULL COMMENT '1-5',
+  `saran` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kuesioner_mahasiswa_baru`
+--
+
+CREATE TABLE `kuesioner_mahasiswa_baru` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `prodi` varchar(255) DEFAULT NULL,
+  `jenis_kelamin` varchar(255) DEFAULT NULL,
+  `angkatan` smallint(6) DEFAULT NULL,
+  `q1` tinyint(4) DEFAULT NULL,
+  `q2` tinyint(4) DEFAULT NULL,
+  `q3` tinyint(4) DEFAULT NULL,
+  `q4` tinyint(4) DEFAULT NULL,
+  `q5` tinyint(4) DEFAULT NULL,
+  `q6` tinyint(4) DEFAULT NULL,
+  `q7` tinyint(4) DEFAULT NULL,
+  `saran` text DEFAULT NULL,
+  `answers` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`answers`)),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `kuesioner_mahasiswa_baru`
+--
+
+INSERT INTO `kuesioner_mahasiswa_baru` (`id`, `mahasiswa_id`, `email`, `prodi`, `jenis_kelamin`, `angkatan`, `q1`, `q2`, `q3`, `q4`, `q5`, `q6`, `q7`, `saran`, `answers`, `created_at`, `updated_at`) VALUES
+(1, 6, 'jojo@student.stih.ac.id', 'Ilmu Hukum', 'Laki-Laki', 2026, 4, 4, 4, 4, 4, 4, 4, 'Cukup', NULL, '2026-05-20 06:58:54', '2026-05-20 06:58:54'),
+(2, 2, 'dewilestari@student.stih.ac.id', 'Ilmu Hukum', NULL, 2026, 4, 4, 4, 4, 4, 4, 4, 'tidak ada, cukup', NULL, '2026-05-20 08:01:18', '2026-05-20 08:01:18'),
+(3, 1, 'andipratama@student.stih.ac.id', 'Ilmu Hukum', NULL, 2024, 4, 4, 4, 4, 4, 4, 4, 'tidak', NULL, '2026-05-20 09:57:56', '2026-05-20 09:57:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mahasiswas`
+--
+
+CREATE TABLE `mahasiswas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `nim` varchar(255) NOT NULL,
+  `prodi` varchar(255) NOT NULL,
+  `prodi_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `angkatan` varchar(255) NOT NULL,
+  `semester` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
+  `tahun_akademik_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `last_semester_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `no_hp` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `alamat` text DEFAULT NULL,
+  `rt` varchar(255) DEFAULT NULL,
+  `rw` varchar(255) DEFAULT NULL,
+  `kota` varchar(255) DEFAULT NULL,
+  `kecamatan` varchar(255) DEFAULT NULL,
+  `desa` varchar(255) DEFAULT NULL,
+  `alamat_ktp` text DEFAULT NULL,
+  `rt_ktp` varchar(255) DEFAULT NULL,
+  `rw_ktp` varchar(255) DEFAULT NULL,
+  `provinsi_ktp` varchar(255) DEFAULT NULL,
+  `kota_ktp` varchar(255) DEFAULT NULL,
+  `kecamatan_ktp` varchar(255) DEFAULT NULL,
+  `desa_ktp` varchar(255) DEFAULT NULL,
+  `provinsi` varchar(255) DEFAULT NULL,
+  `kabupaten` varchar(255) DEFAULT NULL,
+  `jenis_sekolah` varchar(255) DEFAULT NULL,
+  `jurusan_sekolah` varchar(255) DEFAULT NULL,
+  `tahun_lulus` varchar(255) DEFAULT NULL,
+  `nilai_kelulusan` decimal(5,2) DEFAULT NULL,
+  `foto` varchar(255) DEFAULT NULL,
+  `tempat_lahir` varchar(255) DEFAULT NULL,
+  `tanggal_lahir` date DEFAULT NULL,
+  `jenis_kelamin` enum('Laki-Laki','Perempuan') DEFAULT NULL,
+  `agama` varchar(255) DEFAULT NULL,
+  `status_sipil` enum('Belum Menikah','Menikah','Cerai') DEFAULT NULL,
+  `status` enum('aktif','cuti','lulus','do') NOT NULL DEFAULT 'aktif',
+  `status_akun` enum('baru','aktif','tidak_aktif') NOT NULL DEFAULT 'baru',
+  `is_dokumen_unlocked` tinyint(1) NOT NULL DEFAULT 0,
+  `kelas_perkuliahan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `new_survey_completed` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `file_ijazah` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`file_ijazah`)),
+  `file_transkrip` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`file_transkrip`)),
+  `file_kk` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`file_kk`)),
+  `file_ktp` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`file_ktp`)),
+  `email_pribadi` varchar(255) DEFAULT NULL COMMENT 'Email pribadi mahasiswa untuk login & notifikasi alternatif',
+  `email_kampus` varchar(255) DEFAULT NULL COMMENT 'Email kampus otomatis: [nama_tanpa_spasi]@student.stih.ac.id',
+  `email_aktif` enum('pribadi','kampus') NOT NULL DEFAULT 'pribadi' COMMENT 'Email aktif untuk login & notifikasi: pribadi | kampus',
+  `email_pribadi_verified_at` timestamp NULL DEFAULT NULL COMMENT 'Timestamp saat email pribadi diverifikasi',
+  `password_reset_token` varchar(255) DEFAULT NULL COMMENT 'Token untuk force reset password (opsional)',
+  `is_default_password` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'true = password masih default (NIM), false = sudah diganti',
+  `account_automation_at` timestamp NULL DEFAULT NULL COMMENT 'Timestamp saat akun otomasi dijalankan'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `mahasiswas`
+--
+
+INSERT INTO `mahasiswas` (`id`, `user_id`, `nim`, `prodi`, `prodi_id`, `angkatan`, `semester`, `tahun_akademik_id`, `last_semester_id`, `phone`, `no_hp`, `address`, `alamat`, `rt`, `rw`, `kota`, `kecamatan`, `desa`, `alamat_ktp`, `rt_ktp`, `rw_ktp`, `provinsi_ktp`, `kota_ktp`, `kecamatan_ktp`, `desa_ktp`, `provinsi`, `kabupaten`, `jenis_sekolah`, `jurusan_sekolah`, `tahun_lulus`, `nilai_kelulusan`, `foto`, `tempat_lahir`, `tanggal_lahir`, `jenis_kelamin`, `agama`, `status_sipil`, `status`, `status_akun`, `is_dokumen_unlocked`, `kelas_perkuliahan_id`, `new_survey_completed`, `created_at`, `updated_at`, `file_ijazah`, `file_transkrip`, `file_kk`, `file_ktp`, `email_pribadi`, `email_kampus`, `email_aktif`, `email_pribadi_verified_at`, `password_reset_token`, `is_default_password`, `account_automation_at`) VALUES
+(1, 5, '2024010001', 'Ilmu Hukum', 1, '2024', 1, 1, NULL, '081234567894', '081234567890', 'Jl. Mahasiswa No. 1', 'Jl. Test No. 123', '12', '12', 'KAB. ACEH BARAT', 'ARONGAN LAMBALEK', 'ALUE BAGOK', 'Jl. Test No. 123', '12', '12', 'ACEH', 'KAB. ACEH BARAT', 'ARONGAN LAMBALEK', 'ALUE BAGOK', 'ACEH', NULL, '1 - Umum', 'SMA', '2024', 85.50, NULL, 'Jakarta', '2000-01-15', 'Laki-Laki', 'Islam', 'Belum Menikah', 'aktif', 'baru', 0, NULL, 1, '2026-05-20 05:16:19', '2026-05-20 10:04:06', NULL, NULL, NULL, NULL, NULL, 'andipratama@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL),
+(2, 6, '2024010002', 'Ilmu Hukum', 1, '2026', 1, 1, NULL, '081234567895', NULL, 'Jl. Mahasiswa No. 2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, 40, 1, '2026-05-20 05:16:20', '2026-05-20 08:01:18', NULL, NULL, NULL, NULL, NULL, 'dewilestari@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL),
+(3, 7, '2024010003', 'Hukum Pidana', NULL, '2024', 1, NULL, NULL, '081234567896', NULL, 'Jl. Mahasiswa No. 3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, NULL, 0, '2026-05-20 05:16:20', '2026-05-20 05:16:20', NULL, NULL, NULL, NULL, NULL, NULL, 'pribadi', NULL, NULL, 1, NULL),
+(4, 10, '2024001', 'Ilmu Hukum', NULL, '2024', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, NULL, 0, '2026-05-20 05:16:21', '2026-05-20 05:16:21', NULL, NULL, NULL, NULL, NULL, NULL, 'pribadi', NULL, NULL, 1, NULL),
+(5, 11, '2024002', 'Ilmu Hukum', 1, '2025', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, 44, 0, '2026-05-20 05:16:21', '2026-05-20 06:52:09', NULL, NULL, NULL, NULL, NULL, 'sitimahasiswi@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL),
+(6, 29, '12345678', 'Ilmu Hukum', 1, '2026', 1, 1, NULL, NULL, '8111111111111', NULL, 'qwe', '123', '123', 'KAB. ACEH BARAT DAYA', 'BLANGPIDIE', 'GUDANG', 'qwe', '123', '123', 'ACEH', 'KAB. ACEH BARAT DAYA', 'BLANGPIDIE', 'GUDANG', 'ACEH', NULL, '1 - Umum', 'SMA', '2025', 100.00, NULL, 'Jakarta', '2000-10-10', 'Laki-Laki', 'Katolik', 'Cerai', 'aktif', 'baru', 0, 40, 1, '2026-05-20 06:56:46', '2026-05-20 10:05:27', NULL, NULL, NULL, NULL, 'gregoriusjoell@gmail.com', 'jojo@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mata_kuliahs`
+--
+
+CREATE TABLE `mata_kuliahs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kode_mk` varchar(20) NOT NULL,
+  `kode_id` varchar(50) DEFAULT NULL COMMENT 'master kode like sms1, sms2',
+  `nama_mk` varchar(255) NOT NULL,
+  `praktikum` tinyint(4) DEFAULT NULL COMMENT 'jumlah sks praktikum',
+  `tipe` enum('teori','praktikum','sidang','lab') NOT NULL DEFAULT 'teori' COMMENT 'Jenis mata kuliah: teori, praktikum, sidang, atau lab',
+  `sks` int(11) NOT NULL,
+  `semester` int(11) NOT NULL,
+  `jenis` enum('wajib_nasional','wajib_prodi','pilihan','peminatan') NOT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `prodi_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `fakultas_id` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `mata_kuliahs`
+--
+
+INSERT INTO `mata_kuliahs` (`id`, `kode_mk`, `kode_id`, `nama_mk`, `praktikum`, `tipe`, `sks`, `semester`, `jenis`, `deskripsi`, `created_at`, `updated_at`, `prodi_id`, `fakultas_id`) VALUES
+(1, 'ADH10010', 'sms1', 'Ilmu Agama', NULL, 'teori', 2, 1, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(2, 'ADH10006', 'sms1', 'Bahasa Indonesia Hukum', NULL, 'teori', 2, 1, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(3, 'ADH10007', 'sms1', 'Pancasila & Kewargakabupatenan', NULL, 'teori', 3, 1, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(4, 'ADH30001', 'sms1', 'Ekonomi Pembangunan', NULL, 'teori', 2, 1, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(5, 'ADH20001', 'sms1', 'Ilmu Kabupaten', NULL, 'teori', 3, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(6, 'ADH20002', 'sms1', 'Pengantar Ilmu Hukum', NULL, 'teori', 3, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(7, 'ADH20003', 'sms1', 'Pengantar Hukum Indonesia', NULL, 'teori', 3, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(8, 'ADH20004', 'sms1', 'Hukum & Hak Asasi Manusia', NULL, 'teori', 2, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(9, 'ADH20050', 'sms2', 'Hukum Perdata', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(10, 'ADH20006', 'sms2', 'Hukum Pidana', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(11, 'ADH20009', 'sms2', 'Hukum Adat', NULL, 'teori', 4, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(12, 'ADH20010', 'sms2', 'Hukum Islam', NULL, 'teori', 2, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(13, 'ADH20012', 'sms2', 'Ilmu Perundang-undangan', 1, 'teori', 2, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(14, 'ADH20014', 'sms2', 'Hukum Internasional', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(15, 'ADH20007', 'sms2', 'Hukum Tata Kabupaten', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(16, 'ADH20005', 'sms3', 'Hukum Benda & Orang', NULL, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(17, 'ADH20015', 'sms3', 'Hukum Dagang', NULL, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(18, 'ADH20018', 'sms3', 'Hukum Acara Pidana', 1, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(19, 'ADH20013', 'sms3', 'Hukum Acara Perdata', 1, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(20, 'ADH20008', 'sms3', 'Hukum Administrasi Kabupaten', NULL, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(21, 'ADH20020', 'sms3', 'Kejaksaan dan Badan Peradilan di Indonesia', 1, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(22, 'ADH20040', 'sms3', 'Hukum Sanksi', 1, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(23, 'ADH20051', 'sms3', 'Penerapan Asas-Asas Hukum Pidana', NULL, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(24, 'ADH30011', 'sms3', 'Lembaga Kabupaten Indonesia', NULL, 'teori', 2, 3, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(25, 'ADH20011', 'sms3', 'Hukum Perikatan', NULL, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(26, 'ADH30002', 'sms4', 'Legal English', 1, 'teori', 2, 4, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(27, 'ADH20019', 'sms4', 'Hukum Acara Tata Usaha Kabupaten', 1, 'teori', 3, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(28, 'ADH20017', 'sms4', 'Hukum Agraria', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(29, 'ADH20047', 'sms4', 'Hukum Perdata Internasional', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(30, 'ADH20016', 'sms4', 'Hukum Ketenagakerjaan', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(31, 'ADH20026', 'sms4', 'Hukum Kekayaan Interlektual', 1, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(32, 'ADH20052', 'sms4', 'Kejaksaan Dalam Sistem Peradilan Pidana', 1, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(33, 'ADH20036', 'sms4', 'Praktik Pembuktian Pidana', 2, 'teori', 3, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 2', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(34, 'ADH20023', 'sms4', 'Hukum Lingkungan', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(35, 'ADH20022', 'sms4', 'Hukum Pajak', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(36, 'ADH10009', 'sms4', 'Logika Hukum', NULL, 'teori', 2, 4, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(37, 'ADH20033', 'sms5', 'Metode Penelitian Hukum & Penulisan Jurnal Ilmiah', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(38, 'ADH30005', 'sms5', 'Hukum Pidana Khusus', NULL, 'teori', 2, 5, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(39, 'ADH20027', 'sms5', 'Hukum Perlindungan Anak', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(40, 'ADH20029', 'sms5', 'Hukum Pidana Internasional', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(41, 'ADH20025', 'sms5', 'Hukum Acara Mahkamah Konstitusi', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(42, 'ADH30007', 'sms5', 'Hukum Siber', NULL, 'teori', 2, 5, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(43, 'ADH20048', 'sms5', 'Hukum Humaniter', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(44, 'ADH20035', 'sms5', 'Hukum Kepailitan', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(45, 'ADH20021', 'sms5', 'Hukum Perdata Islam', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(46, 'ADH20034', 'sms5', 'Pencucian Uang, Penyitaan & Pemulihan Aset', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(47, 'ADH20028', 'sms5', 'Hukum Antar Tata Hukum', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(48, 'ADH20053', 'sms5', 'Kejaksaan Dalam Bidang Perdata & Tata Usaha Kabupaten', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(49, 'ADH20037', 'sms6', 'Etika, Tanggung Jawab & Profesi Hukum', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(50, 'ADH20038', 'sms6', 'Filsafat Hukum', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(51, 'ADH20039', 'sms6', 'Legal Drafting', 2, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 2', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(52, 'ADH20041', 'sms6', 'Praktik Hukum Perdata', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(53, 'ADH20042', 'sms6', 'Praktik Hukum Tata Usaha Kabupaten', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(54, 'ADH40004', 'sms6', 'Kriminologi & Viktimologi', NULL, 'teori', 2, 6, 'peminatan', 'Mata Kuliah Peminatan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(55, 'ADH20044', 'sms6', 'Arbitrase & Alternative Dispute Resolution', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(56, 'ADH30004', 'sms6', 'Hukum Perusahaan, Persaingan Usaha & Jaminan', NULL, 'teori', 2, 6, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(57, 'ADH20030', 'sms6', 'Hukum Perbankan & Surat Berharga', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(58, 'ADH20031', 'sms6', 'Penyelesaian Sengketa Industrial', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(59, 'ADH20032', 'sms6', 'Perbandingan Hukum Pidana', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(60, 'ADH30010', 'sms6', 'Hukum Organisasi Internasional', NULL, 'teori', 2, 6, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(61, 'ADH20024', 'sms7', 'Hukum Administrasi Kabupaten Sektoral', 1, 'teori', 2, 7, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(62, 'ADH30003', 'sms7', 'Legal Enterpreneurship (Kewirausahaan)', 1, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(63, 'ADD20049', 'sms7', 'Penulisan Skripsi/ Penulisan Jurnal Ilmiah', 3, 'teori', 4, 7, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 3', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(64, 'ADH40001', 'sms7', 'Hukum Laut', NULL, 'teori', 2, 7, 'peminatan', 'Mata Kuliah Peminatan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(65, 'ADH30014', 'sms7', 'Hukum Perlindungan Konsumen', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(66, 'ADH30006', 'sms7', 'Hukum Jaminan', 1, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(67, 'ADH30012', 'sms7', 'Hukum Kesehatan & Medikolegal', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(68, 'ADH30008', 'sms7', 'Hukum Investasi', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(69, 'ADH30009', 'sms7', 'Hukum Perjanjian Internasional', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
+(70, 'ADH30015', 'sms7', 'Kapita Selekta Hukum Acara Pidana', 1, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mata_kuliah_semesters`
+--
+
+CREATE TABLE `mata_kuliah_semesters` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `semester_id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `status` enum('active','history','archived') NOT NULL DEFAULT 'active',
+  `source_semester_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `activated_at` datetime DEFAULT NULL,
+  `deactivated_at` datetime DEFAULT NULL,
+  `meta` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`meta`)),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `materis`
+--
+
+CREATE TABLE `materis` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `pertemuan` int(11) NOT NULL DEFAULT 1,
+  `judul` varchar(255) NOT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `file_path` varchar(255) DEFAULT NULL,
+  `file_name` varchar(255) DEFAULT NULL,
+  `file_type` varchar(255) DEFAULT NULL,
+  `file_size` bigint(20) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `migrations`
+--
+
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
+(1, '0001_01_01_000000_create_users_table', 1),
+(2, '0001_01_01_000001_create_cache_table', 1),
+(3, '0001_01_01_000002_create_jobs_table', 1),
+(4, '2026_01_13_091431_add_role_to_users_table', 1),
+(5, '2026_01_15_000001_create_mata_kuliahs_table', 1),
+(6, '2026_01_15_000002_create_kelas_table', 1),
+(7, '2026_01_15_000003_create_jadwals_table', 1),
+(8, '2026_01_15_030141_create_admins_table', 1),
+(9, '2026_01_15_030149_create_dosens_table', 1),
+(10, '2026_01_15_030150_create_mahasiswas_table', 1),
+(11, '2026_01_15_030151_create_parents_table', 1),
+(12, '2026_01_15_030152_create_activity_logs_table', 1),
+(13, '2026_01_15_030153_create_semesters_table', 1),
+(14, '2026_01_15_030153_create_system_settings_table', 1),
+(15, '2026_01_15_030154_create_kelas_mata_kuliahs_table', 1),
+(16, '2026_01_15_030156_create_krs_table', 1),
+(17, '2026_01_15_030157_create_nilai_table', 1),
+(18, '2026_01_15_030158_create_presensis_table', 1),
+(19, '2026_01_19_000001_create_jadwal_reschedules_table', 1),
+(20, '2026_01_19_000002_add_apply_date_to_jadwal_reschedules_table', 1),
+(21, '2026_01_19_000003_create_jadwal_exceptions_table', 1),
+(22, '2026_01_19_040244_create_kuesioner_aktivasi_table', 1),
+(23, '2026_01_19_040252_create_pembayaran_table', 1),
+(24, '2026_01_19_040301_add_status_to_mahasiswas_table', 1),
+(25, '2026_01_19_040556_add_ambil_mk_to_krs_table', 1),
+(26, '2026_01_19_042201_add_is_active_to_semesters_table', 1),
+(27, '2026_01_19_044316_add_krs_settings_to_semesters_table', 1),
+(28, '2026_01_19_130000_add_qr_to_kelas_mata_kuliahs_table', 1),
+(29, '2026_01_20_024300_add_fields_to_presensis_table', 1),
+(30, '2026_01_20_080000_add_semester_to_mahasiswas_table', 1),
+(31, '2026_01_20_090000_add_mata_kuliah_ids_to_dosens_table', 1),
+(32, '2026_01_20_100000_update_jenis_mata_kuliah_enum', 1),
+(33, '2026_01_20_101500_add_pendidikan_to_dosens_table', 1),
+(34, '2026_01_21_000001_add_kode_id_to_mata_kuliahs_table', 1),
+(35, '2026_01_21_000002_add_praktikum_to_mata_kuliahs_table', 1),
+(36, '2026_01_21_032900_add_hari_to_kelas_mata_kuliahs_table', 1),
+(37, '2026_01_21_033208_create_kelas_reschedules_table', 1),
+(38, '2026_01_21_033546_add_new_kelas_to_kelas_reschedules_table', 1),
+(39, '2026_01_21_033845_add_mata_kuliah_id_to_krs_table', 1),
+(40, '2026_01_21_050000_add_times_to_kelas_mata_kuliahs_table', 1),
+(41, '2026_01_21_115547_create_dosen_pa_table', 1),
+(42, '2026_01_21_120000_update_krs_table_to_current_system', 1),
+(43, '2026_01_22_000002_add_hubungan_pekerjaan_to_parents', 1),
+(44, '2026_01_22_082913_add_data_pribadi_to_mahasiswas_table', 1),
+(45, '2026_01_22_084657_add_orang_tua_to_parents_table', 1),
+(46, '2026_01_22_084707_add_asal_sekolah_to_mahasiswas_table', 1),
+(47, '2026_01_23_041401_create_academic_events_table', 1),
+(48, '2026_01_23_065016_align_academic_event_types', 1),
+(49, '2026_01_23_120000_add_pertemuan_to_presensis_table', 1),
+(50, '2026_01_26_000001_add_new_survey_flag_to_mahasiswas', 1),
+(51, '2026_01_26_000002_create_kuesioner_mahasiswa_baru_table', 1),
+(52, '2026_01_26_000003_add_q_columns_to_kuesioner_mahasiswa_baru', 1),
+(53, '2026_01_26_000004_add_meta_columns_to_kuesioner_mahasiswa_baru', 1),
+(54, '2026_01_28_000001_create_tugas_table', 1),
+(55, '2026_01_28_000002_create_tugas_submissions_table', 1),
+(56, '2026_01_29_000000_rename_npm_to_nim_in_mahasiswas', 1),
+(57, '2026_01_29_010000_convert_nama_semester_to_enum', 1),
+(58, '2026_01_29_020000_add_unique_index_semesters', 1),
+(59, '2026_01_30_000002_create_religions_table', 1),
+(60, '2026_01_30_071940_add_desa_provinsi_to_mahasiswas', 1),
+(61, '2026_01_30_072052_drop_propinsi_from_mahasiswas', 1),
+(62, '2026_01_30_081140_add_document_fields_to_mahasiswas', 1),
+(63, '2026_01_30_084701_add_wali_fields_to_parents', 1),
+(64, '2026_01_30_092328_add_keluarga_to_parents', 1),
+(65, '2026_01_30_110441_add_ktp_address_to_mahasiswas', 1),
+(66, '2026_01_30_120000_add_metode_pengajaran_to_kelas_mata_kuliahs', 1),
+(67, '2026_01_30_130000_create_pengumumans_table', 1),
+(68, '2026_02_03_020911_create_prodis_table', 1),
+(69, '2026_02_03_020920_create_fakultas_table', 1),
+(70, '2026_02_03_023543_update_mata_kuliahs_add_prodi_fakultas_relations', 1),
+(71, '2026_02_03_024544_add_foreign_key_to_prodis_table', 1),
+(72, '2026_02_03_033934_add_qr_current_pertemuan_to_kelas_mata_kuliahs_table', 1),
+(73, '2026_02_03_040919_create_jadwal_proposals_table', 1),
+(74, '2026_02_03_040928_create_jadwal_approvals_table', 1),
+(75, '2026_02_03_044000_add_fields_to_dosens_table', 1),
+(76, '2026_02_03_045000_create_jadwal_generate_logs_table', 1),
+(77, '2026_02_03_082432_add_target_to_pengumumans_table', 1),
+(78, '2026_02_03_085058_create_ruangans_table', 1),
+(79, '2026_02_03_091447_add_ruangan_id_to_jadwals_table', 1),
+(80, '2026_02_03_091505_add_ruangan_id_to_jadwal_proposals_table', 1),
+(81, '2026_02_03_091540_add_ruangan_id_to_kelas_mata_kuliahs_table', 1),
+(82, '2026_02_04_034520_add_desa_columns_to_parents_table', 1),
+(83, '2026_02_04_041443_create_jam_perkuliahan_table', 1),
+(84, '2026_02_04_042815_split_parent_address_columns', 1),
+(85, '2026_02_04_083453_add_universitas_to_dosens_table', 1),
+(86, '2026_02_05_100000_create_materis_table', 1),
+(87, '2026_02_05_100001_update_tugas_table_for_sharing', 1),
+(88, '2026_02_05_164000_add_columns_to_ruangans_table', 1),
+(89, '2026_02_05_164500_fix_kelas_dosen_foreign_key', 1),
+(90, '2026_02_06_064041_create_dosen_availabilities_table', 1),
+(91, '2026_02_06_070353_add_kecamatan_columns_to_mahasiswas_and_parents_tables', 1),
+(92, '2026_02_06_093010_create_dosen_availability_checks_table', 1),
+(93, '2026_02_09_000001_create_import_logs_table', 1),
+(94, '2026_02_09_000001_update_nilai_table_add_components', 1),
+(95, '2026_02_09_000002_create_bobot_penilaian_table', 1),
+(96, '2026_02_09_000003_add_published_status_to_nilai_table', 1),
+(97, '2026_02_10_070112_create_pengajuans_table', 1),
+(98, '2026_02_11_000001_create_pertemuans_table', 1),
+(99, '2026_02_11_033628_add_pertemuan_to_presensis_table', 1),
+(100, '2026_02_11_034943_create_dokumen_kelas_table', 1),
+(101, '2026_02_11_035309_add_asynchronous_file_to_kelas_mata_kuliahs', 1),
+(102, '2026_02_12_041345_add_approval_fields_to_pengajuans_table', 1),
+(103, '2026_02_12_080836_add_metode_columns_to_kelas_reschedules_table', 1),
+(104, '2026_02_13_000001_add_semester_transition_fields', 1),
+(105, '2026_02_18_000000_fix_invoices_student_foreign_to_mahasiswas', 1),
+(106, '2026_02_18_000001_add_role_to_users_table', 1),
+(107, '2026_02_18_000001_fix_installment_requests_student_foreign_to_mahasiswas', 1),
+(108, '2026_02_18_000002_create_students_table', 1),
+(109, '2026_02_18_000003_create_invoices_table', 1),
+(110, '2026_02_18_000004_create_installment_requests_table', 1),
+(111, '2026_02_18_000005_create_installments_table', 1),
+(112, '2026_02_18_000006_create_payment_proofs_table', 1),
+(113, '2026_02_18_000007_create_payments_table', 1),
+(114, '2026_02_18_000008_create_audit_logs_table', 1),
+(115, '2026_02_18_021638_make_user_id_nullable_in_parents_table', 1),
+(116, '2026_02_18_022023_make_mahasiswa_id_nullable_in_parents_table', 1),
+(117, '2026_02_19_000001_drop_absen_password_hash_from_dosens', 1),
+(118, '2026_02_19_050352_add_kuota_to_dosens_table', 1),
+(119, '2026_02_19_065019_add_online_meeting_link_to_pertemuans_table', 1),
+(120, '2026_02_20_000001_add_metode_pengajaran_to_pertemuans', 1),
+(121, '2026_02_20_000002_add_absen_password_hash_to_dosens', 1),
+(122, '2026_02_20_000003_create_dosen_attendances_table', 1),
+(123, '2026_02_23_100000_add_location_fields_to_presensis_table', 1),
+(124, '2026_02_25_022611_add_submission_type_to_tugas_table', 1),
+(125, '2026_02_25_022640_add_text_submission_to_tugas_submissions_table', 1),
+(126, '2026_02_25_024708_drop_assignments_tables', 1),
+(127, '2026_02_25_080555_add_availability_tracking_to_jadwal_proposals_table', 1),
+(128, '2026_02_25_080641_add_availability_tracking_to_jadwals_table', 1),
+(129, '2026_02_26_033215_make_schedule_fields_nullable_in_kelas_mata_kuliahs_table', 1),
+(130, '2026_02_27_000001_create_mata_kuliah_semesters_table', 1),
+(131, '2026_02_27_000002_add_lock_fields_to_semesters_table', 1),
+(132, '2026_02_27_000003_add_audit_fields_to_audit_logs_table', 1),
+(133, '2026_02_28_000001_add_tipe_pertemuan_to_pertemuans_table', 1),
+(134, '2026_02_28_100000_add_indexes_and_audit_to_academic_events', 1),
+(135, '2026_02_28_200000_create_dosen_mata_kuliah_table', 1),
+(136, '2026_03_03_000001_upgrade_pengajuans_workflow', 1),
+(137, '2026_03_03_000002_create_pengajuan_revisions_table', 1),
+(138, '2026_03_03_035729_add_is_dokumen_unlocked_to_mahasiswas_table', 1),
+(139, '2026_03_04_000001_create_internships_table', 1),
+(140, '2026_03_05_063714_add_semester_mahasiswa_to_internships_table', 1),
+(141, '2026_03_06_000001_update_internships_for_full_workflow', 1),
+(142, '2026_03_11_073140_drop_unused_columns_from_parents_table', 1),
+(143, '2026_03_12_000001_create_thesis_submissions_table', 1),
+(144, '2026_03_12_000002_create_thesis_guidances_table', 1),
+(145, '2026_03_12_000003_create_thesis_sidang_tables', 1),
+(146, '2026_03_12_000004_create_thesis_sidang_schedules_table', 1),
+(147, '2026_03_12_000005_create_thesis_revisions_table', 1),
+(148, '2026_03_31_040610_create_uploads_table', 1),
+(149, '2026_03_31_100000_add_logbook_file_to_thesis_submissions', 1),
+(150, '2026_04_01_035237_rename_thesis_to_skripsi_tables', 1),
+(151, '2026_04_13_120000_add_fakultas_id_to_dosens_table', 1),
+(152, '2026_04_15_000000_fix_installment_requests_foreign_key_properly', 1),
+(153, '2026_04_15_034718_drop_fakultas_id_from_prodis_table', 1),
+(154, '2026_04_15_add_online_meeting_link_to_kelas_mata_kuliahs', 1),
+(155, '2026_04_16_000001_create_kategori_ruangans_table', 1),
+(156, '2026_04_16_000002_add_kategori_id_to_ruangans_table', 1),
+(157, '2026_04_16_062753_update_krs_status_enum_to_sudah_submit', 1),
+(158, '2026_04_16_add_tipe_to_mata_kuliahs_table', 1),
+(159, '2026_04_17_070255_restore_fakultas_id_to_prodis_table', 1),
+(160, '2026_04_20_000001_create_kelas_perkuliahans_table', 1),
+(161, '2026_04_20_000002_add_kelas_perkuliahan_id_to_related_tables', 1),
+(162, '2026_04_20_000003_add_email_columns_to_mahasiswas_table', 1),
+(163, '2026_04_20_000004_create_email_blast_logs_table', 1),
+(164, '2026_04_20_050133_drop_kapasitas_from_kelas_perkuliahans_table', 1),
+(165, '2026_04_22_033524_create_email_outboxes_table', 1),
+(166, '2026_04_24_150000_add_va_fields_to_invoices_table', 1),
+(167, '2026_04_29_140500_add_auto_generated_from_krs_to_invoices_table', 1),
+(168, '2026_04_30_115430_add_tahun_ajaran_to_krs_table', 1),
+(169, '2026_04_30_115938_drop_semester_id_from_krs_table', 1),
+(170, '2026_04_30_140000_add_mahasiswa_class_assignment_fields', 1),
+(171, '2026_05_04_000001_refactor_kelas_perkuliahan_to_angkatan', 1),
+(172, '2026_05_05_000001_add_credential_recipient_type_to_email_blast_logs', 1),
+(173, '2026_05_05_000002_add_credential_type_to_email_outboxes', 1),
+(174, '2026_05_06_remove_section_from_kelas', 1),
+(175, '2026_05_08_000001_create_prestasi_tables', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `nilai`
+--
+
+CREATE TABLE `nilai` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `krs_id` bigint(20) UNSIGNED NOT NULL,
+  `kelas_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `nilai_partisipatif` decimal(5,2) DEFAULT NULL,
+  `nilai_proyek` decimal(5,2) DEFAULT NULL,
+  `nilai_quiz` decimal(5,2) DEFAULT NULL,
+  `nilai_tugas` decimal(5,2) DEFAULT NULL,
+  `nilai_uts` decimal(5,2) DEFAULT NULL,
+  `nilai_uas` decimal(5,2) DEFAULT NULL,
+  `nilai_akhir` decimal(5,2) DEFAULT NULL,
+  `grade` char(2) DEFAULT NULL,
+  `bobot` decimal(4,2) DEFAULT NULL,
+  `is_published` tinyint(1) NOT NULL DEFAULT 0,
+  `published_at` timestamp NULL DEFAULT NULL,
+  `published_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `nilai`
+--
+
+INSERT INTO `nilai` (`id`, `krs_id`, `kelas_id`, `nilai_partisipatif`, `nilai_proyek`, `nilai_quiz`, `nilai_tugas`, `nilai_uts`, `nilai_uas`, `nilai_akhir`, `grade`, `bobot`, `is_published`, `published_at`, `published_by`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(2, 2, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(3, 3, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(4, 4, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(5, 5, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(6, 6, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(7, 7, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(8, 8, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(9, 9, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(10, 10, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(11, 11, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(12, 12, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(13, 13, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(14, 14, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(15, 15, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(16, 16, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(17, 17, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(18, 18, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(19, 19, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(20, 20, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(21, 21, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(22, 22, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(23, 23, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(24, 24, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(25, 25, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(26, 26, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(27, 27, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(28, 28, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(29, 29, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(30, 30, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(31, 31, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(32, 32, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(33, 33, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(34, 34, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(35, 35, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(36, 36, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(37, 37, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(38, 38, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(39, 39, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(40, 40, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(41, 41, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(42, 42, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(43, 43, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(44, 44, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(45, 45, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(46, 46, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(47, 47, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(48, 48, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(49, 49, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(50, 50, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(51, 51, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(52, 52, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `parents`
+--
+
+CREATE TABLE `parents` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `hubungan` varchar(255) DEFAULT NULL,
+  `pekerjaan` varchar(255) DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tipe_wali` enum('orang_tua','wali') NOT NULL DEFAULT 'orang_tua',
+  `nama_ayah` varchar(255) DEFAULT NULL,
+  `pendidikan_ayah` varchar(255) DEFAULT NULL,
+  `pekerjaan_ayah` varchar(255) DEFAULT NULL,
+  `agama_ayah` varchar(255) DEFAULT NULL,
+  `alamat_ayah` text DEFAULT NULL,
+  `kota_ayah` varchar(255) DEFAULT NULL,
+  `kecamatan_ayah` varchar(255) DEFAULT NULL,
+  `propinsi_ayah` varchar(255) DEFAULT NULL,
+  `desa_ayah` varchar(255) DEFAULT NULL,
+  `handphone_ayah` varchar(20) DEFAULT NULL,
+  `nama_ibu` varchar(255) DEFAULT NULL,
+  `pendidikan_ibu` varchar(255) DEFAULT NULL,
+  `pekerjaan_ibu` varchar(255) DEFAULT NULL,
+  `agama_ibu` varchar(255) DEFAULT NULL,
+  `alamat_ibu` text DEFAULT NULL,
+  `kota_ibu` varchar(255) DEFAULT NULL,
+  `kecamatan_ibu` varchar(255) DEFAULT NULL,
+  `propinsi_ibu` varchar(255) DEFAULT NULL,
+  `desa_ibu` varchar(255) DEFAULT NULL,
+  `handphone_ibu` varchar(20) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `nama_wali` varchar(255) DEFAULT NULL,
+  `hubungan_wali` varchar(255) DEFAULT NULL,
+  `pendidikan_wali` varchar(255) DEFAULT NULL,
+  `pekerjaan_wali` varchar(255) DEFAULT NULL,
+  `agama_wali` varchar(255) DEFAULT NULL,
+  `alamat_wali` text DEFAULT NULL,
+  `kota_wali` varchar(255) DEFAULT NULL,
+  `kecamatan_wali` varchar(255) DEFAULT NULL,
+  `provinsi_wali` varchar(255) DEFAULT NULL,
+  `handphone_wali` varchar(20) DEFAULT NULL,
+  `keluarga` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`keluarga`)),
+  `address` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `desa_wali` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `parents`
+--
+
+INSERT INTO `parents` (`id`, `hubungan`, `pekerjaan`, `user_id`, `mahasiswa_id`, `tipe_wali`, `nama_ayah`, `pendidikan_ayah`, `pekerjaan_ayah`, `agama_ayah`, `alamat_ayah`, `kota_ayah`, `kecamatan_ayah`, `propinsi_ayah`, `desa_ayah`, `handphone_ayah`, `nama_ibu`, `pendidikan_ibu`, `pekerjaan_ibu`, `agama_ibu`, `alamat_ibu`, `kota_ibu`, `kecamatan_ibu`, `propinsi_ibu`, `desa_ibu`, `handphone_ibu`, `phone`, `nama_wali`, `hubungan_wali`, `pendidikan_wali`, `pekerjaan_wali`, `agama_wali`, `alamat_wali`, `kota_wali`, `kecamatan_wali`, `provinsi_wali`, `handphone_wali`, `keluarga`, `address`, `created_at`, `updated_at`, `desa_wali`) VALUES
+(1, NULL, NULL, 5, 1, 'orang_tua', 'Budi Santoso', NULL, NULL, 'Islam', 'Jl. Ayah No. 1', NULL, NULL, NULL, 'Menteng Atas', '08111222333', 'Siti Aminah', NULL, 'Guru', 'Islam', 'Jl. Ibu No. 2', NULL, NULL, NULL, 'Menteng Atas', '08222333444', '081234567897', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Jl. Orang Tua No. 1', '2026-05-20 05:16:20', '2026-05-20 10:04:06', NULL),
+(2, NULL, NULL, 29, 6, 'orang_tua', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'budi', 'Paman', 'Tamat SMTP', 'Pelajar / Mahasiswa', 'Protestan', 'dadadada', 'KAB. KULON PROGO', 'GIRIMULYO', 'DAERAH ISTIMEWA YOGYAKARTA', '85285193499', NULL, NULL, '2026-05-20 10:05:27', '2026-05-20 10:05:27', 'GIRIPURWO');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_reset_tokens`
+--
+
+CREATE TABLE `password_reset_tokens` (
+  `email` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_id` bigint(20) UNSIGNED NOT NULL,
+  `installment_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `proof_id` bigint(20) UNSIGNED NOT NULL,
+  `amount_approved` bigint(20) UNSIGNED NOT NULL,
+  `paid_date` date NOT NULL,
+  `transfer_date` date NOT NULL,
+  `approved_by` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment_proofs`
+--
+
+CREATE TABLE `payment_proofs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `installment_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `uploaded_by` bigint(20) UNSIGNED NOT NULL,
+  `transfer_date` date NOT NULL,
+  `amount_submitted` bigint(20) UNSIGNED NOT NULL,
+  `method` varchar(50) DEFAULT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `status` enum('UPLOADED','APPROVED','REJECTED') NOT NULL DEFAULT 'UPLOADED',
+  `finance_notes` text DEFAULT NULL,
+  `approved_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_at` datetime DEFAULT NULL,
+  `rejected_at` datetime DEFAULT NULL,
+  `student_notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pembayaran`
+--
+
+CREATE TABLE `pembayaran` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `semester_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `jenis` varchar(255) NOT NULL,
+  `jumlah` decimal(15,2) NOT NULL,
+  `dibayar` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `status` enum('belum_bayar','sebagian','lunas') NOT NULL DEFAULT 'belum_bayar',
+  `tanggal_bayar` date DEFAULT NULL,
+  `bukti_bayar` varchar(255) DEFAULT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pengajuans`
+--
+
+CREATE TABLE `pengajuans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `jenis` varchar(255) NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `payload_template` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`payload_template`)),
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `file_path` varchar(255) DEFAULT NULL,
+  `generated_doc_path` varchar(255) DEFAULT NULL,
+  `signed_doc_path` varchar(255) DEFAULT NULL,
+  `admin_note` text DEFAULT NULL,
+  `rejected_reason` text DEFAULT NULL,
+  `revision_no` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
+  `approved_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `rejected_at` timestamp NULL DEFAULT NULL,
+  `nomor_surat` varchar(255) DEFAULT NULL,
+  `file_surat` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pengajuan_revisions`
+--
+
+CREATE TABLE `pengajuan_revisions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `pengajuan_id` bigint(20) UNSIGNED NOT NULL,
+  `revision_no` smallint(5) UNSIGNED NOT NULL,
+  `signed_doc_path` varchar(255) NOT NULL,
+  `note_from_admin` text DEFAULT NULL,
+  `note_from_mahasiswa` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pengumumans`
+--
+
+CREATE TABLE `pengumumans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `judul` varchar(255) NOT NULL,
+  `isi` text NOT NULL,
+  `target` enum('semua','dosen','mahasiswa') NOT NULL DEFAULT 'semua',
+  `published_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pertemuans`
+--
+
+CREATE TABLE `pertemuans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kelas_mata_kuliah_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `nomor_pertemuan` int(10) UNSIGNED NOT NULL,
+  `tipe_pertemuan` enum('kuliah','uts','uas') NOT NULL DEFAULT 'kuliah' COMMENT 'Meeting type: kuliah (regular), uts (midterm), uas (final)',
+  `tanggal` date DEFAULT NULL,
+  `topik` varchar(255) DEFAULT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `metode_pengajaran` enum('offline','online','asynchronous') NOT NULL DEFAULT 'offline',
+  `online_meeting_link` varchar(255) DEFAULT NULL,
+  `qr_token` varchar(100) DEFAULT NULL,
+  `qr_enabled` tinyint(1) NOT NULL DEFAULT 0,
+  `qr_expires_at` datetime DEFAULT NULL,
+  `qr_generated_at` datetime DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'scheduled',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `presensis`
+--
+
+CREATE TABLE `presensis` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `kelas_mata_kuliah_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `pertemuan` int(10) UNSIGNED DEFAULT NULL,
+  `nama` varchar(255) DEFAULT NULL,
+  `kontak` varchar(255) DEFAULT NULL,
+  `waktu` timestamp NULL DEFAULT NULL,
+  `krs_id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal` date NOT NULL,
+  `status` enum('hadir','izin','sakit','alpa') NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `student_lat` decimal(10,7) DEFAULT NULL,
+  `student_lng` decimal(10,7) DEFAULT NULL,
+  `distance_meters` int(11) DEFAULT NULL,
+  `presence_mode` enum('offline','online') DEFAULT NULL,
+  `reason_category` varchar(255) DEFAULT NULL,
+  `reason_detail` text DEFAULT NULL,
+  `campus_lat` decimal(10,7) NOT NULL DEFAULT -6.3112520,
+  `campus_lng` decimal(10,7) NOT NULL DEFAULT 106.8111740,
+  `radius_meters` int(11) NOT NULL DEFAULT 100,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `prestasis`
+--
+
+CREATE TABLE `prestasis` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tipe` enum('pengajuan','pelaporan') NOT NULL DEFAULT 'pengajuan',
+  `pengaju_type` varchar(255) NOT NULL,
+  `pengaju_id` bigint(20) UNSIGNED NOT NULL,
+  `nama_kegiatan` varchar(255) NOT NULL,
+  `jenis_kegiatan` varchar(255) NOT NULL DEFAULT 'akademik',
+  `tingkat_kegiatan` enum('internal','regional','nasional','internasional') NOT NULL DEFAULT 'nasional',
+  `tempat_kegiatan` varchar(255) NOT NULL,
+  `tanggal_mulai` date NOT NULL,
+  `tanggal_selesai` date DEFAULT NULL,
+  `penyelenggara` varchar(255) NOT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `dosen_pendamping_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `jenis_prestasi` varchar(255) DEFAULT NULL,
+  `nomor_sertifikat` varchar(255) DEFAULT NULL,
+  `keterangan` text DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'draft',
+  `approved_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `rejected_reason` text DEFAULT NULL,
+  `rejected_at` timestamp NULL DEFAULT NULL,
+  `admin_note` text DEFAULT NULL,
+  `tags` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`tags`)),
+  `external_ref` varchar(255) DEFAULT NULL,
+  `hash_kegiatan` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `prestasi_dokumens`
+--
+
+CREATE TABLE `prestasi_dokumens` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `prestasi_id` bigint(20) UNSIGNED NOT NULL,
+  `jenis` enum('sertifikat','dokumentasi','surat_tugas_lama','pendukung') NOT NULL DEFAULT 'sertifikat',
+  `file_path` varchar(255) NOT NULL,
+  `original_name` varchar(255) NOT NULL,
+  `mime_type` varchar(255) DEFAULT NULL,
+  `size` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+  `uploaded_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `prestasi_logs`
+--
+
+CREATE TABLE `prestasi_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `prestasi_id` bigint(20) UNSIGNED NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `from_status` varchar(255) DEFAULT NULL,
+  `to_status` varchar(255) DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `metadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`metadata`)),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `prestasi_surats`
+--
+
+CREATE TABLE `prestasi_surats` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `prestasi_id` bigint(20) UNSIGNED NOT NULL,
+  `jenis_surat` varchar(255) NOT NULL,
+  `nomor_surat` varchar(255) NOT NULL,
+  `tanggal_surat` date NOT NULL,
+  `penandatangan_nama` varchar(255) NOT NULL,
+  `penandatangan_jabatan` varchar(255) NOT NULL,
+  `penandatangan_nip` varchar(255) DEFAULT NULL,
+  `file_path` varchar(255) DEFAULT NULL,
+  `is_backdate` tinyint(1) NOT NULL DEFAULT 0,
+  `generated_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `metadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`metadata`)),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `prestasi_surat_settings`
+--
+
+CREATE TABLE `prestasi_surat_settings` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `jenis_surat` varchar(255) NOT NULL,
+  `format_nomor` varchar(255) NOT NULL,
+  `last_counter` int(11) NOT NULL DEFAULT 0,
+  `reset_year` year(4) NOT NULL DEFAULT 2026,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `prestasi_surat_settings`
+--
+
+INSERT INTO `prestasi_surat_settings` (`id`, `jenis_surat`, `format_nomor`, `last_counter`, `reset_year`, `created_at`, `updated_at`) VALUES
+(1, 'tugas', '{counter}/STIH/ST/{month}/{year}', 0, '2026', '2026-05-20 05:16:18', '2026-05-20 05:16:18'),
+(2, 'rekomendasi', '{counter}/STIH/SR/{month}/{year}', 0, '2026', '2026-05-20 05:16:18', '2026-05-20 05:16:18'),
+(3, 'keterangan', '{counter}/STIH/SKP/{month}/{year}', 0, '2026', '2026-05-20 05:16:18', '2026-05-20 05:16:18'),
+(4, 'penghargaan', '{counter}/STIH/PP/{month}/{year}', 0, '2026', '2026-05-20 05:16:18', '2026-05-20 05:16:18');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `prodis`
+--
+
+CREATE TABLE `prodis` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kode_prodi` varchar(10) NOT NULL,
+  `fakultas_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `nama_prodi` varchar(255) NOT NULL,
+  `jenjang` enum('D3','S1','S2','S3') NOT NULL,
+  `status` enum('aktif','nonaktif') NOT NULL DEFAULT 'aktif',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `prodis`
+--
+
+INSERT INTO `prodis` (`id`, `kode_prodi`, `fakultas_id`, `nama_prodi`, `jenjang`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'HK', 1, 'Ilmu Hukum', 'S1', 'aktif', '2026-05-20 05:16:15', '2026-05-20 05:51:24'),
+(2, 'INF', NULL, 'Informatika', 'S1', 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(3, 'MAN', NULL, 'Manajemen', 'S1', 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(4, 'AKT', NULL, 'Akuntansi', 'D3', 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `religions`
+--
+
+CREATE TABLE `religions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `code` varchar(255) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `religions`
+--
+
+INSERT INTO `religions` (`id`, `code`, `name`, `created_at`, `updated_at`) VALUES
+(1, '1001001', 'Islam', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(2, '1001002', 'Protestan', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(3, '1001003', 'Hindu', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(4, '1001004', 'Buddha', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(5, '1001005', 'Katolik', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(6, '1001006', 'Khonghucu', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(7, '1001007', 'Penganut Kepercayaan Lainnya', '2026-05-20 05:16:20', '2026-05-20 05:16:20');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ruangans`
+--
+
+CREATE TABLE `ruangans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kode_ruangan` varchar(20) NOT NULL,
+  `nama_ruangan` varchar(255) NOT NULL,
+  `gedung` varchar(50) DEFAULT NULL,
+  `lantai` int(11) DEFAULT NULL,
+  `kapasitas` int(11) NOT NULL DEFAULT 30,
+  `status` enum('aktif','nonaktif') NOT NULL DEFAULT 'aktif',
+  `kategori_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `ruangans`
+--
+
+INSERT INTO `ruangans` (`id`, `kode_ruangan`, `nama_ruangan`, `gedung`, `lantai`, `kapasitas`, `status`, `kategori_id`, `created_at`, `updated_at`) VALUES
+(15, 'RI 1', 'Ruang Kelas Internasional 1', 'STIH Adhyaksa', 1, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
+(16, 'RI 2', 'Ruang Kelas Internasional 2', 'STIH Adhyaksa', 1, 30, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
+(17, 'RI 3', 'Ruang Kelas Internasional 3', 'STIH Adhyaksa', 1, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
+(18, 'R 1', 'Ruang Kelas R 1', 'STIH Adhyaksa', 2, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
+(19, 'R 2', 'Ruang Kelas R 2', 'STIH Adhyaksa', 2, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
+(20, 'R 3', 'Ruang Kelas R 3', 'STIH Adhyaksa', 2, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
+(21, 'R 4', 'Ruang Kelas R 4', 'STIH Adhyaksa', 2, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `semesters`
+--
+
+CREATE TABLE `semesters` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama_semester` enum('Ganjil','Genap') NOT NULL,
+  `nama_semester_old` varchar(255) DEFAULT NULL,
+  `tahun_ajaran` varchar(255) NOT NULL,
+  `status` enum('aktif','non-aktif') NOT NULL DEFAULT 'non-aktif',
+  `is_active` tinyint(1) NOT NULL DEFAULT 0,
+  `is_locked` tinyint(1) NOT NULL DEFAULT 0,
+  `locked_at` datetime DEFAULT NULL,
+  `locked_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `krs_dapat_diisi` tinyint(1) NOT NULL DEFAULT 0,
+  `max_sks_rendah` int(11) NOT NULL DEFAULT 20 COMMENT 'Max SKS untuk IPK < 3.0',
+  `max_sks_tinggi` int(11) NOT NULL DEFAULT 24 COMMENT 'Max SKS untuk IPK >= 3.0',
+  `krs_mulai` date DEFAULT NULL,
+  `krs_selesai` date DEFAULT NULL,
+  `tanggal_mulai` date NOT NULL,
+  `tanggal_selesai` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `semesters`
+--
+
+INSERT INTO `semesters` (`id`, `nama_semester`, `nama_semester_old`, `tahun_ajaran`, `status`, `is_active`, `is_locked`, `locked_at`, `locked_by`, `krs_dapat_diisi`, `max_sks_rendah`, `max_sks_tinggi`, `krs_mulai`, `krs_selesai`, `tanggal_mulai`, `tanggal_selesai`, `created_at`, `updated_at`) VALUES
+(1, 'Ganjil', NULL, '2025/2026', 'aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2026-05-20', '2026-11-20', '2026-05-20 05:17:57', '2026-05-20 05:17:57'),
+(2, 'Genap', NULL, '2025/2026', 'non-aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2026-11-21', '2027-05-21', '2026-05-20 06:18:35', '2026-05-20 06:18:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sessions`
+--
+
+CREATE TABLE `sessions` (
+  `id` varchar(255) NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `payload` longtext NOT NULL,
+  `last_activity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skripsi_guidances`
+--
+
+CREATE TABLE `skripsi_guidances` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `skripsi_submission_id` bigint(20) UNSIGNED NOT NULL,
+  `dosen_id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal_bimbingan` date NOT NULL,
+  `catatan` text NOT NULL,
+  `file_path` varchar(255) DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `catatan_dosen` text DEFAULT NULL,
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skripsi_revisions`
+--
+
+CREATE TABLE `skripsi_revisions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `skripsi_submission_id` bigint(20) UNSIGNED NOT NULL,
+  `revision_file_path` varchar(255) NOT NULL,
+  `original_name` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `dosen_notes` text DEFAULT NULL,
+  `approved_by_dosen_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `uploaded_at` timestamp NULL DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skripsi_sidang_files`
+--
+
+CREATE TABLE `skripsi_sidang_files` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `sidang_registration_id` bigint(20) UNSIGNED NOT NULL,
+  `file_type` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `original_name` varchar(255) NOT NULL,
+  `file_size` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skripsi_sidang_registrations`
+--
+
+CREATE TABLE `skripsi_sidang_registrations` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `skripsi_submission_id` bigint(20) UNSIGNED NOT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'draft',
+  `notes` text DEFAULT NULL,
+  `admin_note` text DEFAULT NULL,
+  `verified_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `verified_at` timestamp NULL DEFAULT NULL,
+  `rejected_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skripsi_sidang_schedules`
+--
+
+CREATE TABLE `skripsi_sidang_schedules` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `skripsi_submission_id` bigint(20) UNSIGNED NOT NULL,
+  `sidang_registration_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tanggal` date NOT NULL,
+  `waktu_mulai` time NOT NULL,
+  `waktu_selesai` time DEFAULT NULL,
+  `ruangan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `ruangan_manual` varchar(255) DEFAULT NULL,
+  `pembimbing_id` bigint(20) UNSIGNED NOT NULL,
+  `penguji_1_id` bigint(20) UNSIGNED NOT NULL,
+  `penguji_2_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skripsi_submissions`
+--
+
+CREATE TABLE `skripsi_submissions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `semester_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `judul` varchar(255) NOT NULL,
+  `deskripsi_proposal` text DEFAULT NULL,
+  `proposal_file_path` varchar(255) DEFAULT NULL,
+  `requested_supervisor_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_supervisor_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'PROPOSAL_DRAFT',
+  `total_bimbingan` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `logbook_file_path` varchar(255) DEFAULT NULL,
+  `logbook_original_name` varchar(255) DEFAULT NULL,
+  `logbook_uploaded_at` timestamp NULL DEFAULT NULL,
+  `eligible_for_sidang_at` timestamp NULL DEFAULT NULL,
+  `revision_approved_at` timestamp NULL DEFAULT NULL,
+  `admin_note` text DEFAULT NULL,
+  `reviewed_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `students`
+--
+
+CREATE TABLE `students` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `npm` varchar(50) NOT NULL,
+  `nama` varchar(255) NOT NULL,
+  `prodi` varchar(100) NOT NULL,
+  `angkatan` varchar(10) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `system_settings`
+--
+
+CREATE TABLE `system_settings` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `key` varchar(255) NOT NULL,
+  `value` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tugas`
+--
+
+CREATE TABLE `tugas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mata_kuliah_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `kelas_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `pertemuan` int(11) NOT NULL DEFAULT 1,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `due_date` datetime DEFAULT NULL,
+  `dosen_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `file_path` varchar(255) DEFAULT NULL,
+  `max_score` int(11) DEFAULT NULL,
+  `submission_type` enum('pdf','word','excel','text','any') NOT NULL DEFAULT 'any',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tugas_submissions`
+--
+
+CREATE TABLE `tugas_submissions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tugas_id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `file_path` varchar(255) DEFAULT NULL,
+  `text_submission` text DEFAULT NULL,
+  `comments` text DEFAULT NULL,
+  `score` int(11) DEFAULT NULL,
+  `graded_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `graded_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `uploads`
+--
+
+CREATE TABLE `uploads` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `uploadable_type` varchar(255) DEFAULT NULL,
+  `uploadable_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `original_name` varchar(255) NOT NULL,
+  `mime_type` varchar(255) NOT NULL,
+  `extension` varchar(20) NOT NULL,
+  `folder` varchar(50) NOT NULL,
+  `size` bigint(20) UNSIGNED NOT NULL,
+  `disk` varchar(20) NOT NULL DEFAULT 's3',
+  `label` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
+  `role` varchar(255) NOT NULL DEFAULT 'mahasiswa',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `created_at`, `updated_at`) VALUES
+(1, 'Admin STIH', 'admin@stih.ac.id', NULL, '$2y$12$dEezDkUi08kIUCtGHpWVJ.QYVIydW3vkyBA7TBF//2.pLclQyF/8q', NULL, 'admin', '2026-05-20 05:16:19', '2026-05-20 05:16:19'),
+(2, 'Dr. Ahmad Fauzi, S.H., M.H.', 'ahmad.fauzi@stih.ac.id', NULL, '$2y$12$KVqF3bQ2EsL7gojylV8Vs..42Kxvlg4yqTAJGKBmW1hTWMzAnWM46', NULL, 'dosen', '2026-05-20 05:16:19', '2026-05-20 05:16:19'),
+(3, 'Prof. Dr. Siti Nurjanah, S.H., M.H.', 'siti.nurjanah@stih.ac.id', NULL, '$2y$12$jBEEkIxhlqxOarT8YpoMD.kRJbwnOyKxyJnAJQGDZQbegTsTqeIw.', NULL, 'dosen', '2026-05-20 05:16:19', '2026-05-20 05:16:19'),
+(4, 'Dr. Budi Santoso, S.H., M.H.', 'budi.santoso@stih.ac.id', NULL, '$2y$12$lIfQ53o7usCKt/y1kbnFMO5BXHM3DMElQ1yIvrz0zKWd3Toyk7gG6', NULL, 'dosen', '2026-05-20 05:16:19', '2026-05-20 05:16:19'),
+(5, 'Andi Pratama', 'andipratama@student.stih.ac.id', NULL, '$2y$12$c2oWuZ.KKw.vmAN6g9U3kexXaAAIJ0X5BL.Ez1Z3w9sAjt5vsxfbi', NULL, 'mahasiswa', '2026-05-20 05:16:19', '2026-05-20 09:57:33'),
+(6, 'Dewi Lestari', 'dewilestari@student.stih.ac.id', NULL, '$2y$12$zCd1lvph..5lnv8OeDh5/uAa8BL3cgHUQ33Oa7Gyc3KRz/qe3DL5O', NULL, 'mahasiswa', '2026-05-20 05:16:20', '2026-05-20 08:00:41'),
+(7, 'Rizki Firmansyah', 'rizki.firmansyah@student.stih.ac.id', NULL, '$2y$12$NygPRyuhpaAwXFEmc6abrOTpw4aTir3PHRoi5uJqUSacdmezoH.x2', NULL, 'mahasiswa', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(8, 'Bapak Pratama', 'parent.pratama@stih.ac.id', NULL, '$2y$12$i.CQ.eIHlXu0YOnRAx9cLuHSwgLlzuon1osu10zC9zcCSG/5p6CLG', NULL, 'parent', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(9, 'Staf Keuangan', 'finance@stih.ac.id', '2026-05-20 05:16:20', '$2y$12$negmtMBG0ep0WyA19PvLHOEV3kMuqWqG9i/6ZDE9Y5.HiWCE5wFB.', NULL, 'finance', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
+(10, 'Ahmad Mahasiswa', 'student1@stih.ac.id', '2026-05-20 05:16:21', '$2y$12$DI0tK9TbHBIks0amMuipHeFpPn1heC3CPMGdeIRxBS6Rge21At1AK', NULL, 'student', '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
+(11, 'Siti Mahasiswi', 'sitimahasiswi@student.stih.ac.id', '2026-05-20 05:16:21', '$2y$12$X0mDEfow18rE1dojBlbR8eQqBKX173AEbc.e2w0IPgIX2xf6yI7xq', NULL, 'student', '2026-05-20 05:16:21', '2026-05-20 07:59:41'),
+(12, 'Dr. R Muhamad Ibnu Mazjah, S.H., M.H.', '417017906@stihadhyaksa.ac.id', NULL, '$2y$12$v.A2lc4GRk5PyGbRt4F8e.Exe6xjRkD6hJ2Ug7xO/bOUbG97ffkaO', NULL, 'dosen', '2026-05-20 06:36:26', '2026-05-20 06:36:26'),
+(13, 'Dr. Armansyah, S.H., M.H.', '301067501@stihadhyaksa.ac.id', NULL, '$2y$12$FHbw//1pdsTl5BWEOjHkGOClxLUpa4LYwvAhS1X6/tscf.O6cg2jO', NULL, 'dosen', '2026-05-20 06:36:27', '2026-05-20 06:36:27'),
+(14, 'Dr. Mukhlis, S.H., M.H.', '3146747648130140@stihadhyaksa.ac.id', NULL, '$2y$12$2G/PvRWNG2Heoj1YV86tpeZlmUqcdppPhA2wdSFXXHMO.8psB/CWu', NULL, 'dosen', '2026-05-20 06:36:27', '2026-05-20 06:36:27'),
+(15, 'Dr. Joko Cahyono, SH., MH.', '714076601@stihadhyaksa.ac.id', NULL, '$2y$12$DP3IwZ6ZTpjqgMYQfAr.C.Ot2wl2SU7eFqSlSdkDKMXoZJY1zf9Xa', NULL, 'dosen', '2026-05-20 06:36:27', '2026-05-20 06:36:27'),
+(16, 'Sandi Yudha Prayoga, S.H., M.H.', '302129701@stihadhyaksa.ac.id', NULL, '$2y$12$EYS0Ng5B1QoTB4qWKlGvGeYZDW.6DlZASju37iTsGFqLicqLY5SSO', NULL, 'dosen', '2026-05-20 06:36:27', '2026-05-20 06:36:27'),
+(17, 'Adilla Meytiara Intan, S.H., LL.M.', '302059501@stihadhyaksa.ac.id', NULL, '$2y$12$4HwsJpbUwoxJLu7yz0NJ.uhOVKv1P7TaoaFkdz6jte5Tbg7GY1MDC', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
+(18, 'Adery Ardhan Saputro, S.H., LL.M.', '313089202@stihadhyaksa.ac.id', NULL, '$2y$12$2zpkP.tbyEzU97ryQT5x5Op7l.s5EPZOid.QeHRqNaXPzyEzjMiie', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
+(19, 'Dio Ashar Wicaksana, S.H., M.A.', '307089005@stihadhyaksa.ac.id', NULL, '$2y$12$N13FmT2JDZd4qqyBL0nVyOgTtJuU3P1sZ8sMmbfGCUoBMlwIj0yJy', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
+(20, 'Prof. Dr. Bambang Sugeng Rukmono, S.H.,M.M., M.H.', '8918290024@stihadhyaksa.ac.id', NULL, '$2y$12$rOrGWjlDt9iwgmGxZTo2dOw3kEchDmiXAUkw3sxirz7qwDaIeuYtK', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
+(21, 'Maydika Ramadani, S.H., M.H.', '3860765666130310@stihadhyaksa.ac.id', NULL, '$2y$12$LIS0bqcEABzqBkQROjhtK.UkfR1ONF3GJHs9p9ELqpDpcbRTkU7Mi', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
+(22, 'Raul Gindo cahyono, S.H., M.H.', '1956751652130120@stihadhyaksa.ac.id', NULL, '$2y$12$T7UaNgouE.qbHeAMXPVw2eU7IFxcPrSabjQR0TSjfblAOefkTpNIy', NULL, 'dosen', '2026-05-20 06:36:29', '2026-05-20 06:36:29'),
+(23, 'Muhammad Arbani, S.H., M.Kn.', '3345774675130210@stihadhyaksa.ac.id', NULL, '$2y$12$T9qfb7FvUOOJ2Q55AcEWWeU10vHHJygJinUTZrQTMvd5SmsBBm2QW', NULL, 'dosen', '2026-05-20 06:36:29', '2026-05-20 06:36:29'),
+(24, 'Muhammad Rizqi Alfarizi, S.H., LL.M.', '4434778679130070@stihadhyaksa.ac.id', NULL, '$2y$12$s7W0igebJJZPJfcmWDMIpe89APEg0w/.2uzIgN4m/fr/UG4nch59e', NULL, 'dosen', '2026-05-20 06:36:29', '2026-05-20 06:36:29'),
+(25, 'Amir Firmansyah, S.H. M.H', '7641763664130240@stihadhyaksa.ac.id', NULL, '$2y$12$HlC2vaQe4lwTYQWTkj85quuIZcd0/tF4teFOx9nW0qmfD0V4ogOSC', NULL, 'dosen', '2026-05-20 06:36:29', '2026-05-20 06:36:29'),
+(26, 'Akhmad Ikraam, S.H., M.H.', '2150767668137030@stihadhyaksa.ac.id', NULL, '$2y$12$BO8Nwpd8SJypEp2KWTc2UeyxAW0EFlZUTmNwwIJIcnTKspczw79Dy', NULL, 'dosen', '2026-05-20 06:36:30', '2026-05-20 06:36:30'),
+(27, 'Zul Karnen, S.S., M.Si.', '3454762663130160@stihadhyaksa.ac.id', NULL, '$2y$12$n6el99ZIFEKKbMF3JXnmkucCmRrHN.1dbNG7o3bNcd3bjxhcWJx/W', NULL, 'dosen', '2026-05-20 06:36:30', '2026-05-20 06:36:30'),
+(28, 'Dr. Rudi Pradisetia Sudirdja., S.H., M.H.', '3204070406910000@stihadhyaksa.ac.id', NULL, '$2y$12$ObF74w/TFTKTcQZfVht4V.Q5XA57i4R.QdGTBpEBuw4qVMXQVRnUS', NULL, 'dosen', '2026-05-20 06:36:30', '2026-05-20 06:36:30'),
+(29, 'Jojo', 'jojo@student.stih.ac.id', NULL, '$2y$12$ME3DeLMuL48ho5J5XkzWZ.vmp0NEJaD06MtjsRf54O4LICzhk3ocy', NULL, 'mahasiswa', '2026-05-20 06:56:46', '2026-05-20 08:10:18');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `academic_events`
+--
+ALTER TABLE `academic_events`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ae_active_type_dates_idx` (`is_active`,`event_type`,`start_date`,`end_date`),
+  ADD KEY `ae_semester_type_idx` (`semester_id`,`event_type`);
+
+--
+-- Indexes for table `activity_logs`
+--
+ALTER TABLE `activity_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `activity_logs_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `admins_nip_unique` (`nip`),
+  ADD KEY `admins_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `audit_logs_actor_id_index` (`actor_id`),
+  ADD KEY `audit_logs_auditable_type_auditable_id_index` (`auditable_type`,`auditable_id`),
+  ADD KEY `audit_logs_action_index` (`action`);
+
+--
+-- Indexes for table `bobot_penilaian`
+--
+ALTER TABLE `bobot_penilaian`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `bobot_penilaian_kelas_id_unique` (`kelas_id`),
+  ADD KEY `bobot_penilaian_locked_by_foreign` (`locked_by`);
+
+--
+-- Indexes for table `cache`
+--
+ALTER TABLE `cache`
+  ADD PRIMARY KEY (`key`);
+
+--
+-- Indexes for table `cache_locks`
+--
+ALTER TABLE `cache_locks`
+  ADD PRIMARY KEY (`key`);
+
+--
+-- Indexes for table `dokumen_kelas`
+--
+ALTER TABLE `dokumen_kelas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `dokumen_kelas_kelas_id_tipe_dokumen_unique` (`kelas_id`,`tipe_dokumen`),
+  ADD KEY `dokumen_kelas_uploaded_by_foreign` (`uploaded_by`);
+
+--
+-- Indexes for table `dosens`
+--
+ALTER TABLE `dosens`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `dosens_nidn_unique` (`nidn`),
+  ADD KEY `dosens_user_id_foreign` (`user_id`),
+  ADD KEY `dosens_fakultas_id_foreign` (`fakultas_id`);
+
+--
+-- Indexes for table `dosen_attendances`
+--
+ALTER TABLE `dosen_attendances`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `dosen_attendance_unique` (`dosen_id`,`pertemuan_id`),
+  ADD KEY `dosen_attendances_kelas_mata_kuliah_id_foreign` (`kelas_mata_kuliah_id`),
+  ADD KEY `dosen_attendances_pertemuan_id_foreign` (`pertemuan_id`);
+
+--
+-- Indexes for table `dosen_availabilities`
+--
+ALTER TABLE `dosen_availabilities`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_dosen_slot` (`dosen_id`,`semester_id`,`hari`,`jam_perkuliahan_id`),
+  ADD KEY `dosen_availabilities_semester_id_foreign` (`semester_id`),
+  ADD KEY `dosen_availabilities_jam_perkuliahan_id_foreign` (`jam_perkuliahan_id`);
+
+--
+-- Indexes for table `dosen_availability_checks`
+--
+ALTER TABLE `dosen_availability_checks`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `dosen_availability_checks_dosen_id_foreign` (`dosen_id`),
+  ADD KEY `dosen_availability_checks_mata_kuliah_id_foreign` (`mata_kuliah_id`);
+
+--
+-- Indexes for table `dosen_mata_kuliah`
+--
+ALTER TABLE `dosen_mata_kuliah`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `dmk_unique` (`dosen_id`,`mata_kuliah_id`,`semester_id`),
+  ADD KEY `dosen_mata_kuliah_mata_kuliah_id_foreign` (`mata_kuliah_id`),
+  ADD KEY `dosen_mata_kuliah_semester_id_foreign` (`semester_id`),
+  ADD KEY `dosen_mata_kuliah_created_by_foreign` (`created_by`),
+  ADD KEY `dmk_dosen_semester` (`dosen_id`,`semester_id`);
+
+--
+-- Indexes for table `dosen_pa`
+--
+ALTER TABLE `dosen_pa`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `dosen_pa_mahasiswa_id_unique` (`mahasiswa_id`),
+  ADD KEY `dosen_pa_dosen_id_foreign` (`dosen_id`);
+
+--
+-- Indexes for table `email_blast_logs`
+--
+ALTER TABLE `email_blast_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `email_blast_logs_batch_id_index` (`batch_id`),
+  ADD KEY `email_blast_logs_mahasiswa_id_index` (`mahasiswa_id`),
+  ADD KEY `email_blast_logs_success_index` (`success`),
+  ADD KEY `email_blast_logs_created_at_index` (`created_at`);
+
+--
+-- Indexes for table `email_outboxes`
+--
+ALTER TABLE `email_outboxes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `email_outboxes_mahasiswa_id_foreign` (`mahasiswa_id`),
+  ADD KEY `email_outboxes_batch_id_index` (`batch_id`),
+  ADD KEY `email_outboxes_status_index` (`status`),
+  ADD KEY `email_outboxes_scheduled_at_index` (`scheduled_at`);
+
+--
+-- Indexes for table `failed_jobs`
+--
+ALTER TABLE `failed_jobs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
+
+--
+-- Indexes for table `fakultas`
+--
+ALTER TABLE `fakultas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `fakultas_kode_fakultas_unique` (`kode_fakultas`);
+
+--
+-- Indexes for table `import_logs`
+--
+ALTER TABLE `import_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `import_logs_user_id_foreign` (`user_id`),
+  ADD KEY `import_logs_type_index` (`type`),
+  ADD KEY `import_logs_created_at_index` (`created_at`);
+
+--
+-- Indexes for table `installments`
+--
+ALTER TABLE `installments`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `installments_invoice_id_installment_no_unique` (`invoice_id`,`installment_no`),
+  ADD KEY `installments_invoice_id_status_index` (`invoice_id`,`status`);
+
+--
+-- Indexes for table `installment_requests`
+--
+ALTER TABLE `installment_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `installment_requests_student_id_foreign` (`student_id`),
+  ADD KEY `installment_requests_reviewed_by_foreign` (`reviewed_by`),
+  ADD KEY `installment_requests_invoice_id_status_index` (`invoice_id`,`status`),
+  ADD KEY `installment_requests_status_index` (`status`);
+
+--
+-- Indexes for table `internships`
+--
+ALTER TABLE `internships`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `internships_semester_id_foreign` (`semester_id`),
+  ADD KEY `internships_approved_by_foreign` (`approved_by`),
+  ADD KEY `internships_mahasiswa_id_semester_id_index` (`mahasiswa_id`,`semester_id`),
+  ADD KEY `internships_supervisor_dosen_id_index` (`supervisor_dosen_id`),
+  ADD KEY `internships_status_index` (`status`),
+  ADD KEY `internships_sent_by_foreign` (`sent_by`),
+  ADD KEY `internships_date_changed_by_foreign` (`date_changed_by`);
+
+--
+-- Indexes for table `internship_course_mappings`
+--
+ALTER TABLE `internship_course_mappings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `internship_course_mappings_internship_id_mata_kuliah_id_unique` (`internship_id`,`mata_kuliah_id`),
+  ADD KEY `internship_course_mappings_mata_kuliah_id_foreign` (`mata_kuliah_id`);
+
+--
+-- Indexes for table `internship_logbooks`
+--
+ALTER TABLE `internship_logbooks`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `internship_logbooks_internship_id_index` (`internship_id`);
+
+--
+-- Indexes for table `internship_revisions`
+--
+ALTER TABLE `internship_revisions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `internship_revisions_internship_id_index` (`internship_id`);
+
+--
+-- Indexes for table `invoices`
+--
+ALTER TABLE `invoices`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `invoices_created_by_foreign` (`created_by`),
+  ADD KEY `invoices_student_id_status_index` (`student_id`,`status`),
+  ADD KEY `invoices_tahun_ajaran_index` (`tahun_ajaran`);
+
+--
+-- Indexes for table `jadwals`
+--
+ALTER TABLE `jadwals`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jadwals_kelas_id_foreign` (`kelas_id`),
+  ADD KEY `jadwals_approved_by_foreign` (`approved_by`),
+  ADD KEY `jadwals_ruangan_id_index` (`ruangan_id`),
+  ADD KEY `jadwals_kelas_perkuliahan_id_foreign` (`kelas_perkuliahan_id`);
+
+--
+-- Indexes for table `jadwal_approvals`
+--
+ALTER TABLE `jadwal_approvals`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jadwal_approvals_jadwal_proposal_id_role_index` (`jadwal_proposal_id`,`role`),
+  ADD KEY `jadwal_approvals_approved_by_action_index` (`approved_by`,`action`);
+
+--
+-- Indexes for table `jadwal_exceptions`
+--
+ALTER TABLE `jadwal_exceptions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jadwal_exceptions_jadwal_id_foreign` (`jadwal_id`);
+
+--
+-- Indexes for table `jadwal_generate_logs`
+--
+ALTER TABLE `jadwal_generate_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jadwal_generate_logs_user_id_foreign` (`user_id`),
+  ADD KEY `jadwal_generate_logs_created_at_index` (`created_at`);
+
+--
+-- Indexes for table `jadwal_proposals`
+--
+ALTER TABLE `jadwal_proposals`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jadwal_proposals_kelas_id_foreign` (`kelas_id`),
+  ADD KEY `jadwal_proposals_dosen_id_foreign` (`dosen_id`),
+  ADD KEY `jadwal_proposals_generated_by_foreign` (`generated_by`),
+  ADD KEY `jadwal_proposals_status_dosen_id_index` (`status`,`dosen_id`),
+  ADD KEY `jadwal_proposals_mata_kuliah_id_hari_jam_mulai_index` (`mata_kuliah_id`,`hari`,`jam_mulai`),
+  ADD KEY `jadwal_proposals_ruangan_id_index` (`ruangan_id`);
+
+--
+-- Indexes for table `jadwal_reschedules`
+--
+ALTER TABLE `jadwal_reschedules`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jadwal_reschedules_jadwal_id_foreign` (`jadwal_id`),
+  ADD KEY `jadwal_reschedules_dosen_id_foreign` (`dosen_id`);
+
+--
+-- Indexes for table `jam_perkuliahan`
+--
+ALTER TABLE `jam_perkuliahan`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `jam_perkuliahan_jam_ke_unique` (`jam_ke`);
+
+--
+-- Indexes for table `jobs`
+--
+ALTER TABLE `jobs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jobs_queue_index` (`queue`);
+
+--
+-- Indexes for table `job_batches`
+--
+ALTER TABLE `job_batches`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `kategori_ruangans`
+--
+ALTER TABLE `kategori_ruangans`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `kategori_ruangans_nama_kategori_unique` (`nama_kategori`),
+  ADD KEY `kategori_ruangans_urutan_index` (`urutan`),
+  ADD KEY `kategori_ruangans_status_index` (`status`);
+
+--
+-- Indexes for table `kelas`
+--
+ALTER TABLE `kelas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `kelas_mata_kuliah_id_foreign` (`mata_kuliah_id`),
+  ADD KEY `kelas_dosen_id_foreign` (`dosen_id`),
+  ADD KEY `kelas_kelas_perkuliahan_id_foreign` (`kelas_perkuliahan_id`);
+
+--
+-- Indexes for table `kelas_mata_kuliahs`
+--
+ALTER TABLE `kelas_mata_kuliahs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `kelas_mata_kuliahs_qr_token_unique` (`qr_token`),
+  ADD KEY `kelas_mata_kuliahs_mata_kuliah_id_foreign` (`mata_kuliah_id`),
+  ADD KEY `kelas_mata_kuliahs_dosen_id_foreign` (`dosen_id`),
+  ADD KEY `kelas_mata_kuliahs_semester_id_foreign` (`semester_id`),
+  ADD KEY `kelas_mata_kuliahs_ruangan_id_index` (`ruangan_id`),
+  ADD KEY `kelas_mata_kuliahs_kelas_perkuliahan_id_foreign` (`kelas_perkuliahan_id`);
+
+--
+-- Indexes for table `kelas_perkuliahans`
+--
+ALTER TABLE `kelas_perkuliahans`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `kp_unique_angkatan_combo` (`angkatan`,`prodi_id`,`kode_kelas`,`tahun_akademik_id`),
+  ADD KEY `kelas_perkuliahans_tahun_akademik_id_foreign` (`tahun_akademik_id`),
+  ADD KEY `idx_kelas_angkatan` (`angkatan`),
+  ADD KEY `idx_kelas_prodi` (`prodi_id`),
+  ADD KEY `idx_kelas_kode` (`kode_kelas`),
+  ADD KEY `idx_kelas_angkatan_prodi_kode` (`angkatan`,`prodi_id`,`kode_kelas`);
+
+--
+-- Indexes for table `kelas_reschedules`
+--
+ALTER TABLE `kelas_reschedules`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `kelas_reschedules_kelas_mata_kuliah_id_foreign` (`kelas_mata_kuliah_id`),
+  ADD KEY `kelas_reschedules_dosen_id_foreign` (`dosen_id`),
+  ADD KEY `kelas_reschedules_approved_by_foreign` (`approved_by`);
+
+--
+-- Indexes for table `krs`
+--
+ALTER TABLE `krs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `krs_mahasiswa_id_foreign` (`mahasiswa_id`),
+  ADD KEY `krs_kelas_id_foreign` (`kelas_id`),
+  ADD KEY `krs_mata_kuliah_id_foreign` (`mata_kuliah_id`),
+  ADD KEY `krs_kelas_mata_kuliah_id_foreign` (`kelas_mata_kuliah_id`),
+  ADD KEY `krs_internship_id_foreign` (`internship_id`);
+
+--
+-- Indexes for table `kuesioner_aktivasi`
+--
+ALTER TABLE `kuesioner_aktivasi`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `kuesioner_aktivasi_mahasiswa_id_foreign` (`mahasiswa_id`),
+  ADD KEY `kuesioner_aktivasi_semester_id_foreign` (`semester_id`);
+
+--
+-- Indexes for table `kuesioner_mahasiswa_baru`
+--
+ALTER TABLE `kuesioner_mahasiswa_baru`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `kuesioner_mahasiswa_baru_mahasiswa_id_index` (`mahasiswa_id`);
+
+--
+-- Indexes for table `mahasiswas`
+--
+ALTER TABLE `mahasiswas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `mahasiswas_nim_unique` (`nim`),
+  ADD UNIQUE KEY `mahasiswas_email_kampus_unique` (`email_kampus`),
+  ADD KEY `mahasiswas_user_id_foreign` (`user_id`),
+  ADD KEY `mahasiswas_last_semester_id_foreign` (`last_semester_id`),
+  ADD KEY `mahasiswas_email_pribadi_index` (`email_pribadi`),
+  ADD KEY `mahasiswas_kelas_perkuliahan_id_idx` (`kelas_perkuliahan_id`),
+  ADD KEY `mahasiswas_prodi_id_idx` (`prodi_id`),
+  ADD KEY `mahasiswas_tahun_akademik_id_idx` (`tahun_akademik_id`),
+  ADD KEY `mahasiswas_semester_idx` (`semester`);
+
+--
+-- Indexes for table `mata_kuliahs`
+--
+ALTER TABLE `mata_kuliahs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `mata_kuliahs_kode_mk_unique` (`kode_mk`),
+  ADD KEY `mata_kuliahs_kode_id_index` (`kode_id`),
+  ADD KEY `mata_kuliahs_prodi_id_foreign` (`prodi_id`),
+  ADD KEY `mata_kuliahs_fakultas_id_foreign` (`fakultas_id`),
+  ADD KEY `mata_kuliahs_tipe_index` (`tipe`);
+
+--
+-- Indexes for table `mata_kuliah_semesters`
+--
+ALTER TABLE `mata_kuliah_semesters`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `mk_semester_unique` (`semester_id`,`mata_kuliah_id`),
+  ADD KEY `mata_kuliah_semesters_mata_kuliah_id_foreign` (`mata_kuliah_id`),
+  ADD KEY `mata_kuliah_semesters_status_index` (`status`),
+  ADD KEY `mata_kuliah_semesters_source_semester_id_index` (`source_semester_id`);
+
+--
+-- Indexes for table `materis`
+--
+ALTER TABLE `materis`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `materis_mata_kuliah_id_pertemuan_index` (`mata_kuliah_id`,`pertemuan`),
+  ADD KEY `materis_dosen_id_index` (`dosen_id`);
+
+--
+-- Indexes for table `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `nilai`
+--
+ALTER TABLE `nilai`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `nilai_krs_id_foreign` (`krs_id`),
+  ADD KEY `nilai_kelas_id_foreign` (`kelas_id`),
+  ADD KEY `nilai_published_by_foreign` (`published_by`);
+
+--
+-- Indexes for table `parents`
+--
+ALTER TABLE `parents`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `parents_user_id_foreign` (`user_id`),
+  ADD KEY `parents_mahasiswa_id_foreign` (`mahasiswa_id`);
+
+--
+-- Indexes for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD PRIMARY KEY (`email`);
+
+--
+-- Indexes for table `payments`
+--
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `payments_proof_id_unique` (`proof_id`),
+  ADD KEY `payments_approved_by_foreign` (`approved_by`),
+  ADD KEY `payments_invoice_id_paid_date_index` (`invoice_id`,`paid_date`),
+  ADD KEY `payments_installment_id_index` (`installment_id`);
+
+--
+-- Indexes for table `payment_proofs`
+--
+ALTER TABLE `payment_proofs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `payment_proofs_uploaded_by_foreign` (`uploaded_by`),
+  ADD KEY `payment_proofs_approved_by_foreign` (`approved_by`),
+  ADD KEY `payment_proofs_status_index` (`status`),
+  ADD KEY `payment_proofs_installment_id_status_index` (`installment_id`,`status`),
+  ADD KEY `payment_proofs_invoice_id_status_index` (`invoice_id`,`status`);
+
+--
+-- Indexes for table `pembayaran`
+--
+ALTER TABLE `pembayaran`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pembayaran_mahasiswa_id_foreign` (`mahasiswa_id`),
+  ADD KEY `pembayaran_semester_id_foreign` (`semester_id`);
+
+--
+-- Indexes for table `pengajuans`
+--
+ALTER TABLE `pengajuans`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pengajuans_approved_by_foreign` (`approved_by`),
+  ADD KEY `idx_pengajuans_mhs_status` (`mahasiswa_id`,`status`),
+  ADD KEY `idx_pengajuans_jenis` (`jenis`);
+
+--
+-- Indexes for table `pengajuan_revisions`
+--
+ALTER TABLE `pengajuan_revisions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pengajuan_revisions_pengajuan_id_revision_no_index` (`pengajuan_id`,`revision_no`);
+
+--
+-- Indexes for table `pengumumans`
+--
+ALTER TABLE `pengumumans`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `pertemuans`
+--
+ALTER TABLE `pertemuans`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `pertemuans_qr_token_unique` (`qr_token`),
+  ADD KEY `pertemuans_kelas_mata_kuliah_id_index` (`kelas_mata_kuliah_id`),
+  ADD KEY `pertemuans_kelas_mata_kuliah_id_nomor_pertemuan_index` (`kelas_mata_kuliah_id`,`nomor_pertemuan`),
+  ADD KEY `pertemuans_kmk_tipe_nomor_index` (`kelas_mata_kuliah_id`,`tipe_pertemuan`,`nomor_pertemuan`);
+
+--
+-- Indexes for table `presensis`
+--
+ALTER TABLE `presensis`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `presensis_krs_id_foreign` (`krs_id`),
+  ADD KEY `presensis_mahasiswa_id_foreign` (`mahasiswa_id`),
+  ADD KEY `presensis_kelas_mata_kuliah_id_foreign` (`kelas_mata_kuliah_id`);
+
+--
+-- Indexes for table `prestasis`
+--
+ALTER TABLE `prestasis`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `prestasis_approved_by_foreign` (`approved_by`),
+  ADD KEY `prestasis_pengaju_type_pengaju_id_index` (`pengaju_type`,`pengaju_id`),
+  ADD KEY `prestasis_dosen_pendamping_id_index` (`dosen_pendamping_id`),
+  ADD KEY `prestasis_tingkat_kegiatan_index` (`tingkat_kegiatan`),
+  ADD KEY `prestasis_status_index` (`status`),
+  ADD KEY `prestasis_hash_kegiatan_index` (`hash_kegiatan`);
+
+--
+-- Indexes for table `prestasi_dokumens`
+--
+ALTER TABLE `prestasi_dokumens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `prestasi_dokumens_uploaded_by_foreign` (`uploaded_by`),
+  ADD KEY `prestasi_dokumens_prestasi_id_index` (`prestasi_id`);
+
+--
+-- Indexes for table `prestasi_logs`
+--
+ALTER TABLE `prestasi_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `prestasi_logs_user_id_foreign` (`user_id`),
+  ADD KEY `prestasi_logs_prestasi_id_index` (`prestasi_id`),
+  ADD KEY `prestasi_logs_action_index` (`action`);
+
+--
+-- Indexes for table `prestasi_surats`
+--
+ALTER TABLE `prestasi_surats`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `prestasi_surats_nomor_surat_unique` (`nomor_surat`),
+  ADD KEY `prestasi_surats_generated_by_foreign` (`generated_by`),
+  ADD KEY `prestasi_surats_prestasi_id_index` (`prestasi_id`),
+  ADD KEY `prestasi_surats_jenis_surat_index` (`jenis_surat`);
+
+--
+-- Indexes for table `prestasi_surat_settings`
+--
+ALTER TABLE `prestasi_surat_settings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `prodis`
+--
+ALTER TABLE `prodis`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `prodis_kode_prodi_unique` (`kode_prodi`),
+  ADD KEY `prodis_fakultas_id_foreign` (`fakultas_id`);
+
+--
+-- Indexes for table `religions`
+--
+ALTER TABLE `religions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `religions_code_index` (`code`);
+
+--
+-- Indexes for table `ruangans`
+--
+ALTER TABLE `ruangans`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `ruangans_kode_ruangan_unique` (`kode_ruangan`),
+  ADD KEY `ruangans_kategori_id_foreign` (`kategori_id`);
+
+--
+-- Indexes for table `semesters`
+--
+ALTER TABLE `semesters`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `semesters_nama_tahun_tanggal_unique` (`nama_semester`,`tahun_ajaran`,`tanggal_mulai`),
+  ADD KEY `semesters_locked_by_foreign` (`locked_by`);
+
+--
+-- Indexes for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sessions_user_id_index` (`user_id`),
+  ADD KEY `sessions_last_activity_index` (`last_activity`);
+
+--
+-- Indexes for table `skripsi_guidances`
+--
+ALTER TABLE `skripsi_guidances`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `thesis_guidances_dosen_id_foreign` (`dosen_id`),
+  ADD KEY `skripsi_guidances_skripsi_submission_id_foreign` (`skripsi_submission_id`);
+
+--
+-- Indexes for table `skripsi_revisions`
+--
+ALTER TABLE `skripsi_revisions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `thesis_revisions_approved_by_dosen_id_foreign` (`approved_by_dosen_id`),
+  ADD KEY `skripsi_revisions_skripsi_submission_id_foreign` (`skripsi_submission_id`);
+
+--
+-- Indexes for table `skripsi_sidang_files`
+--
+ALTER TABLE `skripsi_sidang_files`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `thesis_sidang_files_sidang_registration_id_foreign` (`sidang_registration_id`);
+
+--
+-- Indexes for table `skripsi_sidang_registrations`
+--
+ALTER TABLE `skripsi_sidang_registrations`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `thesis_sidang_registrations_verified_by_foreign` (`verified_by`),
+  ADD KEY `skripsi_sidang_registrations_skripsi_submission_id_foreign` (`skripsi_submission_id`);
+
+--
+-- Indexes for table `skripsi_sidang_schedules`
+--
+ALTER TABLE `skripsi_sidang_schedules`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `thesis_sidang_schedules_sidang_registration_id_foreign` (`sidang_registration_id`),
+  ADD KEY `thesis_sidang_schedules_ruangan_id_foreign` (`ruangan_id`),
+  ADD KEY `thesis_sidang_schedules_pembimbing_id_foreign` (`pembimbing_id`),
+  ADD KEY `thesis_sidang_schedules_penguji_1_id_foreign` (`penguji_1_id`),
+  ADD KEY `thesis_sidang_schedules_penguji_2_id_foreign` (`penguji_2_id`),
+  ADD KEY `thesis_sidang_schedules_created_by_foreign` (`created_by`),
+  ADD KEY `skripsi_sidang_schedules_skripsi_submission_id_foreign` (`skripsi_submission_id`);
+
+--
+-- Indexes for table `skripsi_submissions`
+--
+ALTER TABLE `skripsi_submissions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `thesis_submissions_mahasiswa_id_foreign` (`mahasiswa_id`),
+  ADD KEY `thesis_submissions_semester_id_foreign` (`semester_id`),
+  ADD KEY `thesis_submissions_requested_supervisor_id_foreign` (`requested_supervisor_id`),
+  ADD KEY `thesis_submissions_approved_supervisor_id_foreign` (`approved_supervisor_id`),
+  ADD KEY `thesis_submissions_reviewed_by_foreign` (`reviewed_by`);
+
+--
+-- Indexes for table `students`
+--
+ALTER TABLE `students`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `students_npm_unique` (`npm`),
+  ADD KEY `students_user_id_foreign` (`user_id`),
+  ADD KEY `students_npm_index` (`npm`);
+
+--
+-- Indexes for table `system_settings`
+--
+ALTER TABLE `system_settings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `system_settings_key_unique` (`key`);
+
+--
+-- Indexes for table `tugas`
+--
+ALTER TABLE `tugas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tugas_kelas_id_pertemuan_index` (`kelas_id`,`pertemuan`),
+  ADD KEY `tugas_mata_kuliah_id_index` (`mata_kuliah_id`);
+
+--
+-- Indexes for table `tugas_submissions`
+--
+ALTER TABLE `tugas_submissions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tugas_submissions_tugas_id_mahasiswa_id_index` (`tugas_id`,`mahasiswa_id`);
+
+--
+-- Indexes for table `uploads`
+--
+ALTER TABLE `uploads`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `uploads_uploadable_type_uploadable_id_index` (`uploadable_type`,`uploadable_id`),
+  ADD KEY `uploads_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `users_email_unique` (`email`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `academic_events`
+--
+ALTER TABLE `academic_events`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+
+--
+-- AUTO_INCREMENT for table `activity_logs`
+--
+ALTER TABLE `activity_logs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
+
+--
+-- AUTO_INCREMENT for table `bobot_penilaian`
+--
+ALTER TABLE `bobot_penilaian`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `dokumen_kelas`
+--
+ALTER TABLE `dokumen_kelas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `dosens`
+--
+ALTER TABLE `dosens`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `dosen_attendances`
+--
+ALTER TABLE `dosen_attendances`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `dosen_availabilities`
+--
+ALTER TABLE `dosen_availabilities`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `dosen_availability_checks`
+--
+ALTER TABLE `dosen_availability_checks`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `dosen_mata_kuliah`
+--
+ALTER TABLE `dosen_mata_kuliah`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `dosen_pa`
+--
+ALTER TABLE `dosen_pa`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `email_blast_logs`
+--
+ALTER TABLE `email_blast_logs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `email_outboxes`
+--
+ALTER TABLE `email_outboxes`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `failed_jobs`
+--
+ALTER TABLE `failed_jobs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `fakultas`
+--
+ALTER TABLE `fakultas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `import_logs`
+--
+ALTER TABLE `import_logs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `installments`
+--
+ALTER TABLE `installments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `installment_requests`
+--
+ALTER TABLE `installment_requests`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `internships`
+--
+ALTER TABLE `internships`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `internship_course_mappings`
+--
+ALTER TABLE `internship_course_mappings`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `internship_logbooks`
+--
+ALTER TABLE `internship_logbooks`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `internship_revisions`
+--
+ALTER TABLE `internship_revisions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `invoices`
+--
+ALTER TABLE `invoices`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jadwals`
+--
+ALTER TABLE `jadwals`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jadwal_approvals`
+--
+ALTER TABLE `jadwal_approvals`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jadwal_exceptions`
+--
+ALTER TABLE `jadwal_exceptions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jadwal_generate_logs`
+--
+ALTER TABLE `jadwal_generate_logs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jadwal_proposals`
+--
+ALTER TABLE `jadwal_proposals`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jadwal_reschedules`
+--
+ALTER TABLE `jadwal_reschedules`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jam_perkuliahan`
+--
+ALTER TABLE `jam_perkuliahan`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `jobs`
+--
+ALTER TABLE `jobs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `kategori_ruangans`
+--
+ALTER TABLE `kategori_ruangans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `kelas`
+--
+ALTER TABLE `kelas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `kelas_mata_kuliahs`
+--
+ALTER TABLE `kelas_mata_kuliahs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `kelas_perkuliahans`
+--
+ALTER TABLE `kelas_perkuliahans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+
+--
+-- AUTO_INCREMENT for table `kelas_reschedules`
+--
+ALTER TABLE `kelas_reschedules`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `krs`
+--
+ALTER TABLE `krs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+
+--
+-- AUTO_INCREMENT for table `kuesioner_aktivasi`
+--
+ALTER TABLE `kuesioner_aktivasi`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `kuesioner_mahasiswa_baru`
+--
+ALTER TABLE `kuesioner_mahasiswa_baru`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `mahasiswas`
+--
+ALTER TABLE `mahasiswas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `mata_kuliahs`
+--
+ALTER TABLE `mata_kuliahs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+
+--
+-- AUTO_INCREMENT for table `mata_kuliah_semesters`
+--
+ALTER TABLE `mata_kuliah_semesters`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `materis`
+--
+ALTER TABLE `materis`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `migrations`
+--
+ALTER TABLE `migrations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=176;
+
+--
+-- AUTO_INCREMENT for table `nilai`
+--
+ALTER TABLE `nilai`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+
+--
+-- AUTO_INCREMENT for table `parents`
+--
+ALTER TABLE `parents`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `payments`
+--
+ALTER TABLE `payments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `payment_proofs`
+--
+ALTER TABLE `payment_proofs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pembayaran`
+--
+ALTER TABLE `pembayaran`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pengajuans`
+--
+ALTER TABLE `pengajuans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pengajuan_revisions`
+--
+ALTER TABLE `pengajuan_revisions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pengumumans`
+--
+ALTER TABLE `pengumumans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pertemuans`
+--
+ALTER TABLE `pertemuans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `presensis`
+--
+ALTER TABLE `presensis`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `prestasis`
+--
+ALTER TABLE `prestasis`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `prestasi_dokumens`
+--
+ALTER TABLE `prestasi_dokumens`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `prestasi_logs`
+--
+ALTER TABLE `prestasi_logs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `prestasi_surats`
+--
+ALTER TABLE `prestasi_surats`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `prestasi_surat_settings`
+--
+ALTER TABLE `prestasi_surat_settings`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `prodis`
+--
+ALTER TABLE `prodis`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `religions`
+--
+ALTER TABLE `religions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `ruangans`
+--
+ALTER TABLE `ruangans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `semesters`
+--
+ALTER TABLE `semesters`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `skripsi_guidances`
+--
+ALTER TABLE `skripsi_guidances`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `skripsi_revisions`
+--
+ALTER TABLE `skripsi_revisions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `skripsi_sidang_files`
+--
+ALTER TABLE `skripsi_sidang_files`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `skripsi_sidang_registrations`
+--
+ALTER TABLE `skripsi_sidang_registrations`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `skripsi_sidang_schedules`
+--
+ALTER TABLE `skripsi_sidang_schedules`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `skripsi_submissions`
+--
+ALTER TABLE `skripsi_submissions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `students`
+--
+ALTER TABLE `students`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `system_settings`
+--
+ALTER TABLE `system_settings`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tugas`
+--
+ALTER TABLE `tugas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tugas_submissions`
+--
+ALTER TABLE `tugas_submissions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `uploads`
+--
+ALTER TABLE `uploads`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `academic_events`
+--
+ALTER TABLE `academic_events`
+  ADD CONSTRAINT `academic_events_semester_id_foreign` FOREIGN KEY (`semester_id`) REFERENCES `semesters` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `activity_logs`
+--
+ALTER TABLE `activity_logs`
+  ADD CONSTRAINT `activity_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `admins`
+--
+ALTER TABLE `admins`
+  ADD CONSTRAINT `admins_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  ADD CONSTRAINT `audit_logs_actor_id_foreign` FOREIGN KEY (`actor_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `bobot_penilaian`
+--
+ALTER TABLE `bobot_penilaian`
+  ADD CONSTRAINT `bobot_penilaian_kelas_id_foreign` FOREIGN KEY (`kelas_id`) REFERENCES `kelas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `bobot_penilaian_locked_by_foreign` FOREIGN KEY (`locked_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `dokumen_kelas`
+--
+ALTER TABLE `dokumen_kelas`
+  ADD CONSTRAINT `dokumen_kelas_kelas_id_foreign` FOREIGN KEY (`kelas_id`) REFERENCES `kelas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dokumen_kelas_uploaded_by_foreign` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dosens`
+--
+ALTER TABLE `dosens`
+  ADD CONSTRAINT `dosens_fakultas_id_foreign` FOREIGN KEY (`fakultas_id`) REFERENCES `fakultas` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `dosens_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dosen_attendances`
+--
+ALTER TABLE `dosen_attendances`
+  ADD CONSTRAINT `dosen_attendances_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dosen_attendances_kelas_mata_kuliah_id_foreign` FOREIGN KEY (`kelas_mata_kuliah_id`) REFERENCES `kelas_mata_kuliahs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dosen_attendances_pertemuan_id_foreign` FOREIGN KEY (`pertemuan_id`) REFERENCES `pertemuans` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dosen_availabilities`
+--
+ALTER TABLE `dosen_availabilities`
+  ADD CONSTRAINT `dosen_availabilities_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dosen_availabilities_jam_perkuliahan_id_foreign` FOREIGN KEY (`jam_perkuliahan_id`) REFERENCES `jam_perkuliahan` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dosen_availabilities_semester_id_foreign` FOREIGN KEY (`semester_id`) REFERENCES `semesters` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dosen_availability_checks`
+--
+ALTER TABLE `dosen_availability_checks`
+  ADD CONSTRAINT `dosen_availability_checks_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dosen_availability_checks_mata_kuliah_id_foreign` FOREIGN KEY (`mata_kuliah_id`) REFERENCES `mata_kuliahs` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dosen_mata_kuliah`
+--
+ALTER TABLE `dosen_mata_kuliah`
+  ADD CONSTRAINT `dosen_mata_kuliah_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `dosen_mata_kuliah_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dosen_mata_kuliah_mata_kuliah_id_foreign` FOREIGN KEY (`mata_kuliah_id`) REFERENCES `mata_kuliahs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dosen_mata_kuliah_semester_id_foreign` FOREIGN KEY (`semester_id`) REFERENCES `semesters` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dosen_pa`
+--
+ALTER TABLE `dosen_pa`
+  ADD CONSTRAINT `dosen_pa_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dosen_pa_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `email_blast_logs`
+--
+ALTER TABLE `email_blast_logs`
+  ADD CONSTRAINT `email_blast_logs_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `email_outboxes`
+--
+ALTER TABLE `email_outboxes`
+  ADD CONSTRAINT `email_outboxes_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `import_logs`
+--
+ALTER TABLE `import_logs`
+  ADD CONSTRAINT `import_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `installments`
+--
+ALTER TABLE `installments`
+  ADD CONSTRAINT `installments_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `installment_requests`
+--
+ALTER TABLE `installment_requests`
+  ADD CONSTRAINT `installment_requests_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `installment_requests_reviewed_by_foreign` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `internships`
+--
+ALTER TABLE `internships`
+  ADD CONSTRAINT `internships_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `internships_date_changed_by_foreign` FOREIGN KEY (`date_changed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `internships_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `internships_semester_id_foreign` FOREIGN KEY (`semester_id`) REFERENCES `semesters` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `internships_sent_by_foreign` FOREIGN KEY (`sent_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `internships_supervisor_dosen_id_foreign` FOREIGN KEY (`supervisor_dosen_id`) REFERENCES `dosens` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `internship_course_mappings`
+--
+ALTER TABLE `internship_course_mappings`
+  ADD CONSTRAINT `internship_course_mappings_internship_id_foreign` FOREIGN KEY (`internship_id`) REFERENCES `internships` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `internship_course_mappings_mata_kuliah_id_foreign` FOREIGN KEY (`mata_kuliah_id`) REFERENCES `mata_kuliahs` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `internship_logbooks`
+--
+ALTER TABLE `internship_logbooks`
+  ADD CONSTRAINT `internship_logbooks_internship_id_foreign` FOREIGN KEY (`internship_id`) REFERENCES `internships` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `internship_revisions`
+--
+ALTER TABLE `internship_revisions`
+  ADD CONSTRAINT `internship_revisions_internship_id_foreign` FOREIGN KEY (`internship_id`) REFERENCES `internships` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `invoices`
+--
+ALTER TABLE `invoices`
+  ADD CONSTRAINT `invoices_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `invoices_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `jadwals`
+--
+ALTER TABLE `jadwals`
+  ADD CONSTRAINT `jadwals_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `jadwals_kelas_id_foreign` FOREIGN KEY (`kelas_id`) REFERENCES `kelas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `jadwals_kelas_perkuliahan_id_foreign` FOREIGN KEY (`kelas_perkuliahan_id`) REFERENCES `kelas_perkuliahans` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `jadwals_ruangan_id_foreign` FOREIGN KEY (`ruangan_id`) REFERENCES `ruangans` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `jadwal_approvals`
+--
+ALTER TABLE `jadwal_approvals`
+  ADD CONSTRAINT `jadwal_approvals_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `jadwal_approvals_jadwal_proposal_id_foreign` FOREIGN KEY (`jadwal_proposal_id`) REFERENCES `jadwal_proposals` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `jadwal_exceptions`
+--
+ALTER TABLE `jadwal_exceptions`
+  ADD CONSTRAINT `jadwal_exceptions_jadwal_id_foreign` FOREIGN KEY (`jadwal_id`) REFERENCES `jadwals` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `jadwal_generate_logs`
+--
+ALTER TABLE `jadwal_generate_logs`
+  ADD CONSTRAINT `jadwal_generate_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `jadwal_proposals`
+--
+ALTER TABLE `jadwal_proposals`
+  ADD CONSTRAINT `jadwal_proposals_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `jadwal_proposals_generated_by_foreign` FOREIGN KEY (`generated_by`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `jadwal_proposals_kelas_id_foreign` FOREIGN KEY (`kelas_id`) REFERENCES `kelas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `jadwal_proposals_mata_kuliah_id_foreign` FOREIGN KEY (`mata_kuliah_id`) REFERENCES `mata_kuliahs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `jadwal_proposals_ruangan_id_foreign` FOREIGN KEY (`ruangan_id`) REFERENCES `ruangans` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `jadwal_reschedules`
+--
+ALTER TABLE `jadwal_reschedules`
+  ADD CONSTRAINT `jadwal_reschedules_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `jadwal_reschedules_jadwal_id_foreign` FOREIGN KEY (`jadwal_id`) REFERENCES `jadwals` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `kelas`
+--
+ALTER TABLE `kelas`
+  ADD CONSTRAINT `kelas_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `kelas_kelas_perkuliahan_id_foreign` FOREIGN KEY (`kelas_perkuliahan_id`) REFERENCES `kelas_perkuliahans` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `kelas_mata_kuliah_id_foreign` FOREIGN KEY (`mata_kuliah_id`) REFERENCES `mata_kuliahs` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `kelas_mata_kuliahs`
+--
+ALTER TABLE `kelas_mata_kuliahs`
+  ADD CONSTRAINT `kelas_mata_kuliahs_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `kelas_mata_kuliahs_kelas_perkuliahan_id_foreign` FOREIGN KEY (`kelas_perkuliahan_id`) REFERENCES `kelas_perkuliahans` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `kelas_mata_kuliahs_mata_kuliah_id_foreign` FOREIGN KEY (`mata_kuliah_id`) REFERENCES `mata_kuliahs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `kelas_mata_kuliahs_ruangan_id_foreign` FOREIGN KEY (`ruangan_id`) REFERENCES `ruangans` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `kelas_mata_kuliahs_semester_id_foreign` FOREIGN KEY (`semester_id`) REFERENCES `semesters` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `kelas_perkuliahans`
+--
+ALTER TABLE `kelas_perkuliahans`
+  ADD CONSTRAINT `kelas_perkuliahans_prodi_id_foreign` FOREIGN KEY (`prodi_id`) REFERENCES `prodis` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `kelas_perkuliahans_tahun_akademik_id_foreign` FOREIGN KEY (`tahun_akademik_id`) REFERENCES `semesters` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `kelas_reschedules`
+--
+ALTER TABLE `kelas_reschedules`
+  ADD CONSTRAINT `kelas_reschedules_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `kelas_reschedules_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `kelas_reschedules_kelas_mata_kuliah_id_foreign` FOREIGN KEY (`kelas_mata_kuliah_id`) REFERENCES `kelas_mata_kuliahs` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `krs`
+--
+ALTER TABLE `krs`
+  ADD CONSTRAINT `krs_internship_id_foreign` FOREIGN KEY (`internship_id`) REFERENCES `internships` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `krs_kelas_id_foreign` FOREIGN KEY (`kelas_id`) REFERENCES `kelas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `krs_kelas_mata_kuliah_id_foreign` FOREIGN KEY (`kelas_mata_kuliah_id`) REFERENCES `kelas_mata_kuliahs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `krs_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `krs_mata_kuliah_id_foreign` FOREIGN KEY (`mata_kuliah_id`) REFERENCES `mata_kuliahs` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `kuesioner_aktivasi`
+--
+ALTER TABLE `kuesioner_aktivasi`
+  ADD CONSTRAINT `kuesioner_aktivasi_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `kuesioner_aktivasi_semester_id_foreign` FOREIGN KEY (`semester_id`) REFERENCES `semesters` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `kuesioner_mahasiswa_baru`
+--
+ALTER TABLE `kuesioner_mahasiswa_baru`
+  ADD CONSTRAINT `kuesioner_mahasiswa_baru_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `mahasiswas`
+--
+ALTER TABLE `mahasiswas`
+  ADD CONSTRAINT `mahasiswas_kelas_perkuliahan_id_foreign` FOREIGN KEY (`kelas_perkuliahan_id`) REFERENCES `kelas_perkuliahans` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `mahasiswas_last_semester_id_foreign` FOREIGN KEY (`last_semester_id`) REFERENCES `semesters` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `mahasiswas_prodi_id_foreign` FOREIGN KEY (`prodi_id`) REFERENCES `prodis` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `mahasiswas_tahun_akademik_id_foreign` FOREIGN KEY (`tahun_akademik_id`) REFERENCES `semesters` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `mahasiswas_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `mata_kuliahs`
+--
+ALTER TABLE `mata_kuliahs`
+  ADD CONSTRAINT `mata_kuliahs_fakultas_id_foreign` FOREIGN KEY (`fakultas_id`) REFERENCES `fakultas` (`id`),
+  ADD CONSTRAINT `mata_kuliahs_prodi_id_foreign` FOREIGN KEY (`prodi_id`) REFERENCES `prodis` (`id`);
+
+--
+-- Constraints for table `mata_kuliah_semesters`
+--
+ALTER TABLE `mata_kuliah_semesters`
+  ADD CONSTRAINT `mata_kuliah_semesters_mata_kuliah_id_foreign` FOREIGN KEY (`mata_kuliah_id`) REFERENCES `mata_kuliahs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `mata_kuliah_semesters_semester_id_foreign` FOREIGN KEY (`semester_id`) REFERENCES `semesters` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `mata_kuliah_semesters_source_semester_id_foreign` FOREIGN KEY (`source_semester_id`) REFERENCES `semesters` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `nilai`
+--
+ALTER TABLE `nilai`
+  ADD CONSTRAINT `nilai_kelas_id_foreign` FOREIGN KEY (`kelas_id`) REFERENCES `kelas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `nilai_krs_id_foreign` FOREIGN KEY (`krs_id`) REFERENCES `krs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `nilai_published_by_foreign` FOREIGN KEY (`published_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `parents`
+--
+ALTER TABLE `parents`
+  ADD CONSTRAINT `parents_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `parents_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `payments`
+--
+ALTER TABLE `payments`
+  ADD CONSTRAINT `payments_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `payments_installment_id_foreign` FOREIGN KEY (`installment_id`) REFERENCES `installments` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `payments_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `payments_proof_id_foreign` FOREIGN KEY (`proof_id`) REFERENCES `payment_proofs` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `payment_proofs`
+--
+ALTER TABLE `payment_proofs`
+  ADD CONSTRAINT `payment_proofs_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `payment_proofs_installment_id_foreign` FOREIGN KEY (`installment_id`) REFERENCES `installments` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `payment_proofs_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `payment_proofs_uploaded_by_foreign` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `pembayaran`
+--
+ALTER TABLE `pembayaran`
+  ADD CONSTRAINT `pembayaran_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `pembayaran_semester_id_foreign` FOREIGN KEY (`semester_id`) REFERENCES `semesters` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `pengajuans`
+--
+ALTER TABLE `pengajuans`
+  ADD CONSTRAINT `pengajuans_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `pengajuans_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `pengajuan_revisions`
+--
+ALTER TABLE `pengajuan_revisions`
+  ADD CONSTRAINT `pengajuan_revisions_pengajuan_id_foreign` FOREIGN KEY (`pengajuan_id`) REFERENCES `pengajuans` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `pertemuans`
+--
+ALTER TABLE `pertemuans`
+  ADD CONSTRAINT `pertemuans_kelas_mata_kuliah_id_foreign` FOREIGN KEY (`kelas_mata_kuliah_id`) REFERENCES `kelas_mata_kuliahs` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `presensis`
+--
+ALTER TABLE `presensis`
+  ADD CONSTRAINT `presensis_kelas_mata_kuliah_id_foreign` FOREIGN KEY (`kelas_mata_kuliah_id`) REFERENCES `kelas_mata_kuliahs` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `presensis_krs_id_foreign` FOREIGN KEY (`krs_id`) REFERENCES `krs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `presensis_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `prestasis`
+--
+ALTER TABLE `prestasis`
+  ADD CONSTRAINT `prestasis_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `prestasis_dosen_pendamping_id_foreign` FOREIGN KEY (`dosen_pendamping_id`) REFERENCES `dosens` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `prestasi_dokumens`
+--
+ALTER TABLE `prestasi_dokumens`
+  ADD CONSTRAINT `prestasi_dokumens_prestasi_id_foreign` FOREIGN KEY (`prestasi_id`) REFERENCES `prestasis` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `prestasi_dokumens_uploaded_by_foreign` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `prestasi_logs`
+--
+ALTER TABLE `prestasi_logs`
+  ADD CONSTRAINT `prestasi_logs_prestasi_id_foreign` FOREIGN KEY (`prestasi_id`) REFERENCES `prestasis` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `prestasi_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `prestasi_surats`
+--
+ALTER TABLE `prestasi_surats`
+  ADD CONSTRAINT `prestasi_surats_generated_by_foreign` FOREIGN KEY (`generated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `prestasi_surats_prestasi_id_foreign` FOREIGN KEY (`prestasi_id`) REFERENCES `prestasis` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `prodis`
+--
+ALTER TABLE `prodis`
+  ADD CONSTRAINT `prodis_fakultas_id_foreign` FOREIGN KEY (`fakultas_id`) REFERENCES `fakultas` (`id`);
+
+--
+-- Constraints for table `ruangans`
+--
+ALTER TABLE `ruangans`
+  ADD CONSTRAINT `ruangans_kategori_id_foreign` FOREIGN KEY (`kategori_id`) REFERENCES `kategori_ruangans` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `semesters`
+--
+ALTER TABLE `semesters`
+  ADD CONSTRAINT `semesters_locked_by_foreign` FOREIGN KEY (`locked_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `skripsi_guidances`
+--
+ALTER TABLE `skripsi_guidances`
+  ADD CONSTRAINT `skripsi_guidances_skripsi_submission_id_foreign` FOREIGN KEY (`skripsi_submission_id`) REFERENCES `skripsi_submissions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `thesis_guidances_dosen_id_foreign` FOREIGN KEY (`dosen_id`) REFERENCES `dosens` (`id`);
+
+--
+-- Constraints for table `skripsi_revisions`
+--
+ALTER TABLE `skripsi_revisions`
+  ADD CONSTRAINT `skripsi_revisions_skripsi_submission_id_foreign` FOREIGN KEY (`skripsi_submission_id`) REFERENCES `skripsi_submissions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `thesis_revisions_approved_by_dosen_id_foreign` FOREIGN KEY (`approved_by_dosen_id`) REFERENCES `dosens` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `skripsi_sidang_files`
+--
+ALTER TABLE `skripsi_sidang_files`
+  ADD CONSTRAINT `thesis_sidang_files_sidang_registration_id_foreign` FOREIGN KEY (`sidang_registration_id`) REFERENCES `skripsi_sidang_registrations` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `skripsi_sidang_registrations`
+--
+ALTER TABLE `skripsi_sidang_registrations`
+  ADD CONSTRAINT `skripsi_sidang_registrations_skripsi_submission_id_foreign` FOREIGN KEY (`skripsi_submission_id`) REFERENCES `skripsi_submissions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `thesis_sidang_registrations_verified_by_foreign` FOREIGN KEY (`verified_by`) REFERENCES `admins` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `skripsi_sidang_schedules`
+--
+ALTER TABLE `skripsi_sidang_schedules`
+  ADD CONSTRAINT `skripsi_sidang_schedules_skripsi_submission_id_foreign` FOREIGN KEY (`skripsi_submission_id`) REFERENCES `skripsi_submissions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `thesis_sidang_schedules_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `thesis_sidang_schedules_pembimbing_id_foreign` FOREIGN KEY (`pembimbing_id`) REFERENCES `dosens` (`id`),
+  ADD CONSTRAINT `thesis_sidang_schedules_penguji_1_id_foreign` FOREIGN KEY (`penguji_1_id`) REFERENCES `dosens` (`id`),
+  ADD CONSTRAINT `thesis_sidang_schedules_penguji_2_id_foreign` FOREIGN KEY (`penguji_2_id`) REFERENCES `dosens` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `thesis_sidang_schedules_ruangan_id_foreign` FOREIGN KEY (`ruangan_id`) REFERENCES `ruangans` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `thesis_sidang_schedules_sidang_registration_id_foreign` FOREIGN KEY (`sidang_registration_id`) REFERENCES `skripsi_sidang_registrations` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `skripsi_submissions`
+--
+ALTER TABLE `skripsi_submissions`
+  ADD CONSTRAINT `thesis_submissions_approved_supervisor_id_foreign` FOREIGN KEY (`approved_supervisor_id`) REFERENCES `dosens` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `thesis_submissions_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `thesis_submissions_requested_supervisor_id_foreign` FOREIGN KEY (`requested_supervisor_id`) REFERENCES `dosens` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `thesis_submissions_reviewed_by_foreign` FOREIGN KEY (`reviewed_by`) REFERENCES `admins` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `thesis_submissions_semester_id_foreign` FOREIGN KEY (`semester_id`) REFERENCES `semesters` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `students`
+--
+ALTER TABLE `students`
+  ADD CONSTRAINT `students_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `uploads`
+--
+ALTER TABLE `uploads`
+  ADD CONSTRAINT `uploads_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

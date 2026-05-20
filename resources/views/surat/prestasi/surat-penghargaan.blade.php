@@ -1,43 +1,66 @@
 @extends('surat.prestasi.layout')
 
-@section('surat-title', 'PIAGAM PENGHARGAAN')
+@section('surat-perihal', 'Piagam Penghargaan')
 
 @section('letter-content')
-    <div class="text-center mt-8">
-        <p style="font-size: 14pt; font-style: italic;">Diberikan Kepada:</p>
-        <h2 style="font-size: 20pt; margin: 15px 0; border-bottom: 2px solid #8B1538; display: inline-block; padding: 0 30px;">
-            {{ strtoupper($user->name) }}
-        </h2>
-        <p style="font-size: 12pt; font-weight: bold;">{{ $pengaju->nim ?? $pengaju->nidn }}</p>
-    </div>
+    <div class="text-justify">
+        <p class="indent">Yang bertanda tangan di bawah ini, {{ $penandatangan_jabatan ?? 'Ketua' }} Sekolah Tinggi Ilmu Hukum (STIH) Adhyaksa, dengan ini memberikan penghargaan kepada:</p>
 
-    <div class="text-justify mt-8">
-        <p class="indent" style="line-height: 1.8;">Atas prestasi luar biasa dan dedikasi tinggi yang telah ditunjukkan sebagai:</p>
-        
-        <div class="text-center mt-4">
-            <h3 style="font-size: 16pt; color: #8B1538;">{{ strtoupper($prestasi->jenis_prestasi) }}</h3>
-            <p style="font-size: 14pt; margin-top: 5px;">Pada Kegiatan:</p>
-            <p style="font-size: 14pt; font-weight: bold;">{{ $prestasi->nama_kegiatan }}</p>
-        </div>
-
-        <table class="data-table mt-4" style="width: 80%; margin-left: auto; margin-right: auto;">
+        <table class="data-table">
             <tr>
-                <td style="width: 150px;">Tingkat</td>
-                <td style="width: 20px;">:</td>
-                <td>{{ $prestasi->tingkat_label }}</td>
+                <td class="label-col">Nama</td>
+                <td class="sep-col">:</td>
+                <td class="value-col">{{ $user->name }}</td>
             </tr>
             <tr>
-                <td>Penyelenggara</td>
-                <td>:</td>
-                <td>{{ $prestasi->penyelenggara }}</td>
+                <td class="label-col">NIM/NIDN</td>
+                <td class="sep-col">:</td>
+                <td class="value-col">{{ $pengaju->nim ?? $pengaju->nidn }}</td>
             </tr>
             <tr>
-                <td>Waktu</td>
-                <td>:</td>
-                <td>{{ \Carbon\Carbon::parse($prestasi->tanggal_mulai)->translatedFormat('d F Y') }}</td>
+                <td class="label-col">Program Studi</td>
+                <td class="sep-col">:</td>
+                <td class="value-col">{{ $pengaju->prodi ?? 'Ilmu Hukum' }}</td>
             </tr>
         </table>
 
-        <p class="mt-8 indent">Institusi Sekolah Tinggi Ilmu Hukum (STIH) Adhyaksa menyampaikan apresiasi yang setinggi-tingginya. Semoga prestasi ini menjadi motivasi untuk terus berkarya dan memberikan kontribusi terbaik bagi bangsa dan negara.</p>
+        <p>Atas prestasi luar biasa dan dedikasi tinggi yang telah ditunjukkan sebagai:</p>
+
+        <table class="data-table">
+            <tr>
+                <td class="label-col">Capaian/Prestasi</td>
+                <td class="sep-col">:</td>
+                <td class="value-col font-bold">{{ $prestasi->jenis_prestasi }}</td>
+            </tr>
+            <tr>
+                <td class="label-col">Nama Kegiatan</td>
+                <td class="sep-col">:</td>
+                <td class="value-col">{{ $prestasi->nama_kegiatan }}</td>
+            </tr>
+            <tr>
+                <td class="label-col">Tingkat</td>
+                <td class="sep-col">:</td>
+                <td class="value-col">{{ $prestasi->tingkat_label }}</td>
+            </tr>
+            <tr>
+                <td class="label-col">Penyelenggara</td>
+                <td class="sep-col">:</td>
+                <td class="value-col">{{ $prestasi->penyelenggara }}</td>
+            </tr>
+            <tr>
+                <td class="label-col">Waktu</td>
+                <td class="sep-col">:</td>
+                <td class="value-col">
+                    {{ \Carbon\Carbon::parse($prestasi->tanggal_mulai)->translatedFormat('d F Y') }}
+                    @if($prestasi->tanggal_selesai && \Carbon\Carbon::parse($prestasi->tanggal_mulai)->format('Y-m-d') !== \Carbon\Carbon::parse($prestasi->tanggal_selesai)->format('Y-m-d'))
+                        sampai dengan {{ \Carbon\Carbon::parse($prestasi->tanggal_selesai)->translatedFormat('d F Y') }}
+                    @endif
+                </td>
+            </tr>
+        </table>
+
+        <p class="mt-4 indent">Institusi Sekolah Tinggi Ilmu Hukum (STIH) Adhyaksa menyampaikan apresiasi yang setinggi-tingginya. Semoga prestasi ini menjadi motivasi untuk terus berkarya dan memberikan kontribusi terbaik bagi bangsa dan negara.</p>
+
+        <p class="mt-2 indent">Demikian piagam penghargaan ini diberikan untuk dapat dipergunakan sebagaimana mestinya.</p>
     </div>
 @endsection

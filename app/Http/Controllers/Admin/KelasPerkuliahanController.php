@@ -148,12 +148,12 @@ class KelasPerkuliahanController extends Controller
     }
 
     /**
-     * Soft delete the specified kelas perkuliahan.
+     * Permanently delete the specified kelas perkuliahan.
      */
     public function destroy(KelasPerkuliahan $kelasPerkuliahan)
     {
         $namaKelas = $kelasPerkuliahan->nama_kelas;
-        $kelasPerkuliahan->delete();
+        $kelasPerkuliahan->forceDelete();
 
         return redirect()
             ->route('admin.kelas-perkuliahan.index')
@@ -170,7 +170,8 @@ class KelasPerkuliahanController extends Controller
         if ($mode === 'auto') {
             $request->validate([
                 'prodi_id'                  => 'required|exists:prodis,id',
-                'angkatan'                  => 'required|digits:4',
+                'angkatan'                  => 'required|array|min:1',
+                'angkatan.*'                => 'digits:4',
                 'tahun_akademik_id'         => 'nullable|exists:semesters,id',
                 'max_students_per_class'    => 'required|integer|min:1|max:100',
                 'jumlah_mahasiswa'          => 'required|integer|min:0|max:10000',
@@ -183,36 +184,48 @@ class KelasPerkuliahanController extends Controller
             $kelasPerAngkatan = $jumlahMahasiswa > 0 ? (int) ceil($jumlahMahasiswa / $maxPerKelas) : 0;
             $kelasPerAngkatan = max(1, $kelasPerAngkatan);
 
-            $result = $overwrite 
-                ? $this->service->generateForAngkatanWithOverwrite(
-                    $request->prodi_id,
-                    $request->angkatan,
-                    $request->tahun_akademik_id,
-                    $kelasPerAngkatan
-                )
-                : $this->service->generateForAngkatan(
-                    $request->prodi_id,
-                    $request->angkatan,
-                    $request->tahun_akademik_id,
-                    $kelasPerAngkatan
-                );
+            $totalCreated = 0;
+            $totalDeleted = 0;
+            $totalSkipped = 0;
 
-            $createdCount = $result['created']->count();
+            $angkatanList = $request->input('angkatan', []);
+
+            foreach ($angkatanList as $angkatan) {
+                $result = $overwrite
+                    ? $this->service->generateForAngkatanWithOverwrite(
+                        $request->prodi_id,
+                        $angkatan,
+                        $request->tahun_akademik_id,
+                        $kelasPerAngkatan
+                    )
+                    : $this->service->generateForAngkatan(
+                        $request->prodi_id,
+                        $angkatan,
+                        $request->tahun_akademik_id,
+                        $kelasPerAngkatan
+                    );
+
+                $totalCreated += $result['created']->count();
+                if ($overwrite) {
+                    $totalDeleted += $result['deleted'];
+                } else {
+                    $totalSkipped += $result['skipped'];
+                }
+            }
 
             if ($overwrite) {
-                $deletedCount = $result['deleted'];
-                $message = "Berhasil menimpa data. Dihapus: {$deletedCount}, dibuat ulang: {$createdCount} Kelas Perkuliahan.";
+                $message = "Berhasil menimpa data. Dihapus: {$totalDeleted}, dibuat ulang: {$totalCreated} Kelas Perkuliahan.";
             } else {
-                $skipped = $result['skipped'];
-                $message = "Berhasil generate {$createdCount} Kelas Perkuliahan baru.";
-                if ($skipped > 0) {
-                    $message .= " {$skipped} data sudah ada sebelumnya (dilewati).";
+                $message = "Berhasil generate {$totalCreated} Kelas Perkuliahan baru.";
+                if ($totalSkipped > 0) {
+                    $message .= " {$totalSkipped} data sudah ada sebelumnya (dilewati).";
                 }
             }
         } else {
             $request->validate([
                 'prodi_id'          => 'required|exists:prodis,id',
-                'angkatan'          => 'required|digits:4',
+                'angkatan'          => 'required|array|min:1',
+                'angkatan.*'        => 'digits:4',
                 'tahun_akademik_id' => 'nullable|exists:semesters,id',
                 'kelas_per_angkatan' => 'required|integer|min:1|max:20',
                 'overwrite'         => 'nullable|boolean',
@@ -221,30 +234,41 @@ class KelasPerkuliahanController extends Controller
             $kelasPerAngkatan = $request->integer('kelas_per_angkatan');
             $overwrite = $request->boolean('overwrite', false);
 
-            $result = $overwrite
-                ? $this->service->generateForAngkatanWithOverwrite(
-                    $request->prodi_id,
-                    $request->angkatan,
-                    $request->tahun_akademik_id,
-                    $kelasPerAngkatan
-                )
-                : $this->service->generateForAngkatan(
-                    $request->prodi_id,
-                    $request->angkatan,
-                    $request->tahun_akademik_id,
-                    $kelasPerAngkatan
-                );
+            $totalCreated = 0;
+            $totalDeleted = 0;
+            $totalSkipped = 0;
 
-            $createdCount = $result['created']->count();
+            $angkatanList = $request->input('angkatan', []);
+
+            foreach ($angkatanList as $angkatan) {
+                $result = $overwrite
+                    ? $this->service->generateForAngkatanWithOverwrite(
+                        $request->prodi_id,
+                        $angkatan,
+                        $request->tahun_akademik_id,
+                        $kelasPerAngkatan
+                    )
+                    : $this->service->generateForAngkatan(
+                        $request->prodi_id,
+                        $angkatan,
+                        $request->tahun_akademik_id,
+                        $kelasPerAngkatan
+                    );
+
+                $totalCreated += $result['created']->count();
+                if ($overwrite) {
+                    $totalDeleted += $result['deleted'];
+                } else {
+                    $totalSkipped += $result['skipped'];
+                }
+            }
 
             if ($overwrite) {
-                $deletedCount = $result['deleted'];
-                $message = "Berhasil menimpa data. Dihapus: {$deletedCount}, dibuat ulang: {$createdCount} Kelas Perkuliahan.";
+                $message = "Berhasil menimpa data. Dihapus: {$totalDeleted}, dibuat ulang: {$totalCreated} Kelas Perkuliahan.";
             } else {
-                $skipped = $result['skipped'];
-                $message = "Berhasil generate {$createdCount} Kelas Perkuliahan baru.";
-                if ($skipped > 0) {
-                    $message .= " {$skipped} data sudah ada sebelumnya (dilewati).";
+                $message = "Berhasil generate {$totalCreated} Kelas Perkuliahan baru.";
+                if ($totalSkipped > 0) {
+                    $message .= " {$totalSkipped} data sudah ada sebelumnya (dilewati).";
                 }
             }
         }

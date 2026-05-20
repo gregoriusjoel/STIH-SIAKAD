@@ -101,9 +101,16 @@ class DosenPaController extends Controller
         $dosenProdiCodes = $dosen->prodi ?? [];
         if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
 
-        // Resolve prodi codes to names for comparison with mahasiswa prodi
+        // Resolve prodi codes/names to names for comparison with mahasiswa prodi
         $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
-        $dosenProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $dosenProdiCodes));
+        $dosenProdiNames = [];
+        foreach ($dosenProdiCodes as $code) {
+            if (isset($prodiMap[$code])) {
+                $dosenProdiNames[] = $prodiMap[$code];
+            } elseif (in_array($code, $prodiMap)) {
+                $dosenProdiNames[] = $code;
+            }
+        }
 
         foreach ($mahasiswaIds as $mid) {
             $m = Mahasiswa::find($mid);
@@ -161,9 +168,16 @@ class DosenPaController extends Controller
         $dosenProdiCodes = $dosen->prodi ?? [];
         if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
 
-        // Resolve prodi codes to names
+        // Resolve prodi codes/names to names
         $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
-        $dosenProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $dosenProdiCodes));
+        $dosenProdiNames = [];
+        foreach ($dosenProdiCodes as $code) {
+            if (isset($prodiMap[$code])) {
+                $dosenProdiNames[] = $prodiMap[$code];
+            } elseif (in_array($code, $prodiMap)) {
+                $dosenProdiNames[] = $code;
+            }
+        }
 
         if (!empty($dosenProdiNames)) {
             $query->whereIn('prodi', $dosenProdiNames);
@@ -221,9 +235,16 @@ class DosenPaController extends Controller
             $dosenProdiCodes = $currentDosen->prodi ?? [];
             if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
             
-            // Resolve prodi codes to names
+            // Resolve prodi codes/names to names
             $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
-            $dosenProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $dosenProdiCodes));
+            $dosenProdiNames = [];
+            foreach ($dosenProdiCodes as $code) {
+                if (isset($prodiMap[$code])) {
+                    $dosenProdiNames[] = $prodiMap[$code];
+                } elseif (in_array($code, $prodiMap)) {
+                    $dosenProdiNames[] = $code;
+                }
+            }
 
             $mProdi = $addMahasiswa->prodi ?? null;
             if ($mProdi && !empty($dosenProdiNames) && !in_array($mProdi, $dosenProdiNames)) {
@@ -269,9 +290,16 @@ class DosenPaController extends Controller
             $dosenProdiCodes = $currentDosen->prodi ?? [];
             if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
 
-            // Resolve prodi codes to names
+            // Resolve prodi codes/names to names
             $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
-            $dosenProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $dosenProdiCodes));
+            $dosenProdiNames = [];
+            foreach ($dosenProdiCodes as $code) {
+                if (isset($prodiMap[$code])) {
+                    $dosenProdiNames[] = $prodiMap[$code];
+                } elseif (in_array($code, $prodiMap)) {
+                    $dosenProdiNames[] = $code;
+                }
+            }
 
             if (!empty($dosenProdiNames)) {
                 // Check if any selected mahasiswa has a prodi NOT in the dosen's prodi names
@@ -312,9 +340,16 @@ class DosenPaController extends Controller
         $newProdiCodes = $newDosen->prodi ?? [];
         if (!is_array($newProdiCodes)) $newProdiCodes = json_decode($newProdiCodes, true) ?: [];
 
-        // Resolve prodi codes to names
+        // Resolve prodi codes/names to names
         $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
-        $newProdiNames = array_filter(array_map(fn($code) => $prodiMap[$code] ?? null, $newProdiCodes));
+        $newProdiNames = [];
+        foreach ($newProdiCodes as $code) {
+            if (isset($prodiMap[$code])) {
+                $newProdiNames[] = $prodiMap[$code];
+            } elseif (in_array($code, $prodiMap)) {
+                $newProdiNames[] = $code;
+            }
+        }
 
         if (!empty($newProdiNames)) {
             $bad = Mahasiswa::whereIn('id', $request->mahasiswa_ids)->whereNotIn('prodi', $newProdiNames)->pluck('id')->first();

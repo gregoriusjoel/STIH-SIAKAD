@@ -57,14 +57,15 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class="fas fa-envelope text-blue-500 mr-1"></i>
-                                    Email Kampus *
+                                    Email Kampus [Auto-generate] *
                                 </label>
-                                <input type="email" name="email_kampus"
+                                <input type="text" id="email_kampus_display" readonly
                                     value="{{ old('email_kampus', $mahasiswa->email_kampus) }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                    placeholder="nama@student.stih.ac.id" required>
-                                <small class="text-gray-500 mt-1 block">Email kampus untuk login utama:
-                                    [nama]@student.stih.ac.id</small>
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-maroon focus:border-transparent transition cursor-not-allowed"
+                                    placeholder="otomatis dari Nama">
+                                <input type="hidden" name="email_kampus" id="email_kampus_field"
+                                    value="{{ old('email_kampus', $mahasiswa->email_kampus) }}">
+                                <small class="text-gray-500 mt-1 block">Dibuat otomatis dari Nama Lengkap untuk login utama</small>
                             </div>
 
                             <div>
@@ -252,6 +253,27 @@
     </div>
     @push('scripts')
         <script>
+            // Auto-generate email kampus from Nama Lengkap
+            const nameInputForEmail = document.querySelector('input[name="name"]');
+            const emailKampusDisplay = document.getElementById('email_kampus_display');
+            const emailKampusField = document.getElementById('email_kampus_field');
+            
+            if (nameInputForEmail && emailKampusDisplay && emailKampusField) {
+                function generateEmailKampus() {
+                    const nameVal = nameInputForEmail.value.trim();
+                    if (nameVal) {
+                        const emailKampus = nameVal.toLowerCase().replace(/\s+/g, '') + '@student.stih.ac.id';
+                        emailKampusDisplay.value = emailKampus;
+                        emailKampusField.value = emailKampus;
+                    } else {
+                        emailKampusDisplay.value = '';
+                        emailKampusField.value = '';
+                    }
+                }
+                
+                nameInputForEmail.addEventListener('input', generateEmailKampus);
+            }
+
             const prodiSelect = document.getElementById('prodi_id');
             const angkatanSelect = document.getElementById('angkatan');
             const kelasSelect = document.getElementById('kelas_perkuliahan_id');

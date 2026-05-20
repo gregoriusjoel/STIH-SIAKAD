@@ -99,7 +99,7 @@ $missingByTab[$info['tab']]++;
         </div>
     </div>
 
-    <form action="{{ route('mahasiswa.profil.update') }}" method="POST" enctype="multipart/form-data" class="animate-fade-in">
+    <form action="{{ route('mahasiswa.profil.update') }}" method="POST" enctype="multipart/form-data" class="animate-fade-in" novalidate>
         @csrf
         @method('PUT')
 
@@ -505,7 +505,11 @@ $missingByTab[$info['tab']]++;
                                     const desaKtpInput = document.querySelector('input[name="desa_ktp"]');
                                     if (desaKtpInput && desaDomValue) {
                                         const alpineEl = desaKtpInput.closest('[x-data]');
-                                        if (alpineEl && alpineEl.__x) {
+                                        if (alpineEl && typeof Alpine !== 'undefined' && Alpine.$data) {
+                                            const data = Alpine.$data(alpineEl);
+                                            data.selected = desaDomValue;
+                                            data.selectedText = desaDomValue;
+                                        } else if (alpineEl && alpineEl.__x) {
                                             alpineEl.__x.$data.selected = desaDomValue;
                                             alpineEl.__x.$data.selectedText = desaDomValue;
                                         } else if (alpineEl && typeof Alpine !== 'undefined') {
@@ -948,6 +952,7 @@ $missingByTab[$info['tab']]++;
                         </div>
                         <div class="relative group">
                             <input type="file" name="{{ $doc['name'] }}[]" multiple
+                                data-uploaded="{{ ($doc['data'] && count($doc['data']) > 0) ? 'true' : 'false' }}"
                                 accept=".pdf,.jpeg,.jpg,.png,application/pdf,image/jpeg,image/png"
                                 onchange="validateDocumentFiles(this)"
                                 class="w-full px-4 py-3 bg-[#F9FAFB] border border-[#E5E7EB] border-dashed rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-[#8B1538] file:text-white hover:file:bg-[#6D1029]">
@@ -1966,8 +1971,8 @@ $missingByTab[$info['tab']]++;
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Fields to require and which tab they belong to
-        const requiredMap = {
+        // Base required fields that are unconditionally required
+        const baseRequiredFields = {
             // akademik
             'name': 'akademik',
             'no_hp': 'akademik',
@@ -1976,18 +1981,23 @@ $missingByTab[$info['tab']]++;
             'provinsi': 'data_pribadi',
             'kota': 'data_pribadi',
             'kecamatan': 'data_pribadi',
+            'desa': 'data_pribadi',
             'tempat_lahir': 'data_pribadi',
             'tanggal_lahir': 'data_pribadi',
             'jenis_kelamin': 'data_pribadi',
             'agama': 'data_pribadi',
             'status_sipil': 'data_pribadi',
-            // orang_tua
-            'nama_ayah': 'orang_tua',
-            'nama_ibu': 'orang_tua',
-            'alamat_ayah': 'orang_tua',
-            'handphone_ayah': 'orang_tua',
-            'alamat_ibu': 'orang_tua',
-            'handphone_ibu': 'orang_tua'
+            // KTP fields (data_pribadi)
+            'alamat_ktp': 'data_pribadi',
+            'provinsi_ktp': 'data_pribadi',
+            'kota_ktp': 'data_pribadi',
+            'kecamatan_ktp': 'data_pribadi',
+            'desa_ktp': 'data_pribadi',
+            // Asal sekolah (data_pribadi)
+            'jenis_sekolah': 'data_pribadi',
+            'jurusan_sekolah': 'data_pribadi',
+            'tahun_lulus': 'data_pribadi',
+            'nilai_kelulusan': 'data_pribadi'
         };
 
         const form = document.querySelector('form');
@@ -2008,6 +2018,26 @@ $missingByTab[$info['tab']]++;
                 parent.appendChild(span);
             }
             return span;
+        }
+
+        // Helper: retrieve human readable label from element context
+        function getFieldLabel(field) {
+            const name = field.getAttribute('name');
+            let labelText = '';
+            
+            // Search for adjacent label inside the group container
+            const formGroup = field.closest('.space-y-2') || field.closest('div');
+            if (formGroup) {
+                const label = formGroup.querySelector('label');
+                if (label) {
+                    labelText = label.textContent.replace(' (Belum diisi)', '').replace('*', '').trim();
+                }
+            }
+            
+            if (!labelText) {
+                labelText = name.replace('[]', '').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+            }
+            return labelText;
         }
 
         function markValid(field) {
@@ -2037,7 +2067,9 @@ $missingByTab[$info['tab']]++;
             const name = field.getAttribute('name');
             if (!name) return true;
             const val = (field.value || '').toString().trim();
-            if (requiredMap[name]) {
+            
+            // Check if it's base required
+            if (baseRequiredFields[name] !== undefined) {
                 if (val === '') {
                     markInvalid(field);
                     return false;
@@ -2046,7 +2078,8 @@ $missingByTab[$info['tab']]++;
                     return true;
                 }
             }
-            // not required: show green if filled
+            
+            // For other fields, show green check if filled, otherwise clear validation
             if (val === '') {
                 clearValidation(field);
                 return true;
@@ -2055,61 +2088,227 @@ $missingByTab[$info['tab']]++;
             return true;
         }
 
-        // attach listeners to all inputs/selects/textareas in form
+        // Attach listeners to all inputs/selects/textareas in form
         const fields = Array.from(form.querySelectorAll('input:not([type="hidden"]), select, textarea'));
         fields.forEach(f => {
-            // initial state
             validateField(f);
-            // events
             f.addEventListener('input', () => validateField(f));
             f.addEventListener('change', () => validateField(f));
             f.addEventListener('blur', () => validateField(f));
         });
 
-        // submit handler
+        // Submit handler with dynamic parent & document validation
         form.addEventListener('submit', function(e) {
-
             const invalid = [];
-            Object.keys(requiredMap).forEach(name => {
+
+            // 1. Validate Base Required Fields
+            Object.keys(baseRequiredFields).forEach(name => {
                 const field = form.querySelector('[name="' + name + '"]');
                 if (!field) return;
                 const ok = validateField(field);
-                if (!ok) invalid.push({
-                    field,
-                    tab: requiredMap[name]
-                });
+                if (!ok) {
+                    invalid.push({
+                        field: field,
+                        label: getFieldLabel(field),
+                        tab: baseRequiredFields[name]
+                    });
+                }
             });
+
+            // 2. Validate Document Uploads (Required if not already uploaded)
+            const fileInputs = form.querySelectorAll('input[type="file"][name^="file_"]');
+            fileInputs.forEach(input => {
+                const isUploaded = input.getAttribute('data-uploaded') === 'true';
+                if (!isUploaded && input.files.length === 0) {
+                    markInvalid(input);
+                    invalid.push({
+                        field: input,
+                        label: getFieldLabel(input),
+                        tab: 'data_pribadi'
+                    });
+                } else {
+                    markValid(input);
+                }
+            });
+
+            // 3. Validate Parents / Wali dynamic logic
+            const showOrangTuaCheckbox = form.querySelector('input[name="show_orang_tua"]');
+            const showWaliCheckbox = form.querySelector('input[name="show_wali"]');
+            const isOrangTuaChecked = showOrangTuaCheckbox ? showOrangTuaCheckbox.checked : false;
+            const isWaliChecked = showWaliCheckbox ? showWaliCheckbox.checked : false;
+
+            const fatherFields = [
+                'nama_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'agama_ayah',
+                'alamat_ayah', 'kota_ayah', 'kecamatan_ayah', 'propinsi_ayah',
+                'desa_ayah', 'handphone_ayah'
+            ];
+            const motherFields = [
+                'nama_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'agama_ibu',
+                'alamat_ibu', 'kota_ibu', 'kecamatan_ibu', 'propinsi_ibu',
+                'desa_ibu', 'handphone_ibu'
+            ];
+            const waliFields = [
+                'nama_wali', 'hubungan_wali', 'pendidikan_wali', 'pekerjaan_wali',
+                'agama_wali', 'alamat_wali', 'kota_wali', 'kecamatan_wali',
+                'provinsi_wali', 'desa_wali', 'handphone_wali'
+            ];
+
+            const hasFatherData = fatherFields.some(name => {
+                const f = form.querySelector('[name="' + name + '"]');
+                return f && f.value.trim() !== '';
+            });
+            const hasMotherData = motherFields.some(name => {
+                const f = form.querySelector('[name="' + name + '"]');
+                return f && f.value.trim() !== '';
+            });
+            const hasWaliData = waliFields.some(name => {
+                const f = form.querySelector('[name="' + name + '"]');
+                return f && f.value.trim() !== '';
+            });
+
+            let fatherComplete = true;
+            let motherComplete = true;
+            let waliComplete = true;
+
+            const tempFatherInvalid = [];
+            const tempMotherInvalid = [];
+            const tempWaliInvalid = [];
+
+            if (hasFatherData || (isOrangTuaChecked && !hasMotherData && !isWaliChecked)) {
+                fatherFields.forEach(name => {
+                    const field = form.querySelector('[name="' + name + '"]');
+                    if (field) {
+                        if (field.value.trim() === '') {
+                            fatherComplete = false;
+                            markInvalid(field);
+                            tempFatherInvalid.push({
+                                field: field,
+                                label: getFieldLabel(field),
+                                tab: 'orang_tua'
+                            });
+                        } else {
+                            markValid(field);
+                        }
+                    }
+                });
+            }
+
+            if (hasMotherData || (isOrangTuaChecked && !hasFatherData && !isWaliChecked)) {
+                motherFields.forEach(name => {
+                    const field = form.querySelector('[name="' + name + '"]');
+                    if (field) {
+                        if (field.value.trim() === '') {
+                            motherComplete = false;
+                            markInvalid(field);
+                            tempMotherInvalid.push({
+                                field: field,
+                                label: getFieldLabel(field),
+                                tab: 'orang_tua'
+                            });
+                        } else {
+                            markValid(field);
+                        }
+                    }
+                });
+            }
+
+            if (hasWaliData || (isWaliChecked && !isOrangTuaChecked)) {
+                waliFields.forEach(name => {
+                    const field = form.querySelector('[name="' + name + '"]');
+                    if (field) {
+                        if (field.value.trim() === '') {
+                            waliComplete = false;
+                            markInvalid(field);
+                            tempWaliInvalid.push({
+                                field: field,
+                                label: getFieldLabel(field),
+                                tab: 'orang_tua'
+                            });
+                        } else {
+                            markValid(field);
+                        }
+                    }
+                });
+            }
+
+            const isFatherOk = (hasFatherData && fatherComplete);
+            const isMotherOk = (hasMotherData && motherComplete);
+            const isWaliOk = (hasWaliData && waliComplete);
+
+            if (!isFatherOk && !isMotherOk && !isWaliOk) {
+                if (isOrangTuaChecked) {
+                    invalid.push(...tempFatherInvalid);
+                    invalid.push(...tempMotherInvalid);
+                } else if (isWaliChecked) {
+                    invalid.push(...tempWaliInvalid);
+                } else {
+                    invalid.push(...tempFatherInvalid);
+                    invalid.push(...tempMotherInvalid);
+                }
+            } else {
+                if (hasFatherData && !fatherComplete) {
+                    invalid.push(...tempFatherInvalid);
+                }
+                if (hasMotherData && !motherComplete) {
+                    invalid.push(...tempMotherInvalid);
+                }
+                if (hasWaliData && !waliComplete) {
+                    invalid.push(...tempWaliInvalid);
+                }
+            }
+
             if (invalid.length) {
                 e.preventDefault();
-                // focus first invalid and switch to its tab
-                const first = invalid[0];
-                // try to set Alpine activeTab if available
-                const alpineRoot = document.querySelector('[x-data]');
-                try {
-                    if (alpineRoot && alpineRoot.__x) {
-                        alpineRoot.__x.$data.activeTab = first.tab;
-                    } else if (alpineRoot && window.Alpine) {
-                        alpineRoot.dispatchEvent(new CustomEvent('setActiveTab', {
-                            detail: first.tab
-                        }));
-                    }
-                } catch (err) {
-                    /* ignore */
+                if (window.LoaderManager && typeof window.LoaderManager.forceHide === 'function') {
+                    window.LoaderManager.forceHide();
                 }
 
-                // small timeout to allow tab switch then focus
-                setTimeout(() => {
-                    try {
-                        first.field.focus();
-                        first.field.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                    } catch (e) {}
-                }, 200);
+                if (typeof Swal !== 'undefined') {
+                    let missingListHtml = '<ul class="text-left list-disc pl-5 space-y-1 text-sm text-gray-700 max-h-48 overflow-y-auto">';
+                    invalid.forEach(item => {
+                        missingListHtml += `<li>${item.label}</li>`;
+                    });
+                    missingListHtml += '</ul>';
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Data Belum Lengkap',
+                        html: `<p class="mb-3 text-sm text-gray-600">Mohon lengkapi kolom berikut sebelum menyimpan:</p>${missingListHtml}`,
+                        confirmButtonColor: '#8B1538',
+                        confirmButtonText: 'Lengkapi Sekarang'
+                    }).then(() => {
+                        switchToInvalidField(invalid[0]);
+                    });
+                } else {
+                    alert('Mohon lengkapi semua data wajib sebelum melanjutkan.');
+                    switchToInvalidField(invalid[0]);
+                }
                 return false;
             }
         });
+
+        function switchToInvalidField(item) {
+            const alpineRoot = document.querySelector('[x-data]');
+            try {
+                if (alpineRoot && typeof Alpine !== 'undefined' && Alpine.$data) {
+                    Alpine.$data(alpineRoot).activeTab = item.tab;
+                } else if (alpineRoot && alpineRoot.__x) {
+                    alpineRoot.__x.$data.activeTab = item.tab;
+                }
+            } catch (err) {
+                /* ignore */
+            }
+
+            setTimeout(() => {
+                try {
+                    item.field.focus();
+                    item.field.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                } catch (e) {}
+            }, 250);
+        }
     });
 </script>
 
@@ -2479,4 +2678,25 @@ $missingByTab[$info['tab']]++;
         if (e.key === 'Escape') closeFilePreview();
     });
 </script>
+@if($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof Swal !== 'undefined') {
+            let errorMsg = '<ul class="text-left list-disc pl-5 space-y-1 text-sm text-red-600 max-h-48 overflow-y-auto">';
+            @foreach($errors->all() as $error)
+                errorMsg += '<li>{{ addslashes($error) }}</li>';
+            @endforeach
+            errorMsg += '</ul>';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Menyimpan Data',
+                html: `<p class="mb-3 text-sm text-gray-600">Terjadi kesalahan validasi di server:</p>${errorMsg}`,
+                confirmButtonColor: '#8B1538',
+                confirmButtonText: 'Tutup'
+            });
+        }
+    });
+</script>
+@endif
 @endsection

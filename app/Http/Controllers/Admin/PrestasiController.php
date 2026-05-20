@@ -95,13 +95,7 @@ class PrestasiController extends Controller
 
         $dosens = Dosen::with('user')->whereHas('user')->get();
 
-        // Preview nomor surat for each jenis
-        $previewNomors = [];
-        foreach (array_keys(Prestasi::JENIS_SURAT_LABELS) as $jenis) {
-            $previewNomors[$jenis] = $this->letterService->previewNomorSurat($jenis);
-        }
-
-        return view('admin.prestasi.show', compact('prestasi', 'dosens', 'previewNomors'));
+        return view('admin.prestasi.show', compact('prestasi', 'dosens'));
     }
 
     /**
@@ -138,6 +132,7 @@ class PrestasiController extends Controller
             'penandatangan_jabatan' => 'required|string|max:255',
             'penandatangan_nip'     => 'nullable|string|max:100',
             'nomor_surat_manual'    => 'nullable|string|max:100',
+            'lokasi_ttd'            => 'required|string|max:100',
         ]);
 
         try {
@@ -149,6 +144,7 @@ class PrestasiController extends Controller
                 $request->penandatangan_jabatan,
                 $request->penandatangan_nip,
                 $request->nomor_surat_manual,
+                $request->lokasi_ttd,
                 auth()->id()
             );
 
@@ -165,6 +161,20 @@ class PrestasiController extends Controller
             return back()->with('success', 'Surat berhasil digenerate. Nomor: ' . $surat->nomor_surat);
         } catch (\Throwable $e) {
             return back()->with('error', 'Gagal generate surat: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Regenerate an existing surat PDF (re-render with current template).
+     */
+    public function regenerateSurat(Prestasi $prestasi, PrestasiSurat $surat)
+    {
+        try {
+            $this->letterService->regenerateSurat($prestasi, $surat);
+
+            return back()->with('success', 'Surat berhasil di-regenerate dengan template terbaru.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal regenerate surat: ' . $e->getMessage());
         }
     }
 
@@ -235,11 +245,20 @@ class PrestasiController extends Controller
     {
         $request->validate([
             'settings' => 'required|array',
-            'settings.*.format' => 'required|string|max:255',
+            'settings.*.custom_code' => 'required|string|max:50|regex:/^[A-Z0-9\/]+$/',
             'settings.*.counter' => 'required|integer|min:0',
         ]);
 
-        $this->letterService->updateSettings($request->settings);
+        // Convert custom_code to full format
+        $formattedSettings = [];
+        foreach ($request->settings as $jenis => $data) {
+            $formattedSettings[$jenis] = [
+                'format' => '{counter}/' . $data['custom_code'] . '/{month}/{year}',
+                'counter' => $data['counter'],
+            ];
+        }
+
+        $this->letterService->updateSettings($formattedSettings);
 
         return back()->with('success', 'Pengaturan nomor surat berhasil disimpan.');
     }
@@ -249,7 +268,7 @@ class PrestasiController extends Controller
      */
     public function previewNomor(Request $request)
     {
-        $jenisSurat = $request->jenis_surat ?? 'surat_tugas';
+        $jenisSurat = $request->jenis_surat ?? 'tugas';
         $tanggalSurat = $request->tanggal_surat ?? now()->format('Y-m-d');
 
         return response()->json([

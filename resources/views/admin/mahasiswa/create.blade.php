@@ -72,17 +72,18 @@
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     <i class="fas fa-lock text-gray-400 mr-1"></i>
-                                    Password *
+                                    Password (opsional)
                                 </label>
                                 <div class="relative">
                                     <input id="mahasiswa_password" type="password" name="password"
                                         value="{{ old('password') }}"
                                         class="w-full pr-10 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
-                                        placeholder="Minimal 6 karakter" required>
+                                        placeholder="Minimal 6 karakter">
                                     <button type="button" id="toggleMahasiswaPw" aria-pressed="false"
                                         class="absolute right-3 top-1/2 transform -translate-y-1/2 inline-flex items-center px-2 text-sm text-gray-500 hover:text-gray-700 bg-transparent border-0"><i
                                             class="fas fa-eye"></i></button>
                                 </div>
+                                <small class="text-gray-500 mt-1 block">Biarkan kosong jika ingin menggunakan password default: <strong>mahasiswa123</strong></small>
                             </div>
                         </div>
                     </div>

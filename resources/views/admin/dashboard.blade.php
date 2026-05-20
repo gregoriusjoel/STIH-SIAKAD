@@ -209,10 +209,10 @@
                     <div class="w-6 h-6 rounded bg-maroon flex items-center justify-center">
                         <i class="fas fa-wave-square text-white text-xs"></i>
                     </div>
-                    <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200">Periode yang Akan Datang (Kalender Akademik)</h3>
+                    <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200">Kegiatan yang Sedang Berlangsung dan Akan Datang (Kalender Akademik)</h3>
                     <span
                         class="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full bg-maroon/10 text-maroon dark:bg-red-900/30 dark:text-red-200">
-                        {{ $calendarActivePeriods->count() }} periode
+                        {{ $calendarActivePeriods->count() }} Kegiatan
                     </span>
                 </div>
 
@@ -359,7 +359,7 @@
                         </div>
                         <span
                             class="text-[11px] font-semibold px-2 py-1 rounded-full bg-maroon/10 text-maroon dark:bg-red-900/30 dark:text-red-200">
-                            {{ $monthAgendaCount }} agenda
+                            {{ $monthAgendaCount }} Agenda
                         </span>
                     </div>
 

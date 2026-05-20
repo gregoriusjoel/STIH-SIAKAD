@@ -124,62 +124,64 @@
                     </div>
                 </div>
 
-                {{-- Generated DOCX (always show if available) --}}
-                @if($pengajuan->generated_doc_path)
-                    <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-blue-200">
-                        <div class="px-6 py-4 bg-blue-50 border-b border-blue-200">
-                            <h2 class="font-bold text-blue-800 flex items-center gap-2">
-                                <i class="fas fa-file-word"></i>
-                                Dokumen DOCX (Digenerate Mahasiswa)
-                            </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- Generated DOCX (always show if available) --}}
+                    @if($pengajuan->generated_doc_path)
+                        <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-primary/20 flex flex-col h-full">
+                            <div class="px-6 py-4 bg-primary/5 border-b border-primary/20 shrink-0">
+                                <h2 class="font-bold text-primary flex items-center gap-2">
+                                    <i class="fas fa-file-word"></i>
+                                    Dokumen DOCX (Digenerate Mahasiswa)
+                                </h2>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-end">
+                                <a href="{{ route('admin.pengajuan.download-generated', $pengajuan->id) }}" 
+                                    class="w-full btn bg-primary text-white hover:bg-primary/90 rounded-xl px-5 py-3 flex items-center justify-center gap-2 font-medium transition-colors">
+                                    <i class="fas fa-download"></i>
+                                    Download DOCX
+                                </a>
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <a href="{{ route('admin.pengajuan.download-generated', $pengajuan->id) }}" 
-                                class="btn bg-blue-600 text-white hover:bg-blue-700 rounded-xl px-5 py-2.5 flex items-center gap-2 w-fit">
-                                <i class="fas fa-download"></i>
-                                Download DOCX
-                            </a>
-                        </div>
-                    </div>
-                @endif
+                    @endif
 
-                {{-- Signed Document (for submitted/approved/rejected statuses) --}}
-                @if($pengajuan->signed_doc_path)
-                    <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-indigo-200">
-                        <div class="px-6 py-4 bg-indigo-50 border-b border-indigo-200">
-                            <h2 class="font-bold text-indigo-800 flex items-center gap-2">
-                                <i class="fas fa-file-signature"></i>
-                                Dokumen Bertanda Tangan (Upload Mahasiswa)
-                            </h2>
+                    {{-- Signed Document (for submitted/approved/rejected statuses) --}}
+                    @if($pengajuan->signed_doc_path)
+                        <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-primary/20 flex flex-col h-full">
+                            <div class="px-6 py-4 bg-primary/5 border-b border-primary/20 shrink-0">
+                                <h2 class="font-bold text-primary flex items-center gap-2">
+                                    <i class="fas fa-file-signature"></i>
+                                    Dokumen Bertanda Tangan (Upload Mahasiswa)
+                                </h2>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-end">
+                                <a href="{{ route('admin.pengajuan.download-signed', $pengajuan->id) }}" 
+                                    class="w-full btn bg-primary text-white hover:bg-primary/90 rounded-xl px-5 py-3 flex items-center justify-center gap-2 font-medium transition-colors">
+                                    <i class="fas fa-download"></i>
+                                    Download Dokumen TTD
+                                </a>
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <a href="{{ route('admin.pengajuan.download-signed', $pengajuan->id) }}" 
-                                class="btn bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl px-5 py-2.5 flex items-center gap-2 w-fit">
-                                <i class="fas fa-download"></i>
-                                Download Dokumen TTD
-                            </a>
-                        </div>
-                    </div>
-                @endif
+                    @endif
 
-                {{-- Final Letter (if approved) --}}
-                @if($pengajuan->status === 'approved' && $pengajuan->file_surat)
-                    <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-green-200">
-                        <div class="px-6 py-4 bg-green-50 border-b border-green-200">
-                            <h2 class="font-bold text-green-800 flex items-center gap-2">
-                                <i class="fas fa-file-pdf"></i>
-                                Surat Resmi (Disetujui)
-                            </h2>
+                    {{-- Final Letter (if approved) --}}
+                    @if($pengajuan->status === 'approved' && $pengajuan->file_surat)
+                        <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-primary/20 flex flex-col h-full">
+                            <div class="px-6 py-4 bg-primary/5 border-b border-primary/20 shrink-0">
+                                <h2 class="font-bold text-primary flex items-center gap-2">
+                                    <i class="fas fa-file-pdf"></i>
+                                    Surat Resmi (Disetujui)
+                                </h2>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-end">
+                                <a href="{{ route('admin.pengajuan.download', $pengajuan->id) }}" 
+                                    class="w-full btn bg-primary text-white hover:bg-primary/90 rounded-xl px-5 py-3 flex items-center justify-center gap-2 font-medium transition-colors">
+                                    <i class="fas fa-download"></i>
+                                    Download Surat Resmi
+                                </a>
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <a href="{{ route('admin.pengajuan.download', $pengajuan->id) }}" 
-                                class="btn bg-green-600 text-white hover:bg-green-700 rounded-xl px-5 py-2.5 flex items-center gap-2 w-fit">
-                                <i class="fas fa-download"></i>
-                                Download Surat Resmi
-                            </a>
-                        </div>
-                    </div>
-                @endif
+                    @endif
+                </div>
 
                 {{-- Revision History --}}
                 @if($pengajuan->revisions->count() > 0)
@@ -222,10 +224,10 @@
             </div>
 
             {{-- Sidebar --}}
-            <div class="space-y-6">
+            <div class="flex flex-col gap-6 h-full">
                 
                 {{-- Student Info --}}
-                <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-border-color overflow-hidden">
+                <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-border-color overflow-hidden shrink-0">
                     <div class="px-6 py-4 bg-gray-50 border-b border-border-color">
                         <h2 class="font-bold text-text-primary">Data Mahasiswa</h2>
                     </div>
@@ -263,11 +265,11 @@
 
                 {{-- Actions --}}
                 @if($pengajuan->status === 'submitted')
-                    <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-border-color overflow-hidden" x-data>
-                        <div class="px-6 py-4 bg-yellow-50 border-b border-yellow-200">
-                            <h2 class="font-bold text-yellow-800">Tindakan</h2>
+                    <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-primary/20 flex flex-col flex-1" x-data>
+                        <div class="px-6 py-4 bg-primary/5 border-b border-primary/20 shrink-0">
+                            <h2 class="font-bold text-primary">Tindakan</h2>
                         </div>
-                        <div class="p-6 space-y-3">
+                        <div class="p-6 space-y-3 flex-1 flex flex-col justify-end">
                             <button @click="$dispatch('open-modal', 'approve-modal')" 
                                 class="w-full btn bg-green-600 text-white hover:bg-green-700 rounded-xl px-5 py-3 flex items-center justify-center gap-2 font-medium">
                                 <i class="fas fa-check-circle"></i>

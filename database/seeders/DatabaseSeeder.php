@@ -196,5 +196,17 @@ class DatabaseSeeder extends Seeder
 
         // Import locations (countries/provinces/cities) from CSVs
         $this->call(LocationsSeeder::class);
+
+        // Call all other seeders
+        $this->call(FakultasSeeder::class);
+        $this->call(ProdiSeeder::class);
+        $this->call(MataKuliahSeeder::class);
+        $this->call(RuanganSeeder::class);
+        $this->call(KategoriRuanganSeeder::class);
+        $this->call(JamPerkuliahanSeeder::class);
+        $this->call(PaymentSystemSeeder::class);
+        $this->call(RifqiSksSeeder::class);
+        $this->call(PopulateMataKuliahTipsSeeder::class);
+        $this->call(UpdateUserRolesSeeder::class);
     }
 }

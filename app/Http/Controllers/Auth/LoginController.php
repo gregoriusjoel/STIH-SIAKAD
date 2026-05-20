@@ -21,6 +21,8 @@ class LoginController extends Controller
                 return redirect()->route('admin.dashboard');
             } elseif ($user->role === 'mahasiswa') {
                 return redirect()->route('mahasiswa.dashboard');
+            } elseif ($user->role === 'parent') {
+                return redirect()->route('parent.dashboard');
             } elseif ($user->role === 'finance' || $user->role === 'keuangan') {
                 return redirect()->route('finance.invoices.index');
             }

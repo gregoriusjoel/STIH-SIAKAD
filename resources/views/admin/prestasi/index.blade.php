@@ -6,7 +6,7 @@
 <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[1600px] mx-auto font-inter">
 
     {{-- Page Header --}}
-    <div class="sm:flex sm:justify-between sm:items-center mb-8">
+    <div x-data class="sm:flex sm:justify-between sm:items-center mb-8">
         <div class="mb-4 sm:mb-0">
             <h1 class="text-2xl md:text-3xl font-bold text-text-primary tracking-tight">Manajemen Prestasi</h1>
             <p class="text-sm text-text-secondary mt-1">Kelola pengajuan prestasi dan pelaporan kegiatan akademik & non-akademik.</p>
@@ -36,7 +36,7 @@
                 <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center"><i class="fas fa-trophy text-blue-600"></i></div>
             </div>
             <div class="text-3xl font-bold text-text-primary">{{ $stats['total'] }}</div>
-            <div class="text-xs text-gray-500 mt-2">{{ $stats['mahasiswa'] }} Mhs / {{ $stats['dosen'] }} Dosen</div>
+            <div class="text-xs text-gray-500 mt-2">{{ $stats['mahasiswa'] }} Mahasiswa | {{ $stats['dosen'] }} Dosen</div>
         </div>
         <div class="bg-white dark:bg-bg-card rounded-2xl p-6 shadow-sm border border-yellow-200">
             <div class="flex items-center justify-between mb-3">
@@ -68,7 +68,7 @@
                    class="rounded-xl border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800 text-sm px-4 py-2.5 w-64 focus:ring-[#7a1621] focus:border-[#7a1621] transition-all">
             
             <select name="role" class="rounded-xl border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800 text-sm px-4 py-2.5 focus:ring-[#7a1621] focus:border-[#7a1621] transition-all">
-                <option value="">Semua Role</option>
+                <option value="">Semua Pengguna</option>
                 <option value="mahasiswa" {{ request('role') == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
                 <option value="dosen" {{ request('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
             </select>

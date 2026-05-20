@@ -29,7 +29,7 @@ return new class extends Migration
         $prodi = \DB::table('prodis')->first();
         if (!$prodi) {
             $prodiId = \DB::table('prodis')->insertGetId([
-                'kode_prodi' => 'HK01',
+                'kode_prodi' => 'HK',
                 'nama_prodi' => 'Ilmu Hukum',
                 'fakultas_id' => $fakultasId,
                 'jenjang' => 'S1',
