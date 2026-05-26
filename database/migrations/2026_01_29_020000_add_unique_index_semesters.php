@@ -13,15 +13,24 @@ return new class extends Migration
     public function up(): void
     {
         // Remove exact duplicate rows, keeping the one with the smallest id
-        DB::statement(<<<'SQL'
-            DELETE s1 FROM semesters s1
-            INNER JOIN semesters s2
-              ON s1.nama_semester = s2.nama_semester
-             AND s1.tahun_ajaran = s2.tahun_ajaran
-             AND s1.tanggal_mulai = s2.tanggal_mulai
-            WHERE s1.id > s2.id
-        SQL
-        );
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(<<<'SQL'
+                DELETE s1 FROM semesters s1
+                INNER JOIN semesters s2
+                  ON s1.nama_semester = s2.nama_semester
+                 AND s1.tahun_ajaran = s2.tahun_ajaran
+                 AND s1.tanggal_mulai = s2.tanggal_mulai
+                WHERE s1.id > s2.id
+            SQL
+            );
+        } else {
+            DB::statement(<<<'SQL'
+                DELETE FROM semesters WHERE id NOT IN (
+                    SELECT MIN(id) FROM semesters GROUP BY nama_semester, tahun_ajaran, tanggal_mulai
+                )
+            SQL
+            );
+        }
 
         // Add composite unique index to enforce uniqueness at the DB level
         Schema::table('semesters', function (Blueprint $table) {

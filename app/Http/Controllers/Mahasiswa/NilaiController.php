@@ -23,7 +23,7 @@ class NilaiController extends Controller
                 'kelasMataKuliah.mataKuliah',
                 'kelasMataKuliah.semester',
                 'mataKuliah',           // ← direct link for internship conversion
-                'semester',             // ← direct semester for internship conversion (krs.semester_id)
+                'internship.semester',  // ← eager load internship and its semester for internship conversion
                 'nilai' => fn($q) => $q->where('is_published', true),
                 'nilai.bobotPenilaian',
             ])
@@ -36,7 +36,7 @@ class NilaiController extends Controller
      *
      * Priority:
      * 1. kelasMataKuliah.semester.nama_semester  (normal KRS)
-     * 2. krs.semester.nama_semester              (internship conversion with semester_id set)
+     * 2. krs.internship.semester.nama_semester   (internship conversion via internship relation)
      * 3. "Semester X"                            (fallback from mataKuliah.semester number)
      */
     private function semesterKey($krs): string
@@ -46,9 +46,9 @@ class NilaiController extends Controller
             return $krs->kelasMataKuliah->semester->nama_semester;
         }
 
-        // Internship conversion path — krs.semester_id set by InternshipKrsService
-        if ($krs->semester) {
-            return $krs->semester->nama_semester;
+        // Internship conversion path — resolve semester through the internship relationship
+        if ($krs->internship && $krs->internship->semester) {
+            return $krs->internship->semester->nama_semester;
         }
 
         // Last fallback: use MK semester number
@@ -76,13 +76,9 @@ class NilaiController extends Controller
     private function getSemesterNumber($krs): ?int
     {
         $number = $krs->kelasMataKuliah?->semester?->semester_number
-            ?? $krs->semester?->semester_number
+            ?? $krs->internship?->semester?->semester_number
             ?? $krs->mataKuliah?->semester
             ?? $krs->kelasMataKuliah?->mataKuliah?->semester;
-
-        if ($number === null || $number === '') {
-            return null;
-        }
 
         return is_numeric($number) ? (int) $number : null;
     }
@@ -330,7 +326,7 @@ class NilaiController extends Controller
         $semesterNumber = $semesterNumber ?? ($currentSemester->semester_number ?? null);
 
         $prodi = $mahasiswa->prodi ?? '-';
-        $dosenPa = $mahasiswa->dosenPa->first()?->user?->name ?? '-';
+        $dosenPa = $mahasiswa->dosenPa?->user?->name ?? '-';
 
         $pdf = PDF::loadView('page.mahasiswa.nilai.rangkuman-pdf', [
             'mahasiswa' => $mahasiswa,

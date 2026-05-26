@@ -98,6 +98,14 @@
             background: linear-gradient(90deg, #ff7b7b, #b22222);
         }
 
+        /* Action buttons hover scaling and transitions */
+        .action-btn {
+            transition: all 0.2s ease;
+        }
+        .action-btn:hover {
+            transform: scale(1.1) !important;
+        }
+
         /* Modern search suggestions UI */
         #search-suggestions {
             background: rgba(255, 255, 255, 0.95);

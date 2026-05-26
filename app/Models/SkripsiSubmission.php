@@ -96,6 +96,11 @@ class SkripsiSubmission extends Model
         return $this->hasOne(SkripsiRevision::class, 'skripsi_submission_id')->latestOfMany();
     }
 
+    public function wisudaRegistration(): HasOne
+    {
+        return $this->hasOne(WisudaRegistration::class, 'skripsi_submission_id')->latest();
+    }
+
     public function getIsEligibleForSidangAttribute(): bool
     {
         return $this->total_bimbingan >= 8

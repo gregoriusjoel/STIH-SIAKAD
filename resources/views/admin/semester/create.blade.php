@@ -102,14 +102,13 @@
                         end.value = toYMD(target);
                     });
 
-                    // When selecting Genap, autofill tanggal_mulai from previous Ganjil.tanggal_selesai + 1 day
+                    // Autofill tanggal_mulai from previous semester's tanggal_selesai + 1 day
                     async function tryFillFromPrevious() {
                         if (!nama || !tahun) return;
-                        if (nama.value !== 'Genap') return;
-                        if (!tahun.value) return;
+                        if (!nama.value || !tahun.value) return;
 
                         try {
-                            const url = `{{ url('admin/semester/previous-end') }}?tahun_ajaran=${encodeURIComponent(tahun.value)}`;
+                            const url = `{{ url('admin/semester/previous-end') }}?tahun_ajaran=${encodeURIComponent(tahun.value)}&nama_semester=${encodeURIComponent(nama.value)}`;
                             const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
                             if (!res.ok) return;
                             const data = await res.json();

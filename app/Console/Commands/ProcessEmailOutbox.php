@@ -150,7 +150,7 @@ class ProcessEmailOutbox extends Command
                     );
                 } else {
                     // Email Biasa
-                    $actionUrl = 'https://satu.axiona.id';
+                    $actionUrl = url('/');
                     $actionText = 'Login ke SIAKAD';
                     
                     Notification::route('mail', $outbox->target_email)->notify(

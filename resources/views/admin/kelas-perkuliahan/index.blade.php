@@ -129,23 +129,26 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <div class="flex items-center justify-center gap-2">
+                                    <div class="flex items-center justify-center gap-1.5">
                                         <a href="{{ route('admin.kelas-perkuliahan.show', $kp) }}"
-                                            class="text-blue-600 hover:text-blue-800 transition" title="Detail">
-                                            <i class="fas fa-eye"></i>
+                                            class="action-btn w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                                            title="Detail">
+                                            <i class="fas fa-eye text-xs"></i>
                                         </a>
                                         <a href="{{ route('admin.kelas-perkuliahan.edit', $kp) }}"
-                                            class="text-yellow-600 hover:text-yellow-800 transition" title="Edit">
-                                            <i class="fas fa-edit"></i>
+                                            class="action-btn w-8 h-8 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 flex items-center justify-center hover:bg-yellow-100 dark:hover:bg-yellow-900/40"
+                                            title="Edit">
+                                            <i class="fas fa-edit text-xs"></i>
                                         </a>
                                         <form method="POST" action="{{ route('admin.kelas-perkuliahan.destroy', $kp) }}"
                                             class="inline"
                                             onsubmit="return confirm('Yakin hapus kelas {{ $kp->nama_kelas }}?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800 transition"
+                                            <button type="submit"
+                                                class="action-btn w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40"
                                                 title="Hapus">
-                                                <i class="fas fa-trash"></i>
+                                                <i class="fas fa-trash text-xs"></i>
                                             </button>
                                         </form>
                                     </div>

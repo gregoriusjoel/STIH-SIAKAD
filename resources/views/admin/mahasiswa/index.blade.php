@@ -152,25 +152,25 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex items-center space-x-2" @click.stop>
+                                            <div class="flex items-center justify-center gap-1.5" @click.stop>
                                                 <a href="{{ route('admin.mahasiswa.show', $mahasiswa) }}"
-                                                    class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition"
+                                                    class="action-btn w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/40"
                                                     title="Detail">
-                                                    <i class="fas fa-eye"></i>
+                                                    <i class="fas fa-eye text-xs"></i>
                                                 </a>
                                                 <a href="{{ route('admin.mahasiswa.edit', $mahasiswa) }}"
-                                                    class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition"
+                                                    class="action-btn w-8 h-8 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 flex items-center justify-center hover:bg-yellow-100 dark:hover:bg-yellow-900/40"
                                                     title="Edit">
-                                                    <i class="fas fa-edit"></i>
+                                                    <i class="fas fa-edit text-xs"></i>
                                                 </a>
                                                 <form action="{{ route('admin.mahasiswa.destroy', $mahasiswa) }}" method="POST"
                                                     class="inline delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                        class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition"
+                                                        class="action-btn w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40"
                                                         title="Hapus">
-                                                        <i class="fas fa-trash"></i>
+                                                        <i class="fas fa-trash text-xs"></i>
                                                     </button>
                                                 </form>
                                             </div>

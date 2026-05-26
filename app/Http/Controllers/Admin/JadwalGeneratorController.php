@@ -533,27 +533,15 @@ class JadwalGeneratorController extends Controller
             ->join('kelas', 'jadwals.kelas_id', '=', 'kelas.id')
             ->where('kelas.dosen_id', $dosenId)
             ->where('jadwals.hari', $hari)
-            ->where(function ($query) use ($jamMulai, $jamSelesai) {
-                $query->whereBetween('jadwals.jam_mulai', [$jamMulai, $jamSelesai])
-                    ->orWhereBetween('jadwals.jam_selesai', [$jamMulai, $jamSelesai])
-                    ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
-                        $q->where('jadwals.jam_mulai', '<=', $jamMulai)
-                            ->where('jadwals.jam_selesai', '>=', $jamSelesai);
-                    });
-            })
+            ->where('jadwals.jam_mulai', '<', $jamSelesai)
+            ->where('jadwals.jam_selesai', '>', $jamMulai)
             ->exists();
 
         // Cek di proposal yang sudah approved dosen atau admin (proposal menyimpan dosen_id langsung)
         $existingProposal = JadwalProposal::where('dosen_id', $dosenId)
             ->where('hari', $hari)
-            ->where(function ($query) use ($jamMulai, $jamSelesai) {
-                $query->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
-                    ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
-                    ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
-                        $q->where('jam_mulai', '<=', $jamMulai)
-                            ->where('jam_selesai', '>=', $jamSelesai);
-                    });
-            })
+            ->where('jam_mulai', '<', $jamSelesai)
+            ->where('jam_selesai', '>', $jamMulai)
             ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
             ->exists();
 
@@ -573,27 +561,15 @@ class JadwalGeneratorController extends Controller
             // Cek apakah ruang sudah terpakai di jadwal aktif
             $ruangTerpakai = Jadwal::where('hari', $hari)
                 ->where('ruangan', $ruang)
-                ->where(function ($query) use ($jamMulai, $jamSelesai) {
-                    $query->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
-                        ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
-                        ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
-                            $q->where('jam_mulai', '<=', $jamMulai)
-                                ->where('jam_selesai', '>=', $jamSelesai);
-                        });
-                })
+                ->where('jam_mulai', '<', $jamSelesai)
+                ->where('jam_selesai', '>', $jamMulai)
                 ->exists();
 
             // Cek apakah ruang sudah terpakai di proposal (include pending_dosen)
             $ruangTerpakaiProposal = JadwalProposal::where('hari', $hari)
                 ->where('ruangan', $ruang)
-                ->where(function ($query) use ($jamMulai, $jamSelesai) {
-                    $query->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
-                        ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
-                        ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
-                            $q->where('jam_mulai', '<=', $jamMulai)
-                                ->where('jam_selesai', '>=', $jamSelesai);
-                        });
-                })
+                ->where('jam_mulai', '<', $jamSelesai)
+                ->where('jam_selesai', '>', $jamMulai)
                 ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
                 ->exists();
 

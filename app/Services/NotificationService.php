@@ -263,6 +263,29 @@ class NotificationService
             }
         } catch (\Throwable $e) {}
 
+        // 10) Wisuda
+        try {
+            $query = \App\Models\WisudaRegistration::with('mahasiswa.user')->orderByDesc('updated_at');
+            if (!$includeHandled) {
+                $query->where('status', 'pending');
+            }
+            $wisudas = $query->limit($limit)->get();
+
+            foreach ($wisudas as $reg) {
+                $when = $reg->submitted_at ?? $reg->updated_at ?? $reg->created_at;
+                $notifications->push([
+                    'id' => 'wisuda-' . $reg->id,
+                    'title' => 'Pendaftaran Wisuda',
+                    'message' => ($reg->mahasiswa?->user?->name ?? 'Mahasiswa') . ' mengajukan pendaftaran wisuda.',
+                    'icon' => 'school',
+                    'url' => route('admin.wisuda.show', $reg->id),
+                    'human_time' => $safeHumanTime($when),
+                    'created_at_ts' => Carbon::parse($when)->timestamp,
+                    'needs_action' => $reg->status->value === 'pending',
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
         return $notifications->sortByDesc('created_at_ts')->values();
     }
 }

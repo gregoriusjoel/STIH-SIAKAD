@@ -248,8 +248,9 @@
                 <ol class="px-2 py-2 flex flex-col gap-1">
                     @foreach($steps as $step => $label)
                     @php 
-                        $done = $step < $currentStep; 
-                        $active = $step === $currentStep; 
+                        $isCompleted = $submission && in_array($submission->status->value, ['REVISION_APPROVED', 'THESIS_COMPLETED', 'SKRIPSI_COMPLETED']);
+                        $done = $step < $currentStep || ($step === $currentStep && $isCompleted); 
+                        $active = $step === $currentStep && !$isCompleted; 
                         $isErrorState = $active && $isGlobalError;
                     @endphp
                     <li class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors

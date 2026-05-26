@@ -62,8 +62,8 @@ class HasilKuisionerController extends Controller
         if ($type === 'mahasiswa_baru') {
             $angkatans = KuesionerMahasiswaBaru::whereNotNull('angkatan')->distinct()->pluck('angkatan')->sortDesc();
         } else {
-            // For other types, try to get from related students or just a standard range
-            $angkatans = KuesionerAktivasi::whereNotNull('angkatan')->distinct()->pluck('angkatan')->sortDesc();
+            // For other types, get from related students who completed the activation questionnaire
+            $angkatans = \App\Models\Mahasiswa::whereHas('kuesionerAktivasi')->whereNotNull('angkatan')->distinct()->pluck('angkatan')->sortDesc();
         }
 
         $stats = $this->calculateStats($type, $results);

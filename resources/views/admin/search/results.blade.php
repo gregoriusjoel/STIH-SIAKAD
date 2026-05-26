@@ -33,6 +33,8 @@
                                         <div>
                                             @if(isset($f['route']) && Route::has($f['route']))
                                                 <a href="{{ route($f['route']) }}" class="text-maroon hover:underline text-sm">Buka</a>
+                                            @elseif(!empty($f['url']))
+                                                <a href="{{ url($f['url']) }}" class="text-maroon hover:underline text-sm">Buka</a>
                                             @else
                                                 <a href="#" class="text-gray-400 text-sm">Tidak tersedia</a>
                                             @endif

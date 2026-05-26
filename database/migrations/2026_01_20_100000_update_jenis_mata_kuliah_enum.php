@@ -12,14 +12,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // First expand the enum to include all values
-        DB::statement("ALTER TABLE mata_kuliahs MODIFY COLUMN jenis ENUM('wajib', 'pilihan', 'wajib_nasional', 'wajib_prodi', 'peminatan') NOT NULL");
-        
-        // Update existing 'wajib' to 'wajib_prodi'
-        DB::statement("UPDATE mata_kuliahs SET jenis = 'wajib_prodi' WHERE jenis = 'wajib'");
-        
-        // Remove old 'wajib' option from enum
-        DB::statement("ALTER TABLE mata_kuliahs MODIFY COLUMN jenis ENUM('wajib_nasional', 'wajib_prodi', 'pilihan', 'peminatan') NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            // First expand the enum to include all values
+            DB::statement("ALTER TABLE mata_kuliahs MODIFY COLUMN jenis ENUM('wajib', 'pilihan', 'wajib_nasional', 'wajib_prodi', 'peminatan') NOT NULL");
+            
+            // Update existing 'wajib' to 'wajib_prodi'
+            DB::statement("UPDATE mata_kuliahs SET jenis = 'wajib_prodi' WHERE jenis = 'wajib'");
+            
+            // Remove old 'wajib' option from enum
+            DB::statement("ALTER TABLE mata_kuliahs MODIFY COLUMN jenis ENUM('wajib_nasional', 'wajib_prodi', 'pilihan', 'peminatan') NOT NULL");
+        } else {
+            DB::statement("UPDATE mata_kuliahs SET jenis = 'wajib_prodi' WHERE jenis = 'wajib'");
+        }
     }
 
     /**
@@ -27,6 +31,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE mata_kuliahs MODIFY COLUMN jenis ENUM('wajib', 'pilihan') NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE mata_kuliahs MODIFY COLUMN jenis ENUM('wajib', 'pilihan') NOT NULL");
+        }
     }
 };

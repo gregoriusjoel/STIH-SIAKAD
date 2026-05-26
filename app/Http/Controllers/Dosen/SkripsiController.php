@@ -195,21 +195,27 @@ class SkripsiController extends Controller
         $isPenguji    = optional($skripsi->sidangSchedule)->penguji_1_id === $dosen->id
             || optional($skripsi->sidangSchedule)->penguji_2_id === $dosen->id;
 
-        abort_unless(
-            ($isSupervisor || $isPenguji)
-            && in_array($skripsi->status, [
-                SkripsiStatus::SIDANG_SCHEDULED,
-                SkripsiStatus::SIDANG_COMPLETED,
-                SkripsiStatus::REVISION_PENDING,
-                SkripsiStatus::REVISION_UPLOADED,
-                SkripsiStatus::REVISION_APPROVED,
-                SkripsiStatus::SKRIPSI_COMPLETED,
-            ], true),
-            403, 'File belum tersedia.'
-        );
-
         $path = base64_decode($encodedPath);
         abort_unless($path && str_starts_with($path, 'skripsi/'), 403);
+
+        $isGuidanceFile = str_contains($path, '/bimbingan/');
+
+        if ($isGuidanceFile) {
+            abort_unless($isSupervisor || $isPenguji, 403);
+        } else {
+            abort_unless(
+                ($isSupervisor || $isPenguji)
+                && in_array($skripsi->status, [
+                    SkripsiStatus::SIDANG_SCHEDULED,
+                    SkripsiStatus::SIDANG_COMPLETED,
+                    SkripsiStatus::REVISION_PENDING,
+                    SkripsiStatus::REVISION_UPLOADED,
+                    SkripsiStatus::REVISION_APPROVED,
+                    SkripsiStatus::SKRIPSI_COMPLETED,
+                ], true),
+                403, 'File belum tersedia.'
+            );
+        }
 
         return $this->fileService->downloadResponse($path, basename($path));
     }

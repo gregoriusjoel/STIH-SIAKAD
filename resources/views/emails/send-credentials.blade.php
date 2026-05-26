@@ -32,7 +32,7 @@ Akun SIAKAD Anda telah dibuat. Berikut adalah kredensial login Anda:
 Login ke SIAKAD
 </x-mail::button>
 
-⚠️ **PENTING:** Simpan password ini dengan aman. Anda bisa mengubah password setelah login pertama kali.
+**PENTING:** Simpan password ini dengan aman. Anda bisa mengubah password setelah login pertama kali.
 
 ---
 

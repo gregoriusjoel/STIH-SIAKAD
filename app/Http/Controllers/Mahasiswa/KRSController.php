@@ -151,6 +151,13 @@ class KRSController extends Controller
         // Get student's current semester number (1-8)
         $mahasiswaSemester = $mahasiswa->getCurrentSemester();
 
+        // Calculate target tahun_ajaran for the KRS records
+        $baseYear = (int) $mahasiswa->angkatan;
+        $yearOffset = floor(($mahasiswaSemester - 1) / 2);
+        $academicStartYear = $baseYear + $yearOffset;
+        $academicEndYear = $academicStartYear + 1;
+        $calculatedTahunAjaran = $academicStartYear . '/' . $academicEndYear;
+
         // Determine current semester kode_id based on student's semester
         $currentKodeId = 'sms' . $mahasiswaSemester;
 
@@ -164,11 +171,12 @@ class KRSController extends Controller
             $allowedKodeIds = ['sms2', 'sms4', 'sms6', 'sms8'];
         }
 
-        // Check if student has already submitted KRS (status != draft) for the relevant semester codes
+        // Check if student has already submitted KRS (status != draft) for the relevant semester codes and target academic year
         // If so, redirect to confirm page with info
         $relevantKodeIds = array_merge([$currentKodeId], $allowedKodeIds);
         $hasSubmitted = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->where('status', '!=', 'draft')
+            ->where('tahun_ajaran', $calculatedTahunAjaran)
             ->whereHas('mataKuliah', function ($q) use ($relevantKodeIds) {
                 $q->whereIn('kode_id', $relevantKodeIds);
             })->exists();
@@ -225,6 +233,7 @@ class KRSController extends Controller
         // Get existing KRS entries for the relevant semester codes with full details for calendar
         $relevantKodeIds = array_merge([$currentKodeId], $allowedKodeIds);
         $existingKrs = Krs::where('mahasiswa_id', $mahasiswa->id)
+            ->where('tahun_ajaran', $calculatedTahunAjaran)
             ->whereHas('mataKuliah', function ($q) use ($relevantKodeIds) {
                 $q->whereIn('kode_id', $relevantKodeIds);
             })
@@ -280,6 +289,7 @@ class KRSController extends Controller
             $currentKodeId = 'sms' . $mahasiswaSemester;
             $currentSemesterSubmitted = Krs::where('mahasiswa_id', $mahasiswa->id)
                 ->where('status', '!=', 'draft')
+                ->where('tahun_ajaran', $calculatedTahunAjaran)
                 ->whereHas('mataKuliah', function ($q) use ($currentKodeId) {
                     $q->where('kode_id', $currentKodeId);
                 })->exists();
@@ -530,6 +540,14 @@ class KRSController extends Controller
 
         // Validate odd/even semester rules and SKS limit
         $mahasiswaSemester = $mahasiswa->getCurrentSemester();
+
+        // Calculate target tahun_ajaran for the KRS records
+        $baseYear = (int) $mahasiswa->angkatan;
+        $yearOffset = floor(($mahasiswaSemester - 1) / 2);
+        $academicStartYear = $baseYear + $yearOffset;
+        $academicEndYear = $academicStartYear + 1;
+        $calculatedTahunAjaran = $academicStartYear . '/' . $academicEndYear;
+
         $totalSks = 0;
         $selectedMkIds = [];
 
@@ -580,6 +598,7 @@ class KRSController extends Controller
         $relevantKodeIds = array_merge([$currentKodeId], $allowedKodeIds);
         $hasSubmitted = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->where('status', '!=', 'draft')
+            ->where('tahun_ajaran', $calculatedTahunAjaran)
             ->whereHas('mataKuliah', function ($q) use ($relevantKodeIds) {
                 $q->whereIn('kode_id', $relevantKodeIds);
             })->exists();
@@ -590,9 +609,10 @@ class KRSController extends Controller
 
         DB::beginTransaction();
         try {
-            // Delete existing KRS for this mahasiswa for the relevant semester codes
+            // Delete existing KRS for this mahasiswa for the relevant semester codes and target academic year
             $relevantKodeIds = array_merge([$currentKodeId], $allowedKodeIds);
             Krs::where('mahasiswa_id', $mahasiswa->id)
+                ->where('tahun_ajaran', $calculatedTahunAjaran)
                 ->whereHas('mataKuliah', function ($q) use ($relevantKodeIds) {
                     $q->whereIn('kode_id', $relevantKodeIds);
                 })->delete();
@@ -742,11 +762,19 @@ class KRSController extends Controller
         
         // Get current semester number
         $currentSemester = $mahasiswa->getCurrentSemester();
+
+        // Calculate target tahun_ajaran for the KRS records
+        $baseYear = (int) $mahasiswa->angkatan;
+        $yearOffset = floor(($currentSemester - 1) / 2);
+        $academicStartYear = $baseYear + $yearOffset;
+        $academicEndYear = $academicStartYear + 1;
+        $calculatedTahunAjaran = $academicStartYear . '/' . $academicEndYear;
         
         // Check if current semester KRS is already submitted
         $currentKodeId = 'sms' . $currentSemester;
         $currentSemesterSubmitted = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->where('status', '!=', 'draft')
+            ->where('tahun_ajaran', $calculatedTahunAjaran)
             ->whereHas('mataKuliah', function ($q) use ($currentKodeId) {
                 $q->where('kode_id', $currentKodeId);
             })->exists();
@@ -813,12 +841,14 @@ class KRSController extends Controller
 
         $alreadySubmitted = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->where('status', '!=', 'draft')
+            ->where('tahun_ajaran', $calculatedTahunAjaran)
             ->whereHas('mataKuliah', function ($q) use ($relevantKodeIds) {
                 $q->whereIn('kode_id', $relevantKodeIds);
             })->exists();
 
         $hasDraft = Krs::where('mahasiswa_id', $mahasiswa->id)
             ->where('status', 'draft')
+            ->where('tahun_ajaran', $calculatedTahunAjaran)
             ->whereHas('mataKuliah', function ($q) use ($relevantKodeIds) {
                 $q->whereIn('kode_id', $relevantKodeIds);
             })->exists();

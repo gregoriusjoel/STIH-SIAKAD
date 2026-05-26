@@ -97,48 +97,48 @@
 
                         {{-- Schedule Cards (Vertical Scroll) --}}
                         @if(count($jadwals) > 0)
-                            <div class="p-5 space-y-4 bg-gray-50/50 dark:bg-slate-900/50 flex-grow max-h-[420px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                            <div class="p-4 space-y-3 bg-gray-50/50 dark:bg-slate-900/50 flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent" style="max-height: 340px;">
                                 @foreach($jadwals as $jadwal)
-                                    <div class="relative bg-white dark:bg-[#1a1d2e] rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-slate-700 group transform hover:-translate-y-1">
+                                    <div class="relative bg-white dark:bg-[#1a1d2e] rounded-xl p-4 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-slate-700 group transform hover:-translate-y-1">
                                         <!-- Animated Line Accent -->
                                         <div class="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#8B1538] to-[#D92B5A] rounded-l-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         
                                         {{-- Time Badge & Room --}}
-                                        <div class="flex items-center justify-between mb-4">
-                                            <div class="bg-rose-50 dark:bg-rose-900/20 px-3 py-1.5 rounded-full flex items-center gap-2 border border-rose-100 dark:border-rose-800/30">
-                                                <i class="fas fa-clock text-[#8B1538] dark:text-rose-400 text-xs opacity-80"></i>
-                                                <span class="font-bold text-[#8B1538] dark:text-rose-400 text-xs tracking-wide">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="bg-rose-50 dark:bg-rose-900/20 px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-rose-100 dark:border-rose-800/30">
+                                                <i class="fas fa-clock text-[#8B1538] dark:text-rose-400 text-[10px] opacity-80"></i>
+                                                <span class="font-bold text-[#8B1538] dark:text-rose-400 text-[11px] tracking-wide">
                                                     {{ substr($jadwal['jam_mulai'], 0, 5) }} - {{ substr($jadwal['jam_selesai'], 0, 5) }}
                                                 </span>
                                             </div>
-                                            <div class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5 bg-gray-100 dark:bg-slate-800 px-3 py-1 rounded-full">
-                                                <i class="fas fa-map-marker-alt text-gray-400 text-xs"></i> <span>{{ $jadwal['ruangan'] }}</span>
+                                            <div class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1 bg-gray-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
+                                                <i class="fas fa-map-marker-alt text-gray-400 text-[10px]"></i> <span>{{ $jadwal['ruangan'] }}</span>
                                             </div>
                                         </div>
 
                                         {{-- Course Title --}}
-                                        <h4 class="font-bold text-gray-900 dark:text-white text-[15px] mb-2 leading-tight group-hover:text-[#8B1538] dark:group-hover:text-rose-400 transition-colors">
+                                        <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1.5 leading-tight group-hover:text-[#8B1538] dark:group-hover:text-rose-400 transition-colors">
                                             {{ $jadwal['mata_kuliah'] }}
                                         </h4>
                                         
                                         {{-- Dosen & Info --}}
-                                        <div class="text-xs text-gray-600 dark:text-gray-400 mb-4">
-                                            <div class="flex items-center gap-2">
-                                                <div class="bg-gray-100 dark:bg-slate-800 p-1.5 rounded-md flex-shrink-0 group-hover:bg-rose-50 dark:group-hover:bg-rose-900/20 transition-colors flex items-center justify-center">
+                                        <div class="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                                            <div class="flex items-center gap-1.5">
+                                                <div class="bg-gray-100 dark:bg-slate-800 p-1 rounded-md flex-shrink-0 group-hover:bg-rose-50 dark:group-hover:bg-rose-900/20 transition-colors flex items-center justify-center">
                                                     <i class="fas fa-user-tie text-gray-500 dark:text-gray-400 text-[10px] group-hover:text-[#8B1538] transition-colors leading-none"></i>
                                                 </div>
-                                                <span class="font-medium leading-tight">{{ $jadwal['dosen'] }}</span>
+                                                <span class="font-medium leading-tight text-[11px]">{{ $jadwal['dosen'] }}</span>
                                             </div>
                                         </div>
 
                                         {{-- Footer Info --}}
-                                        <div class="pt-3 border-t border-gray-100 dark:border-slate-700/50 flex justify-between items-center">
-                                            <div class="flex items-center gap-2 text-xs font-medium text-gray-500">
-                                                <span class="bg-gray-100 dark:bg-slate-800 px-2 py-1 rounded text-[11px] font-mono font-bold">{{ $jadwal['kode_mk'] }}</span>
+                                        <div class="pt-2.5 border-t border-gray-100 dark:border-slate-700/50 flex justify-between items-center">
+                                            <div class="flex items-center gap-1.5 text-xs font-medium text-gray-500">
+                                                <span class="bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">{{ $jadwal['kode_mk'] }}</span>
                                                 <span class="text-gray-300 dark:text-slate-600">•</span>
-                                                <span class="text-gray-600 dark:text-gray-400 font-bold">{{ $jadwal['sks'] }} SKS</span>
+                                                <span class="text-gray-600 dark:text-gray-400 font-bold text-[11px]">{{ $jadwal['sks'] }} SKS</span>
                                             </div>
-                                            <span class="px-3 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-400 rounded-md text-xs font-bold border border-blue-100/50 dark:border-blue-800/30 shadow-sm">
+                                            <span class="px-2 py-0.5 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-400 rounded-md text-[10px] font-bold border border-blue-100/50 dark:border-blue-800/30 shadow-sm">
                                                 Kelas {{ $jadwal['kelas'] }}
                                             </span>
                                         </div>

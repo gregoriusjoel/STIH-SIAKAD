@@ -235,19 +235,23 @@
                 </form>
             </td>
             <td class="px-5 py-4 text-center">
-                <div class="flex items-center justify-center gap-1">
+                <div class="flex items-center justify-center gap-1.5">
                     <button type="button" @click="openDrawer({{ $dosen->id }})"
-                        class="text-violet-600 hover:text-violet-900 transition p-2 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded" title="Quick Assign MK">
-                        <i class="fas fa-bolt"></i>
+                        class="action-btn w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 flex items-center justify-center hover:bg-purple-100 dark:hover:bg-purple-900/40"
+                        title="Quick Assign MK">
+                        <i class="fas fa-bolt text-xs"></i>
                     </button>
                     <a href="{{ route('admin.dosen.show', $dosen) }}"
-                        class="text-blue-600 hover:text-blue-900 transition p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="Detail">
-                        <i class="fas fa-eye"></i>
+                        class="action-btn w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        title="Detail">
+                        <i class="fas fa-eye text-xs"></i>
                     </a>
                     <form action="{{ route('admin.dosen.destroy', $dosen) }}" method="POST" class="inline delete-form">
                         @csrf @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:text-red-900 transition p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Hapus">
-                            <i class="fas fa-trash"></i>
+                        <button type="submit"
+                            class="action-btn w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40"
+                            title="Hapus">
+                            <i class="fas fa-trash text-xs"></i>
                         </button>
                     </form>
                 </div>
@@ -380,19 +384,23 @@
                 </form>
             </td>
             <td class="px-5 py-4 text-center">
-                <div class="flex items-center justify-center gap-1">
+                <div class="flex items-center justify-center gap-1.5">
                     <button type="button" @click="openDrawer({{ $dosen->id }})"
-                        class="text-violet-600 hover:text-violet-900 transition p-2 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded" title="Quick Assign MK">
-                        <i class="fas fa-bolt"></i>
+                        class="action-btn w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 flex items-center justify-center hover:bg-purple-100 dark:hover:bg-purple-900/40"
+                        title="Quick Assign MK">
+                        <i class="fas fa-bolt text-xs"></i>
                     </button>
                     <a href="{{ route('admin.dosen.show', $dosen) }}"
-                        class="text-blue-600 hover:text-blue-900 transition p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="Detail">
-                        <i class="fas fa-eye"></i>
+                        class="action-btn w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        title="Detail">
+                        <i class="fas fa-eye text-xs"></i>
                     </a>
                     <form action="{{ route('admin.dosen.destroy', $dosen) }}" method="POST" class="inline delete-form">
                         @csrf @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:text-red-900 transition p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Hapus">
-                            <i class="fas fa-trash"></i>
+                        <button type="submit"
+                            class="action-btn w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40"
+                            title="Hapus">
+                            <i class="fas fa-trash text-xs"></i>
                         </button>
                     </form>
                 </div>

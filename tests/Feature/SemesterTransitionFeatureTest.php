@@ -46,12 +46,17 @@ class SemesterTransitionFeatureTest extends TestCase
             'nama_mk' => 'Test MK',
             'sks' => 3,
             'semester' => 1,
+            'jenis' => 'wajib_prodi',
+            'prodi_id' => 1,
+            'fakultas_id' => 1,
         ]);
 
+        $user1 = User::factory()->create();
         $dosen = Dosen::create([
-            'user_id' => 1,
+            'user_id' => $user1->id,
             'nidn' => '1234567890',
             'nama' => 'Test Dosen',
+            'prodi' => 'Ilmu Hukum',
         ]);
 
         // Create class from old semester
@@ -61,6 +66,7 @@ class SemesterTransitionFeatureTest extends TestCase
             'semester_id' => $oldSemester->id,
             'kode_kelas' => 'OLD',
             'kapasitas' => 40,
+            'ruang' => 'A101',
         ]);
 
         // Create class from new semester
@@ -70,6 +76,7 @@ class SemesterTransitionFeatureTest extends TestCase
             'semester_id' => $newSemester->id,
             'kode_kelas' => 'NEW',
             'kapasitas' => 40,
+            'ruang' => 'A101',
         ]);
 
         // Test: Query active classes
@@ -112,12 +119,17 @@ class SemesterTransitionFeatureTest extends TestCase
             'nama_mk' => 'Test MK',
             'sks' => 3,
             'semester' => 1,
+            'jenis' => 'wajib_prodi',
+            'prodi_id' => 1,
+            'fakultas_id' => 1,
         ]);
 
+        $user2 = User::factory()->create();
         $dosen = Dosen::create([
-            'user_id' => 1,
+            'user_id' => $user2->id,
             'nidn' => '1234567890',
             'nama' => 'Test Dosen',
+            'prodi' => 'Ilmu Hukum',
         ]);
 
         // Create class from recent semester (within grace period)
@@ -127,6 +139,7 @@ class SemesterTransitionFeatureTest extends TestCase
             'semester_id' => $recentSemester->id,
             'kode_kelas' => 'RECENT',
             'kapasitas' => 40,
+            'ruang' => 'A101',
         ]);
 
         // Create class from new semester
@@ -136,6 +149,7 @@ class SemesterTransitionFeatureTest extends TestCase
             'semester_id' => $newSemester->id,
             'kode_kelas' => 'NEW',
             'kapasitas' => 40,
+            'ruang' => 'A101',
         ]);
 
         // Test: Query active classes
@@ -177,12 +191,17 @@ class SemesterTransitionFeatureTest extends TestCase
             'nama_mk' => 'Sistem Informasi',
             'sks' => 3,
             'semester' => 1,
+            'jenis' => 'wajib_prodi',
+            'prodi_id' => 1,
+            'fakultas_id' => 1,
         ]);
 
+        $user3 = User::factory()->create();
         $dosen = Dosen::create([
-            'user_id' => 1,
+            'user_id' => $user3->id,
             'nidn' => '1234567890',
             'nama' => 'Dr. Test',
+            'prodi' => 'Ilmu Hukum',
         ]);
 
         // Create classes
@@ -195,6 +214,7 @@ class SemesterTransitionFeatureTest extends TestCase
             'hari' => 'Senin',
             'jam_mulai' => '08:00:00',
             'jam_selesai' => '10:00:00',
+            'ruang' => 'A101',
         ]);
 
         $currentClass = KelasMataKuliah::create([
@@ -206,6 +226,7 @@ class SemesterTransitionFeatureTest extends TestCase
             'hari' => 'Selasa',
             'jam_mulai' => '10:00:00',
             'jam_selesai' => '12:00:00',
+            'ruang' => 'A101',
         ]);
 
         // Query using current semester scope

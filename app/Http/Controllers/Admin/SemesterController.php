@@ -144,7 +144,7 @@ class SemesterController extends Controller
     }
 
     /**
-     * Return the tanggal_selesai for the Ganjil semester of the given tahun_ajaran.
+     * Return the tanggal_selesai for the preceding semester of the given tahun_ajaran and nama_semester.
      *
      * Response: { tanggal_selesai: 'YYYY-MM-DD' | null }
      */
@@ -155,15 +155,44 @@ class SemesterController extends Controller
 
             $request->validate([
                 'tahun_ajaran' => 'required|string',
+                'nama_semester' => 'nullable|string|in:Ganjil,Genap',
             ]);
 
             $tahun = $request->input('tahun_ajaran');
+            $nama = $request->input('nama_semester');
 
-            // Only return a date when a Ganjil exists for the exact same tahun_ajaran.
-            $semester = Semester::where('nama_semester', 'Ganjil')
-                ->where('tahun_ajaran', $tahun)
-                ->orderBy('tanggal_selesai', 'desc')
-                ->first();
+            // Determine logically preceding semester
+            $prevSemesterName = null;
+            $prevTahunAjaran = null;
+
+            if ($nama === 'Genap') {
+                // If creating Genap for YYYY/YYYY, preceding is Ganjil for the SAME YYYY/YYYY
+                $prevSemesterName = 'Ganjil';
+                $prevTahunAjaran = $tahun;
+            } elseif ($nama === 'Ganjil') {
+                // If creating Ganjil for YYYY/YYYY, preceding is Genap for the PREVIOUS YYYY/YYYY
+                $prevSemesterName = 'Genap';
+                $parts = explode('/', $tahun);
+                if (count($parts) === 2) {
+                    $prevYearStart = intval($parts[0]) - 1;
+                    $prevYearEnd = intval($parts[1]) - 1;
+                    $prevTahunAjaran = "$prevYearStart/$prevYearEnd";
+                }
+            }
+
+            $semester = null;
+
+            if ($prevSemesterName && $prevTahunAjaran) {
+                $semester = Semester::where('nama_semester', $prevSemesterName)
+                    ->where('tahun_ajaran', $prevTahunAjaran)
+                    ->orderBy('tanggal_selesai', 'desc')
+                    ->first();
+            }
+
+            // Fallback: If not found, use the latest overall semester by tanggal_selesai
+            if (!$semester) {
+                $semester = Semester::orderBy('tanggal_selesai', 'desc')->first();
+            }
 
             if (!$semester || !$semester->tanggal_selesai) {
                 return response()->json(['tanggal_selesai' => null]);

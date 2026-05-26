@@ -261,7 +261,7 @@ class ImportController extends Controller
         $templateColumns = $config['template_columns'];
         
         // Handle both array format (keys=display, values=actual) and simple array
-        if (is_assoc_array($templateColumns)) {
+        if ($this->is_assoc_array($templateColumns)) {
             $displayColumns = array_keys($templateColumns);
             $actualColumns = array_values($templateColumns);
         } else {

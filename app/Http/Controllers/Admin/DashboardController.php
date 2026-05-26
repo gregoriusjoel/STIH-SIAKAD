@@ -37,7 +37,6 @@ class DashboardController extends Controller
             'academic_events' => AcademicEvent::active()
                 ->orderBy('start_date', 'asc')
                 ->get()
-                ->unique('title')
                 ->values(),
             'calendar_active_periods' => AcademicEvent::currentlyActive()
                 ->orderBy('end_date', 'asc')

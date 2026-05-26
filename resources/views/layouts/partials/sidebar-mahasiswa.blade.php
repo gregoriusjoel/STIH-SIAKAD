@@ -143,6 +143,15 @@
             </a>
             @endif
 
+            {{-- Wisuda --}}
+            @if(Route::has('mahasiswa.wisuda.index'))
+            <a href="{{ route('mahasiswa.wisuda.index') }}"
+               class="{{ $navItemClass }} {{ Request::routeIs('mahasiswa.wisuda*') ? $activeClass : $inactiveClass }}">
+                <i class="fas fa-user-graduate w-5 text-center transition-transform group-hover:scale-110"></i>
+                <span class="tracking-wide">Wisuda</span>
+            </a>
+            @endif
+
             {{-- Separator --}}
             <div class="pt-4 pb-2">
                 <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Keuangan</p>

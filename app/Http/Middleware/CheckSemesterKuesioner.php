@@ -33,8 +33,13 @@ class CheckSemesterKuesioner
             return $next($request);
         }
         
-        // Skip if mahasiswa status is not aktif (new student still in activation)
-        if ($mahasiswa->status_akun !== 'aktif') {
+        // Skip if account is not activated yet (handled by CheckMahasiswaStatus)
+        if ($mahasiswa->status_akun === 'tidak_aktif') {
+            return $next($request);
+        }
+        
+        // Skip for new students in semester 1 (they must complete the New Student Survey instead)
+        if ($mahasiswa->semester <= 1) {
             return $next($request);
         }
         

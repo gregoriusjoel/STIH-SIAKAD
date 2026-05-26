@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 
 class SearchController extends Controller
 {
@@ -37,32 +39,14 @@ class SearchController extends Controller
             'pengumumans' => ['tables' => ['pengumumans', 'pengumuman'], 'columns' => ['judul']],
         ];
 
-        // Static admin features (label and route name)
-        $features = [
-            ['key' => 'mahasiswa', 'label' => 'Data Mahasiswa', 'route' => 'admin.mahasiswa.index'],
-            ['key' => 'dosen', 'label' => 'Data Dosen', 'route' => 'admin.dosen.index'],
-            ['key' => 'mata_kuliah', 'label' => 'Mata Kuliah', 'route' => 'admin.mata-kuliah.index'],
-            ['key' => 'kelas', 'label' => 'Kelas Mata Kuliah', 'route' => 'admin.kelas-mata-kuliah.index'],
-            ['key' => 'jadwal', 'label' => 'Jadwal Perkuliahan', 'route' => 'admin.jadwal.index'],
-            ['key' => 'parents', 'label' => 'Data Orang Tua', 'route' => 'admin.parents.index'],
-            ['key' => 'users', 'label' => 'Manajemen User', 'route' => 'admin.users.index'],
-            ['key' => 'semester', 'label' => 'Semester & Tahun Ajaran', 'route' => 'admin.semester.index'],
-            ['key' => 'krs', 'label' => 'Manajemen KRS', 'route' => 'admin.krs.index'],
-            ['key' => 'ruangan', 'label' => 'Manajemen Ruangan', 'route' => 'admin.ruangan.index'],
-            ['key' => 'jam_perkuliahan', 'label' => 'Jam Perkuliahan', 'route' => 'admin.jam-perkuliahan.index'],
-            ['key' => 'prodi', 'label' => 'Program Studi', 'route' => 'admin.prodi.index'],
-            ['key' => 'fakultas', 'label' => 'Fakultas', 'route' => 'admin.fakultas.index'],
-            ['key' => 'magang', 'label' => 'Bimbingan Magang', 'route' => 'admin.magang.index'],
-            ['key' => 'kalender', 'label' => 'Kalender Akademik', 'route' => 'admin.kalender.index'],
-            ['key' => 'dosen_pa', 'label' => 'Dosen Pembimbing Akademik', 'route' => 'admin.dosen-pa.index'],
-            ['key' => 'pengajuan', 'label' => 'Pengajuan Surat', 'route' => 'admin.pengajuan.index'],
-            ['key' => 'jadwal_generator', 'label' => 'Auto Generate Jadwal', 'route' => 'admin.jadwal_generator.index'],
-            ['key' => 'jadwal_admin_approval', 'label' => 'Persetujuan Jadwal', 'route' => 'admin.jadwal_admin_approval.index'],
-            ['key' => 'availability', 'label' => 'Ketersediaan Dosen', 'route' => 'admin.availability.index'],
-            ['key' => 'import', 'label' => 'Import Data', 'route' => 'admin.import.index'],
-            ['key' => 'pengumuman', 'label' => 'Pengumuman', 'route' => 'admin.pengumuman.index'],
-            ['key' => 'absensi_dosen', 'label' => 'Absensi Dosen', 'route' => 'admin.absensi_dosen.index'],
-        ];
+        // Dynamically get admin features from the sidebar blade template
+        if (app()->environment('local')) {
+            $features = $this->getDynamicFeatures();
+        } else {
+            $features = Cache::remember('admin_sidebar_features', 86400, function () {
+                return $this->getDynamicFeatures();
+            });
+        }
 
         // search database tables (try common table name variants)
         foreach ($tables as $logical => $cfg) {
@@ -103,7 +87,10 @@ class SearchController extends Controller
 
         // search features
         foreach ($features as $f) {
-            if (stripos($f['label'], $q) !== false || stripos($f['key'], $q) !== false) {
+            $match = stripos($f['label'], $q) !== false 
+                || stripos($f['key'], $q) !== false 
+                || (!empty($f['route']) && stripos($f['route'], $q) !== false);
+            if ($match) {
                 $featureResults[] = $f;
             }
         }
@@ -150,8 +137,10 @@ class SearchController extends Controller
             $outFeatures = [];
             foreach ($featureResults as $f) {
                 $url = null;
-                if (!empty($f['route']) && \Route::has($f['route'])) {
+                if (!empty($f['route']) && Route::has($f['route'])) {
                     $url = route($f['route']);
+                } elseif (!empty($f['url'])) {
+                    $url = url($f['url']);
                 }
                 $outFeatures[] = ['label' => $f['label'], 'route' => $f['route'] ?? null, 'url' => $url, 'key' => $f['key']];
             }
@@ -161,6 +150,82 @@ class SearchController extends Controller
 
         // pass feature results under a dedicated key for html view
         return view('admin.search.results', ['q' => $q, 'results' => $results, 'features' => $featureResults]);
+    }
+
+    /**
+     * Parses the admin sidebar blade template to extract available features.
+     *
+     * @return array
+     */
+    private function getDynamicFeatures()
+    {
+        $path = resource_path('views/admin/sidebar-admin.blade.php');
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        $content = file_get_contents($path);
+        
+        // Match all <a> tags that have class containing 'sidebar-link'
+        preg_match_all('/<a\s+[^>]*class="[^"]*sidebar-link[^"]*"[^>]*>.*?<\/a>/is', $content, $matches);
+
+        $features = [];
+        $seenKeys = [];
+
+        foreach (($matches[0] ?? []) as $anchorBlock) {
+            // Find span with class matching 'text-sm'
+            if (preg_match('/<span[^>]*class="[^"]*text-sm[^"]*"[^>]*>(.*?)<\/span>/is', $anchorBlock, $spanMatch)) {
+                $label = trim(strip_tags($spanMatch[1]));
+                $lowerLabel = strtolower($label);
+                
+                // Exclude logout and generic/empty elements
+                if ($lowerLabel === 'logout' || $lowerLabel === '') {
+                    continue;
+                }
+
+                // Extract route name from the block
+                $route = null;
+                if (preg_match('/route\(\'([^\'\s]+)\'\)/', $anchorBlock, $routeMatch)) {
+                    $route = $routeMatch[1];
+                }
+
+                // Extract url fallback from the block
+                $url = null;
+                if (preg_match('/url\(\'([^\'\s]+)\'\)/', $anchorBlock, $urlMatch)) {
+                    $url = $urlMatch[1];
+                }
+
+                // Generate slug/key
+                $key = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '_', trim($label)));
+                if (empty($key)) {
+                    continue;
+                }
+
+                if (!$route && !$url) {
+                    continue;
+                }
+
+                if (isset($seenKeys[$key])) {
+                    $idx = $seenKeys[$key];
+                    if ($route && !$features[$idx]['route']) {
+                        $features[$idx]['route'] = $route;
+                    }
+                    if ($url && !$features[$idx]['url']) {
+                        $features[$idx]['url'] = $url;
+                    }
+                } else {
+                    $features[] = [
+                        'key' => $key,
+                        'label' => $label,
+                        'route' => $route,
+                        'url' => $url,
+                    ];
+                    $seenKeys[$key] = count($features) - 1;
+                }
+            }
+        }
+
+        return $features;
     }
 
 }

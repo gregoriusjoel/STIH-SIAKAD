@@ -369,7 +369,23 @@
                         @endif
                     </a>
                 @endif
+            </li>
             <li>
+                @if(Route::has('admin.wisuda.index'))
+                    <a href="{{ route('admin.wisuda.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.wisuda.*') ? 'active' : '' }}">
+                        <i class="fas fa-user-graduate w-5 mr-3"></i>
+                        <span class="text-sm font-medium">Pendaftaran Wisuda</span>
+                        @php
+                            $pendingWisudaCount = \App\Models\WisudaRegistration::where('status', 'pending')->count();
+                        @endphp
+                        @if($pendingWisudaCount > 0)
+                            <span class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                {{ $pendingWisudaCount }}
+                            </span>
+                        @endif
+                    </a>
+                @endif
+            </li>
                 @if(Route::has('admin.hasil-kuisioner.index'))
                     <a href="{{ route('admin.hasil-kuisioner.index') }}" class="sidebar-link flex items-center px-4 py-3 text-white rounded-lg hover:bg-red-800/40 {{ request()->routeIs('admin.hasil-kuisioner.*') ? 'active' : '' }}">
                         <i class="fas fa-poll w-5 mr-3"></i>

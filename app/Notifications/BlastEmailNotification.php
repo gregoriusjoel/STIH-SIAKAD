@@ -34,24 +34,15 @@ class BlastEmailNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $mail = (new MailMessage)
+        return (new MailMessage)
             ->subject($this->subject)
-            ->greeting($this->greeting)
-            ->line($this->message);
-
-        // Tambahkan action link jika ada
-        if ($this->actionUrl && $this->actionText) {
-            $mail->action($this->actionText, $this->actionUrl);
-        }
-
-        // Tambahkan additional lines
-        foreach ($this->additionalLines as $line) {
-            $mail->line($line);
-        }
-
-        $mail->salutation('Salam,<br>Sistem SIAKAD Universitas Adhyaksa');
-
-        return $mail;
+            ->view('emails.blast-notification', [
+                'subject'     => $this->subject,
+                'greeting'    => $this->greeting,
+                'messageBody' => $this->message,
+                'actionUrl'   => $this->actionUrl,
+                'actionText'  => $this->actionText,
+            ]);
     }
 
     /**

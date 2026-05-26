@@ -336,10 +336,13 @@ class AcademicCalendarController extends Controller
     {
         $request->validate([
             'file' => 'required|file|mimes:csv,txt,pdf|max:2048',
+            'semester_id' => 'nullable|exists:semesters,id',
         ]);
 
+        $semesterId = $request->input('semester_id');
+
         if ($request->input('pdf_text_content')) {
-            return $this->processPdfText($request->input('pdf_text_content'));
+            return $this->processPdfText($request->input('pdf_text_content'), $semesterId);
         }
 
         $file = $request->file('file');
@@ -348,7 +351,7 @@ class AcademicCalendarController extends Controller
         if ($ext === 'pdf') {
             try {
                 $text = \App\Services\SimplePdfParser::parseText($file->getPathname());
-                return $this->processPdfText($text);
+                return $this->processPdfText($text, $semesterId);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'Gagal membaca PDF di server: ' . $e->getMessage()], 500);
             }
@@ -381,7 +384,7 @@ class AcademicCalendarController extends Controller
                     $color = $this->getEventColor($type);
                 }
 
-                AcademicEvent::create([
+                $event = AcademicEvent::create([
                     'title'       => $title,
                     'start_date'  => $start,
                     'end_date'    => $end,
@@ -391,7 +394,11 @@ class AcademicCalendarController extends Controller
                     'is_active'   => true,
                     'created_by'  => auth()->id(),
                     'updated_by'  => auth()->id(),
+                    'semester_id' => $semesterId ?: ($data[6] ?? null),
                 ]);
+
+                // Sync KRS dates to semester if this is a KRS event
+                $this->syncKrsDatesToSemester($event);
 
                 $count++;
             } catch (\Exception $e) {
@@ -413,7 +420,7 @@ class AcademicCalendarController extends Controller
         ]);
     }
 
-    private function processPdfText($text)
+    private function processPdfText($text, $semesterId = null)
     {
 
 
@@ -493,7 +500,7 @@ class AcademicCalendarController extends Controller
                 else if (str_contains($t, 'kuliah') || str_contains($t, 'pertemuan'))
                     $type = 'perkuliahan';
 
-                AcademicEvent::create([
+                $event = AcademicEvent::create([
                     'title'       => $title,
                     'start_date'  => $dates['start'],
                     'end_date'    => $dates['end'],
@@ -503,7 +510,12 @@ class AcademicCalendarController extends Controller
                     'is_active'   => true,
                     'created_by'  => auth()->id(),
                     'updated_by'  => auth()->id(),
+                    'semester_id' => $semesterId,
                 ]);
+
+                // Sync KRS dates to semester if this is a KRS event
+                $this->syncKrsDatesToSemester($event);
+
                 $count++;
             }
 

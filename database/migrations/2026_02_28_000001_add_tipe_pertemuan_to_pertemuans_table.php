@@ -20,7 +20,12 @@ return new class extends Migration
 
         // Add composite index for efficient queries
         // Check if index already exists first
-        $indexExists = collect(DB::select("SHOW INDEX FROM pertemuans WHERE Key_name = 'pertemuans_kmk_tipe_nomor_index'"))->isNotEmpty();
+        $indexExists = false;
+        if (DB::getDriverName() !== 'sqlite') {
+            $indexExists = collect(DB::select("SHOW INDEX FROM pertemuans WHERE Key_name = 'pertemuans_kmk_tipe_nomor_index'"))->isNotEmpty();
+        } else {
+            $indexExists = collect(DB::select("PRAGMA index_list(pertemuans)"))->contains('name', 'pertemuans_kmk_tipe_nomor_index');
+        }
         if (!$indexExists) {
             Schema::table('pertemuans', function (Blueprint $table) {
                 $table->index(

@@ -16,9 +16,27 @@ class DashboardController extends Controller
         $user = Auth::user();
         $mahasiswa = Mahasiswa::where('user_id', $user->id)->firstOrFail();
         
+        // Calculate target tahun_ajaran and allowed semester codes for current semester
+        $currentSemester = $mahasiswa->getCurrentSemester();
+        $baseYear = (int) $mahasiswa->angkatan;
+        $yearOffset = floor(($currentSemester - 1) / 2);
+        $academicStartYear = $baseYear + $yearOffset;
+        $academicEndYear = $academicStartYear + 1;
+        $calculatedTahunAjaran = $academicStartYear . '/' . $academicEndYear;
+
+        if ($currentSemester % 2 == 1) {
+            $allowedKodeIds = ['sms1', 'sms3', 'sms5', 'sms7'];
+        } else {
+            $allowedKodeIds = ['sms2', 'sms4', 'sms6', 'sms8'];
+        }
+
         // Get active KRS for current semester
         $activeKrs = Krs::where('mahasiswa_id', $mahasiswa->id)
-            ->where('status', 'sudah submit')
+            ->whereIn('status', ['sudah submit', 'approved', 'disetujui'])
+            ->where('tahun_ajaran', $calculatedTahunAjaran)
+            ->whereHas('mataKuliah', function ($q) use ($allowedKodeIds) {
+                $q->whereIn('kode_id', $allowedKodeIds);
+            })
             ->with(['kelasMataKuliah.mataKuliah'])
             ->get();
         

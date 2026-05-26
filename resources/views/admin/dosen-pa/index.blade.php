@@ -131,20 +131,20 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium" @click.stop>
-                                    <div class="flex items-center justify-center space-x-2">
+                                    <div class="flex items-center justify-center gap-1.5">
                                         <a href="{{ route('admin.dosen-pa.edit', $dosen->id) }}"
-                                            class="text-yellow-600 dark:text-yellow-400 hover:text-yellow-900 dark:hover:text-yellow-300 transition p-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded"
+                                            class="action-btn w-8 h-8 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 flex items-center justify-center hover:bg-yellow-100 dark:hover:bg-yellow-900/40"
                                             title="Edit Dosen PA">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fas fa-edit text-xs"></i>
                                         </a>
                                         <form action="{{ route('admin.dosen-pa.destroy', $dosen->id) }}" method="POST"
                                             class="inline delete-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                                class="action-btn w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40"
                                                 title="Hapus Dosen PA">
-                                                <i class="fas fa-trash"></i>
+                                                <i class="fas fa-trash text-xs"></i>
                                             </button>
                                         </form>
                                     </div>

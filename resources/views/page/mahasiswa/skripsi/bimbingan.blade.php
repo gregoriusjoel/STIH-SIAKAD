@@ -220,51 +220,229 @@
     </div>
 
     {{-- ═══════════════════════════════════════════════════════════
-         RIWAYAT BIMBINGAN LAMA (Read-Only / Backward Compatibility)
+         PILIHAN LAIN: INPUT LOGBOOK DIGITAL DI WEB (OPSIONAL)
     ════════════════════════════════════════════════════════════ --}}
-    @if($guidances->isNotEmpty())
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div class="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[18px] text-gray-400">history</span>
-                </div>
-                <div>
-                    <h2 class="font-bold text-gray-700 text-sm">Riwayat Bimbingan Sebelumnya</h2>
-                    <p class="text-[11px] text-gray-400">Catatan bimbingan yang tercatat di sistem lama</p>
-                </div>
-            </div>
-            <span class="text-xs bg-gray-100 text-gray-500 px-3 py-1 rounded-full font-bold">{{ $guidances->count() }} entri</span>
-        </div>
-        <div class="divide-y divide-gray-50">
-            @foreach($guidances as $i => $g)
-            @php $statusColor = $g->status->color(); @endphp
-            <div class="px-5 py-3.5 hover:bg-gray-50/50 transition-colors">
-                <div class="flex items-start justify-between gap-3">
-                    <div class="flex items-start gap-3">
-                        <div class="w-7 h-7 shrink-0 rounded-full bg-gray-100 flex items-center justify-center text-[11px] font-bold text-gray-600">
-                            {{ $guidances->count() - $i }}
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-xs text-gray-400 font-medium">{{ $g->tanggal_bimbingan->format('d M Y') }}</p>
-                            <p class="text-sm text-gray-700 mt-1 leading-relaxed">{{ $g->catatan }}</p>
-                            @if($g->catatan_dosen)
-                            <div class="mt-2 bg-blue-50 border-l-2 border-blue-400 pl-3 py-1.5 text-xs text-gray-600 rounded-r-lg">
-                                <strong>Catatan Dosen:</strong> {{ $g->catatan_dosen }}
-                            </div>
-                            @endif
-                        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+
+        {{-- LEFT COLUMN: FORM INPUT LOGBOOK (1/3 width) --}}
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden lg:col-span-1">
+            <div class="bg-gradient-to-r from-[#8B1538] to-[#6D1029] px-5 py-4">
+                <div class="flex items-center gap-3 text-white">
+                    <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm shrink-0">
+                        <span class="material-symbols-outlined text-lg">edit_note</span>
                     </div>
-                    <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-bold
-                        bg-{{ $statusColor }}-100 text-{{ $statusColor }}-700">
-                        {{ $g->status->label() }}
-                    </span>
+                    <div>
+                        <h2 class="font-bold text-sm">Input Logbook Web</h2>
+                        <p class="text-[11px] text-red-100 mt-0.5">Input aktivitas bimbingan langsung di sini</p>
+                    </div>
                 </div>
             </div>
-            @endforeach
+            
+            <form action="{{ route('mahasiswa.skripsi.bimbingan.store') }}" method="POST" enctype="multipart/form-data" class="p-5 space-y-4"
+                x-data="{
+                    note: '',
+                    fileName: '',
+                    fileSize: '',
+                    handleFile(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            this.fileName = file.name;
+                            this.fileSize = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+                        }
+                    }
+                }">
+                @csrf
+
+                {{-- Tanggal Bimbingan --}}
+                <div class="space-y-1">
+                    <label for="tanggal_bimbingan" class="text-xs font-black text-gray-700 uppercase tracking-wider block">Tanggal Bimbingan</label>
+                    <div class="relative">
+                        <input type="date" id="tanggal_bimbingan" name="tanggal_bimbingan" 
+                            max="{{ now()->format('Y-m-d') }}"
+                            value="{{ old('tanggal_bimbingan', now()->format('Y-m-d')) }}"
+                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:bg-white focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] transition-all"
+                            required>
+                    </div>
+                    @error('tanggal_bimbingan')
+                    <p class="text-xs text-red-500 flex items-center gap-1 mt-1">
+                        <span class="material-symbols-outlined text-[14px]">error</span>
+                        {{ $message }}
+                    </p>
+                    @enderror
+                </div>
+
+                {{-- Catatan Bimbingan --}}
+                <div class="space-y-1">
+                    <div class="flex justify-between items-center">
+                        <label for="catatan" class="text-xs font-black text-gray-700 uppercase tracking-wider block">Catatan Bimbingan</label>
+                        <span class="text-[10px] font-bold text-gray-400" :class="note.length < 20 ? 'text-red-500' : 'text-emerald-500'">
+                            <span x-text="note.length"></span>/3000 (min 20)
+                        </span>
+                    </div>
+                    <textarea id="catatan" name="catatan" rows="6" x-model="note"
+                        placeholder="Tuliskan materi diskusi bimbingan dan arahan dosen pembimbing..."
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:bg-white focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] transition-all resize-none leading-relaxed"
+                        minlength="20" maxlength="3000" required>{{ old('catatan') }}</textarea>
+                    @error('catatan')
+                    <p class="text-xs text-red-500 flex items-center gap-1 mt-1">
+                        <span class="material-symbols-outlined text-[14px]">error</span>
+                        {{ $message }}
+                    </p>
+                    @enderror
+                </div>
+
+                {{-- File Lampiran --}}
+                <div class="space-y-1">
+                    <label class="text-xs font-black text-gray-700 uppercase tracking-wider block">File Lampiran (Opsional)</label>
+                    <div class="border border-dashed rounded-xl p-4 text-center transition-all bg-gray-50/50 hover:bg-gray-50"
+                        :class="fileName ? 'border-emerald-300 bg-emerald-50/10' : 'border-gray-200'">
+                        
+                        <template x-if="!fileName">
+                            <div class="flex flex-col items-center">
+                                <span class="material-symbols-outlined text-gray-400 text-2xl mb-1">upload_file</span>
+                                <p class="text-[10px] text-gray-400 mb-2">PDF, DOC, DOCX, JPG, PNG (Maks 5MB)</p>
+                            </div>
+                        </template>
+
+                        <template x-if="fileName">
+                            <div class="mb-2">
+                                <p class="text-xs font-bold text-emerald-800 truncate" x-text="fileName"></p>
+                                <p class="text-[10px] text-emerald-600" x-text="fileSize"></p>
+                            </div>
+                        </template>
+
+                        <label class="inline-flex items-center gap-1 cursor-pointer px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-[11px] font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[14px] text-gray-500">attach_file</span>
+                            <span x-text="fileName ? 'Ganti File' : 'Pilih File'"></span>
+                            <input type="file" name="file_bimbingan" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="hidden" @change="handleFile($event)">
+                        </label>
+                    </div>
+                    @error('file_bimbingan')
+                    <p class="text-xs text-red-500 flex items-center gap-1 mt-1">
+                        <span class="material-symbols-outlined text-[14px]">error</span>
+                        {{ $message }}
+                    </p>
+                    @enderror
+                </div>
+
+                {{-- Submit Button --}}
+                <button type="submit"
+                    class="w-full inline-flex items-center justify-center gap-2 bg-[#8B1538] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-[#6D1029] hover:shadow-lg hover:shadow-[#8B1538]/20 transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="note.length < 20">
+                    <span class="material-symbols-outlined text-[18px]">send</span>
+                    Simpan Catatan
+                </button>
+            </form>
         </div>
+
+        {{-- RIGHT COLUMN: DAFTAR ENTRI LOGBOOK DIGITAL (2/3 width) --}}
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden lg:col-span-2">
+            <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[18px] text-gray-400">format_list_bulleted</span>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-gray-700 text-sm">Daftar Entri Logbook Digital</h2>
+                        <p class="text-[11px] text-gray-400">Seluruh riwayat bimbingan yang diinput secara digital</p>
+                    </div>
+                </div>
+                <span class="text-xs bg-[#8B1538]/5 text-[#8B1538] px-3 py-1 rounded-full font-bold">{{ $guidances->count() }} entri</span>
+            </div>
+
+            @if($guidances->isEmpty())
+            <div class="p-12 text-center flex flex-col items-center justify-center">
+                <div class="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 text-gray-300">
+                    <span class="material-symbols-outlined text-4xl">inbox</span>
+                </div>
+                <h3 class="text-sm font-bold text-gray-700 mb-1">Belum Ada Entri Logbook</h3>
+                <p class="text-xs text-gray-400 max-w-sm leading-relaxed">
+                    Silakan tambahkan catatan bimbingan baru menggunakan form di sebelah kiri untuk merekam sesi bimbingan Anda secara digital.
+                </p>
+            </div>
+            @else
+            <div class="divide-y divide-gray-100 max-h-[620px] overflow-y-auto custom-scrollbar">
+                @foreach($guidances as $i => $g)
+                @php
+                    $statusColor = $g->status->color();
+                    // Maps standard color names to specific Tailwinds class colors
+                    $themeColor = match($statusColor) {
+                        'green'  => 'emerald',
+                        'yellow' => 'amber',
+                        'red'    => 'rose',
+                        'blue'   => 'blue',
+                        default  => 'gray',
+                    };
+                @endphp
+                <div class="p-5 hover:bg-gray-50/40 transition-all duration-200 relative group">
+                    {{-- Status Indicator Line --}}
+                    <div class="absolute top-0 left-0 w-1.5 h-full transition-all duration-200
+                        @if($g->status->value === 'pending') bg-amber-400
+                        @elseif($g->status->value === 'approved') bg-emerald-500
+                        @elseif($g->status->value === 'rejected') bg-rose-500
+                        @else bg-blue-500
+                        @endif">
+                    </div>
+
+                    <div class="pl-2 space-y-3">
+                        {{-- Top Metadata Row --}}
+                        <div class="flex items-center justify-between gap-3 flex-wrap">
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-black text-gray-500">
+                                    #{{ $guidances->count() - $i }}
+                                </div>
+                                <div class="flex items-center gap-1.5 text-gray-500 text-xs font-semibold">
+                                    <span class="material-symbols-outlined text-[15px]">calendar_month</span>
+                                    <span>{{ $g->tanggal_bimbingan->format('d M Y') }}</span>
+                                </div>
+                            </div>
+                            
+                            {{-- Status Badge --}}
+                            <span class="px-2.5 py-0.5 border rounded-full text-[10px] font-black uppercase tracking-wider
+                                bg-{{ $themeColor }}-50 text-{{ $themeColor }}-700 border-{{ $themeColor }}-100">
+                                {{ $g->status->label() }}
+                            </span>
+                        </div>
+
+                        {{-- Guidance Notes --}}
+                        <div class="bg-gray-50/70 border border-gray-100 rounded-xl p-3.5 group-hover:bg-white group-hover:shadow-sm transition-all duration-200">
+                            <p class="text-sm font-medium text-gray-700 leading-relaxed whitespace-pre-line">{{ $g->catatan }}</p>
+                        </div>
+
+                        {{-- Attachment Section --}}
+                        @if($g->file_path)
+                        <div class="flex items-center pt-0.5">
+                            <a href="{{ route('mahasiswa.skripsi.download', ['type' => 'guidance', 'id' => $g->id]) }}"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#8B1538]/5 text-[#8B1538] hover:bg-[#8B1538] hover:text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+                                <span class="material-symbols-outlined text-[16px]">cloud_download</span>
+                                <span>Unduh File Bukti</span>
+                            </a>
+                        </div>
+                        @endif
+
+                        {{-- Supervisor Feedback Comment Thread --}}
+                        @if($g->catatan_dosen)
+                        <div class="bg-blue-50/50 border border-blue-100/50 rounded-xl p-3.5 mt-2 flex gap-3 items-start">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm">
+                                {{ substr($submission->approvedSupervisor?->nama ?? 'D', 0, 1) }}
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <h4 class="text-xs font-bold text-blue-900 leading-none">{{ $submission->approvedSupervisor?->nama ?? 'Dosen Pembimbing' }}</h4>
+                                    <span class="text-[9px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.5 rounded uppercase tracking-wider scale-90">Feedback</span>
+                                </div>
+                                <p class="text-xs text-blue-800 font-medium leading-relaxed whitespace-pre-line mt-1">{{ $g->catatan_dosen }}</p>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
+        </div>
+
     </div>
-    @endif
 
 </div>
 @endsection

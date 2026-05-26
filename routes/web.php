@@ -314,6 +314,17 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         Route::post('/sidang/{reg}/upload', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'uploadSidangFile'])->name('sidang.upload');
         Route::post('/sidang/{reg}/submit', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'submitSidangRegistration'])->name('sidang.submit');
         Route::post('/revisi/upload', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'uploadRevision'])->name('revision.upload');
+        Route::get('/download/{type}/{id}', [App\Http\Controllers\Mahasiswa\SkripsiController::class, 'downloadFile'])->name('download');
+    });
+
+    // ── Wisuda (Mahasiswa) ──────────────────────────────────
+    Route::prefix('wisuda')->name('wisuda.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Mahasiswa\WisudaController::class, 'index'])->name('index');
+        Route::get('/daftar', [App\Http\Controllers\Mahasiswa\WisudaController::class, 'registerForm'])->name('register');
+        Route::post('/daftar', [App\Http\Controllers\Mahasiswa\WisudaController::class, 'store'])->name('store');
+        Route::post('/daftar/{reg}/upload', [App\Http\Controllers\Mahasiswa\WisudaController::class, 'uploadDocument'])->name('upload');
+        Route::post('/daftar/{reg}/submit', [App\Http\Controllers\Mahasiswa\WisudaController::class, 'submit'])->name('submit');
+        Route::get('/kartu-undangan', [App\Http\Controllers\Mahasiswa\WisudaController::class, 'printCard'])->name('print-card');
     });
 
     Route::prefix('thesis')->group(function () {
@@ -620,6 +631,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/{skripsi}/complete', [App\Http\Controllers\Admin\SkripsiController::class, 'completeSidang'])->name('complete');
         Route::get('/download/{encodedPath}', [App\Http\Controllers\Admin\SkripsiController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
         Route::get('/preview/{encodedPath}', [App\Http\Controllers\Admin\SkripsiController::class, 'previewFile'])->name('preview')->where('encodedPath', '.*');
+    });
+
+    // ── Wisuda (Admin) ──────────────────────────────────
+    Route::prefix('wisuda')->name('wisuda.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\WisudaController::class, 'index'])->name('index');
+        Route::get('/batches/list', [App\Http\Controllers\Admin\WisudaController::class, 'batches'])->name('batches');
+        Route::get('/batches/create', [App\Http\Controllers\Admin\WisudaController::class, 'createBatch'])->name('batches.create');
+        Route::post('/batches', [App\Http\Controllers\Admin\WisudaController::class, 'storeBatch'])->name('batches.store');
+        Route::get('/batches/{batch}', [App\Http\Controllers\Admin\WisudaController::class, 'showBatch'])->name('batches.show');
+        Route::patch('/batches/{batch}', [App\Http\Controllers\Admin\WisudaController::class, 'updateBatch'])->name('batches.update');
+        Route::post('/batches/{batch}/assign', [App\Http\Controllers\Admin\WisudaController::class, 'assignToBatch'])->name('batches.assign');
+        Route::get('/download/{encodedPath}', [App\Http\Controllers\Admin\WisudaController::class, 'downloadFile'])->name('download')->where('encodedPath', '.*');
+        Route::get('/preview/{encodedPath}', [App\Http\Controllers\Admin\WisudaController::class, 'previewFile'])->name('preview')->where('encodedPath', '.*');
+        Route::get('/{registration}', [App\Http\Controllers\Admin\WisudaController::class, 'show'])->name('show');
+        Route::post('/{registration}/approve', [App\Http\Controllers\Admin\WisudaController::class, 'approve'])->name('approve');
+        Route::post('/{registration}/reject', [App\Http\Controllers\Admin\WisudaController::class, 'reject'])->name('reject');
     });
 
     // Hasil Kuisioner Management

@@ -356,25 +356,25 @@
                                                 </div>
                                             </td>
                                             <td class="px-5 py-4 text-center">
-                                                <div class="flex items-center justify-center gap-1">
+                                                <div class="flex items-center justify-center gap-1.5">
                                                     <button type="button"
                                                         onclick="document.getElementById('modal-mk-{{ $mk->id }}').classList.remove('hidden')"
-                                                        class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition"
+                                                        class="action-btn w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/40"
                                                         title="Detail">
-                                                        <i class="fas fa-eye"></i>
+                                                        <i class="fas fa-eye text-xs"></i>
                                                     </button>
                                                     <a href="{{ route('admin.mata-kuliah.edit', $mk) }}"
-                                                        class="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition"
+                                                        class="action-btn w-8 h-8 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 flex items-center justify-center hover:bg-yellow-100 dark:hover:bg-yellow-900/40"
                                                         title="Edit">
-                                                        <i class="fas fa-edit"></i>
+                                                        <i class="fas fa-edit text-xs"></i>
                                                     </a>
                                                     <form action="{{ route('admin.mata-kuliah.destroy', $mk) }}" method="POST"
                                                         class="inline delete-form">
                                                         @csrf @method('DELETE')
                                                         <button type="submit"
-                                                            class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition"
+                                                            class="action-btn w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40"
                                                             title="Hapus">
-                                                            <i class="fas fa-trash"></i>
+                                                            <i class="fas fa-trash text-xs"></i>
                                                         </button>
                                                     </form>
                                                 </div>
@@ -535,21 +535,17 @@
                                             {{ $pivot->activated_at ? $pivot->activated_at->format('d/m/Y') : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-center">
-                                            @if($selectedSemester && !$selectedSemester->is_locked)
                                                 <form method="POST" action="{{ route('admin.mata-kuliah-semester.detach') }}"
                                                     onsubmit="return confirm('Pindah ke histori?')">
                                                     @csrf
                                                     <input type="hidden" name="semester_id" value="{{ $selectedSemester->id }}">
                                                     <input type="hidden" name="mata_kuliah_ids[]" value="{{ $mk->id }}">
                                                     <button type="submit"
-                                                        class="p-1.5 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded transition text-xs"
+                                                        class="action-btn w-8 h-8 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 flex items-center justify-center hover:bg-yellow-100 dark:hover:bg-yellow-900/40"
                                                         title="Pindah ke Histori">
-                                                        <i class="fas fa-archive"></i>
+                                                        <i class="fas fa-archive text-xs"></i>
                                                     </button>
                                                 </form>
-                                            @else
-                                                <i class="fas fa-lock text-gray-300 dark:text-gray-600 text-xs"></i>
-                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

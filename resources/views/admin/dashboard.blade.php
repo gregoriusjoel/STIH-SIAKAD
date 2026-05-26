@@ -5,6 +5,8 @@
 
 @push('styles')
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
         .dashboard-hero {
             background: linear-gradient(135deg, #5f0a1f 0%, #800020 60%, #931b2e 100%);
         }
@@ -17,6 +19,91 @@
 
         [x-cloak] {
             display: none !important;
+        }
+
+        /* Premium Month-Year Picker Styling */
+        .month-year-picker-container {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+
+        .month-year-picker-trigger {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-weight: 800 !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(139, 21, 56, 0.12);
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        .dark .month-year-picker-trigger {
+            border-color: rgba(239, 68, 68, 0.15);
+            background-color: rgba(31, 41, 55, 0.85);
+        }
+
+        .month-year-picker-trigger:hover {
+            border-color: #8B1538;
+            color: #8B1538 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 21, 56, 0.08);
+            background-color: #fff1f2;
+        }
+
+        .dark .month-year-picker-trigger:hover {
+            border-color: #ef4444;
+            color: #fca5a5 !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.08);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        @keyframes pickerPopoverFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 6px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(1);
+            }
+        }
+
+        .month-year-picker-popover {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .dark .month-year-picker-popover {
+            border-color: rgba(75, 85, 99, 0.5);
+        }
+
+        .month-year-picker-popover:not(.hidden) {
+            display: block !important;
+            animation: pickerPopoverFadeIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(139, 21, 56, 0.2);
+            border-radius: 99px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 21, 56, 0.45);
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(239, 68, 68, 0.20);
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(239, 68, 68, 0.45);
         }
     </style>
 @endpush
@@ -219,29 +306,65 @@
                 <div class="grid grid-cols-1 gap-3">
                     @foreach($calendarActivePeriods as $period)
                         @php
-                            $startDate = $period->start_date ? \Carbon\Carbon::parse($period->start_date) : null;
-                            $endDate = $period->end_date ? \Carbon\Carbon::parse($period->end_date) : null;
-                            $daysLeft = $endDate ? max(0, (int) now()->startOfDay()->diffInDays($endDate->copy()->startOfDay(), false)) : null;
+                            $startDate = $period->start_date ? \Carbon\Carbon::parse($period->start_date)->startOfDay() : null;
+                            $endDate = $period->end_date ? \Carbon\Carbon::parse($period->end_date)->startOfDay() : null;
+                            $now = \Carbon\Carbon::now()->startOfDay();
+
+                            $isOngoing = false;
+                            $daysLeft = null;
+                            $daysUntilStart = null;
+
+                            if ($startDate && $endDate) {
+                                $isOngoing = $now->between($startDate, $endDate);
+                                if ($isOngoing) {
+                                    $daysLeft = (int) $now->diffInDays($endDate, false);
+                                } else if ($now->lt($startDate)) {
+                                    $daysUntilStart = (int) $now->diffInDays($startDate, false);
+                                }
+                            }
+
                             $dateRangeText = $startDate && $endDate
-                                ? $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y')
+                                ? $startDate->translatedFormat('d M Y') . ' - ' . $endDate->translatedFormat('d M Y')
                                 : 'Tanggal belum lengkap';
                         @endphp
                         <div
-                            class="rounded-lg border border-maroon/20 dark:border-red-900/40 bg-maroon/[0.04] dark:bg-red-900/10 p-3">
+                            class="rounded-lg border p-3 relative overflow-hidden transition-all duration-300 {{ $isOngoing ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-[0.02] dark:bg-emerald-950/10 shadow-sm' : 'border-maroon/10 dark:border-red-950/40 bg-maroon/[0.01] dark:bg-red-950/5' }}">
                             <p class="text-sm font-bold text-gray-800 dark:text-gray-100 line-clamp-1" title="{{ $period->title }}">
                                 {{ $period->title }}</p>
                             <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1.5">
-                                <i class="fas fa-clock text-maroon/70"></i>
+                                <i class="fas fa-clock {{ $isOngoing ? 'text-emerald-500' : 'text-maroon/70' }}"></i>
                                 <span class="truncate">{{ $dateRangeText }}</span>
                             </p>
-                            <div class="mt-2 flex items-center justify-between gap-2">
-                                <span
-                                    class="inline-flex px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase rounded-full bg-maroon/10 text-maroon dark:bg-red-900/30 dark:text-red-200 border border-maroon/20">
-                                    {{ $period->type_label }}
-                                </span>
-                                @if($daysLeft !== null)
-                                    <span class="text-[10px] font-semibold text-maroon dark:text-red-200">
-                                        {{ $daysLeft }} hari lagi
+                            <div class="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100/50 dark:border-gray-700/50 pt-2.5">
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <span
+                                        class="inline-flex px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase rounded-full {{ $isOngoing ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200 border border-emerald-200/50 dark:border-emerald-800/50' : 'bg-maroon/10 text-maroon dark:bg-red-900/30 dark:text-red-200 border border-maroon/20' }}">
+                                        {{ $period->type_label }}
+                                    </span>
+                                    @if($isOngoing)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-extrabold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                            Sedang Berlangsung
+                                        </span>
+                                    @else
+                                        <span class="inline-flex px-2.5 py-1 text-[10px] font-bold rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-100 dark:border-blue-900/40">
+                                            Akan Datang
+                                        </span>
+                                    @endif
+                                </div>
+                                @if($isOngoing)
+                                    @if($daysLeft === 0)
+                                        <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                                            Berakhir hari ini
+                                        </span>
+                                    @else
+                                        <span class="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                                            Sisa {{ $daysLeft }} hari
+                                        </span>
+                                    @endif
+                                @elseif($daysUntilStart !== null)
+                                    <span class="text-[10px] font-semibold text-blue-700 dark:text-blue-400">
+                                        {{ $daysUntilStart }} hari lagi
                                     </span>
                                 @endif
                             </div>
@@ -349,8 +472,7 @@
                                 title="Bulan sebelumnya">
                                 <i class="fas fa-chevron-left text-[10px]"></i>
                             </a>
-                            <h4 class="text-sm font-bold text-gray-800 dark:text-gray-100 min-w-[110px] text-center">
-                                {{ $monthStart->translatedFormat('F Y') }}</h4>
+                            <div id="dashboardMonthYearPicker" class="min-w-[110px] text-center text-sm font-bold"></div>
                             <a href="{{ $nextMonthUrl }}"
                                 class="inline-flex items-center justify-center w-7 h-7 rounded-lg border border-maroon/20 text-maroon hover:bg-maroon/10 dark:text-red-200 dark:border-red-900/40 dark:hover:bg-red-900/30"
                                 title="Bulan berikutnya">
@@ -429,3 +551,159 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        function initMonthYearPicker(containerEl, initialYear, initialMonth, onSelect) {
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+            const monthFullNames = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            
+            containerEl.innerHTML = '';
+            containerEl.className = 'month-year-picker-container relative inline-block text-left';
+            
+            const trigger = document.createElement('button');
+            trigger.type = 'button';
+            trigger.className = 'month-year-picker-trigger flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-800 dark:text-gray-100 font-extrabold transition-all w-full';
+            
+            const displayText = document.createElement('span');
+            displayText.textContent = `${monthFullNames[initialMonth]} ${initialYear}`;
+            trigger.appendChild(displayText);
+            
+            const chevron = document.createElement('i');
+            chevron.className = 'fas fa-chevron-down text-[10px] text-slate-400 dark:text-gray-500 transition-transform duration-200';
+            trigger.appendChild(chevron);
+            
+            const popover = document.createElement('div');
+            popover.className = 'month-year-picker-popover hidden absolute left-1/2 -translate-x-1/2 mt-2 w-72 rounded-2xl bg-white/95 dark:bg-gray-800 shadow-2xl z-[100] p-3 text-slate-800 dark:text-gray-100';
+            
+            const scrollContainer = document.createElement('div');
+            scrollContainer.className = 'max-h-[300px] overflow-y-auto space-y-1 pr-1 custom-scrollbar';
+            
+            popover.appendChild(scrollContainer);
+            containerEl.appendChild(trigger);
+            containerEl.appendChild(popover);
+            
+            let expandedYear = initialYear;
+            
+            function renderYears() {
+                scrollContainer.innerHTML = '';
+                const currentYear = new Date().getFullYear();
+                const startYear = currentYear - 5;
+                const endYear = currentYear + 5;
+                
+                for (let y = startYear; y <= endYear; y++) {
+                    const yearItem = document.createElement('div');
+                    yearItem.className = 'border-b border-slate-100 dark:border-gray-700/50 last:border-0 pb-1';
+                    
+                    const yearHeader = document.createElement('button');
+                    yearHeader.type = 'button';
+                    yearHeader.className = 'w-full flex items-center justify-between py-2 px-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-maroon dark:hover:text-red-400 transition-colors';
+                    
+                    const yearLabel = document.createElement('span');
+                    yearLabel.textContent = y;
+                    if (y === initialYear) {
+                        yearLabel.className = 'text-maroon dark:text-red-400 font-extrabold';
+                    }
+                    yearHeader.appendChild(yearLabel);
+                    
+                    const yearChevron = document.createElement('i');
+                    yearChevron.className = `fas fa-chevron-right text-[10px] transition-transform duration-200 ${expandedYear === y ? 'rotate-90 text-maroon dark:text-red-400' : 'text-slate-300 dark:text-gray-600'}`;
+                    yearHeader.appendChild(yearChevron);
+                    
+                    yearItem.appendChild(yearHeader);
+                    
+                    const monthGrid = document.createElement('div');
+                    monthGrid.className = `grid grid-cols-4 gap-1.5 p-2 transition-all duration-300 ${expandedYear === y ? 'block' : 'hidden'}`;
+                    
+                    monthNames.forEach((name, mIdx) => {
+                        const monthBtn = document.createElement('button');
+                        monthBtn.type = 'button';
+                        const isSelected = (y === initialYear && mIdx === initialMonth);
+                        
+                        monthBtn.className = isSelected 
+                            ? 'py-2.5 text-xs font-bold rounded-xl bg-gradient-to-br from-[#800020] to-[#a01235] text-white shadow-md shadow-red-950/20 transition-all text-center transform scale-105'
+                            : 'py-2.5 text-xs font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-gray-700/80 text-slate-700 dark:text-gray-200 transition-all text-center hover:scale-105';
+                        
+                        monthBtn.textContent = name;
+                        
+                        monthBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            popover.classList.add('hidden');
+                            chevron.classList.remove('rotate-180');
+                            onSelect(y, mIdx);
+                        });
+                        
+                        monthGrid.appendChild(monthBtn);
+                    });
+                    
+                    yearItem.appendChild(monthGrid);
+                    
+                    yearHeader.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (expandedYear === y) {
+                            expandedYear = null;
+                        } else {
+                            expandedYear = y;
+                        }
+                        renderYears();
+                    });
+                    
+                    scrollContainer.appendChild(yearItem);
+                }
+            }
+            
+            renderYears();
+            
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isHidden = popover.classList.contains('hidden');
+                
+                document.querySelectorAll('.month-year-picker-popover').forEach(p => p.classList.add('hidden'));
+                document.querySelectorAll('.month-year-picker-trigger i').forEach(i => i.classList.remove('rotate-180'));
+                
+                if (isHidden) {
+                    popover.classList.remove('hidden');
+                    chevron.classList.add('rotate-180');
+                    renderYears();
+                    setTimeout(() => {
+                        const activeLabel = scrollContainer.querySelector('.text-maroon, .text-red-400');
+                        if (activeLabel) {
+                            activeLabel.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                        }
+                    }, 50);
+                } else {
+                    popover.classList.add('hidden');
+                    chevron.classList.remove('rotate-180');
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!containerEl.contains(e.target)) {
+                    popover.classList.add('hidden');
+                    chevron.classList.remove('rotate-180');
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            const pickerContainer = document.getElementById('dashboardMonthYearPicker');
+            if (pickerContainer) {
+                initMonthYearPicker(
+                    pickerContainer, 
+                    {{ $monthStart->format('Y') }}, 
+                    {{ (int)$monthStart->format('m') - 1 }}, 
+                    function(year, monthIndex) {
+                        const monthStr = String(monthIndex + 1).padStart(2, '0');
+                        const monthKey = `${year}-${monthStr}`;
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('month', monthKey);
+                        window.location.href = url.toString();
+                    }
+                );
+            }
+        });
+    </script>
+@endpush

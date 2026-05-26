@@ -423,6 +423,17 @@
             <!-- Body -->
             <form id="importForm" class="p-6 space-y-6" data-no-loader>
 
+                <!-- Target Semester Indicator -->
+                <div id="targetSemesterWrapper" class="hidden flex gap-4 items-center bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/30 rounded-xl p-4">
+                    <div class="w-12 h-12 flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/40 rounded-lg text-emerald-600 dark:text-emerald-400">
+                        <i class="fas fa-calendar-check text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs text-slate-500 dark:text-gray-400 font-bold uppercase tracking-wider">Target Import Semester</p>
+                        <p id="targetSemesterText" class="text-sm font-bold text-emerald-800 dark:text-emerald-300 mt-0.5"></p>
+                    </div>
+                </div>
+
                 <!-- Template Card -->
                 <div
                     class="flex gap-4 items-start bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-900/30 rounded-xl p-4">
@@ -501,34 +512,95 @@
         {{-- FullCalendar + pdf.js di-bundle lokal via Vite (eliminasi cross-domain script + SRI requirement). --}}
         @vite(['resources/js/fullcalendar.js', 'resources/js/pdfjs.js'])
         <style>
-            /* Custom Scrollbar for Modal */
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+            .month-year-picker-container {
+                font-family: 'Plus Jakarta Sans', sans-serif !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: inline-block !important;
+            }
+
+            .month-year-picker-trigger {
+                font-family: 'Plus Jakarta Sans', sans-serif !important;
+                font-weight: 800 !important;
+                font-size: 1.125rem !important;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 1px solid rgba(139, 21, 56, 0.12);
+                background-color: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(8px);
+            }
+
+            .dark .month-year-picker-trigger {
+                border-color: rgba(239, 68, 68, 0.15);
+                background-color: rgba(31, 41, 55, 0.85);
+            }
+
+            .month-year-picker-trigger:hover {
+                border-color: #8B1538;
+                color: #8B1538 !important;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(139, 21, 56, 0.08);
+                background-color: #fff1f2;
+            }
+
+            .dark .month-year-picker-trigger:hover {
+                border-color: #ef4444;
+                color: #fca5a5 !important;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.08);
+                background-color: rgba(239, 68, 68, 0.1);
+            }
+
+            @keyframes pickerPopoverFadeIn {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, 6px) scale(0.96);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, 0) scale(1);
+                }
+            }
+
+            .month-year-picker-popover {
+                font-family: 'Plus Jakarta Sans', sans-serif !important;
+                backdrop-filter: blur(16px);
+                border: 1px solid rgba(226, 232, 240, 0.8);
+            }
+
+            .dark .month-year-picker-popover {
+                border-color: rgba(75, 85, 99, 0.5);
+            }
+
+            .month-year-picker-popover:not(.hidden) {
+                display: block !important;
+                animation: pickerPopoverFadeIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            }
+
+            /* Custom Scrollbar for Modal & Picker */
             .custom-scrollbar::-webkit-scrollbar {
-                width: 6px;
+                width: 5px;
             }
 
             .custom-scrollbar::-webkit-scrollbar-track {
-                background: #f1f5f9;
-            }
-
-            .dark .custom-scrollbar::-webkit-scrollbar-track {
-                background: #1f2937;
+                background: transparent;
             }
 
             .custom-scrollbar::-webkit-scrollbar-thumb {
-                background: #cbd5e1;
-                border-radius: 4px;
-            }
-
-            .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-                background: #4b5563;
+                background: rgba(139, 21, 56, 0.2);
+                border-radius: 99px;
             }
 
             .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                background: #94a3b8;
+                background: rgba(139, 21, 56, 0.45);
+            }
+
+            .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: rgba(239, 68, 68, 0.20);
             }
 
             .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                background: #6b7280;
+                background: rgba(239, 68, 68, 0.45);
             }
 
             /* FullCalendar Customization */
@@ -560,7 +632,7 @@
                 --fc-today-bg-color: #f8fafc;
                 --fc-neutral-bg-color: #f1f5f9;
 
-                font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
             }
 
             .dark .fc {
@@ -585,10 +657,13 @@
             }
 
             .fc-toolbar-title {
+                margin: 0 !important;
+                padding: 0 !important;
                 font-size: 1.5rem !important;
                 font-weight: 800;
                 color: #1e293b;
                 letter-spacing: -0.025em;
+                display: inline-block !important;
             }
 
             .dark .fc-toolbar-title {
@@ -945,6 +1020,140 @@
                 return (new Date(date - offset)).toISOString().split('T')[0];
             }
 
+            function initMonthYearPicker(containerEl, initialYear, initialMonth, onSelect) {
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+                const monthFullNames = [
+                    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                ];
+                
+                containerEl.innerHTML = '';
+                containerEl.className = 'month-year-picker-container relative inline-block text-left fc-toolbar-title';
+                
+                const trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'month-year-picker-trigger flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-800 dark:text-gray-100 font-extrabold transition-all w-full';
+                
+                const displayText = document.createElement('span');
+                displayText.textContent = `${monthFullNames[initialMonth]} ${initialYear}`;
+                trigger.appendChild(displayText);
+                
+                const chevron = document.createElement('i');
+                chevron.className = 'fas fa-chevron-down text-[10px] text-slate-400 dark:text-gray-500 transition-transform duration-200';
+                trigger.appendChild(chevron);
+                
+                const popover = document.createElement('div');
+                popover.className = 'month-year-picker-popover hidden absolute left-1/2 -translate-x-1/2 mt-2 w-72 rounded-2xl bg-white/95 dark:bg-gray-800 shadow-2xl z-[100] p-3 text-slate-800 dark:text-gray-100';
+                
+                const scrollContainer = document.createElement('div');
+                scrollContainer.className = 'max-h-[300px] overflow-y-auto space-y-1 pr-1 custom-scrollbar';
+                
+                popover.appendChild(scrollContainer);
+                containerEl.appendChild(trigger);
+                containerEl.appendChild(popover);
+                
+                let expandedYear = initialYear;
+                
+                function renderYears() {
+                    scrollContainer.innerHTML = '';
+                    const currentYear = new Date().getFullYear();
+                    const startYear = currentYear - 5;
+                    const endYear = currentYear + 5;
+                    
+                    for (let y = startYear; y <= endYear; y++) {
+                        const yearItem = document.createElement('div');
+                        yearItem.className = 'border-b border-slate-100 dark:border-gray-700/50 last:border-0 pb-1';
+                        
+                        const yearHeader = document.createElement('button');
+                        yearHeader.type = 'button';
+                        yearHeader.className = 'w-full flex items-center justify-between py-2 px-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-maroon dark:hover:text-red-400 transition-colors';
+                        
+                        const yearLabel = document.createElement('span');
+                        yearLabel.textContent = y;
+                        if (y === initialYear) {
+                            yearLabel.className = 'text-maroon dark:text-red-400 font-extrabold';
+                        }
+                        yearHeader.appendChild(yearLabel);
+                        
+                        const yearChevron = document.createElement('i');
+                        yearChevron.className = `fas fa-chevron-right text-[10px] transition-transform duration-200 ${expandedYear === y ? 'rotate-90 text-maroon dark:text-red-400' : 'text-slate-300 dark:text-gray-600'}`;
+                        yearHeader.appendChild(yearChevron);
+                        
+                        yearItem.appendChild(yearHeader);
+                        
+                        const monthGrid = document.createElement('div');
+                        monthGrid.className = `grid grid-cols-4 gap-1.5 p-2 transition-all duration-300 ${expandedYear === y ? 'block' : 'hidden'}`;
+                        
+                        monthNames.forEach((name, mIdx) => {
+                            const monthBtn = document.createElement('button');
+                            monthBtn.type = 'button';
+                            const isSelected = (y === initialYear && mIdx === initialMonth);
+                            
+                            monthBtn.className = isSelected 
+                                ? 'py-2.5 text-xs font-bold rounded-xl bg-gradient-to-br from-[#800020] to-[#a01235] text-white shadow-md shadow-red-950/20 transition-all text-center transform scale-105'
+                                : 'py-2.5 text-xs font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-gray-700/80 text-slate-700 dark:text-gray-200 transition-all text-center hover:scale-105';
+                            
+                            monthBtn.textContent = name;
+                            
+                            monthBtn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                popover.classList.add('hidden');
+                                chevron.classList.remove('rotate-180');
+                                onSelect(y, mIdx);
+                            });
+                            
+                            monthGrid.appendChild(monthBtn);
+                        });
+                        
+                        yearItem.appendChild(monthGrid);
+                        
+                        yearHeader.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (expandedYear === y) {
+                                expandedYear = null;
+                            } else {
+                                expandedYear = y;
+                            }
+                            renderYears();
+                        });
+                        
+                        scrollContainer.appendChild(yearItem);
+                    }
+                }
+                
+                renderYears();
+                
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isHidden = popover.classList.contains('hidden');
+                    
+                    document.querySelectorAll('.month-year-picker-popover').forEach(p => p.classList.add('hidden'));
+                    document.querySelectorAll('.month-year-picker-trigger i').forEach(i => i.classList.remove('rotate-180'));
+                    
+                    if (isHidden) {
+                        popover.classList.remove('hidden');
+                        chevron.classList.add('rotate-180');
+                        renderYears();
+                        setTimeout(() => {
+                            const activeLabel = scrollContainer.querySelector('.text-maroon, .text-red-400');
+                            if (activeLabel) {
+                                activeLabel.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                            }
+                        }, 50);
+                    } else {
+                        popover.classList.add('hidden');
+                        chevron.classList.remove('rotate-180');
+                    }
+                });
+                
+                document.addEventListener('click', (e) => {
+                    if (!containerEl.contains(e.target)) {
+                        popover.classList.add('hidden');
+                        chevron.classList.remove('rotate-180');
+                    }
+                });
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 // Color Input Listener Removed
 
@@ -972,14 +1181,18 @@
                     datesSet: function (info) {
                         const titleEl = document.querySelector('.fc-toolbar-title');
                         if (titleEl && (info.view.type === 'dayGridMonth' || info.view.type === 'listMonth')) {
-                            const monthNames = [
-                                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                            ];
                             const date = info.view.currentStart;
-                            const month = monthNames[date.getMonth()];
-                            const year = date.getFullYear();
-                            titleEl.textContent = `${month} ${year}`;
+                            const currentMonth = date.getMonth();
+                            const currentYear = date.getFullYear();
+
+                            initMonthYearPicker(
+                                titleEl,
+                                currentYear,
+                                currentMonth,
+                                function (year, monthIndex) {
+                                    calendar.gotoDate(new Date(year, monthIndex, 1));
+                                }
+                            );
                         }
                     },
                     fixedWeekCount: false, // Don't always show 6 weeks (saves space)
@@ -1532,6 +1745,20 @@
                 const modal = document.getElementById('importModal');
                 const dialog = document.getElementById('importModalDialog');
                 if (!modal || !dialog) return;
+
+                // Check filter semester
+                const filterSem = document.getElementById('filterSemester');
+                const targetWrapper = document.getElementById('targetSemesterWrapper');
+                const targetText = document.getElementById('targetSemesterText');
+
+                if (filterSem && filterSem.value && targetWrapper && targetText) {
+                    const selectedOptionText = filterSem.options[filterSem.selectedIndex].text;
+                    targetText.textContent = selectedOptionText;
+                    targetWrapper.classList.remove('hidden');
+                } else if (targetWrapper) {
+                    targetWrapper.classList.add('hidden');
+                }
+
                 modal.classList.remove('hidden');
                 // ensure aria-hidden is not present on the shown element
                 if (modal.hasAttribute('aria-hidden')) modal.removeAttribute('aria-hidden');
@@ -1619,6 +1846,12 @@
                 const file = fileInput.files[0];
 
                 if (!file) return;
+
+                // Append selected semester filter value to import form data
+                const semesterFilterVal = document.getElementById('filterSemester').value;
+                if (semesterFilterVal) {
+                    formData.append('semester_id', semesterFilterVal);
+                }
 
                 const btn = this.querySelector('button[type="submit"]');
                 const originalText = btn.innerHTML;

@@ -208,5 +208,6 @@ class DatabaseSeeder extends Seeder
         $this->call(RifqiSksSeeder::class);
         $this->call(PopulateMataKuliahTipsSeeder::class);
         $this->call(UpdateUserRolesSeeder::class);
+        $this->call(JojoSkripsiSeeder::class);
     }
 }

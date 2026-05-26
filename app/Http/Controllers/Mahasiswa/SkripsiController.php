@@ -299,17 +299,23 @@ class SkripsiController extends Controller
 
     // ── Download (private) ────────────────────────────────────────────────
 
-    public function downloadFile(string $type, int $submissionId)
+    public function downloadFile(string $type, int $id)
     {
-        $mahasiswa  = $this->getMahasiswa();
-        $submission = SkripsiSubmission::findOrFail($submissionId);
+        $mahasiswa = $this->getMahasiswa();
 
-        abort_unless($submission->mahasiswa_id === $mahasiswa->id, 403);
-
-        $path = match ($type) {
-            'proposal' => $submission->proposal_file_path,
-            default    => null,
-        };
+        if ($type === 'guidance') {
+            $guidance = \App\Models\SkripsiGuidance::findOrFail($id);
+            $submission = $guidance->submission;
+            abort_unless($submission->mahasiswa_id === $mahasiswa->id, 403);
+            $path = $guidance->file_path;
+        } else {
+            $submission = SkripsiSubmission::findOrFail($id);
+            abort_unless($submission->mahasiswa_id === $mahasiswa->id, 403);
+            $path = match ($type) {
+                'proposal' => $submission->proposal_file_path,
+                default    => null,
+            };
+        }
 
         abort_unless($path, 404);
 

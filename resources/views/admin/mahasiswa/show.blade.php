@@ -135,7 +135,7 @@
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 uppercase">Penasihat Akademik</label>
-                                <div>{{ $mahasiswa->dosenPa->first()->user->name ?? 'Belum ditentukan' }}</div>
+                                <div>{{ $mahasiswa->dosenPa?->user?->name ?? 'Belum ditentukan' }}</div>
                             </div>
                         </div>
                     </div>

@@ -28,13 +28,17 @@ return new class extends Migration
         ]);
 
         // Alter column to ENUM('Ganjil','Genap') NOT NULL
-        DB::statement("ALTER TABLE `semesters` MODIFY `nama_semester` ENUM('Ganjil','Genap') NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE `semesters` MODIFY `nama_semester` ENUM('Ganjil','Genap') NOT NULL");
+        }
     }
 
     public function down(): void
     {
         // Revert to varchar and restore original values if present
-        DB::statement("ALTER TABLE `semesters` MODIFY `nama_semester` VARCHAR(255) NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE `semesters` MODIFY `nama_semester` VARCHAR(255) NOT NULL");
+        }
 
         if (Schema::hasColumn('semesters', 'nama_semester_old')) {
             DB::table('semesters')->whereNotNull('nama_semester_old')->update(['nama_semester' => DB::raw('nama_semester_old')]);

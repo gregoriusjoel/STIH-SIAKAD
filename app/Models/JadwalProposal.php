@@ -126,14 +126,8 @@ class JadwalProposal extends Model
         return static::where('id', '!=', $this->id)
             ->where('dosen_id', $this->dosen_id)
             ->where('hari', $this->hari)
-            ->where(function ($query) {
-                $query->whereBetween('jam_mulai', [$this->jam_mulai, $this->jam_selesai])
-                      ->orWhereBetween('jam_selesai', [$this->jam_mulai, $this->jam_selesai])
-                      ->orWhere(function ($q) {
-                          $q->where('jam_mulai', '<=', $this->jam_mulai)
-                            ->where('jam_selesai', '>=', $this->jam_selesai);
-                      });
-            })
+            ->where('jam_mulai', '<', $this->jam_selesai)
+            ->where('jam_selesai', '>', $this->jam_mulai)
             ->whereIn('status', ['approved_dosen', 'approved_admin'])
             ->exists();
     }

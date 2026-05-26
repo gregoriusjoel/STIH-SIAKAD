@@ -313,6 +313,15 @@ class Mahasiswa extends Model
         return $this->belongsToMany(Dosen::class, 'dosen_pa', 'mahasiswa_id', 'dosen_id')->withTimestamps();
     }
 
+    public function getDosenPaAttribute()
+    {
+        if ($this->relationLoaded('dosenPa')) {
+            return $this->getRelationValue('dosenPa')->first();
+        }
+
+        return $this->dosenPa()->first();
+    }
+
     public function internships(): HasMany
     {
         return $this->hasMany(Internship::class);
@@ -321,6 +330,11 @@ class Mahasiswa extends Model
     public function prestasis()
     {
         return $this->morphMany(Prestasi::class, 'pengaju');
+    }
+
+    public function wisudaRegistrations(): HasMany
+    {
+        return $this->hasMany(WisudaRegistration::class);
     }
 
     public function prodiData(): BelongsTo

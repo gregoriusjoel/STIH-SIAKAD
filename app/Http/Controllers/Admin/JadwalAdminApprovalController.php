@@ -380,28 +380,16 @@ class JadwalAdminApprovalController extends Controller
                 $q->where('dosen_id', $proposal->dosen_id);
             })
             ->where('hari', $proposal->hari)
-            ->where(function ($query) use ($proposal) {
-                $query->whereBetween('jam_mulai', [$proposal->jam_mulai, $proposal->jam_selesai])
-                    ->orWhereBetween('jam_selesai', [$proposal->jam_mulai, $proposal->jam_selesai])
-                    ->orWhere(function ($q) use ($proposal) {
-                        $q->where('jam_mulai', '<=', $proposal->jam_mulai)
-                            ->where('jam_selesai', '>=', $proposal->jam_selesai);
-                    });
-            })
+            ->where('jam_mulai', '<', $proposal->jam_selesai)
+            ->where('jam_selesai', '>', $proposal->jam_mulai)
             ->exists();
 
         // Cek konflik dengan proposal lain yang sudah approved
         $conflictProposal = JadwalProposal::where('id', '!=', $proposal->id)
             ->where('dosen_id', $proposal->dosen_id)
             ->where('hari', $proposal->hari)
-            ->where(function ($query) use ($proposal) {
-                $query->whereBetween('jam_mulai', [$proposal->jam_mulai, $proposal->jam_selesai])
-                    ->orWhereBetween('jam_selesai', [$proposal->jam_mulai, $proposal->jam_selesai])
-                    ->orWhere(function ($q) use ($proposal) {
-                        $q->where('jam_mulai', '<=', $proposal->jam_mulai)
-                            ->where('jam_selesai', '>=', $proposal->jam_selesai);
-                    });
-            })
+            ->where('jam_mulai', '<', $proposal->jam_selesai)
+            ->where('jam_selesai', '>', $proposal->jam_mulai)
             ->whereIn('status', ['approved_admin'])
             ->exists();
 
