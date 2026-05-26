@@ -81,7 +81,7 @@
     <table class="header">
         <tr>
             <td class="logo">
-                <img src="{{ public_path('images/logo_stih_white-clear.png') }}" alt="Logo STIH">
+                <img src="{{ public_path('images/logo_stih_color.png') }}" alt="Logo STIH">
             </td>
             <td class="institution">
                 <h1>SEKOLAH TINGGI ILMU HUKUM (STIH) ADHYAKSA</h1>

@@ -213,7 +213,7 @@
             <tr>
                 <td class="kop-logo-cell">
                     @php
-                        $logoPath = public_path('images/logo_stih_white.png');
+                        $logoPath = public_path('images/logo_stih_color.png');
                         $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
                     @endphp
                     <img src="{{ $logoBase64 }}" style="width: 75px; height: auto;">

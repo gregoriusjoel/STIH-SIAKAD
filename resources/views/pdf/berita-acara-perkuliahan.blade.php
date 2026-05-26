@@ -165,11 +165,11 @@
     </style>
 </head>
 <body>
-    <img src="{{ public_path('images/logo_stih_white-clear.png') }}" class="watermark">
+    <img src="{{ public_path('images/logo_stih_color.png') }}" class="watermark">
 
     {{-- HEADER (Only on Page 1) --}}
     <div class="header">
-        <img src="{{ public_path('images/logo_stih_white-clear.png') }}" alt="Logo STIH">
+        <img src="{{ public_path('images/logo_stih_color.png') }}" alt="Logo STIH">
     </div>
 
     {{-- FIXED FOOTER --}}
@@ -258,7 +258,7 @@
                         
                         {{-- IDENTITAS HALAMAN 2 UNTUK MENCEGAH NABRAK --}}
                         <div class="header" style="margin-top: 10px; margin-bottom: 30px;">
-                            <img src="{{ public_path('images/logo_stih_white-clear.png') }}" alt="Logo STIH">
+                            <img src="{{ public_path('images/logo_stih_color.png') }}" alt="Logo STIH">
                         </div>
 
                         <table class="main-table">

@@ -50,7 +50,7 @@
 
     <!-- Fixed Header Area -->
     <div class="title flex items-center gap-4 shrink-0">
-        <div class="w-10 h-10 rounded-md overflow-hidden bg-white p-1 shadow-sm flex-shrink-0 logo">
+        <div class="w-10 h-10 rounded-md overflow-hidden bg-white/15 backdrop-blur-sm border border-white/20 p-1 shadow-sm flex-shrink-0 logo">
             <img src="{{ asset('images/logo_stih_white.png') }}" alt="STIH" class="w-full h-full object-contain">
         </div>
         <div class="flex flex-col">
