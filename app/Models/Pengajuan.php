@@ -66,6 +66,7 @@ class Pengajuan extends Model
             'cuti'           => 'Cuti Akademik',
             'dispensasi'     => 'Dispensasi Perkuliahan',
             'izin_penelitian'=> 'Izin Penelitian',
+            'bebas_keuangan' => 'Surat Keterangan Bebas Keuangan',
             default          => ucfirst(str_replace('_', ' ', $this->jenis)),
         };
     }

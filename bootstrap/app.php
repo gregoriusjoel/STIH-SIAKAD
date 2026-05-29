@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'parent.role' => \App\Http\Middleware\ParentMiddleware::class,
+            'finance' => \App\Http\Middleware\FinanceMiddleware::class,
             'mahasiswa.status' => \App\Http\Middleware\CheckMahasiswaStatus::class,
             'semester.lock' => \App\Http\Middleware\CheckSemesterLock::class,
             'check.semester.kuesioner' => \App\Http\Middleware\CheckSemesterKuesioner::class,

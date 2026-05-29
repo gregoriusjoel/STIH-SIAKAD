@@ -26,6 +26,7 @@ class LetterTemplateConfig
             'cuti'            => static::cutiAkademik(),
             'dispensasi'      => static::dispensasi(),
             'izin_penelitian' => static::izinPenelitian(),
+            'bebas_keuangan'  => static::bebasKeuangan(),
         ];
     }
 
@@ -292,6 +293,36 @@ class LetterTemplateConfig
                 'tanggal_selesai_penelitian'=> '@tanggal_selesai_penelitian',
                 'alamat'                    => 'alamat',
                 'no_hp'                     => 'no_hp',
+            ],
+        ];
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  Jenis 5: Surat Keterangan Bebas Keuangan
+    // ──────────────────────────────────────────────────────────────
+    private static function bebasKeuangan(): array
+    {
+        return [
+            'label'    => 'Surat Keterangan Bebas Keuangan',
+            'template' => 'Surat Keterangan Bebas Keuangan.docx',
+            'icon'     => 'fa-file-invoice-dollar',
+            'color'    => 'teal',
+
+            // Field dinamis yang muncul di form mahasiswa (tidak ada field khusus)
+            'fields' => [],
+
+            // Mapping placeholder DOCX → source data
+            'placeholders' => [
+                'nama'           => 'nama',
+                'nim'            => 'nim',
+                'prodi'          => 'prodi',
+                'fakultas'       => 'fakultas',
+                'semester'       => 'semester',
+                'tahun_ajaran'   => 'tahun_ajaran',
+                'tanggal'        => 'tanggal',
+                'alamat'         => 'alamat',
+                'no_hp'          => 'no_hp',
+                'tujuan'         => fn() => 'Persyaratan Kelulusan / Wisuda',
             ],
         ];
     }

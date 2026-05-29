@@ -172,7 +172,7 @@
             </div>
         </div>
 
-        {{-- Right Column: Scheduled Students & Batch Assignment --}}
+        {{-- Right Column: Scheduled Mahasiswa & Batch Assignment --}}
         <div class="lg:col-span-8 space-y-6">
             {{-- Tab Content --}}
             <div x-data="{ activeTab: 'scheduled' }" class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
@@ -200,7 +200,7 @@
                     </button>
                 </div>
 
-                {{-- Tab Panel: Scheduled Students --}}
+                {{-- Tab Panel: Scheduled Mahasiswa --}}
                 <div x-show="activeTab === 'scheduled'" class="p-6 sm:p-8 min-h-[300px]">
                     <div class="grid gap-3">
                         @forelse($batch->registrations as $reg)
@@ -258,7 +258,7 @@
                     </div>
                 </div>
 
-                {{-- Tab Panel: Available Students to Assign --}}
+                {{-- Tab Panel: Available Mahasiswa to Assign --}}
                 <div x-show="activeTab === 'available'" class="p-6 sm:p-8 min-h-[300px]" x-cloak>
                     @if($availableRegistrations->count() > 0)
                         <form action="{{ route('admin.wisuda.batches.assign', $batch->id) }}" method="POST"
@@ -285,7 +285,7 @@
                                     </span>
                                 </div>
 
-                                {{-- Student Checkboxes --}}
+                                {{-- Mahasiswa Checkboxes --}}
                                 <div class="grid gap-3">
                                     @foreach($availableRegistrations as $reg)
                                         @php

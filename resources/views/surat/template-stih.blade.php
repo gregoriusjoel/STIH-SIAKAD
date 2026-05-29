@@ -175,7 +175,7 @@
     {{-- BODY TEXT --}}
     <p class="mb-2">Saya mahasiswa Program Studi .......................................................................................................... Jenjang S1</p>
 
-    {{-- STUDENT DATA FORM --}}
+    {{-- DATA MAHASISWA FORM --}}
     <table class="form-table">
         <tr>
             <td class="label-col">Nama Lengkap</td>

@@ -137,6 +137,26 @@
          STATE 1: NO ACTIVE REGISTRATION
     ════════════════════════════════════════════════════════════════ --}}
     @if(!isset($summary['active_registration']))
+        @if(!empty($summary['unpaid_semesters']))
+            {{-- Unpaid Semesters Warning --}}
+            <div class="bg-red-50 border border-red-200 rounded-2xl p-6 shadow-sm mb-4">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-white border border-red-200 rounded-xl flex items-center justify-center shrink-0 text-red-600 shadow-sm">
+                        <span class="material-symbols-outlined text-2xl">credit_card_off</span>
+                    </div>
+                    <div>
+                        <h3 class="font-garamond text-lg font-bold text-red-900">Pembayaran Belum Lengkap</h3>
+                        <p class="text-sm text-red-700/95 mt-1 leading-relaxed">
+                            Anda belum melunasi tagihan uang kuliah pada semester: <strong class="text-red-950 font-black">{{ implode(', ', $summary['unpaid_semesters']) }}</strong>.
+                        </p>
+                        <p class="text-xs text-red-600 mt-2 font-medium">
+                            Silakan selesaikan semua tunggakan Anda di menu <a href="{{ route('mahasiswa.pembayaran.index') }}" class="underline font-bold hover:text-red-800">Pembayaran Kuliah</a> terlebih dahulu untuk membuka akses pendaftaran wisuda.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         @if($summary['is_eligible'])
             {{-- Eligible --}}
             <div class="bg-gradient-to-br from-emerald-50 to-emerald-50/50 border border-emerald-200/50 rounded-2xl p-6 shadow-sm">
@@ -160,16 +180,18 @@
                 </div>
             </div>
         @else
-            {{-- Not eligible --}}
-            <div class="bg-red-50/60 border border-red-200/50 rounded-2xl p-5 flex items-start gap-3">
-                <span class="material-symbols-outlined text-red-500 mt-0.5 shrink-0">lock</span>
-                <div>
-                    <h4 class="text-sm font-bold text-red-800">Pendaftaran Terkunci</h4>
-                    <p class="text-xs text-red-600/90 font-medium mt-1 leading-relaxed max-w-2xl">
-                        Anda belum memenuhi syarat untuk mendaftar wisuda. Jalur ini hanya terbuka untuk mahasiswa yang skripsinya telah dinyatakan selesai dan disetujui revisinya oleh dosen penguji & pembimbing (status skripsi: <strong>ACC Revisi</strong>).
-                    </p>
+            @if(empty($summary['unpaid_semesters']) || !$summary['submission'])
+                {{-- Not eligible --}}
+                <div class="bg-red-50/60 border border-red-200/50 rounded-2xl p-5 flex items-start gap-3">
+                    <span class="material-symbols-outlined text-red-500 mt-0.5 shrink-0">lock</span>
+                    <div>
+                        <h4 class="text-sm font-bold text-red-800">Pendaftaran Terkunci</h4>
+                        <p class="text-xs text-red-600/90 font-medium mt-1 leading-relaxed max-w-2xl">
+                            Anda belum memenuhi syarat untuk mendaftar wisuda. Jalur ini hanya terbuka untuk mahasiswa yang skripsinya telah dinyatakan selesai dan disetujui revisinya oleh dosen penguji & pembimbing (status skripsi: <strong>ACC Revisi</strong>).
+                        </p>
+                    </div>
                 </div>
-            </div>
+            @endif
 
             {{-- Locked steps --}}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">

@@ -95,6 +95,11 @@ class User extends Authenticatable
         return $this->role === 'parent';
     }
 
+    public function isFinance(): bool
+    {
+        return $this->role === 'finance';
+    }
+
     /**
      * Get all classes taught by this dosen
      */

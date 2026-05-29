@@ -66,13 +66,13 @@
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {{-- Left Column: Student & Invoice Info --}}
+        {{-- Left Column: Mahasiswa & Invoice Info --}}
         <div class="lg:col-span-2 space-y-8">
-            {{-- Student Profile --}}
+            {{-- Profil Mahasiswa --}}
             <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden p-8">
                 <div class="flex items-center gap-6 mb-8">
                     <div class="size-20 rounded-3xl overflow-hidden border-2 border-slate-50 flex-shrink-0">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode($invoice->student->user->name ?? 'Student') }}&background=8B1538&color=fff&bold=true&font-size=0.4" 
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($invoice->student->user->name ?? 'Mahasiswa') }}&background=8B1538&color=fff&bold=true&font-size=0.4" 
                              class="w-full h-full object-cover" alt="Avatar">
                     </div>
                     <div>

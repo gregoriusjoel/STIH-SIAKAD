@@ -58,4 +58,15 @@ Route::middleware(['auth', 'verified'])->prefix('finance')->name('finance.')->gr
 
     // Laporan
     Route::get('/laporan', [\App\Http\Controllers\Finance\LaporanController::class, 'index'])->name('laporan.index');
+
+    // Pengajuan Bebas Keuangan
+    Route::prefix('pengajuan')->name('pengajuan.')->middleware(['finance'])->group(function () {
+        Route::get('/', [\App\Http\Controllers\Finance\PengajuanController::class, 'index'])->name('index');
+        Route::get('/{pengajuan}', [\App\Http\Controllers\Finance\PengajuanController::class, 'show'])->name('show');
+        Route::post('/{pengajuan}/approve', [\App\Http\Controllers\Finance\PengajuanController::class, 'approve'])->name('approve');
+        Route::post('/{pengajuan}/reject', [\App\Http\Controllers\Finance\PengajuanController::class, 'reject'])->name('reject');
+        Route::get('/{pengajuan}/download-signed', [\App\Http\Controllers\Finance\PengajuanController::class, 'downloadSigned'])->name('download-signed');
+        Route::get('/{pengajuan}/download-generated', [\App\Http\Controllers\Finance\PengajuanController::class, 'downloadGenerated'])->name('download-generated');
+        Route::get('/{pengajuan}/download', [\App\Http\Controllers\Finance\PengajuanController::class, 'download'])->name('download');
+    });
 });

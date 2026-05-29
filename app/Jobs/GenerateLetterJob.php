@@ -73,7 +73,9 @@ class GenerateLetterJob implements ShouldQueue
         foreach ($config['placeholders'] as $placeholder => $source) {
             $value = '';
 
-            if (str_starts_with((string) $source, '@')) {
+            if (is_callable($source)) {
+                $value = $source($context, $payload);
+            } elseif (str_starts_with((string) $source, '@')) {
                 // Ambil dari payload_template
                 $key   = ltrim($source, '@');
                 $value = $payload[$key] ?? '';

@@ -66,6 +66,16 @@ class PengajuanController extends Controller
     {
         $mahasiswa = Auth::user()->mahasiswa;
 
+        if ($request->jenis === 'bebas_keuangan') {
+            $eligibilityService = app(\App\Domain\Wisuda\Services\WisudaEligibilityService::class);
+            $unpaidSemesters = $eligibilityService->getUnpaidSemesters($mahasiswa);
+            if (!empty($unpaidSemesters)) {
+                return response()->json([
+                    'error' => 'Anda belum melunasi pembayaran untuk semester: ' . implode(', ', $unpaidSemesters)
+                ], 422);
+            }
+        }
+
         $pengajuan = $this->service->createDraft(
             mahasiswaId: $mahasiswa->id,
             jenis:       $request->jenis,
@@ -159,9 +169,20 @@ class PengajuanController extends Controller
             return response()->json(['error' => 'Upload dokumen bertanda tangan terlebih dahulu.'], 422);
         }
 
+        if ($pengajuan->jenis === 'bebas_keuangan') {
+            $eligibilityService = app(\App\Domain\Wisuda\Services\WisudaEligibilityService::class);
+            $unpaidSemesters = $eligibilityService->getUnpaidSemesters($pengajuan->mahasiswa);
+            if (!empty($unpaidSemesters)) {
+                return response()->json([
+                    'error' => 'Pengajuan gagal karena Anda belum melunasi pembayaran untuk semester: ' . implode(', ', $unpaidSemesters)
+                ], 422);
+            }
+        }
+
         $this->service->submit($pengajuan, $request->input('revision_note'));
 
-        return response()->json(['message' => 'Pengajuan berhasil dikirim ke admin.']);
+        $recipient = $pengajuan->jenis === 'bebas_keuangan' ? 'keuangan' : 'admin';
+        return response()->json(['message' => 'Pengajuan berhasil dikirim ke ' . $recipient . '.']);
     }
 
     // ── Hapus pengajuan (mahasiswa) ───────────────────────────────────

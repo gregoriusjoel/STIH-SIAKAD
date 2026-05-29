@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 20, 2026 at 12:07 PM
+-- Generation Time: May 26, 2026 at 04:20 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -48,31 +48,31 @@ CREATE TABLE `academic_events` (
 --
 
 INSERT INTO `academic_events` (`id`, `title`, `description`, `event_type`, `start_date`, `end_date`, `semester_id`, `color`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'Bimbingan akademik', 'Imported from PDF', 'lainnya', '2025-09-15', '2025-09-17', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(2, 'KRS online mahasiswa', 'Imported from PDF', 'krs', '2025-09-15', '2025-09-17', NULL, '#10b981', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(3, 'Batas waktu pengajuan Judul Skripsi', 'Imported from PDF', 'lainnya', '2025-09-18', '2025-09-19', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(4, 'Perkenalan Kehidupan Kampus Bagi Mahasiswa Baru (PKKMB) dan Pelantikan Mahasiswa baru', 'Imported from PDF', 'lainnya', '2025-10-02', '2025-10-03', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(5, 'Awal Perkuliahaan', 'Imported from PDF', 'perkuliahan', '2025-10-06', '2025-10-06', NULL, '#3b82f6', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(6, 'Masa Perkuliahaan efektif sebelum UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2025-10-06', '2025-11-21', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(7, 'Ujian Tengah Semester (UTS)', 'Imported from PDF', 'uts', '2025-11-24', '2025-11-28', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(8, 'Masa Perkuliahaan efektif setelah UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2025-12-01', '2026-02-06', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(9, 'Libur Hari Raya Natal dan Tahun Baru 2025/2026', 'Imported from PDF', 'libur_akademik', '2025-12-22', '2026-01-06', NULL, '#ef4444', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(10, 'Perkuliahaan Setelah Libur Hari Raya Natal dan Tahun Baru 2025/2026', 'Imported from PDF', 'libur_akademik', '2026-01-09', '2026-02-13', NULL, '#ef4444', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(11, 'Masa Pendaftaran Sidang Skripsi', 'Imported from PDF', 'lainnya', '2025-11-24', '2025-02-13', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(12, 'Ujian Akhir Semester (UAS)', 'Imported from PDF', 'uas', '2026-02-09', '2026-02-13', NULL, '#d97706', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(13, 'Penginputan Nilai Mahasiswa', 'Imported from PDF', 'lainnya', '2026-02-16', '2026-02-20', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(14, 'Cetak Kartu Hasil Studi (KHS)', 'Imported from PDF', 'lainnya', '2026-02-27', '2026-02-27', NULL, '#6b7280', 1, 1, 1, '2026-05-20 05:18:09', '2026-05-20 05:18:09'),
-(16, 'Bimbingan akademik', 'Imported from PDF', 'lainnya', '2026-03-09', '2026-03-11', NULL, '#6b7280', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(17, 'KRS online mahasiswa', 'Imported from PDF', 'krs', '2026-03-09', '2026-03-11', NULL, '#10b981', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(18, 'Libur Idul Fitri', 'Imported from PDF', 'libur_akademik', '2026-03-16', '2026-03-27', NULL, '#ef4444', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(19, 'Awal Perkuliahaan', 'Imported from PDF', 'perkuliahan', '2026-03-30', '2026-03-30', NULL, '#3b82f6', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(20, 'Masa Perkuliahaan efektif sebelum UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2026-03-30', '2026-05-15', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(21, 'Ujian Tengah Semester (UTS)', 'Imported from PDF', 'uts', '2026-05-18', '2026-05-22', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(22, 'Libur Idul Adha', 'Imported from PDF', 'libur_akademik', '2026-05-27', '2026-05-27', NULL, '#ef4444', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(23, 'Masa Perkuliahaan efektif setelah UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2026-05-25', '2026-07-10', NULL, '#f59e0b', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(24, 'Ujian Akhir Semester (UAS)', 'Imported from PDF', 'uas', '2026-07-13', '2026-07-17', NULL, '#d97706', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(25, 'Penginputan Nilai Mahasiswa', 'Imported from PDF', 'lainnya', '2026-07-20', '2026-07-24', NULL, '#6b7280', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49'),
-(26, 'Cetak Kartu Hasil Studi (KHS)', 'Imported from PDF', 'lainnya', '2026-07-27', '2026-07-30', NULL, '#6b7280', 1, 1, 1, '2026-05-20 06:18:49', '2026-05-20 06:18:49');
+(51, 'Bimbingan akademik', 'Imported from PDF', 'lainnya', '2025-09-15', '2025-09-17', 1, '#6b7280', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(52, 'KRS online mahasiswa', 'Imported from PDF', 'krs', '2025-09-15', '2025-09-17', 1, '#10b981', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(53, 'Batas waktu pengajuan Judul Skripsi', 'Imported from PDF', 'lainnya', '2025-09-18', '2025-09-19', 1, '#6b7280', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(54, 'Perkenalan Kehidupan Kampus Bagi Mahasiswa Baru (PKKMB) dan Pelantikan Mahasiswa baru', 'Imported from PDF', 'lainnya', '2025-10-02', '2025-10-03', 1, '#6b7280', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(55, 'Awal Perkuliahaan', 'Imported from PDF', 'perkuliahan', '2025-10-06', '2025-10-06', 1, '#3b82f6', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(56, 'Masa Perkuliahaan efektif sebelum UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2025-10-06', '2025-11-21', 1, '#f59e0b', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(57, 'Ujian Tengah Semester (UTS)', 'Imported from PDF', 'uts', '2025-11-24', '2025-11-28', 1, '#f59e0b', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(58, 'Masa Perkuliahaan efektif setelah UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2025-12-01', '2026-02-06', 1, '#f59e0b', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(59, 'Libur Hari Raya Natal dan Tahun Baru 2025/2026', 'Imported from PDF', 'libur_akademik', '2025-12-22', '2026-01-06', 1, '#ef4444', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(60, 'Perkuliahaan Setelah Libur Hari Raya Natal dan Tahun Baru 2025/2026', 'Imported from PDF', 'libur_akademik', '2026-01-09', '2026-02-13', 1, '#ef4444', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(61, 'Masa Pendaftaran Sidang Skripsi', 'Imported from PDF', 'lainnya', '2025-11-24', '2025-02-13', 1, '#6b7280', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(62, 'Ujian Akhir Semester (UAS)', 'Imported from PDF', 'uas', '2026-02-09', '2026-02-13', 1, '#d97706', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(63, 'Penginputan Nilai Mahasiswa', 'Imported from PDF', 'lainnya', '2026-02-16', '2026-02-20', 1, '#6b7280', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(64, 'Cetak Kartu Hasil Studi (KHS)', 'Imported from PDF', 'lainnya', '2026-02-27', '2026-02-27', 1, '#6b7280', 1, 1, 1, '2026-05-25 02:30:55', '2026-05-25 02:30:55'),
+(65, 'Bimbingan akademik', 'Imported from PDF', 'lainnya', '2026-03-09', '2026-03-11', 2, '#6b7280', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(66, 'KRS online mahasiswa', 'Imported from PDF', 'krs', '2026-03-09', '2026-03-11', 2, '#10b981', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(67, 'Libur Idul Fitri', 'Imported from PDF', 'libur_akademik', '2026-03-16', '2026-03-27', 2, '#ef4444', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(68, 'Awal Perkuliahaan', 'Imported from PDF', 'perkuliahan', '2026-03-30', '2026-03-30', 2, '#3b82f6', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(69, 'Masa Perkuliahaan efektif sebelum UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2026-03-30', '2026-05-15', 2, '#f59e0b', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(70, 'Ujian Tengah Semester (UTS)', 'Imported from PDF', 'uts', '2026-05-18', '2026-05-22', 2, '#f59e0b', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(71, 'Libur Idul Adha', 'Imported from PDF', 'libur_akademik', '2026-05-27', '2026-05-27', 2, '#ef4444', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(72, 'Masa Perkuliahaan efektif setelah UTS (7x pertemuan)', 'Imported from PDF', 'uts', '2026-05-25', '2026-07-10', 2, '#f59e0b', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(73, 'Ujian Akhir Semester (UAS)', 'Imported from PDF', 'uas', '2026-07-13', '2026-07-17', 2, '#d97706', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(74, 'Penginputan Nilai Mahasiswa', 'Imported from PDF', 'lainnya', '2026-07-20', '2026-07-24', 2, '#6b7280', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12'),
+(75, 'Cetak Kartu Hasil Studi (KHS)', 'Imported from PDF', 'lainnya', '2026-07-27', '2026-07-30', 2, '#6b7280', 1, 1, 1, '2026-05-25 02:31:12', '2026-05-25 02:31:12');
 
 -- --------------------------------------------------------
 
@@ -111,7 +111,7 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `user_id`, `nip`, `phone`, `address`, `created_at`, `updated_at`) VALUES
-(1, 1, '198501012010011001', '081234567890', 'Jl. Kampus STIH No. 1', '2026-05-20 05:16:19', '2026-05-20 05:16:19');
+(1, 1, '198501012010011001', '081234567890', 'Jl. Kampus STIH No. 1', '2026-05-21 09:13:22', '2026-05-21 09:13:22');
 
 -- --------------------------------------------------------
 
@@ -139,171 +139,292 @@ CREATE TABLE `audit_logs` (
 --
 
 INSERT INTO `audit_logs` (`id`, `actor_id`, `actor_role`, `action`, `auditable_type`, `auditable_id`, `meta`, `before`, `after`, `ip_address`, `user_agent`, `created_at`) VALUES
-(1, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 1, NULL, NULL, '{\"nama_semester\":\"Ganjil\",\"tahun_ajaran\":\"2025\\/2026\",\"tanggal_mulai\":\"2026-05-19T17:00:00.000000Z\",\"tanggal_selesai\":\"2026-11-19T17:00:00.000000Z\",\"status\":\"aktif\",\"id\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:17:57'),
-(2, 1, 'user', 'academic_event.created', 'App\\Models\\AcademicEvent', 15, NULL, NULL, '{\"title\":\"Kuliah\",\"description\":null,\"event_type\":\"perkuliahan\",\"start_date\":\"2026-05-20T17:00:00.000000Z\",\"end_date\":\"2026-05-20T17:00:00.000000Z\",\"semester_id\":\"1\",\"color\":\"#3b82f6\",\"created_by\":1,\"updated_by\":1,\"updated_at\":\"2026-05-20T05:34:46.000000Z\",\"created_at\":\"2026-05-20T05:34:46.000000Z\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:34:46'),
-(3, 1, 'admin', 'prodi.updated', 'App\\Models\\Prodi', 1, NULL, '{\"fakultas_id\":null}', '{\"fakultas_id\":\"1\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:35:39'),
-(4, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 13, NULL, '{\"id\":13,\"kode_ruangan\":\"AULA.01\",\"nama_ruangan\":\"Aula Utama\",\"gedung\":\"Gedung C\",\"lantai\":1,\"kapasitas\":200,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:20'),
-(5, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 9, NULL, '{\"id\":9,\"kode_ruangan\":\"LAB.01\",\"nama_ruangan\":\"Lab Komputer 1\",\"gedung\":\"Gedung B\",\"lantai\":1,\"kapasitas\":30,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:22'),
-(6, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 10, NULL, '{\"id\":10,\"kode_ruangan\":\"LAB.02\",\"nama_ruangan\":\"Lab Komputer 2\",\"gedung\":\"Gedung B\",\"lantai\":1,\"kapasitas\":25,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:23'),
-(7, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 11, NULL, '{\"id\":11,\"kode_ruangan\":\"PRAK.01\",\"nama_ruangan\":\"Ruang Praktikum Hukum 1\",\"gedung\":\"Gedung B\",\"lantai\":2,\"kapasitas\":35,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:25'),
-(8, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 12, NULL, '{\"id\":12,\"kode_ruangan\":\"PRAK.02\",\"nama_ruangan\":\"Ruang Praktikum Hukum 2\",\"gedung\":\"Gedung B\",\"lantai\":2,\"kapasitas\":30,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:27'),
-(9, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 1, NULL, '{\"id\":1,\"kode_ruangan\":\"R.101\",\"nama_ruangan\":\"Ruang Kelas A1\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":40,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:28'),
-(10, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 2, NULL, '{\"id\":2,\"kode_ruangan\":\"R.102\",\"nama_ruangan\":\"Ruang Kelas A2\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":35,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:31'),
-(11, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 3, NULL, '{\"id\":3,\"kode_ruangan\":\"R.103\",\"nama_ruangan\":\"Ruang Kelas A3\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":30,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:33'),
-(12, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 4, NULL, '{\"id\":4,\"kode_ruangan\":\"R.104\",\"nama_ruangan\":\"Ruang Kelas A4\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":45,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:34'),
-(13, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 5, NULL, '{\"id\":5,\"kode_ruangan\":\"R.105\",\"nama_ruangan\":\"Ruang Kelas A5\",\"gedung\":\"Gedung A\",\"lantai\":1,\"kapasitas\":40,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:36'),
-(14, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 6, NULL, '{\"id\":6,\"kode_ruangan\":\"R.201\",\"nama_ruangan\":\"Ruang Kelas B1\",\"gedung\":\"Gedung A\",\"lantai\":2,\"kapasitas\":50,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:37'),
-(15, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 7, NULL, '{\"id\":7,\"kode_ruangan\":\"R.202\",\"nama_ruangan\":\"Ruang Kelas B2\",\"gedung\":\"Gedung A\",\"lantai\":2,\"kapasitas\":45,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:40'),
-(16, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 8, NULL, '{\"id\":8,\"kode_ruangan\":\"R.203\",\"nama_ruangan\":\"Ruang Kelas B3\",\"gedung\":\"Gedung A\",\"lantai\":2,\"kapasitas\":40,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:41'),
-(17, 1, 'admin', 'ruangan.deleted', 'App\\Models\\Ruangan', 14, NULL, '{\"id\":14,\"kode_ruangan\":\"SEMINAR.01\",\"nama_ruangan\":\"Ruang Seminar\",\"gedung\":\"Gedung C\",\"lantai\":1,\"kapasitas\":80,\"status\":\"aktif\",\"kategori_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:36:43'),
-(18, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 15, NULL, NULL, '{\"kode_ruangan\":\"RI 1\",\"nama_ruangan\":\"Ruang Kelas Internasional 1\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":1,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
-(19, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 16, NULL, NULL, '{\"kode_ruangan\":\"RI 2\",\"nama_ruangan\":\"Ruang Kelas Internasional 2\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":1,\"kapasitas\":30,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
-(20, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 17, NULL, NULL, '{\"kode_ruangan\":\"RI 3\",\"nama_ruangan\":\"Ruang Kelas Internasional 3\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":1,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
-(21, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 18, NULL, NULL, '{\"kode_ruangan\":\"R 1\",\"nama_ruangan\":\"Ruang Kelas R 1\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
-(22, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 19, NULL, NULL, '{\"kode_ruangan\":\"R 2\",\"nama_ruangan\":\"Ruang Kelas R 2\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
-(23, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 20, NULL, NULL, '{\"kode_ruangan\":\"R 3\",\"nama_ruangan\":\"Ruang Kelas R 3\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
-(24, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 21, NULL, NULL, '{\"kode_ruangan\":\"R 4\",\"nama_ruangan\":\"Ruang Kelas R 4\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":21}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:38:05'),
-(25, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 1, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0101\",\"id\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:07'),
-(26, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 2, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0102\",\"id\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:07'),
-(27, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 3, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0103\",\"id\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:07'),
-(28, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 4, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0104\",\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:07'),
-(29, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 1, NULL, '{\"id\":1,\"nama_kelas\":\"26HK0101\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:44:56'),
-(30, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 2, NULL, '{\"id\":2,\"nama_kelas\":\"26HK0102\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:00'),
-(31, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 3, NULL, '{\"id\":3,\"nama_kelas\":\"26HK0103\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:02'),
-(32, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 4, NULL, '{\"id\":4,\"nama_kelas\":\"26HK0104\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:03'),
-(33, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 7, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"INF\",\"kode_kelas\":\"01\",\"prodi_id\":2,\"tahun_akademik_id\":1,\"nama_kelas\":\"26INF01\",\"id\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:56'),
-(34, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 8, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"INF\",\"kode_kelas\":\"02\",\"prodi_id\":2,\"tahun_akademik_id\":1,\"nama_kelas\":\"26INF02\",\"id\":8}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:56'),
-(35, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 9, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"INF\",\"kode_kelas\":\"03\",\"prodi_id\":2,\"tahun_akademik_id\":1,\"nama_kelas\":\"26INF03\",\"id\":9}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:56'),
-(36, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 10, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"INF\",\"kode_kelas\":\"04\",\"prodi_id\":2,\"tahun_akademik_id\":1,\"nama_kelas\":\"26INF04\",\"id\":10}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:45:56'),
-(37, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 12, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0101\",\"id\":12}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:49:36'),
-(38, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 13, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0102\",\"id\":13}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:49:36'),
-(39, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 14, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0103\",\"id\":14}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:49:36'),
-(40, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 15, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK01\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK0104\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:49:36'),
-(41, 1, 'admin', 'prodi.updated', 'App\\Models\\Prodi', 1, NULL, '{\"kode_prodi\":\"HK01\"}', '{\"kode_prodi\":\"HK\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:51:24'),
-(42, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 12, NULL, '{\"id\":12,\"nama_kelas\":\"26HK0101\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:51:56'),
-(43, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 13, NULL, '{\"id\":13,\"nama_kelas\":\"26HK0102\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:52:06'),
-(44, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 14, NULL, '{\"id\":14,\"nama_kelas\":\"26HK0103\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:52:08'),
-(45, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 15, NULL, '{\"id\":15,\"nama_kelas\":\"26HK0104\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK01\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:52:11'),
-(46, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 16, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK01\",\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:53:01'),
-(47, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 17, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK02\",\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:53:01'),
-(48, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 18, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK03\",\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:53:01'),
-(49, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 19, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK04\",\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:53:01'),
-(50, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 20, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"01\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"26AKT01\",\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(51, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 21, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"02\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"26AKT02\",\"id\":21}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(52, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 22, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"03\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"26AKT03\",\"id\":22}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(53, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 23, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"04\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"26AKT04\",\"id\":23}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(54, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 24, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"01\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"25AKT01\",\"id\":24}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(55, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 25, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"02\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"25AKT02\",\"id\":25}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(56, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 26, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"03\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"25AKT03\",\"id\":26}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(57, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 27, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"04\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"25AKT04\",\"id\":27}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(58, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 28, NULL, NULL, '{\"angkatan\":\"2024\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"01\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"24AKT01\",\"id\":28}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(59, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 29, NULL, NULL, '{\"angkatan\":\"2024\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"02\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"24AKT02\",\"id\":29}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(60, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 30, NULL, NULL, '{\"angkatan\":\"2024\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"03\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"24AKT03\",\"id\":30}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(61, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 31, NULL, NULL, '{\"angkatan\":\"2024\",\"tingkat\":0,\"kode_prodi\":\"AKT\",\"kode_kelas\":\"04\",\"prodi_id\":4,\"tahun_akademik_id\":null,\"nama_kelas\":\"24AKT04\",\"id\":31}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 05:57:24'),
-(62, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 32, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"26HK01\",\"id\":32}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
-(63, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 33, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"26HK02\",\"id\":33}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
-(64, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 34, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"26HK03\",\"id\":34}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
-(65, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 35, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"26HK04\",\"id\":35}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
-(66, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 36, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"25HK01\",\"id\":36}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
-(67, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 37, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"25HK02\",\"id\":37}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
-(68, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 38, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"25HK03\",\"id\":38}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
-(69, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 39, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":null,\"nama_kelas\":\"25HK04\",\"id\":39}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:10:07'),
-(70, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:13:09'),
-(71, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:17:26'),
-(72, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:17:37'),
-(73, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:17:45'),
-(74, 1, 'user', 'academic_event.deleted', 'App\\Models\\AcademicEvent', 15, '{\"deleted_by\":1}', '{\"id\":15,\"title\":\"Kuliah\",\"description\":null,\"event_type\":\"perkuliahan\",\"start_date\":\"2026-05-20T17:00:00.000000Z\",\"end_date\":\"2026-05-20T17:00:00.000000Z\",\"semester_id\":1,\"color\":\"#3b82f6\",\"is_active\":true,\"created_by\":1,\"updated_by\":1,\"created_at\":\"2026-05-20T05:34:46.000000Z\",\"updated_at\":\"2026-05-20T05:34:46.000000Z\"}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:18:21'),
-(75, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 2, NULL, NULL, '{\"nama_semester\":\"Genap\",\"tahun_ajaran\":\"2025\\/2026\",\"tanggal_mulai\":\"2026-11-20T17:00:00.000000Z\",\"tanggal_selesai\":\"2027-05-20T17:00:00.000000Z\",\"status\":\"non-aktif\",\"id\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:18:35'),
-(76, 1, 'admin', 'user.created', 'App\\Models\\User', 12, NULL, NULL, '{\"name\":\"Dr. R Muhamad Ibnu Mazjah, S.H., M.H.\",\"email\":\"417017906@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":12}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:26'),
-(77, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 4, NULL, NULL, '{\"user_id\":12,\"nidn\":\"417017906\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Trisakti\",\"Doktor Ilmu Hukum Universitas Airlangga\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:26'),
-(78, 1, 'admin', 'user.created', 'App\\Models\\User', 13, NULL, NULL, '{\"name\":\"Dr. Armansyah, S.H., M.H.\",\"email\":\"301067501@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":13}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
-(79, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 5, NULL, NULL, '{\"user_id\":13,\"nidn\":\"301067501\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Muhammadiyah Jakarta\",\"Universitas Muhammadiyah Jakarta\",\"Universitas Islam Bandung\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":5}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
-(80, 1, 'admin', 'user.created', 'App\\Models\\User', 14, NULL, NULL, '{\"name\":\"Dr. Mukhlis, S.H., M.H.\",\"email\":\"3146747648130140@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":14}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
-(81, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 6, NULL, NULL, '{\"user_id\":14,\"nidn\":\"3146747648130140\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Andalas\",\"Universitas Andalas\",\"Universitas Jayabaya\"],\"dosen_tetap\":false,\"jabatan_fungsional\":[\"Lektor\"],\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
-(82, 1, 'admin', 'user.created', 'App\\Models\\User', 15, NULL, NULL, '{\"name\":\"Dr. Joko Cahyono, SH., MH.\",\"email\":\"714076601@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
-(83, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 7, NULL, NULL, '{\"user_id\":15,\"nidn\":\"714076601\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Bhayangkara Surabaya\",\"Universitas Airlangga\",\"Universitas Brawijaya\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
-(84, 1, 'admin', 'user.created', 'App\\Models\\User', 16, NULL, NULL, '{\"name\":\"Sandi Yudha Prayoga, S.H., M.H.\",\"email\":\"302129701@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
-(85, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 8, NULL, NULL, '{\"user_id\":16,\"nidn\":\"302129701\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":8}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:27'),
-(86, 1, 'admin', 'user.created', 'App\\Models\\User', 17, NULL, NULL, '{\"name\":\"Adilla Meytiara Intan, S.H., LL.M.\",\"email\":\"302059501@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(87, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 9, NULL, NULL, '{\"user_id\":17,\"nidn\":\"302059501\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Master of Laws Lancaster University\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":9}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(88, 1, 'admin', 'user.created', 'App\\Models\\User', 18, NULL, NULL, '{\"name\":\"Adery Ardhan Saputro, S.H., LL.M.\",\"email\":\"313089202@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(89, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 10, NULL, NULL, '{\"user_id\":18,\"nidn\":\"313089202\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Master of Laws Vrije Universiteit Amsterdam\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":10}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(90, 1, 'admin', 'user.created', 'App\\Models\\User', 19, NULL, NULL, '{\"name\":\"Dio Ashar Wicaksana, S.H., M.A.\",\"email\":\"307089005@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(91, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 11, NULL, NULL, '{\"user_id\":19,\"nidn\":\"307089005\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Master of Laws University of Basque Country\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":11}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(92, 1, 'admin', 'user.created', 'App\\Models\\User', 20, NULL, NULL, '{\"name\":\"Prof. Dr. Bambang Sugeng Rukmono, S.H.,M.M., M.H.\",\"email\":\"8918290024@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(93, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 12, NULL, NULL, '{\"user_id\":20,\"nidn\":\"8918290024\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Sebelas Maret\",\"Universitas Padjajaran\",\"Universitas Hasanuddin Makassar\"],\"dosen_tetap\":false,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":12}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(94, 1, 'admin', 'user.created', 'App\\Models\\User', 21, NULL, NULL, '{\"name\":\"Maydika Ramadani, S.H., M.H.\",\"email\":\"3860765666130310@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":21}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(95, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 13, NULL, NULL, '{\"user_id\":21,\"nidn\":\"3860765666130310\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Muhammadiyah Aceh Banda Aceh\",\"Universitas Pembangunan Nasional Veteran Jakarta\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":13}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:28'),
-(96, 1, 'admin', 'user.created', 'App\\Models\\User', 22, NULL, NULL, '{\"name\":\"Raul Gindo cahyono, S.H., M.H.\",\"email\":\"1956751652130120@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":22}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
-(97, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 14, NULL, NULL, '{\"user_id\":22,\"nidn\":\"1956751652130120\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Islam Attahiriyah\",\"Universitas Pancasila\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":14}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
-(98, 1, 'admin', 'user.created', 'App\\Models\\User', 23, NULL, NULL, '{\"name\":\"Muhammad Arbani, S.H., M.Kn.\",\"email\":\"3345774675130210@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":23}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
-(99, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 15, NULL, NULL, '{\"user_id\":23,\"nidn\":\"3345774675130210\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Universitas Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
-(100, 1, 'admin', 'user.created', 'App\\Models\\User', 24, NULL, NULL, '{\"name\":\"Muhammad Rizqi Alfarizi, S.H., LL.M.\",\"email\":\"4434778679130070@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":24}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
-(101, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 16, NULL, NULL, '{\"user_id\":24,\"nidn\":\"4434778679130070\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Universitas Malaya\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Asisten Ahli\"],\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
-(102, 1, 'admin', 'user.created', 'App\\Models\\User', 25, NULL, NULL, '{\"name\":\"Amir Firmansyah, S.H. M.H\",\"email\":\"7641763664130240@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":25}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
-(103, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 17, NULL, NULL, '{\"user_id\":25,\"nidn\":\"7641763664130240\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Wiraswasta Indonesia\",\"Universitas Al Azhar Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Asisten Ahli\"],\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:29'),
-(104, 1, 'admin', 'user.created', 'App\\Models\\User', 26, NULL, NULL, '{\"name\":\"Akhmad Ikraam, S.H., M.H.\",\"email\":\"2150767668137030@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":26}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
-(105, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 18, NULL, NULL, '{\"user_id\":26,\"nidn\":\"2150767668137030\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Islam Indonesia\",\"Universitas Al Azhar Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Asisten Ahli\"],\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
-(106, 1, 'admin', 'user.created', 'App\\Models\\User', 27, NULL, NULL, '{\"name\":\"Zul Karnen, S.S., M.Si.\",\"email\":\"3454762663130160@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":27}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
-(107, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 19, NULL, NULL, '{\"user_id\":27,\"nidn\":\"3454762663130160\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Al-Azhar Indonesia\",\"Universitas Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
-(108, 1, 'admin', 'user.created', 'App\\Models\\User', 28, NULL, NULL, '{\"name\":\"Dr. Rudi Pradisetia Sudirdja., S.H., M.H.\",\"email\":\"3204070406910000@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":28}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
-(109, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 20, NULL, NULL, '{\"user_id\":28,\"nidn\":\"3204070406910000\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Pasundan\",\"Universitas Padjajaran\",\"Universitas Indonesia\"],\"dosen_tetap\":false,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:36:30'),
-(110, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 40, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK01\",\"id\":40}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
-(111, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 41, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK02\",\"id\":41}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
-(112, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 42, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK03\",\"id\":42}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
-(113, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 43, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK04\",\"id\":43}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
-(114, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 44, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"25HK01\",\"id\":44}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
-(115, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 45, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"25HK02\",\"id\":45}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
-(116, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 46, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"25HK03\",\"id\":46}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02');
+(1, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:13:56'),
+(2, 1, 'admin', 'user.created', 'App\\Models\\User', 12, NULL, NULL, '{\"name\":\"Dr. R Muhamad Ibnu Mazjah, S.H., M.H.\",\"email\":\"417017906@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":12}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:13'),
+(3, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 4, NULL, NULL, '{\"user_id\":12,\"nidn\":\"417017906\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Trisakti\",\"Doktor Ilmu Hukum Universitas Airlangga\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:13'),
+(4, 1, 'admin', 'user.created', 'App\\Models\\User', 13, NULL, NULL, '{\"name\":\"Dr. Armansyah, S.H., M.H.\",\"email\":\"301067501@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":13}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:13'),
+(5, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 5, NULL, NULL, '{\"user_id\":13,\"nidn\":\"301067501\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Muhammadiyah Jakarta\",\"Universitas Muhammadiyah Jakarta\",\"Universitas Islam Bandung\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":5}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:13'),
+(6, 1, 'admin', 'user.created', 'App\\Models\\User', 14, NULL, NULL, '{\"name\":\"Dr. Mukhlis, S.H., M.H.\",\"email\":\"3146747648130140@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":14}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:13'),
+(7, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 6, NULL, NULL, '{\"user_id\":14,\"nidn\":\"3146747648130140\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Andalas\",\"Universitas Andalas\",\"Universitas Jayabaya\"],\"dosen_tetap\":false,\"jabatan_fungsional\":[\"Lektor\"],\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:13'),
+(8, 1, 'admin', 'user.created', 'App\\Models\\User', 15, NULL, NULL, '{\"name\":\"Dr. Joko Cahyono, SH., MH.\",\"email\":\"714076601@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:13'),
+(9, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 7, NULL, NULL, '{\"user_id\":15,\"nidn\":\"714076601\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Bhayangkara Surabaya\",\"Universitas Airlangga\",\"Universitas Brawijaya\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:13'),
+(10, 1, 'admin', 'user.created', 'App\\Models\\User', 16, NULL, NULL, '{\"name\":\"Sandi Yudha Prayoga, S.H., M.H.\",\"email\":\"302129701@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:14'),
+(11, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 8, NULL, NULL, '{\"user_id\":16,\"nidn\":\"302129701\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":8}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:14'),
+(12, 1, 'admin', 'user.created', 'App\\Models\\User', 17, NULL, NULL, '{\"name\":\"Adilla Meytiara Intan, S.H., LL.M.\",\"email\":\"302059501@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:14'),
+(13, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 9, NULL, NULL, '{\"user_id\":17,\"nidn\":\"302059501\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Master of Laws Lancaster University\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":9}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:14'),
+(14, 1, 'admin', 'user.created', 'App\\Models\\User', 18, NULL, NULL, '{\"name\":\"Adery Ardhan Saputro, S.H., LL.M.\",\"email\":\"313089202@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:14'),
+(15, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 10, NULL, NULL, '{\"user_id\":18,\"nidn\":\"313089202\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Master of Laws Vrije Universiteit Amsterdam\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":10}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:14'),
+(16, 1, 'admin', 'user.created', 'App\\Models\\User', 19, NULL, NULL, '{\"name\":\"Dio Ashar Wicaksana, S.H., M.A.\",\"email\":\"307089005@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:14'),
+(17, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 11, NULL, NULL, '{\"user_id\":19,\"nidn\":\"307089005\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Master of Laws University of Basque Country\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Lektor\"],\"id\":11}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:14'),
+(18, 1, 'admin', 'user.created', 'App\\Models\\User', 20, NULL, NULL, '{\"name\":\"Prof. Dr. Bambang Sugeng Rukmono, S.H.,M.M., M.H.\",\"email\":\"8918290024@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(19, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 12, NULL, NULL, '{\"user_id\":20,\"nidn\":\"8918290024\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Sebelas Maret\",\"Universitas Padjajaran\",\"Universitas Hasanuddin Makassar\"],\"dosen_tetap\":false,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":12}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(20, 1, 'admin', 'user.created', 'App\\Models\\User', 21, NULL, NULL, '{\"name\":\"Maydika Ramadani, S.H., M.H.\",\"email\":\"3860765666130310@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":21}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(21, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 13, NULL, NULL, '{\"user_id\":21,\"nidn\":\"3860765666130310\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Muhammadiyah Aceh Banda Aceh\",\"Universitas Pembangunan Nasional Veteran Jakarta\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":13}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(22, 1, 'admin', 'user.created', 'App\\Models\\User', 22, NULL, NULL, '{\"name\":\"Raul Gindo cahyono, S.H., M.H.\",\"email\":\"1956751652130120@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":22}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(23, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 14, NULL, NULL, '{\"user_id\":22,\"nidn\":\"1956751652130120\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Islam Attahiriyah\",\"Universitas Pancasila\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":14}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(24, 1, 'admin', 'user.created', 'App\\Models\\User', 23, NULL, NULL, '{\"name\":\"Muhammad Arbani, S.H., M.Kn.\",\"email\":\"3345774675130210@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":23}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(25, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 15, NULL, NULL, '{\"user_id\":23,\"nidn\":\"3345774675130210\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Universitas Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(26, 1, 'admin', 'user.created', 'App\\Models\\User', 24, NULL, NULL, '{\"name\":\"Muhammad Rizqi Alfarizi, S.H., LL.M.\",\"email\":\"4434778679130070@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":24}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(27, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 16, NULL, NULL, '{\"user_id\":24,\"nidn\":\"4434778679130070\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Indonesia\",\"Universitas Malaya\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Asisten Ahli\"],\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:15'),
+(28, 1, 'admin', 'user.created', 'App\\Models\\User', 25, NULL, NULL, '{\"name\":\"Amir Firmansyah, S.H. M.H\",\"email\":\"7641763664130240@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":25}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:16'),
+(29, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 17, NULL, NULL, '{\"user_id\":25,\"nidn\":\"7641763664130240\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Wiraswasta Indonesia\",\"Universitas Al Azhar Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Asisten Ahli\"],\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:16'),
+(30, 1, 'admin', 'user.created', 'App\\Models\\User', 26, NULL, NULL, '{\"name\":\"Akhmad Ikraam, S.H., M.H.\",\"email\":\"2150767668137030@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":26}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:16'),
+(31, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 18, NULL, NULL, '{\"user_id\":26,\"nidn\":\"2150767668137030\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Islam Indonesia\",\"Universitas Al Azhar Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Asisten Ahli\"],\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:16'),
+(32, 1, 'admin', 'user.created', 'App\\Models\\User', 27, NULL, NULL, '{\"name\":\"Zul Karnen, S.S., M.Si.\",\"email\":\"3454762663130160@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":27}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:16'),
+(33, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 19, NULL, NULL, '{\"user_id\":27,\"nidn\":\"3454762663130160\",\"pendidikan\":\"S2\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\"],\"universitas\":[\"Universitas Al-Azhar Indonesia\",\"Universitas Indonesia\"],\"dosen_tetap\":true,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:16'),
+(34, 1, 'admin', 'user.created', 'App\\Models\\User', 28, NULL, NULL, '{\"name\":\"Dr. Rudi Pradisetia Sudirdja., S.H., M.H.\",\"email\":\"3204070406910000@stihadhyaksa.ac.id\",\"role\":\"dosen\",\"id\":28}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:16'),
+(35, 1, 'admin', 'dosen.created', 'App\\Models\\Dosen', 20, NULL, NULL, '{\"user_id\":28,\"nidn\":\"3204070406910000\",\"pendidikan\":\"S3\",\"prodi\":[\"ilmu hukum\"],\"phone\":\"\",\"address\":\"\",\"status\":\"aktif\",\"pendidikan_terakhir\":[\"S1\",\"S2\",\"S3\"],\"universitas\":[\"Universitas Pasundan\",\"Universitas Padjajaran\",\"Universitas Indonesia\"],\"dosen_tetap\":false,\"jabatan_fungsional\":[\"Tenaga Pengajar\"],\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:16'),
+(36, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 1, NULL, NULL, '{\"nama_semester\":\"Ganjil\",\"tahun_ajaran\":\"2025\\/2026\",\"tanggal_mulai\":\"2026-05-20T17:00:00.000000Z\",\"tanggal_selesai\":\"2026-11-20T17:00:00.000000Z\",\"status\":\"aktif\",\"id\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:40'),
+(37, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 2, NULL, NULL, '{\"nama_semester\":\"Genap\",\"tahun_ajaran\":\"2025\\/2026\",\"tanggal_mulai\":\"2026-11-21T17:00:00.000000Z\",\"tanggal_selesai\":\"2027-05-21T17:00:00.000000Z\",\"status\":\"non-aktif\",\"id\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:16:50'),
+(38, 1, 'admin', 'semester.updated', 'App\\Models\\Semester', 1, NULL, '{\"krs_dapat_diisi\":false,\"krs_mulai\":null,\"krs_selesai\":null}', '{\"krs_dapat_diisi\":true,\"krs_mulai\":\"2026-05-21 00:00:00\",\"krs_selesai\":\"2026-07-31 00:00:00\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:17:01'),
+(39, 1, 'admin', 'prodi.updated', 'App\\Models\\Prodi', 1, NULL, '{\"fakultas_id\":null}', '{\"fakultas_id\":\"1\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:50:53'),
+(40, 1, 'admin', 'prodi.updated', 'App\\Models\\Prodi', 2, NULL, '{\"fakultas_id\":null}', '{\"fakultas_id\":\"2\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:31'),
+(41, 1, 'admin', 'prodi.deleted', 'App\\Models\\Prodi', 3, NULL, '{\"id\":3,\"kode_prodi\":\"MAN\",\"fakultas_id\":null,\"nama_prodi\":\"Manajemen\",\"jenjang\":\"S1\",\"status\":\"aktif\"}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:35'),
+(42, 1, 'admin', 'prodi.deleted', 'App\\Models\\Prodi', 4, NULL, '{\"id\":4,\"kode_prodi\":\"AKT\",\"fakultas_id\":null,\"nama_prodi\":\"Akuntansi\",\"jenjang\":\"D3\",\"status\":\"aktif\"}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:37'),
+(43, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 1, '{\"semester_id\":1,\"mata_kuliah_id\":\"55\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"55\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(44, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 2, '{\"semester_id\":1,\"mata_kuliah_id\":\"2\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"2\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(45, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 3, '{\"semester_id\":1,\"mata_kuliah_id\":\"4\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"4\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(46, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 4, '{\"semester_id\":1,\"mata_kuliah_id\":\"49\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"49\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(47, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 5, '{\"semester_id\":1,\"mata_kuliah_id\":\"50\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"50\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":5}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(48, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 6, '{\"semester_id\":1,\"mata_kuliah_id\":\"8\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"8\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(49, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 7, '{\"semester_id\":1,\"mata_kuliah_id\":\"41\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"41\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(50, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 8, '{\"semester_id\":1,\"mata_kuliah_id\":\"19\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"19\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":8}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(51, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 9, '{\"semester_id\":1,\"mata_kuliah_id\":\"18\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"18\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":9}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(52, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 10, '{\"semester_id\":1,\"mata_kuliah_id\":\"27\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"27\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":10}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(53, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 11, '{\"semester_id\":1,\"mata_kuliah_id\":\"11\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"11\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":11}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(54, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 12, '{\"semester_id\":1,\"mata_kuliah_id\":\"20\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"20\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":12}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(55, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 13, '{\"semester_id\":1,\"mata_kuliah_id\":\"61\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"61\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":13}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(56, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 14, '{\"semester_id\":1,\"mata_kuliah_id\":\"28\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"28\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":14}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(57, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 15, '{\"semester_id\":1,\"mata_kuliah_id\":\"47\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"47\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(58, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 16, '{\"semester_id\":1,\"mata_kuliah_id\":\"16\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"16\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(59, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 17, '{\"semester_id\":1,\"mata_kuliah_id\":\"17\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"17\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(60, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 18, '{\"semester_id\":1,\"mata_kuliah_id\":\"43\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"43\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(61, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 19, '{\"semester_id\":1,\"mata_kuliah_id\":\"14\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"14\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(62, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 20, '{\"semester_id\":1,\"mata_kuliah_id\":\"68\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"68\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(63, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 21, '{\"semester_id\":1,\"mata_kuliah_id\":\"12\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"12\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":21}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(64, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 22, '{\"semester_id\":1,\"mata_kuliah_id\":\"66\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"66\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":22}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(65, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 23, '{\"semester_id\":1,\"mata_kuliah_id\":\"31\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"31\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":23}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(66, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 24, '{\"semester_id\":1,\"mata_kuliah_id\":\"44\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"44\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":24}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(67, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 25, '{\"semester_id\":1,\"mata_kuliah_id\":\"67\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"67\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":25}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(68, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 26, '{\"semester_id\":1,\"mata_kuliah_id\":\"30\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"30\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":26}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(69, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 27, '{\"semester_id\":1,\"mata_kuliah_id\":\"64\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"64\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":27}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(70, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 28, '{\"semester_id\":1,\"mata_kuliah_id\":\"34\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"34\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":28}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(71, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 29, '{\"semester_id\":1,\"mata_kuliah_id\":\"60\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"60\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":29}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(72, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 30, '{\"semester_id\":1,\"mata_kuliah_id\":\"35\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"35\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":30}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(73, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 31, '{\"semester_id\":1,\"mata_kuliah_id\":\"57\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"57\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":31}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(74, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 32, '{\"semester_id\":1,\"mata_kuliah_id\":\"9\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"9\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":32}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(75, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 33, '{\"semester_id\":1,\"mata_kuliah_id\":\"29\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"29\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":33}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(76, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 34, '{\"semester_id\":1,\"mata_kuliah_id\":\"45\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"45\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":34}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(77, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 35, '{\"semester_id\":1,\"mata_kuliah_id\":\"25\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"25\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":35}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(78, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 36, '{\"semester_id\":1,\"mata_kuliah_id\":\"69\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"69\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":36}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(79, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 37, '{\"semester_id\":1,\"mata_kuliah_id\":\"39\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"39\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":37}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(80, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 38, '{\"semester_id\":1,\"mata_kuliah_id\":\"65\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"65\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":38}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(81, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 39, '{\"semester_id\":1,\"mata_kuliah_id\":\"56\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"56\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":39}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(82, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 40, '{\"semester_id\":1,\"mata_kuliah_id\":\"10\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"10\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":40}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(83, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 41, '{\"semester_id\":1,\"mata_kuliah_id\":\"40\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"40\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":41}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(84, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 42, '{\"semester_id\":1,\"mata_kuliah_id\":\"38\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"38\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":42}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(85, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 43, '{\"semester_id\":1,\"mata_kuliah_id\":\"22\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"22\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":43}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(86, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 44, '{\"semester_id\":1,\"mata_kuliah_id\":\"42\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"42\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":44}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(87, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 45, '{\"semester_id\":1,\"mata_kuliah_id\":\"15\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"15\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":45}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(88, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 46, '{\"semester_id\":1,\"mata_kuliah_id\":\"1\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"1\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":46}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(89, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 47, '{\"semester_id\":1,\"mata_kuliah_id\":\"5\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"5\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":47}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(90, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 48, '{\"semester_id\":1,\"mata_kuliah_id\":\"13\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"13\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":48}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(91, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 49, '{\"semester_id\":1,\"mata_kuliah_id\":\"70\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"70\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":49}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(92, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 50, '{\"semester_id\":1,\"mata_kuliah_id\":\"48\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"48\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":50}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(93, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 51, '{\"semester_id\":1,\"mata_kuliah_id\":\"32\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"32\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":51}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(94, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 52, '{\"semester_id\":1,\"mata_kuliah_id\":\"21\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"21\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":52}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(95, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 53, '{\"semester_id\":1,\"mata_kuliah_id\":\"54\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"54\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":53}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(96, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 54, '{\"semester_id\":1,\"mata_kuliah_id\":\"51\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"51\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":54}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(97, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 55, '{\"semester_id\":1,\"mata_kuliah_id\":\"26\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"26\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":55}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(98, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 56, '{\"semester_id\":1,\"mata_kuliah_id\":\"62\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"62\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":56}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(99, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 57, '{\"semester_id\":1,\"mata_kuliah_id\":\"24\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"24\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":57}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(100, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 58, '{\"semester_id\":1,\"mata_kuliah_id\":\"36\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"36\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":58}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(101, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 59, '{\"semester_id\":1,\"mata_kuliah_id\":\"37\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"37\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":59}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(102, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 60, '{\"semester_id\":1,\"mata_kuliah_id\":\"3\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"3\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":60}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(103, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 61, '{\"semester_id\":1,\"mata_kuliah_id\":\"46\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"46\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":61}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(104, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 62, '{\"semester_id\":1,\"mata_kuliah_id\":\"23\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"23\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":62}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45');
 INSERT INTO `audit_logs` (`id`, `actor_id`, `actor_role`, `action`, `auditable_type`, `auditable_id`, `meta`, `before`, `after`, `ip_address`, `user_agent`, `created_at`) VALUES
-(117, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 47, NULL, NULL, '{\"angkatan\":\"2025\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"25HK04\",\"id\":47}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:02'),
-(118, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 32, NULL, '{\"id\":32,\"nama_kelas\":\"26HK01\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:11'),
-(119, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 33, NULL, '{\"id\":33,\"nama_kelas\":\"26HK02\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:14'),
-(120, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 34, NULL, '{\"id\":34,\"nama_kelas\":\"26HK03\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:16'),
-(121, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 35, NULL, '{\"id\":35,\"nama_kelas\":\"26HK04\",\"tingkat\":0,\"angkatan\":\"2026\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:18'),
-(122, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 36, NULL, '{\"id\":36,\"nama_kelas\":\"25HK01\",\"tingkat\":0,\"angkatan\":\"2025\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:20'),
-(123, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 37, NULL, '{\"id\":37,\"nama_kelas\":\"25HK02\",\"tingkat\":0,\"angkatan\":\"2025\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:23'),
-(124, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 38, NULL, '{\"id\":38,\"nama_kelas\":\"25HK03\",\"tingkat\":0,\"angkatan\":\"2025\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:27'),
-(125, 1, 'admin', 'kelasperkuliahan.deleted', 'App\\Models\\KelasPerkuliahan', 39, NULL, '{\"id\":39,\"nama_kelas\":\"25HK04\",\"tingkat\":0,\"angkatan\":\"2025\",\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":null}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:45:31'),
-(126, 1, 'admin', 'user.updated', 'App\\Models\\User', 11, NULL, '{\"email\":\"student2@stih.ac.id\"}', '{\"email\":\"sitimahasiswi@student.stih.ac.id\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:52:09'),
-(127, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 5, NULL, '{\"prodi\":\"Hukum Bisnis\",\"prodi_id\":null,\"angkatan\":\"2024\",\"tahun_akademik_id\":null,\"kelas_perkuliahan_id\":null,\"email_kampus\":null,\"email_aktif\":\"pribadi\"}', '{\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"angkatan\":\"2025\",\"tahun_akademik_id\":1,\"kelas_perkuliahan_id\":44,\"email_kampus\":\"sitimahasiswi@student.stih.ac.id\",\"email_aktif\":\"kampus\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:52:09'),
-(128, 1, 'user', 'mahasiswa.class_assignment_updated', 'App\\Models\\Mahasiswa', 5, '{\"mahasiswa_id\":5,\"mahasiswa_nim\":\"2024002\",\"mahasiswa_nama\":\"Siti Mahasiswi\"}', NULL, '{\"id\":44,\"nama_kelas\":\"25HK01\",\"display_label\":\"25HK01 - Ilmu Hukum Kelas 01\",\"prodi_id\":1,\"prodi\":\"Ilmu Hukum\",\"angkatan\":\"2025\",\"tingkat\":0,\"tahun_akademik_id\":1,\"tahun_akademik\":\"Ganjil 2025\\/2026\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:52:09'),
-(129, 1, 'admin', 'user.created', 'App\\Models\\User', 29, NULL, NULL, '{\"name\":\"Jojo\",\"email\":\"jojo@student.stih.ac.id\",\"role\":\"mahasiswa\",\"id\":29}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:56:46'),
-(130, 1, 'admin', 'mahasiswa.created', 'App\\Models\\Mahasiswa', 6, NULL, NULL, '{\"nim\":\"12345678\",\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"angkatan\":\"2026\",\"semester\":1,\"jenis_kelamin\":\"Laki-Laki\",\"phone\":null,\"address\":null,\"email_pribadi\":\"gregoriusjoell@gmail.com\",\"email_kampus\":\"jojo@student.stih.ac.id\",\"email_aktif\":\"kampus\",\"status\":\"aktif\",\"tahun_akademik_id\":1,\"kelas_perkuliahan_id\":40,\"user_id\":29,\"status_akun\":\"baru\",\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:56:46'),
-(131, 1, 'user', 'mahasiswa.class_assignment_created', 'App\\Models\\Mahasiswa', 6, '{\"mahasiswa_id\":6,\"mahasiswa_nim\":\"12345678\",\"mahasiswa_nama\":\"Jojo\"}', NULL, '{\"id\":40,\"nama_kelas\":\"26HK01\",\"display_label\":\"26HK01 - Ilmu Hukum Kelas 01\",\"prodi_id\":1,\"prodi\":\"Ilmu Hukum\",\"angkatan\":\"2026\",\"tingkat\":0,\"tahun_akademik_id\":1,\"tahun_akademik\":\"Ganjil 2025\\/2026\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:56:46'),
-(132, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:58:40'),
-(133, 29, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"new_survey_completed\":0}', '{\"new_survey_completed\":true}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 06:58:54'),
-(134, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:43:58'),
-(135, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:46:16'),
-(136, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:58:55'),
-(137, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:59:21'),
-(138, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 07:59:58'),
-(139, 1, 'admin', 'user.updated', 'App\\Models\\User', 6, NULL, '{\"email\":\"dewi.lestari@student.stih.ac.id\"}', '{\"email\":\"dewilestari@student.stih.ac.id\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:00:41'),
-(140, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 2, NULL, '{\"prodi\":\"Hukum Bisnis\",\"prodi_id\":null,\"angkatan\":\"2024\",\"tahun_akademik_id\":null,\"kelas_perkuliahan_id\":null,\"email_kampus\":null,\"email_aktif\":\"pribadi\"}', '{\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"angkatan\":\"2026\",\"tahun_akademik_id\":1,\"kelas_perkuliahan_id\":40,\"email_kampus\":\"dewilestari@student.stih.ac.id\",\"email_aktif\":\"kampus\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:00:41'),
-(141, 1, 'user', 'mahasiswa.class_assignment_updated', 'App\\Models\\Mahasiswa', 2, '{\"mahasiswa_id\":2,\"mahasiswa_nim\":\"2024010002\",\"mahasiswa_nama\":\"Dewi Lestari\"}', NULL, '{\"id\":40,\"nama_kelas\":\"26HK01\",\"display_label\":\"26HK01 - Ilmu Hukum Kelas 01\",\"prodi_id\":1,\"prodi\":\"Ilmu Hukum\",\"angkatan\":\"2026\",\"tingkat\":0,\"tahun_akademik_id\":1,\"tahun_akademik\":\"Ganjil 2025\\/2026\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:00:41'),
-(142, 6, 'mahasiswa', 'user.login', 'App\\Models\\User', 6, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:01:05'),
-(143, 6, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 2, NULL, '{\"new_survey_completed\":0}', '{\"new_survey_completed\":true}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:01:18'),
-(144, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:07:29'),
-(145, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:07:58'),
-(146, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:10:07'),
-(147, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:22:45'),
-(148, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 08:23:03'),
-(149, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-20 08:55:56'),
-(150, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:10:31'),
-(151, NULL, 'system', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"no_hp\":null}', '{\"no_hp\":\"08123456789\"}', '127.0.0.1', 'Symfony', '2026-05-20 09:28:25'),
-(152, NULL, 'system', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"no_hp\":\"08123456789\"}', '{\"no_hp\":null}', '127.0.0.1', 'Symfony', '2026-05-20 09:28:31'),
-(168, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:11'),
-(169, 1, 'admin', 'user.updated', 'App\\Models\\User', 5, NULL, '{\"email\":\"andi.pratama@student.stih.ac.id\"}', '{\"email\":\"andipratama@student.stih.ac.id\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:33'),
-(170, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"prodi\":\"Hukum Tata Kabupaten\",\"prodi_id\":null,\"tahun_akademik_id\":null,\"email_kampus\":null,\"email_aktif\":\"pribadi\"}', '{\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"email_kampus\":\"andipratama@student.stih.ac.id\",\"email_aktif\":\"kampus\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:33'),
-(171, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:48'),
-(172, 5, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"new_survey_completed\":0}', '{\"new_survey_completed\":true}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:57:56'),
-(176, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:59:44'),
-(177, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 09:59:55'),
-(179, 5, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"no_hp\":null,\"alamat\":null,\"kota\":null,\"kecamatan\":null,\"desa\":null,\"provinsi\":null,\"jenis_sekolah\":null,\"jurusan_sekolah\":null,\"tahun_lulus\":null,\"nilai_kelulusan\":null,\"tempat_lahir\":null,\"tanggal_lahir\":null,\"jenis_kelamin\":null,\"agama\":null,\"status_sipil\":null,\"email_pribadi\":null}', '{\"no_hp\":\"081234567890\",\"alamat\":\"Jl. Test No. 123\",\"kota\":\"Jakarta Selatan\",\"kecamatan\":\"Kebayoran Baru\",\"desa\":\"Senayan\",\"provinsi\":\"DKI Jakarta\",\"jenis_sekolah\":\"1 - Umum\",\"jurusan_sekolah\":\"SMA\",\"tahun_lulus\":\"2024\",\"nilai_kelulusan\":\"85.50\",\"tempat_lahir\":\"Jakarta\",\"tanggal_lahir\":\"2000-01-15\",\"jenis_kelamin\":\"Laki-Laki\",\"agama\":\"Islam\",\"status_sipil\":\"Belum Menikah\",\"email_pribadi\":\"\"}', '127.0.0.1', 'Symfony', '2026-05-20 10:02:50'),
-(182, 5, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"rt\":null,\"rw\":null,\"kota\":\"Jakarta Selatan\",\"kecamatan\":\"Kebayoran Baru\",\"desa\":\"Senayan\",\"alamat_ktp\":null,\"rt_ktp\":null,\"rw_ktp\":null,\"provinsi_ktp\":null,\"kota_ktp\":null,\"kecamatan_ktp\":null,\"desa_ktp\":null,\"provinsi\":\"DKI Jakarta\",\"email_pribadi\":\"\"}', '{\"rt\":\"12\",\"rw\":\"12\",\"kota\":\"KAB. ACEH BARAT\",\"kecamatan\":\"ARONGAN LAMBALEK\",\"desa\":\"ALUE BAGOK\",\"alamat_ktp\":\"Jl. Test No. 123\",\"rt_ktp\":\"12\",\"rw_ktp\":\"12\",\"provinsi_ktp\":\"ACEH\",\"kota_ktp\":\"KAB. ACEH BARAT\",\"kecamatan_ktp\":\"ARONGAN LAMBALEK\",\"desa_ktp\":\"ALUE BAGOK\",\"provinsi\":\"ACEH\",\"email_pribadi\":null}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 10:04:06'),
-(183, 29, 'mahasiswa', 'user.login', 'App\\Models\\User', 29, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 10:04:18'),
-(184, 29, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"no_hp\":null,\"alamat\":null,\"rt\":null,\"rw\":null,\"kota\":null,\"kecamatan\":null,\"desa\":null,\"alamat_ktp\":null,\"rt_ktp\":null,\"rw_ktp\":null,\"provinsi_ktp\":null,\"kota_ktp\":null,\"kecamatan_ktp\":null,\"desa_ktp\":null,\"provinsi\":null,\"jenis_sekolah\":null,\"jurusan_sekolah\":null,\"tahun_lulus\":null,\"nilai_kelulusan\":null,\"tempat_lahir\":null,\"tanggal_lahir\":null,\"agama\":null,\"status_sipil\":null}', '{\"no_hp\":\"8111111111111\",\"alamat\":\"qwe\",\"rt\":\"123\",\"rw\":\"123\",\"kota\":\"KAB. ACEH BARAT DAYA\",\"kecamatan\":\"BLANGPIDIE\",\"desa\":\"GUDANG\",\"alamat_ktp\":\"qwe\",\"rt_ktp\":\"123\",\"rw_ktp\":\"123\",\"provinsi_ktp\":\"ACEH\",\"kota_ktp\":\"KAB. ACEH BARAT DAYA\",\"kecamatan_ktp\":\"BLANGPIDIE\",\"desa_ktp\":\"GUDANG\",\"provinsi\":\"ACEH\",\"jenis_sekolah\":\"1 - Umum\",\"jurusan_sekolah\":\"SMA\",\"tahun_lulus\":\"2025\",\"nilai_kelulusan\":\"100\",\"tempat_lahir\":\"Jakarta\",\"tanggal_lahir\":\"2000-10-10\",\"agama\":\"Katolik\",\"status_sipil\":\"Cerai\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 10:05:27'),
-(185, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-20 10:06:59');
+(105, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 63, '{\"semester_id\":1,\"mata_kuliah_id\":\"7\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"7\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":63}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(106, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 64, '{\"semester_id\":1,\"mata_kuliah_id\":\"6\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"6\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":64}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(107, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 65, '{\"semester_id\":1,\"mata_kuliah_id\":\"63\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"63\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":65}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(108, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 66, '{\"semester_id\":1,\"mata_kuliah_id\":\"58\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"58\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":66}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(109, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 67, '{\"semester_id\":1,\"mata_kuliah_id\":\"59\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"59\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":67}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(110, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 68, '{\"semester_id\":1,\"mata_kuliah_id\":\"52\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"52\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":68}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(111, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 69, '{\"semester_id\":1,\"mata_kuliah_id\":\"53\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"53\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":69}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(112, 1, 'user', 'attach_mk', 'mata_kuliah_semester', 70, '{\"semester_id\":1,\"mata_kuliah_id\":\"33\"}', NULL, '{\"semester_id\":1,\"mata_kuliah_id\":\"33\",\"status\":\"active\",\"activated_at\":\"2026-05-21T09:51:45.000000Z\",\"updated_at\":\"2026-05-21T09:51:45.000000Z\",\"created_at\":\"2026-05-21T09:51:45.000000Z\",\"id\":70}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:51:45'),
+(113, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 15, NULL, NULL, '{\"kode_ruangan\":\"RI 1\",\"nama_ruangan\":\"Ruang Kelas Internasional 1\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":1,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":15}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:53:47'),
+(114, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 16, NULL, NULL, '{\"kode_ruangan\":\"RI 2\",\"nama_ruangan\":\"Ruang Kelas Internasional 2\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":1,\"kapasitas\":30,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":16}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:53:47'),
+(115, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 17, NULL, NULL, '{\"kode_ruangan\":\"RI 3\",\"nama_ruangan\":\"Ruang Kelas Internasional 3\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":1,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":17}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:53:47'),
+(116, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 18, NULL, NULL, '{\"kode_ruangan\":\"R 1\",\"nama_ruangan\":\"Ruang Kelas R 1\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":18}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:53:47'),
+(117, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 19, NULL, NULL, '{\"kode_ruangan\":\"R 2\",\"nama_ruangan\":\"Ruang Kelas R 2\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":19}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:53:47'),
+(118, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 20, NULL, NULL, '{\"kode_ruangan\":\"R 3\",\"nama_ruangan\":\"Ruang Kelas R 3\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":20}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:53:47'),
+(119, 1, 'admin', 'ruangan.created', 'App\\Models\\Ruangan', 21, NULL, NULL, '{\"kode_ruangan\":\"R 4\",\"nama_ruangan\":\"Ruang Kelas R 4\",\"gedung\":\"STIH Adhyaksa\",\"lantai\":2,\"kapasitas\":50,\"kategori_id\":null,\"status\":\"Aktif\",\"id\":21}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:53:47'),
+(120, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 1, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"01\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK01\",\"id\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:54:34'),
+(121, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 2, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"02\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK02\",\"id\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:54:34'),
+(122, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 3, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"03\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK03\",\"id\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:54:34'),
+(123, 1, 'admin', 'kelasperkuliahan.created', 'App\\Models\\KelasPerkuliahan', 4, NULL, NULL, '{\"angkatan\":\"2026\",\"tingkat\":0,\"kode_prodi\":\"HK\",\"kode_kelas\":\"04\",\"prodi_id\":1,\"tahun_akademik_id\":1,\"nama_kelas\":\"26HK04\",\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:54:34'),
+(124, 1, 'admin', 'user.updated', 'App\\Models\\User', 10, NULL, '{\"email\":\"student1@stih.ac.id\"}', '{\"email\":\"ahmadmahasiswa@student.stih.ac.id\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:58:25'),
+(125, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 4, NULL, '{\"prodi_id\":null,\"angkatan\":\"2024\",\"tahun_akademik_id\":null,\"kelas_perkuliahan_id\":null,\"email_kampus\":null,\"email_aktif\":\"pribadi\"}', '{\"prodi_id\":1,\"angkatan\":\"2026\",\"tahun_akademik_id\":1,\"kelas_perkuliahan_id\":1,\"email_kampus\":\"ahmadmahasiswa@student.stih.ac.id\",\"email_aktif\":\"kampus\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:58:25'),
+(126, 1, 'user', 'mahasiswa.class_assignment_updated', 'App\\Models\\Mahasiswa', 4, '{\"mahasiswa_id\":4,\"mahasiswa_nim\":\"2024001\",\"mahasiswa_nama\":\"Ahmad Mahasiswa\"}', NULL, '{\"id\":1,\"nama_kelas\":\"26HK01\",\"display_label\":\"26HK01 - Ilmu Hukum Kelas 01\",\"prodi_id\":1,\"prodi\":\"Ilmu Hukum\",\"angkatan\":\"2026\",\"tingkat\":0,\"tahun_akademik_id\":1,\"tahun_akademik\":\"Ganjil 2025\\/2026\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:58:25'),
+(127, 1, 'admin', 'dosen.updated', 'App\\Models\\Dosen', 10, NULL, '{\"mata_kuliah_ids\":null}', '{\"mata_kuliah_ids\":\"[1,2,3]\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:58:56'),
+(128, 1, 'admin', 'dosen.updated', 'App\\Models\\Dosen', 1, NULL, '{\"mata_kuliah_ids\":null}', '{\"mata_kuliah_ids\":\"[5,6,7]\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:59:19'),
+(129, 1, 'admin', 'dosen.updated', 'App\\Models\\Dosen', 9, NULL, '{\"mata_kuliah_ids\":null}', '{\"mata_kuliah_ids\":\"[4,8]\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:59:28'),
+(130, 18, 'dosen', 'user.login', 'App\\Models\\User', 18, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:59:39'),
+(131, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:59:47'),
+(132, 18, 'dosen', 'user.login', 'App\\Models\\User', 18, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 09:59:59'),
+(133, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:00:12'),
+(134, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:00:19'),
+(135, 17, 'dosen', 'user.login', 'App\\Models\\User', 17, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:00:34'),
+(136, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:00:47'),
+(137, 18, 'dosen', 'user.login', 'App\\Models\\User', 18, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:08'),
+(138, 18, 'dosen', 'jadwal.created', 'App\\Models\\Jadwal', 1, NULL, NULL, '{\"kelas_id\":1,\"hari\":\"Selasa\",\"jam_mulai\":\"13:45:00\",\"jam_selesai\":\"16:15:00\",\"ruangan\":\"RI 1\",\"ruangan_id\":null,\"status\":\"active\",\"approved_by\":18,\"approved_at\":\"2026-05-21T10:01:11.000000Z\",\"id\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:11'),
+(139, 18, 'dosen', 'kelasmatakuliah.created', 'App\\Models\\KelasMataKuliah', 1, NULL, NULL, '{\"mata_kuliah_id\":3,\"dosen_id\":10,\"semester_id\":1,\"kelas_perkuliahan_id\":1,\"kode_kelas\":\"01\",\"kapasitas\":40,\"ruang\":\"RI 1\",\"ruangan_id\":null,\"hari\":\"Selasa\",\"jam_mulai\":\"13:45:00\",\"jam_selesai\":\"16:15:00\",\"id\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:11'),
+(140, 18, 'dosen', 'jadwal.created', 'App\\Models\\Jadwal', 2, NULL, NULL, '{\"kelas_id\":5,\"hari\":\"Selasa\",\"jam_mulai\":\"20:40:00\",\"jam_selesai\":\"22:10:00\",\"ruangan\":\"R 1\",\"ruangan_id\":null,\"status\":\"active\",\"approved_by\":18,\"approved_at\":\"2026-05-21T10:01:12.000000Z\",\"id\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:12'),
+(141, 18, 'dosen', 'kelasmatakuliah.created', 'App\\Models\\KelasMataKuliah', 2, NULL, NULL, '{\"mata_kuliah_id\":2,\"dosen_id\":10,\"semester_id\":1,\"kelas_perkuliahan_id\":1,\"kode_kelas\":\"01\",\"kapasitas\":40,\"ruang\":\"R 1\",\"ruangan_id\":null,\"hari\":\"Selasa\",\"jam_mulai\":\"20:40:00\",\"jam_selesai\":\"22:10:00\",\"id\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:12'),
+(142, 18, 'dosen', 'jadwal.created', 'App\\Models\\Jadwal', 3, NULL, NULL, '{\"kelas_id\":8,\"hari\":\"Senin\",\"jam_mulai\":\"10:30:00\",\"jam_selesai\":\"12:00:00\",\"ruangan\":\"R 1\",\"ruangan_id\":null,\"status\":\"active\",\"approved_by\":18,\"approved_at\":\"2026-05-21T10:01:13.000000Z\",\"id\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:13'),
+(143, 18, 'dosen', 'kelasmatakuliah.created', 'App\\Models\\KelasMataKuliah', 3, NULL, NULL, '{\"mata_kuliah_id\":1,\"dosen_id\":10,\"semester_id\":1,\"kelas_perkuliahan_id\":1,\"kode_kelas\":\"01\",\"kapasitas\":40,\"ruang\":\"R 1\",\"ruangan_id\":null,\"hari\":\"Senin\",\"jam_mulai\":\"10:30:00\",\"jam_selesai\":\"12:00:00\",\"id\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:13'),
+(144, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:24'),
+(145, 2, 'dosen', 'jadwal.created', 'App\\Models\\Jadwal', 4, NULL, NULL, '{\"kelas_id\":2,\"hari\":\"Kamis\",\"jam_mulai\":\"13:45:00\",\"jam_selesai\":\"16:15:00\",\"ruangan\":\"R 4\",\"ruangan_id\":null,\"status\":\"active\",\"approved_by\":2,\"approved_at\":\"2026-05-21T10:01:26.000000Z\",\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:26'),
+(146, 2, 'dosen', 'kelasmatakuliah.created', 'App\\Models\\KelasMataKuliah', 4, NULL, NULL, '{\"mata_kuliah_id\":6,\"dosen_id\":1,\"semester_id\":1,\"kelas_perkuliahan_id\":1,\"kode_kelas\":\"01\",\"kapasitas\":40,\"ruang\":\"R 4\",\"ruangan_id\":null,\"hari\":\"Kamis\",\"jam_mulai\":\"13:45:00\",\"jam_selesai\":\"16:15:00\",\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:26'),
+(147, 2, 'dosen', 'jadwal.created', 'App\\Models\\Jadwal', 5, NULL, NULL, '{\"kelas_id\":3,\"hari\":\"Kamis\",\"jam_mulai\":\"19:55:00\",\"jam_selesai\":\"22:10:00\",\"ruangan\":\"RI 1\",\"ruangan_id\":null,\"status\":\"active\",\"approved_by\":2,\"approved_at\":\"2026-05-21T10:01:28.000000Z\",\"id\":5}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:28'),
+(148, 2, 'dosen', 'kelasmatakuliah.created', 'App\\Models\\KelasMataKuliah', 5, NULL, NULL, '{\"mata_kuliah_id\":7,\"dosen_id\":1,\"semester_id\":1,\"kelas_perkuliahan_id\":1,\"kode_kelas\":\"01\",\"kapasitas\":40,\"ruang\":\"RI 1\",\"ruangan_id\":null,\"hari\":\"Kamis\",\"jam_mulai\":\"19:55:00\",\"jam_selesai\":\"22:10:00\",\"id\":5}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:28'),
+(149, 2, 'dosen', 'jadwal.created', 'App\\Models\\Jadwal', 6, NULL, NULL, '{\"kelas_id\":4,\"hari\":\"Rabu\",\"jam_mulai\":\"16:15:00\",\"jam_selesai\":\"18:30:00\",\"ruangan\":\"R 2\",\"ruangan_id\":null,\"status\":\"active\",\"approved_by\":2,\"approved_at\":\"2026-05-21T10:01:29.000000Z\",\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:29'),
+(150, 2, 'dosen', 'kelasmatakuliah.created', 'App\\Models\\KelasMataKuliah', 6, NULL, NULL, '{\"mata_kuliah_id\":5,\"dosen_id\":1,\"semester_id\":1,\"kelas_perkuliahan_id\":1,\"kode_kelas\":\"01\",\"kapasitas\":40,\"ruang\":\"R 2\",\"ruangan_id\":null,\"hari\":\"Rabu\",\"jam_mulai\":\"16:15:00\",\"jam_selesai\":\"18:30:00\",\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:29'),
+(151, 17, 'dosen', 'user.login', 'App\\Models\\User', 17, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:33'),
+(152, 17, 'dosen', 'jadwal.created', 'App\\Models\\Jadwal', 7, NULL, NULL, '{\"kelas_id\":6,\"hari\":\"Jumat\",\"jam_mulai\":\"15:30:00\",\"jam_selesai\":\"16:55:00\",\"ruangan\":\"R 2\",\"ruangan_id\":null,\"status\":\"active\",\"approved_by\":17,\"approved_at\":\"2026-05-21T10:01:38.000000Z\",\"id\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:38'),
+(153, 17, 'dosen', 'kelasmatakuliah.created', 'App\\Models\\KelasMataKuliah', 7, NULL, NULL, '{\"mata_kuliah_id\":8,\"dosen_id\":9,\"semester_id\":1,\"kelas_perkuliahan_id\":1,\"kode_kelas\":\"01\",\"kapasitas\":40,\"ruang\":\"R 2\",\"ruangan_id\":null,\"hari\":\"Jumat\",\"jam_mulai\":\"15:30:00\",\"jam_selesai\":\"16:55:00\",\"id\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:38'),
+(154, 17, 'dosen', 'jadwal.created', 'App\\Models\\Jadwal', 8, NULL, NULL, '{\"kelas_id\":7,\"hari\":\"Jumat\",\"jam_mulai\":\"20:40:00\",\"jam_selesai\":\"22:10:00\",\"ruangan\":\"R 1\",\"ruangan_id\":null,\"status\":\"active\",\"approved_by\":17,\"approved_at\":\"2026-05-21T10:01:39.000000Z\",\"id\":8}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:39'),
+(155, 17, 'dosen', 'kelasmatakuliah.created', 'App\\Models\\KelasMataKuliah', 8, NULL, NULL, '{\"mata_kuliah_id\":4,\"dosen_id\":9,\"semester_id\":1,\"kelas_perkuliahan_id\":1,\"kode_kelas\":\"01\",\"kapasitas\":40,\"ruang\":\"R 1\",\"ruangan_id\":null,\"hari\":\"Jumat\",\"jam_mulai\":\"20:40:00\",\"jam_selesai\":\"22:10:00\",\"id\":8}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:39'),
+(156, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:01:45'),
+(157, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:02:20'),
+(158, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:02:55'),
+(159, 1, 'admin', 'user.updated', 'App\\Models\\User', 10, NULL, '{\"role\":\"student\"}', '{\"role\":\"mahasiswa\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:03:10'),
+(160, 10, 'mahasiswa', 'user.login', 'App\\Models\\User', 10, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:03:21'),
+(161, 10, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 4, NULL, '{\"new_survey_completed\":0}', '{\"new_survey_completed\":true}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:03:32'),
+(162, 10, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 4, NULL, '{\"no_hp\":null,\"alamat\":null,\"rt\":null,\"rw\":null,\"kota\":null,\"kecamatan\":null,\"desa\":null,\"alamat_ktp\":null,\"rt_ktp\":null,\"rw_ktp\":null,\"provinsi_ktp\":null,\"kota_ktp\":null,\"kecamatan_ktp\":null,\"desa_ktp\":null,\"provinsi\":null,\"jenis_sekolah\":null,\"jurusan_sekolah\":null,\"tahun_lulus\":null,\"nilai_kelulusan\":null,\"tempat_lahir\":null,\"tanggal_lahir\":null,\"jenis_kelamin\":null,\"agama\":null,\"status_sipil\":null,\"file_ijazah\":null,\"file_transkrip\":null,\"file_kk\":null,\"file_ktp\":null}', '{\"no_hp\":\"1231231231231\",\"alamat\":\"Jakarta\",\"rt\":\"12\",\"rw\":\"12\",\"kota\":\"KAB. ACEH BARAT\",\"kecamatan\":\"ARONGAN LAMBALEK\",\"desa\":\"ALUE SUNDAK\",\"alamat_ktp\":\"Jakarta\",\"rt_ktp\":\"12\",\"rw_ktp\":\"12\",\"provinsi_ktp\":\"ACEH\",\"kota_ktp\":\"KAB. ACEH BARAT\",\"kecamatan_ktp\":\"ARONGAN LAMBALEK\",\"desa_ktp\":\"ALUE SUNDAK\",\"provinsi\":\"ACEH\",\"jenis_sekolah\":\"1 - Umum\",\"jurusan_sekolah\":\"SMA\",\"tahun_lulus\":\"2026\",\"nilai_kelulusan\":\"100\",\"tempat_lahir\":\"Jakarta\",\"tanggal_lahir\":\"2000-10-10\",\"jenis_kelamin\":\"Laki-Laki\",\"agama\":\"Buddha\",\"status_sipil\":\"Belum Menikah\",\"file_ijazah\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/AHMAD_MAHASISWA_2024001\\\\\\/592bd5c7-f8e9-47a8-bf72-006c67b1f252.pdf\\\"]\",\"file_transkrip\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/AHMAD_MAHASISWA_2024001\\\\\\/0bc5dd24-4912-4018-863d-6a46d30e5294.pdf\\\"]\",\"file_kk\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/AHMAD_MAHASISWA_2024001\\\\\\/10ebf57a-ba43-4832-8bb9-ed944738a5be.pdf\\\"]\",\"file_ktp\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/AHMAD_MAHASISWA_2024001\\\\\\/d5af8e70-0bb6-42bc-920f-db7472864937.pdf\\\"]\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:06:25'),
+(163, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.81\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.81', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:16:14'),
+(164, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.81\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.81', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:16:27'),
+(165, 10, 'mahasiswa', 'user.login', 'App\\Models\\User', 10, '{\"ip\":\"192.168.1.81\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.81', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:17:15'),
+(166, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:22:38'),
+(167, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.81\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.81', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:23:31'),
+(168, 1, 'admin', 'user.created', 'App\\Models\\User', 29, NULL, NULL, '{\"name\":\"Akbar\",\"email\":\"2024001@parent.stih.ac.id\",\"role\":\"parent\",\"id\":29}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:25:44'),
+(169, 1, 'admin', 'dosen.updated', 'App\\Models\\Dosen', 1, NULL, '{\"fakultas_id\":null,\"pendidikan_terakhir\":null,\"universitas\":null,\"dosen_tetap\":false,\"jabatan_fungsional\":null,\"pendidikan\":null,\"prodi\":\"Hukum Tata Kabupaten\"}', '{\"fakultas_id\":\"1\",\"pendidikan_terakhir\":\"[\\\"S3\\\"]\",\"universitas\":\"[\\\"Universitas Gunadarma\\\"]\",\"dosen_tetap\":true,\"jabatan_fungsional\":\"[\\\"Asisten Ahli\\\"]\",\"pendidikan\":\"S3\",\"prodi\":\"[\\\"Ilmu Hukum\\\"]\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-21 10:26:50'),
+(170, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:22:32'),
+(171, 10, 'mahasiswa', 'user.login', 'App\\Models\\User', 10, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:24:07'),
+(172, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:25:06'),
+(173, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:33:35'),
+(174, 1, 'admin', 'user.created', 'App\\Models\\User', 30, NULL, NULL, '{\"name\":\"Jojo\",\"email\":\"jojo@student.stih.ac.id\",\"role\":\"mahasiswa\",\"id\":30}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:34:13'),
+(175, 1, 'admin', 'mahasiswa.created', 'App\\Models\\Mahasiswa', 6, NULL, NULL, '{\"nim\":\"50421684\",\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"angkatan\":\"2026\",\"semester\":1,\"jenis_kelamin\":\"Laki-Laki\",\"phone\":null,\"address\":null,\"email_pribadi\":\"gregoriusjoel28@gmail.com\",\"email_kampus\":\"jojo@student.stih.ac.id\",\"email_aktif\":\"kampus\",\"status\":\"aktif\",\"tahun_akademik_id\":1,\"kelas_perkuliahan_id\":1,\"user_id\":30,\"status_akun\":\"baru\",\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:34:13'),
+(176, 1, 'user', 'mahasiswa.class_assignment_created', 'App\\Models\\Mahasiswa', 6, '{\"mahasiswa_id\":6,\"mahasiswa_nim\":\"50421684\",\"mahasiswa_nama\":\"Jojo\"}', NULL, '{\"id\":1,\"nama_kelas\":\"26HK01\",\"display_label\":\"26HK01 - Ilmu Hukum Kelas 01\",\"prodi_id\":1,\"prodi\":\"Ilmu Hukum\",\"angkatan\":\"2026\",\"tingkat\":0,\"tahun_akademik_id\":1,\"tahun_akademik\":\"Ganjil 2025\\/2026\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:34:13'),
+(177, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:35:14'),
+(178, 30, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"new_survey_completed\":0}', '{\"new_survey_completed\":true}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:35:26'),
+(179, 30, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"no_hp\":null,\"alamat\":null,\"rt\":null,\"rw\":null,\"kota\":null,\"kecamatan\":null,\"desa\":null,\"alamat_ktp\":null,\"rt_ktp\":null,\"rw_ktp\":null,\"provinsi_ktp\":null,\"kota_ktp\":null,\"kecamatan_ktp\":null,\"desa_ktp\":null,\"provinsi\":null,\"jenis_sekolah\":null,\"jurusan_sekolah\":null,\"tahun_lulus\":null,\"nilai_kelulusan\":null,\"tempat_lahir\":null,\"tanggal_lahir\":null,\"agama\":null,\"status_sipil\":null,\"file_ijazah\":null,\"file_transkrip\":null,\"file_kk\":null,\"file_ktp\":null}', '{\"no_hp\":\"82282228222\",\"alamat\":\"Jakarta\",\"rt\":\"12\",\"rw\":\"12\",\"kota\":\"KOTA ADM. JAKARTA PUSAT\",\"kecamatan\":\"CEMPAKA PUTIH\",\"desa\":\"CEMPAKA PUTIH BARAT\",\"alamat_ktp\":\"Jakarta\",\"rt_ktp\":\"12\",\"rw_ktp\":\"12\",\"provinsi_ktp\":\"DKI JAKARTA\",\"kota_ktp\":\"KOTA ADM. JAKARTA PUSAT\",\"kecamatan_ktp\":\"CEMPAKA PUTIH\",\"desa_ktp\":\"CEMPAKA PUTIH BARAT\",\"provinsi\":\"DKI JAKARTA\",\"jenis_sekolah\":\"1 - Umum\",\"jurusan_sekolah\":\"SMA\",\"tahun_lulus\":\"2026\",\"nilai_kelulusan\":\"100\",\"tempat_lahir\":\"Jakarta\",\"tanggal_lahir\":\"2000-02-28\",\"agama\":\"Katolik\",\"status_sipil\":\"Belum Menikah\",\"file_ijazah\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/JOJO_50421684\\\\\\/5cd84b5e-7cbc-4022-9f90-19218678b38a.pdf\\\"]\",\"file_transkrip\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/JOJO_50421684\\\\\\/00ad7ed6-9b7f-4cff-94c9-06c1344d4047.pdf\\\"]\",\"file_kk\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/JOJO_50421684\\\\\\/cbd00a11-75c7-46c8-993b-2f4180cba5f3.pdf\\\"]\",\"file_ktp\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/JOJO_50421684\\\\\\/7318a893-fae4-4f36-9860-c173a4bac7e1.pdf\\\"]\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:44:10'),
+(180, 30, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"foto\":null}', '{\"foto\":\"images\\/mahasiswa\\/foto\\/JOJO_50421684\\/b617b89b-5e19-4338-8996-ec8e168371df.png\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:44:41'),
+(181, 30, 'mahasiswa', 'krs.submitted', 'App\\Models\\Mahasiswa', 6, '{\"semester_id\":1,\"total_mk\":8,\"total_sks\":20}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:44:55'),
+(182, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 02:45:26'),
+(183, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:45:43'),
+(184, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":1}', '{\"semester\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 02:46:03'),
+(185, 30, 'mahasiswa', 'krs.submitted', 'App\\Models\\Mahasiswa', 6, '{\"semester_id\":1,\"total_mk\":7,\"total_sks\":20}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 02:46:10'),
+(186, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":2}', '{\"semester\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 02:46:17'),
+(187, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":3}', '{\"semester\":1}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 02:47:23'),
+(188, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":1}', '{\"semester\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 02:56:09'),
+(189, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":3}', '{\"semester\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 02:56:36'),
+(190, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":4}', '{\"semester\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 02:56:50'),
+(191, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 3, NULL, NULL, '{\"nama_semester\":\"Genap\",\"tahun_ajaran\":\"2026\\/2027\",\"tanggal_mulai\":\"2027-05-22T17:00:00.000000Z\",\"tanggal_selesai\":\"2027-11-22T17:00:00.000000Z\",\"status\":\"non-aktif\",\"id\":3}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:34:45'),
+(192, 1, 'admin', 'semester.updated', 'App\\Models\\Semester', 3, NULL, '{\"nama_semester\":\"Genap\"}', '{\"nama_semester\":\"Ganjil\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:34:57'),
+(193, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 4, NULL, NULL, '{\"nama_semester\":\"Genap\",\"tahun_ajaran\":\"2026\\/2027\",\"tanggal_mulai\":\"2027-11-23T17:00:00.000000Z\",\"tanggal_selesai\":\"2028-05-23T17:00:00.000000Z\",\"status\":\"non-aktif\",\"id\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:35:05'),
+(194, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 5, NULL, NULL, '{\"nama_semester\":\"Ganjil\",\"tahun_ajaran\":\"2027\\/2028\",\"tanggal_mulai\":\"2028-05-24T17:00:00.000000Z\",\"tanggal_selesai\":\"2028-11-24T17:00:00.000000Z\",\"status\":\"non-aktif\",\"id\":5}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:35:17'),
+(195, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 6, NULL, NULL, '{\"nama_semester\":\"Genap\",\"tahun_ajaran\":\"2027\\/2028\",\"tanggal_mulai\":\"2028-11-25T17:00:00.000000Z\",\"tanggal_selesai\":\"2029-05-25T17:00:00.000000Z\",\"status\":\"non-aktif\",\"id\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:35:28'),
+(196, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 7, NULL, NULL, '{\"nama_semester\":\"Ganjil\",\"tahun_ajaran\":\"2028\\/2029\",\"tanggal_mulai\":\"2029-05-26T17:00:00.000000Z\",\"tanggal_selesai\":\"2029-11-26T17:00:00.000000Z\",\"status\":\"non-aktif\",\"id\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:35:42'),
+(197, 1, 'admin', 'semester.created', 'App\\Models\\Semester', 8, NULL, NULL, '{\"nama_semester\":\"Genap\",\"tahun_ajaran\":\"2028\\/2029\",\"tanggal_mulai\":\"2029-11-27T17:00:00.000000Z\",\"tanggal_selesai\":\"2030-05-27T17:00:00.000000Z\",\"status\":\"non-aktif\",\"id\":8}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:35:54'),
+(200, 30, 'mahasiswa', 'krs.submitted', 'App\\Models\\Mahasiswa', 6, '{\"semester_id\":1,\"total_mk\":10,\"total_sks\":24}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 03:45:37'),
+(201, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":3}', '{\"semester\":4}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:46:02'),
+(202, 30, 'mahasiswa', 'krs.submitted', 'App\\Models\\Mahasiswa', 6, '{\"semester_id\":1,\"total_mk\":11,\"total_sks\":24}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 03:46:11'),
+(203, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":4}', '{\"semester\":5}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:46:26'),
+(204, 30, 'mahasiswa', 'krs.submitted', 'App\\Models\\Mahasiswa', 6, '{\"semester_id\":1,\"total_mk\":12,\"total_sks\":24}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 03:46:32'),
+(205, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":5}', '{\"semester\":6}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:46:40'),
+(206, 30, 'mahasiswa', 'krs.submitted', 'App\\Models\\Mahasiswa', 6, '{\"semester_id\":1,\"total_mk\":12,\"total_sks\":24}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 03:46:45'),
+(207, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 6, NULL, '{\"semester\":6}', '{\"semester\":7}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15', '2026-05-22 03:46:54'),
+(208, 30, 'mahasiswa', 'krs.submitted', 'App\\Models\\Mahasiswa', 6, '{\"semester_id\":1,\"total_mk\":10,\"total_sks\":22}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 03:47:27'),
+(209, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 03:48:10'),
+(210, 30, 'mahasiswa', 'skripsi.proposal_submitted', 'App\\Models\\SkripsiSubmission', 1, '{\"judul\":\"Analisis Sentimen DOSEN Resek\",\"supervisor_id\":\"1\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:09:35'),
+(211, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:09:44'),
+(212, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:09:52'),
+(213, 2, 'dosen', 'skripsi.supervisor_accepted', 'App\\Models\\SkripsiSubmission', 1, '{\"mahasiswa_id\":6}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:09:57'),
+(214, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:10:03'),
+(215, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:10:23'),
+(216, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:19:32'),
+(217, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:19:39'),
+(218, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:19:49'),
+(219, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:20:42'),
+(220, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:20:55'),
+(221, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:21:06'),
+(222, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:21:25'),
+(223, 30, 'mahasiswa', 'skripsi.revision_uploaded', 'App\\Models\\SkripsiSubmission', 1, '{\"notes\":null}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:21:33'),
+(224, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:24:11'),
+(225, 2, 'dosen', 'skripsi.revision_approved', 'App\\Models\\SkripsiSubmission', 1, '{\"revision_id\":1,\"notes\":null}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:24:20'),
+(226, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:24:33'),
+(227, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:24:50'),
+(228, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:28:24'),
+(229, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:28:54'),
+(230, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 04:29:04'),
+(231, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 05:00:28'),
+(232, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.46\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.46', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36', '2026-05-22 05:22:30'),
+(233, 10, 'mahasiswa', 'user.login', 'App\\Models\\User', 10, '{\"ip\":\"192.168.1.81\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.81', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 05:36:55'),
+(234, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 06:44:49'),
+(235, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 06:52:28'),
+(236, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 06:58:28'),
+(237, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:45:43'),
+(238, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:46:02'),
+(239, 10, 'mahasiswa', 'user.login', 'App\\Models\\User', 10, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:46:15');
+INSERT INTO `audit_logs` (`id`, `actor_id`, `actor_role`, `action`, `auditable_type`, `auditable_id`, `meta`, `before`, `after`, `ip_address`, `user_agent`, `created_at`) VALUES
+(240, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:46:21'),
+(241, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 4, NULL, '{\"semester\":1}', '{\"semester\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:46:30'),
+(242, 10, 'mahasiswa', 'user.login', 'App\\Models\\User', 10, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:46:37'),
+(243, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:47:00'),
+(244, 1, 'admin', 'user.updated', 'App\\Models\\User', 5, NULL, '{\"email\":\"andi.pratama@student.stih.ac.id\"}', '{\"email\":\"andipratama@student.stih.ac.id\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:47:25'),
+(245, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"prodi\":\"Hukum Tata Kabupaten\",\"prodi_id\":null,\"angkatan\":\"2024\",\"tahun_akademik_id\":null,\"kelas_perkuliahan_id\":null,\"email_kampus\":null,\"email_aktif\":\"pribadi\"}', '{\"prodi\":\"Ilmu Hukum\",\"prodi_id\":1,\"angkatan\":\"2026\",\"tahun_akademik_id\":1,\"kelas_perkuliahan_id\":1,\"email_kampus\":\"andipratama@student.stih.ac.id\",\"email_aktif\":\"kampus\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:47:25'),
+(246, 1, 'user', 'mahasiswa.class_assignment_updated', 'App\\Models\\Mahasiswa', 1, '{\"mahasiswa_id\":1,\"mahasiswa_nim\":\"2024010001\",\"mahasiswa_nama\":\"Andi Pratama\"}', NULL, '{\"id\":1,\"nama_kelas\":\"26HK01\",\"display_label\":\"26HK01 - Ilmu Hukum Kelas 01\",\"prodi_id\":1,\"prodi\":\"Ilmu Hukum\",\"angkatan\":\"2026\",\"tingkat\":0,\"tahun_akademik_id\":1,\"tahun_akademik\":\"Ganjil 2025\\/2026\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:47:25'),
+(247, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:47:33'),
+(248, 5, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"new_survey_completed\":0}', '{\"new_survey_completed\":true}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:47:42'),
+(249, 5, 'mahasiswa', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"no_hp\":null,\"alamat\":null,\"rt\":null,\"rw\":null,\"kota\":null,\"kecamatan\":null,\"desa\":null,\"alamat_ktp\":null,\"rt_ktp\":null,\"rw_ktp\":null,\"provinsi_ktp\":null,\"kota_ktp\":null,\"kecamatan_ktp\":null,\"desa_ktp\":null,\"provinsi\":null,\"jenis_sekolah\":null,\"jurusan_sekolah\":null,\"tahun_lulus\":null,\"nilai_kelulusan\":null,\"tempat_lahir\":null,\"tanggal_lahir\":null,\"jenis_kelamin\":null,\"agama\":null,\"status_sipil\":null,\"file_ijazah\":null,\"file_transkrip\":null,\"file_kk\":null,\"file_ktp\":null}', '{\"no_hp\":\"1231231231231\",\"alamat\":\"123\",\"rt\":\"12\",\"rw\":\"12\",\"kota\":\"KAB. ACEH BARAT DAYA\",\"kecamatan\":\"LEMBAH SABIL\",\"desa\":\"LADANG TUHA I\",\"alamat_ktp\":\"123\",\"rt_ktp\":\"12\",\"rw_ktp\":\"12\",\"provinsi_ktp\":\"ACEH\",\"kota_ktp\":\"KAB. ACEH BARAT DAYA\",\"kecamatan_ktp\":\"LEMBAH SABIL\",\"desa_ktp\":\"LADANG TUHA I\",\"provinsi\":\"ACEH\",\"jenis_sekolah\":\"1 - Umum\",\"jurusan_sekolah\":\"SMA\",\"tahun_lulus\":\"2026\",\"nilai_kelulusan\":\"100\",\"tempat_lahir\":\"Jakarta\",\"tanggal_lahir\":\"2000-10-10\",\"jenis_kelamin\":\"Laki-Laki\",\"agama\":\"Katolik\",\"status_sipil\":\"Belum Menikah\",\"file_ijazah\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/ANDI_PRATAMA_2024010001\\\\\\/f54c30e6-eb0c-40fe-a7d9-0dd9aef01121.pdf\\\"]\",\"file_transkrip\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/ANDI_PRATAMA_2024010001\\\\\\/2525e546-e150-40f7-aa01-8f9c8af46f36.pdf\\\"]\",\"file_kk\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/ANDI_PRATAMA_2024010001\\\\\\/bb91228c-cb56-48c5-8800-624cb58d1c97.pdf\\\"]\",\"file_ktp\":\"[\\\"documents\\\\\\/mahasiswa\\\\\\/ANDI_PRATAMA_2024010001\\\\\\/8ead5f91-9f2c-4d98-bcc6-814b14d6e7ac.pdf\\\"]\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:48:45'),
+(250, 5, 'mahasiswa', 'krs.submitted', 'App\\Models\\Mahasiswa', 1, '{\"semester_id\":1,\"total_mk\":8,\"total_sks\":20}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:49:05'),
+(251, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:49:12'),
+(252, 1, 'admin', 'mahasiswa.updated', 'App\\Models\\Mahasiswa', 1, NULL, '{\"semester\":1}', '{\"semester\":2}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:49:20'),
+(253, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:49:29'),
+(254, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:55:51'),
+(255, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 07:56:20'),
+(256, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-22 08:02:01'),
+(257, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 01:35:33'),
+(258, 1, 'admin', 'semester.updated', 'App\\Models\\Semester', 2, NULL, '{\"krs_mulai\":null,\"krs_selesai\":null}', '{\"krs_mulai\":\"2026-03-09 00:00:00\",\"krs_selesai\":\"2026-03-11 00:00:00\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 02:28:55'),
+(259, 1, 'user', 'academic_event.deleted', 'App\\Models\\AcademicEvent', 6, '{\"deleted_by\":1}', '{\"id\":6,\"title\":\"Ujian Tengah Semester (UTS)\",\"description\":\"Imported from PDF\",\"event_type\":\"uts\",\"start_date\":\"2026-05-17T17:00:00.000000Z\",\"end_date\":\"2026-05-21T17:00:00.000000Z\",\"semester_id\":null,\"color\":\"#f59e0b\",\"is_active\":true,\"created_by\":1,\"updated_by\":1,\"created_at\":\"2026-05-22T02:25:43.000000Z\",\"updated_at\":\"2026-05-22T02:25:43.000000Z\"}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 02:29:17'),
+(260, 1, 'user', 'academic_event.deleted', 'App\\Models\\AcademicEvent', 8, '{\"deleted_by\":1}', '{\"id\":8,\"title\":\"Masa Perkuliahaan efektif setelah UTS (7x pertemuan)\",\"description\":\"Imported from PDF\",\"event_type\":\"uts\",\"start_date\":\"2026-05-24T17:00:00.000000Z\",\"end_date\":\"2026-07-09T17:00:00.000000Z\",\"semester_id\":null,\"color\":\"#f59e0b\",\"is_active\":true,\"created_by\":1,\"updated_by\":1,\"created_at\":\"2026-05-22T02:25:44.000000Z\",\"updated_at\":\"2026-05-22T02:25:44.000000Z\"}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 02:29:20'),
+(261, 1, 'user', 'academic_event.deleted', 'App\\Models\\AcademicEvent', 9, '{\"deleted_by\":1}', '{\"id\":9,\"title\":\"Ujian Akhir Semester (UAS)\",\"description\":\"Imported from PDF\",\"event_type\":\"uas\",\"start_date\":\"2026-07-12T17:00:00.000000Z\",\"end_date\":\"2026-07-16T17:00:00.000000Z\",\"semester_id\":null,\"color\":\"#d97706\",\"is_active\":true,\"created_by\":1,\"updated_by\":1,\"created_at\":\"2026-05-22T02:25:44.000000Z\",\"updated_at\":\"2026-05-22T02:25:44.000000Z\"}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 02:29:24'),
+(262, 1, 'user', 'academic_event.deleted', 'App\\Models\\AcademicEvent', 10, '{\"deleted_by\":1}', '{\"id\":10,\"title\":\"Penginputan Nilai Mahasiswa\",\"description\":\"Imported from PDF\",\"event_type\":\"lainnya\",\"start_date\":\"2026-07-19T17:00:00.000000Z\",\"end_date\":\"2026-07-23T17:00:00.000000Z\",\"semester_id\":null,\"color\":\"#6b7280\",\"is_active\":true,\"created_by\":1,\"updated_by\":1,\"created_at\":\"2026-05-22T02:25:44.000000Z\",\"updated_at\":\"2026-05-22T02:25:44.000000Z\"}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 02:29:27'),
+(263, 1, 'user', 'academic_event.deleted', 'App\\Models\\AcademicEvent', 11, '{\"deleted_by\":1}', '{\"id\":11,\"title\":\"Cetak Kartu Hasil Studi (KHS)\",\"description\":\"Imported from PDF\",\"event_type\":\"lainnya\",\"start_date\":\"2026-07-26T17:00:00.000000Z\",\"end_date\":\"2026-07-29T17:00:00.000000Z\",\"semester_id\":null,\"color\":\"#6b7280\",\"is_active\":true,\"created_by\":1,\"updated_by\":1,\"created_at\":\"2026-05-22T02:25:44.000000Z\",\"updated_at\":\"2026-05-22T02:25:44.000000Z\"}', NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 02:29:29'),
+(264, 1, 'admin', 'semester.updated', 'App\\Models\\Semester', 1, NULL, '{\"krs_mulai\":\"2026-05-20T17:00:00.000000Z\",\"krs_selesai\":\"2026-07-30T17:00:00.000000Z\"}', '{\"krs_mulai\":\"2025-09-15 00:00:00\",\"krs_selesai\":\"2025-09-17 00:00:00\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 02:29:54'),
+(265, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.29\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.29', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 03:51:53'),
+(266, 10, 'mahasiswa', 'user.login', 'App\\Models\\User', 10, '{\"ip\":\"192.168.1.29\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.29', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 04:07:12'),
+(267, 10, 'mahasiswa', 'user.login', 'App\\Models\\User', 10, '{\"ip\":\"192.168.1.29\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.29', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 06:19:58'),
+(268, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 06:37:42'),
+(269, 1, 'admin', 'ruangan.updated', 'App\\Models\\Ruangan', 18, NULL, '{\"kategori_id\":null}', '{\"kategori_id\":\"1\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 06:38:22'),
+(270, 1, 'admin', 'ruangan.updated', 'App\\Models\\Ruangan', 19, NULL, '{\"kategori_id\":null}', '{\"kategori_id\":\"1\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 06:38:30'),
+(271, 1, 'admin', 'ruangan.updated', 'App\\Models\\Ruangan', 20, NULL, '{\"kategori_id\":null}', '{\"kategori_id\":\"1\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 06:38:37'),
+(272, 1, 'admin', 'ruangan.updated', 'App\\Models\\Ruangan', 21, NULL, '{\"kategori_id\":null}', '{\"kategori_id\":\"1\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 06:38:48'),
+(273, 1, 'admin', 'ruangan.updated', 'App\\Models\\Ruangan', 15, NULL, '{\"kategori_id\":null}', '{\"kategori_id\":\"3\"}', '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 06:39:05'),
+(274, 6, 'mahasiswa', 'user.login', 'App\\Models\\User', 6, '{\"ip\":\"192.168.1.29\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.29', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 07:26:55'),
+(275, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 07:32:02'),
+(276, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 07:32:34'),
+(277, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 07:44:18'),
+(278, 30, 'mahasiswa', 'user.login', 'App\\Models\\User', 30, '{\"ip\":\"192.168.1.29\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.29', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 07:58:30'),
+(279, 10, 'mahasiswa', 'user.login', 'App\\Models\\User', 10, '{\"ip\":\"192.168.1.29\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.29', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 07:58:53'),
+(280, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.29\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.29', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 07:59:07'),
+(281, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.29\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.29', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 10:02:25'),
+(282, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.29\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.29', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-25 10:02:35'),
+(283, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-26 02:13:03'),
+(284, 2, 'dosen', 'user.login', 'App\\Models\\User', 2, '{\"ip\":\"192.168.1.7\",\"role\":\"dosen\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-26 02:14:04'),
+(285, 5, 'mahasiswa', 'user.login', 'App\\Models\\User', 5, '{\"ip\":\"192.168.1.7\",\"role\":\"mahasiswa\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-26 02:14:15'),
+(286, 1, 'admin', 'user.login', 'App\\Models\\User', 1, '{\"ip\":\"192.168.1.7\",\"role\":\"admin\"}', NULL, NULL, '192.168.1.7', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', '2026-05-26 02:14:29');
 
 -- --------------------------------------------------------
 
@@ -344,9 +465,9 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('academic_period_current_types:1:2026-05-20', 'a:1:{i:0;a:8:{s:4:\"type\";s:3:\"uts\";s:5:\"label\";s:21:\"Ujian Tengah Semester\";s:4:\"icon\";s:11:\"fas fa-edit\";s:6:\"colors\";a:3:{s:2:\"bg\";s:12:\"bg-amber-100\";s:4:\"text\";s:14:\"text-amber-800\";s:6:\"border\";s:16:\"border-amber-300\";}s:5:\"title\";s:27:\"Ujian Tengah Semester (UTS)\";s:10:\"start_date\";s:10:\"2026-05-18\";s:8:\"end_date\";s:10:\"2026-05-22\";s:9:\"days_left\";i:2;}}', 1779271739),
-('academic_periods:1', 'O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:6:{i:0;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:21;s:5:\"title\";s:27:\"Ujian Tengah Semester (UTS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2026-05-18\";s:8:\"end_date\";s:10:\"2026-05-22\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:21;s:5:\"title\";s:27:\"Ujian Tengah Semester (UTS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2026-05-18\";s:8:\"end_date\";s:10:\"2026-05-22\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:23;s:5:\"title\";s:52:\"Masa Perkuliahaan efektif setelah UTS (7x pertemuan)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2026-05-25\";s:8:\"end_date\";s:10:\"2026-07-10\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:23;s:5:\"title\";s:52:\"Masa Perkuliahaan efektif setelah UTS (7x pertemuan)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2026-05-25\";s:8:\"end_date\";s:10:\"2026-07-10\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:2;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:22;s:5:\"title\";s:15:\"Libur Idul Adha\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:14:\"libur_akademik\";s:10:\"start_date\";s:10:\"2026-05-27\";s:8:\"end_date\";s:10:\"2026-05-27\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#ef4444\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:22;s:5:\"title\";s:15:\"Libur Idul Adha\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:14:\"libur_akademik\";s:10:\"start_date\";s:10:\"2026-05-27\";s:8:\"end_date\";s:10:\"2026-05-27\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#ef4444\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:3;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:24;s:5:\"title\";s:26:\"Ujian Akhir Semester (UAS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uas\";s:10:\"start_date\";s:10:\"2026-07-13\";s:8:\"end_date\";s:10:\"2026-07-17\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#d97706\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:24;s:5:\"title\";s:26:\"Ujian Akhir Semester (UAS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uas\";s:10:\"start_date\";s:10:\"2026-07-13\";s:8:\"end_date\";s:10:\"2026-07-17\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#d97706\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:4;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:25;s:5:\"title\";s:27:\"Penginputan Nilai Mahasiswa\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-07-20\";s:8:\"end_date\";s:10:\"2026-07-24\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:25;s:5:\"title\";s:27:\"Penginputan Nilai Mahasiswa\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-07-20\";s:8:\"end_date\";s:10:\"2026-07-24\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:5;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:26;s:5:\"title\";s:29:\"Cetak Kartu Hasil Studi (KHS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-07-27\";s:8:\"end_date\";s:10:\"2026-07-30\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:26;s:5:\"title\";s:29:\"Cetak Kartu Hasil Studi (KHS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-07-27\";s:8:\"end_date\";s:10:\"2026-07-30\";s:11:\"semester_id\";N;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-20 13:18:49\";s:10:\"updated_at\";s:19:\"2026-05-20 13:18:49\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}', 1779271631),
-('active_semester', 'O:19:\"App\\Models\\Semester\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:9:\"semesters\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:18:{s:2:\"id\";i:1;s:13:\"nama_semester\";s:6:\"Ganjil\";s:17:\"nama_semester_old\";N;s:12:\"tahun_ajaran\";s:9:\"2025/2026\";s:6:\"status\";s:5:\"aktif\";s:9:\"is_active\";i:0;s:9:\"is_locked\";i:0;s:9:\"locked_at\";N;s:9:\"locked_by\";N;s:15:\"krs_dapat_diisi\";i:0;s:14:\"max_sks_rendah\";i:20;s:14:\"max_sks_tinggi\";i:24;s:9:\"krs_mulai\";N;s:11:\"krs_selesai\";N;s:13:\"tanggal_mulai\";s:10:\"2026-05-20\";s:15:\"tanggal_selesai\";s:10:\"2026-11-20\";s:10:\"created_at\";s:19:\"2026-05-20 12:17:57\";s:10:\"updated_at\";s:19:\"2026-05-20 12:17:57\";}s:11:\"\0*\0original\";a:18:{s:2:\"id\";i:1;s:13:\"nama_semester\";s:6:\"Ganjil\";s:17:\"nama_semester_old\";N;s:12:\"tahun_ajaran\";s:9:\"2025/2026\";s:6:\"status\";s:5:\"aktif\";s:9:\"is_active\";i:0;s:9:\"is_locked\";i:0;s:9:\"locked_at\";N;s:9:\"locked_by\";N;s:15:\"krs_dapat_diisi\";i:0;s:14:\"max_sks_rendah\";i:20;s:14:\"max_sks_tinggi\";i:24;s:9:\"krs_mulai\";N;s:11:\"krs_selesai\";N;s:13:\"tanggal_mulai\";s:10:\"2026-05-20\";s:15:\"tanggal_selesai\";s:10:\"2026-11-20\";s:10:\"created_at\";s:19:\"2026-05-20 12:17:57\";s:10:\"updated_at\";s:19:\"2026-05-20 12:17:57\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:8:{s:13:\"tanggal_mulai\";s:4:\"date\";s:15:\"tanggal_selesai\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";s:9:\"is_locked\";s:7:\"boolean\";s:9:\"locked_at\";s:8:\"datetime\";s:15:\"krs_dapat_diisi\";s:7:\"boolean\";s:9:\"krs_mulai\";s:4:\"date\";s:11:\"krs_selesai\";s:4:\"date\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:12:{i:0;s:13:\"nama_semester\";i:1;s:12:\"tahun_ajaran\";i:2;s:6:\"status\";i:3;s:13:\"tanggal_mulai\";i:4;s:15:\"tanggal_selesai\";i:5;s:9:\"is_active\";i:6;s:9:\"is_locked\";i:7;s:9:\"locked_at\";i:8;s:9:\"locked_by\";i:9;s:15:\"krs_dapat_diisi\";i:10;s:9:\"krs_mulai\";i:11;s:11:\"krs_selesai\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}', 1779271758);
+('academic_period_current_types:1:2026-05-26', 'a:0:{}', 1779761981),
+('academic_periods:1', 'O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:14:{i:0;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:51;s:5:\"title\";s:18:\"Bimbingan akademik\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2025-09-15\";s:8:\"end_date\";s:10:\"2025-09-17\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:51;s:5:\"title\";s:18:\"Bimbingan akademik\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2025-09-15\";s:8:\"end_date\";s:10:\"2025-09-17\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:52;s:5:\"title\";s:20:\"KRS online mahasiswa\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"krs\";s:10:\"start_date\";s:10:\"2025-09-15\";s:8:\"end_date\";s:10:\"2025-09-17\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#10b981\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:52;s:5:\"title\";s:20:\"KRS online mahasiswa\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"krs\";s:10:\"start_date\";s:10:\"2025-09-15\";s:8:\"end_date\";s:10:\"2025-09-17\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#10b981\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:2;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:53;s:5:\"title\";s:35:\"Batas waktu pengajuan Judul Skripsi\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2025-09-18\";s:8:\"end_date\";s:10:\"2025-09-19\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:53;s:5:\"title\";s:35:\"Batas waktu pengajuan Judul Skripsi\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2025-09-18\";s:8:\"end_date\";s:10:\"2025-09-19\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:3;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:54;s:5:\"title\";s:85:\"Perkenalan Kehidupan Kampus Bagi Mahasiswa Baru (PKKMB) dan Pelantikan Mahasiswa baru\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2025-10-02\";s:8:\"end_date\";s:10:\"2025-10-03\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:54;s:5:\"title\";s:85:\"Perkenalan Kehidupan Kampus Bagi Mahasiswa Baru (PKKMB) dan Pelantikan Mahasiswa baru\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2025-10-02\";s:8:\"end_date\";s:10:\"2025-10-03\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:4;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:55;s:5:\"title\";s:17:\"Awal Perkuliahaan\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:11:\"perkuliahan\";s:10:\"start_date\";s:10:\"2025-10-06\";s:8:\"end_date\";s:10:\"2025-10-06\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#3b82f6\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:55;s:5:\"title\";s:17:\"Awal Perkuliahaan\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:11:\"perkuliahan\";s:10:\"start_date\";s:10:\"2025-10-06\";s:8:\"end_date\";s:10:\"2025-10-06\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#3b82f6\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:5;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:56;s:5:\"title\";s:52:\"Masa Perkuliahaan efektif sebelum UTS (7x pertemuan)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2025-10-06\";s:8:\"end_date\";s:10:\"2025-11-21\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:56;s:5:\"title\";s:52:\"Masa Perkuliahaan efektif sebelum UTS (7x pertemuan)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2025-10-06\";s:8:\"end_date\";s:10:\"2025-11-21\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:6;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:57;s:5:\"title\";s:27:\"Ujian Tengah Semester (UTS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2025-11-24\";s:8:\"end_date\";s:10:\"2025-11-28\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:57;s:5:\"title\";s:27:\"Ujian Tengah Semester (UTS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2025-11-24\";s:8:\"end_date\";s:10:\"2025-11-28\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:7;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:61;s:5:\"title\";s:31:\"Masa Pendaftaran Sidang Skripsi\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2025-11-24\";s:8:\"end_date\";s:10:\"2025-02-13\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:61;s:5:\"title\";s:31:\"Masa Pendaftaran Sidang Skripsi\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2025-11-24\";s:8:\"end_date\";s:10:\"2025-02-13\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:8;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:58;s:5:\"title\";s:52:\"Masa Perkuliahaan efektif setelah UTS (7x pertemuan)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2025-12-01\";s:8:\"end_date\";s:10:\"2026-02-06\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:58;s:5:\"title\";s:52:\"Masa Perkuliahaan efektif setelah UTS (7x pertemuan)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uts\";s:10:\"start_date\";s:10:\"2025-12-01\";s:8:\"end_date\";s:10:\"2026-02-06\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#f59e0b\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:9;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:59;s:5:\"title\";s:46:\"Libur Hari Raya Natal dan Tahun Baru 2025/2026\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:14:\"libur_akademik\";s:10:\"start_date\";s:10:\"2025-12-22\";s:8:\"end_date\";s:10:\"2026-01-06\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#ef4444\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:59;s:5:\"title\";s:46:\"Libur Hari Raya Natal dan Tahun Baru 2025/2026\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:14:\"libur_akademik\";s:10:\"start_date\";s:10:\"2025-12-22\";s:8:\"end_date\";s:10:\"2026-01-06\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#ef4444\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:10;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:60;s:5:\"title\";s:67:\"Perkuliahaan Setelah Libur Hari Raya Natal dan Tahun Baru 2025/2026\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:14:\"libur_akademik\";s:10:\"start_date\";s:10:\"2026-01-09\";s:8:\"end_date\";s:10:\"2026-02-13\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#ef4444\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:60;s:5:\"title\";s:67:\"Perkuliahaan Setelah Libur Hari Raya Natal dan Tahun Baru 2025/2026\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:14:\"libur_akademik\";s:10:\"start_date\";s:10:\"2026-01-09\";s:8:\"end_date\";s:10:\"2026-02-13\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#ef4444\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:11;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:62;s:5:\"title\";s:26:\"Ujian Akhir Semester (UAS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uas\";s:10:\"start_date\";s:10:\"2026-02-09\";s:8:\"end_date\";s:10:\"2026-02-13\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#d97706\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:62;s:5:\"title\";s:26:\"Ujian Akhir Semester (UAS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:3:\"uas\";s:10:\"start_date\";s:10:\"2026-02-09\";s:8:\"end_date\";s:10:\"2026-02-13\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#d97706\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:12;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:63;s:5:\"title\";s:27:\"Penginputan Nilai Mahasiswa\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-02-16\";s:8:\"end_date\";s:10:\"2026-02-20\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:63;s:5:\"title\";s:27:\"Penginputan Nilai Mahasiswa\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-02-16\";s:8:\"end_date\";s:10:\"2026-02-20\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:13;O:24:\"App\\Models\\AcademicEvent\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:15:\"academic_events\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:13:{s:2:\"id\";i:64;s:5:\"title\";s:29:\"Cetak Kartu Hasil Studi (KHS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-02-27\";s:8:\"end_date\";s:10:\"2026-02-27\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:11:\"\0*\0original\";a:13:{s:2:\"id\";i:64;s:5:\"title\";s:29:\"Cetak Kartu Hasil Studi (KHS)\";s:11:\"description\";s:17:\"Imported from PDF\";s:10:\"event_type\";s:7:\"lainnya\";s:10:\"start_date\";s:10:\"2026-02-27\";s:8:\"end_date\";s:10:\"2026-02-27\";s:11:\"semester_id\";i:1;s:5:\"color\";s:7:\"#6b7280\";s:9:\"is_active\";i:1;s:10:\"created_by\";i:1;s:10:\"updated_by\";i:1;s:10:\"created_at\";s:19:\"2026-05-25 09:30:55\";s:10:\"updated_at\";s:19:\"2026-05-25 09:30:55\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"start_date\";s:4:\"date\";s:8:\"end_date\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:10:{i:0;s:5:\"title\";i:1;s:11:\"description\";i:2;s:10:\"event_type\";i:3;s:10:\"start_date\";i:4;s:8:\"end_date\";i:5;s:11:\"semester_id\";i:6;s:5:\"color\";i:7;s:9:\"is_active\";i:8;s:10:\"created_by\";i:9;s:10:\"updated_by\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}', 1779762461),
+('active_semester', 'O:19:\"App\\Models\\Semester\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:9:\"semesters\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:18:{s:2:\"id\";i:1;s:13:\"nama_semester\";s:6:\"Ganjil\";s:17:\"nama_semester_old\";N;s:12:\"tahun_ajaran\";s:9:\"2025/2026\";s:6:\"status\";s:5:\"aktif\";s:9:\"is_active\";i:0;s:9:\"is_locked\";i:0;s:9:\"locked_at\";N;s:9:\"locked_by\";N;s:15:\"krs_dapat_diisi\";i:1;s:14:\"max_sks_rendah\";i:20;s:14:\"max_sks_tinggi\";i:24;s:9:\"krs_mulai\";s:10:\"2025-09-15\";s:11:\"krs_selesai\";s:10:\"2025-09-17\";s:13:\"tanggal_mulai\";s:10:\"2026-05-21\";s:15:\"tanggal_selesai\";s:10:\"2026-11-21\";s:10:\"created_at\";s:19:\"2026-05-21 16:16:40\";s:10:\"updated_at\";s:19:\"2026-05-25 09:29:54\";}s:11:\"\0*\0original\";a:18:{s:2:\"id\";i:1;s:13:\"nama_semester\";s:6:\"Ganjil\";s:17:\"nama_semester_old\";N;s:12:\"tahun_ajaran\";s:9:\"2025/2026\";s:6:\"status\";s:5:\"aktif\";s:9:\"is_active\";i:0;s:9:\"is_locked\";i:0;s:9:\"locked_at\";N;s:9:\"locked_by\";N;s:15:\"krs_dapat_diisi\";i:1;s:14:\"max_sks_rendah\";i:20;s:14:\"max_sks_tinggi\";i:24;s:9:\"krs_mulai\";s:10:\"2025-09-15\";s:11:\"krs_selesai\";s:10:\"2025-09-17\";s:13:\"tanggal_mulai\";s:10:\"2026-05-21\";s:15:\"tanggal_selesai\";s:10:\"2026-11-21\";s:10:\"created_at\";s:19:\"2026-05-21 16:16:40\";s:10:\"updated_at\";s:19:\"2026-05-25 09:29:54\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:8:{s:13:\"tanggal_mulai\";s:4:\"date\";s:15:\"tanggal_selesai\";s:4:\"date\";s:9:\"is_active\";s:7:\"boolean\";s:9:\"is_locked\";s:7:\"boolean\";s:9:\"locked_at\";s:8:\"datetime\";s:15:\"krs_dapat_diisi\";s:7:\"boolean\";s:9:\"krs_mulai\";s:4:\"date\";s:11:\"krs_selesai\";s:4:\"date\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:12:{i:0;s:13:\"nama_semester\";i:1;s:12:\"tahun_ajaran\";i:2;s:6:\"status\";i:3;s:13:\"tanggal_mulai\";i:4;s:15:\"tanggal_selesai\";i:5;s:9:\"is_active\";i:6;s:9:\"is_locked\";i:7;s:9:\"locked_at\";i:8;s:9:\"locked_by\";i:9;s:15:\"krs_dapat_diisi\";i:10;s:9:\"krs_mulai\";i:11;s:11:\"krs_selesai\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}', 1779762161);
 
 -- --------------------------------------------------------
 
@@ -409,26 +530,26 @@ CREATE TABLE `dosens` (
 --
 
 INSERT INTO `dosens` (`id`, `user_id`, `fakultas_id`, `nidn`, `pendidikan_terakhir`, `universitas`, `dosen_tetap`, `jabatan_fungsional`, `pendidikan`, `prodi`, `phone`, `address`, `mata_kuliah_ids`, `status`, `created_at`, `updated_at`, `kuota`, `absen_password_hash`) VALUES
-(1, 2, NULL, '0101018501', NULL, NULL, 0, NULL, NULL, '\"Hukum Tata Kabupaten\"', '081234567891', 'Jl. Dosen No. 1', NULL, 'aktif', '2026-05-20 05:16:19', '2026-05-20 05:16:19', 6, NULL),
-(2, 3, NULL, '0102028601', NULL, NULL, 0, NULL, NULL, '\"Hukum Bisnis\"', '081234567892', 'Jl. Dosen No. 2', NULL, 'aktif', '2026-05-20 05:16:19', '2026-05-20 05:16:19', 6, NULL),
-(3, 4, NULL, '0103038701', NULL, NULL, 0, NULL, NULL, '\"Hukum Pidana\"', '081234567893', 'Jl. Dosen No. 3', NULL, 'aktif', '2026-05-20 05:16:19', '2026-05-20 05:16:19', 6, NULL),
-(4, 12, NULL, '417017906', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Trisakti\",\"Doktor Ilmu Hukum Universitas Airlangga\"]', 1, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:26', '2026-05-20 06:36:26', 6, NULL),
-(5, 13, NULL, '301067501', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Muhammadiyah Jakarta\",\"Universitas Muhammadiyah Jakarta\",\"Universitas Islam Bandung\"]', 1, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:27', '2026-05-20 06:36:27', 6, NULL),
-(6, 14, NULL, '3146747648130140', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Andalas\",\"Universitas Andalas\",\"Universitas Jayabaya\"]', 0, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:27', '2026-05-20 06:36:27', 6, NULL),
-(7, 15, NULL, '714076601', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Bhayangkara Surabaya\",\"Universitas Airlangga\",\"Universitas Brawijaya\"]', 1, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:27', '2026-05-20 06:36:27', 6, NULL),
-(8, 16, NULL, '302129701', '[\"S1\",\"S2\"]', '[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Indonesia\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:27', '2026-05-20 06:36:27', 6, NULL),
-(9, 17, NULL, '302059501', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Master of Laws Lancaster University\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
-(10, 18, NULL, '313089202', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Master of Laws Vrije Universiteit Amsterdam\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
-(11, 19, NULL, '307089005', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Master of Laws University of Basque Country\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
-(12, 20, NULL, '8918290024', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Sebelas Maret\",\"Universitas Padjajaran\",\"Universitas Hasanuddin Makassar\"]', 0, '[\"Tenaga Pengajar\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
-(13, 21, NULL, '3860765666130310', '[\"S1\",\"S2\"]', '[\"Universitas Muhammadiyah Aceh Banda Aceh\",\"Universitas Pembangunan Nasional Veteran Jakarta\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:28', '2026-05-20 06:36:28', 6, NULL),
-(14, 22, NULL, '1956751652130120', '[\"S1\",\"S2\"]', '[\"Universitas Islam Attahiriyah\",\"Universitas Pancasila\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:29', '2026-05-20 06:36:29', 6, NULL),
-(15, 23, NULL, '3345774675130210', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Universitas Indonesia\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:29', '2026-05-20 06:36:29', 6, NULL),
-(16, 24, NULL, '4434778679130070', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Universitas Malaya\"]', 1, '[\"Asisten Ahli\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:29', '2026-05-20 06:36:29', 6, NULL),
-(17, 25, NULL, '7641763664130240', '[\"S1\",\"S2\"]', '[\"Universitas Wiraswasta Indonesia\",\"Universitas Al Azhar Indonesia\"]', 1, '[\"Asisten Ahli\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:29', '2026-05-20 06:36:29', 6, NULL),
-(18, 26, NULL, '2150767668137030', '[\"S1\",\"S2\"]', '[\"Universitas Islam Indonesia\",\"Universitas Al Azhar Indonesia\"]', 1, '[\"Asisten Ahli\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:30', '2026-05-20 06:36:30', 6, NULL),
-(19, 27, NULL, '3454762663130160', '[\"S1\",\"S2\"]', '[\"Universitas Al-Azhar Indonesia\",\"Universitas Indonesia\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:30', '2026-05-20 06:36:30', 6, NULL),
-(20, 28, NULL, '3204070406910000', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Pasundan\",\"Universitas Padjajaran\",\"Universitas Indonesia\"]', 0, '[\"Tenaga Pengajar\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-20 06:36:30', '2026-05-20 06:36:30', 6, NULL);
+(1, 2, 1, '0101018501', '[\"S3\"]', '[\"Universitas Gunadarma\"]', 1, '[\"Asisten Ahli\"]', 'S3', '[\"Ilmu Hukum\"]', '081234567891', 'Jl. Dosen No. 1', '[5,6,7]', 'aktif', '2026-05-21 09:13:22', '2026-05-21 10:26:50', 6, NULL),
+(2, 3, NULL, '0102028601', NULL, NULL, 0, NULL, NULL, '\"Hukum Bisnis\"', '081234567892', 'Jl. Dosen No. 2', NULL, 'aktif', '2026-05-21 09:13:22', '2026-05-21 09:13:22', 6, NULL),
+(3, 4, NULL, '0103038701', NULL, NULL, 0, NULL, NULL, '\"Hukum Pidana\"', '081234567893', 'Jl. Dosen No. 3', NULL, 'aktif', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 6, NULL),
+(4, 12, NULL, '417017906', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Trisakti\",\"Doktor Ilmu Hukum Universitas Airlangga\"]', 1, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:13', '2026-05-21 09:16:13', 6, NULL),
+(5, 13, NULL, '301067501', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Muhammadiyah Jakarta\",\"Universitas Muhammadiyah Jakarta\",\"Universitas Islam Bandung\"]', 1, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:13', '2026-05-21 09:16:13', 6, NULL),
+(6, 14, NULL, '3146747648130140', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Andalas\",\"Universitas Andalas\",\"Universitas Jayabaya\"]', 0, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:13', '2026-05-21 09:16:13', 6, NULL),
+(7, 15, NULL, '714076601', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Bhayangkara Surabaya\",\"Universitas Airlangga\",\"Universitas Brawijaya\"]', 1, '[\"Lektor\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:13', '2026-05-21 09:16:13', 6, NULL),
+(8, 16, NULL, '302129701', '[\"S1\",\"S2\"]', '[\"Universitas Pancasila\",\"Magister Ilmu Hukum Universitas Indonesia\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:14', '2026-05-21 09:16:14', 6, NULL),
+(9, 17, NULL, '302059501', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Master of Laws Lancaster University\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', '[4,8]', 'aktif', '2026-05-21 09:16:14', '2026-05-21 09:59:28', 6, NULL),
+(10, 18, NULL, '313089202', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Master of Laws Vrije Universiteit Amsterdam\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', '[1,2,3]', 'aktif', '2026-05-21 09:16:14', '2026-05-21 09:58:56', 6, NULL),
+(11, 19, NULL, '307089005', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Master of Laws University of Basque Country\"]', 1, '[\"Lektor\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:14', '2026-05-21 09:16:14', 6, NULL),
+(12, 20, NULL, '8918290024', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Sebelas Maret\",\"Universitas Padjajaran\",\"Universitas Hasanuddin Makassar\"]', 0, '[\"Tenaga Pengajar\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:15', '2026-05-21 09:16:15', 6, NULL),
+(13, 21, NULL, '3860765666130310', '[\"S1\",\"S2\"]', '[\"Universitas Muhammadiyah Aceh Banda Aceh\",\"Universitas Pembangunan Nasional Veteran Jakarta\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:15', '2026-05-21 09:16:15', 6, NULL),
+(14, 22, NULL, '1956751652130120', '[\"S1\",\"S2\"]', '[\"Universitas Islam Attahiriyah\",\"Universitas Pancasila\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:15', '2026-05-21 09:16:15', 6, NULL),
+(15, 23, NULL, '3345774675130210', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Universitas Indonesia\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:15', '2026-05-21 09:16:15', 6, NULL),
+(16, 24, NULL, '4434778679130070', '[\"S1\",\"S2\"]', '[\"Universitas Indonesia\",\"Universitas Malaya\"]', 1, '[\"Asisten Ahli\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:15', '2026-05-21 09:16:15', 6, NULL),
+(17, 25, NULL, '7641763664130240', '[\"S1\",\"S2\"]', '[\"Universitas Wiraswasta Indonesia\",\"Universitas Al Azhar Indonesia\"]', 1, '[\"Asisten Ahli\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:16', '2026-05-21 09:16:16', 6, NULL),
+(18, 26, NULL, '2150767668137030', '[\"S1\",\"S2\"]', '[\"Universitas Islam Indonesia\",\"Universitas Al Azhar Indonesia\"]', 1, '[\"Asisten Ahli\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:16', '2026-05-21 09:16:16', 6, NULL),
+(19, 27, NULL, '3454762663130160', '[\"S1\",\"S2\"]', '[\"Universitas Al-Azhar Indonesia\",\"Universitas Indonesia\"]', 1, '[\"Tenaga Pengajar\"]', 'S2', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:16', '2026-05-21 09:16:16', 6, NULL),
+(20, 28, NULL, '3204070406910000', '[\"S1\",\"S2\",\"S3\"]', '[\"Universitas Pasundan\",\"Universitas Padjajaran\",\"Universitas Indonesia\"]', 0, '[\"Tenaga Pengajar\"]', 'S3', '[\"ilmu hukum\"]', '', '', NULL, 'aktif', '2026-05-21 09:16:16', '2026-05-21 09:16:16', 6, NULL);
 
 -- --------------------------------------------------------
 
@@ -470,6 +591,108 @@ CREATE TABLE `dosen_availabilities` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `dosen_availabilities`
+--
+
+INSERT INTO `dosen_availabilities` (`id`, `dosen_id`, `semester_id`, `hari`, `jam_perkuliahan_id`, `status`, `notes`, `created_at`, `updated_at`) VALUES
+(1, 10, 1, 'Senin', 1, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(2, 10, 1, 'Selasa', 1, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(3, 10, 1, 'Senin', 2, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(4, 10, 1, 'Selasa', 2, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(5, 10, 1, 'Senin', 3, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(6, 10, 1, 'Selasa', 3, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(7, 10, 1, 'Senin', 4, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(8, 10, 1, 'Selasa', 4, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(9, 10, 1, 'Senin', 5, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(10, 10, 1, 'Selasa', 5, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(11, 10, 1, 'Senin', 6, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(12, 10, 1, 'Selasa', 6, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(13, 10, 1, 'Senin', 7, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(14, 10, 1, 'Selasa', 7, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(15, 10, 1, 'Senin', 8, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(16, 10, 1, 'Selasa', 8, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(17, 10, 1, 'Senin', 9, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(18, 10, 1, 'Selasa', 9, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(19, 10, 1, 'Senin', 10, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(20, 10, 1, 'Selasa', 10, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(21, 10, 1, 'Senin', 11, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(22, 10, 1, 'Selasa', 11, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(23, 10, 1, 'Senin', 12, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(24, 10, 1, 'Selasa', 12, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(25, 10, 1, 'Senin', 13, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(26, 10, 1, 'Selasa', 13, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(27, 10, 1, 'Senin', 14, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(28, 10, 1, 'Selasa', 14, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(29, 10, 1, 'Senin', 15, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(30, 10, 1, 'Selasa', 15, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(31, 10, 1, 'Senin', 16, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(32, 10, 1, 'Selasa', 16, 'available', NULL, '2026-05-21 10:00:07', '2026-05-21 10:00:07'),
+(33, 1, 1, 'Rabu', 1, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(34, 1, 1, 'Kamis', 1, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(35, 1, 1, 'Rabu', 2, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(36, 1, 1, 'Kamis', 2, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(37, 1, 1, 'Rabu', 3, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(38, 1, 1, 'Kamis', 3, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(39, 1, 1, 'Rabu', 4, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(40, 1, 1, 'Kamis', 4, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(41, 1, 1, 'Rabu', 5, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(42, 1, 1, 'Kamis', 5, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(43, 1, 1, 'Rabu', 6, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(44, 1, 1, 'Kamis', 6, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(45, 1, 1, 'Rabu', 7, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(46, 1, 1, 'Kamis', 7, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(47, 1, 1, 'Rabu', 8, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(48, 1, 1, 'Kamis', 8, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(49, 1, 1, 'Rabu', 9, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(50, 1, 1, 'Kamis', 9, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(51, 1, 1, 'Rabu', 10, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(52, 1, 1, 'Kamis', 10, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(53, 1, 1, 'Rabu', 11, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(54, 1, 1, 'Kamis', 11, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(55, 1, 1, 'Rabu', 12, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(56, 1, 1, 'Kamis', 12, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(57, 1, 1, 'Rabu', 13, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(58, 1, 1, 'Kamis', 13, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(59, 1, 1, 'Rabu', 14, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(60, 1, 1, 'Kamis', 14, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(61, 1, 1, 'Rabu', 15, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(62, 1, 1, 'Kamis', 15, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(63, 1, 1, 'Rabu', 16, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(64, 1, 1, 'Kamis', 16, 'available', NULL, '2026-05-21 10:00:28', '2026-05-21 10:00:28'),
+(65, 9, 1, 'Jumat', 1, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(66, 9, 1, 'Sabtu', 1, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(67, 9, 1, 'Jumat', 2, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(68, 9, 1, 'Sabtu', 2, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(69, 9, 1, 'Jumat', 3, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(70, 9, 1, 'Sabtu', 3, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(71, 9, 1, 'Jumat', 4, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(72, 9, 1, 'Sabtu', 4, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(73, 9, 1, 'Jumat', 5, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(74, 9, 1, 'Sabtu', 5, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(75, 9, 1, 'Jumat', 6, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(76, 9, 1, 'Sabtu', 6, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(77, 9, 1, 'Jumat', 7, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(78, 9, 1, 'Sabtu', 7, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(79, 9, 1, 'Jumat', 8, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(80, 9, 1, 'Sabtu', 8, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(81, 9, 1, 'Jumat', 9, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(82, 9, 1, 'Sabtu', 9, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(83, 9, 1, 'Jumat', 10, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(84, 9, 1, 'Sabtu', 10, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(85, 9, 1, 'Jumat', 11, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(86, 9, 1, 'Sabtu', 11, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(87, 9, 1, 'Jumat', 12, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(88, 9, 1, 'Sabtu', 12, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(89, 9, 1, 'Jumat', 13, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(90, 9, 1, 'Sabtu', 13, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(91, 9, 1, 'Jumat', 14, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(92, 9, 1, 'Sabtu', 14, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(93, 9, 1, 'Jumat', 15, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(94, 9, 1, 'Sabtu', 15, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(95, 9, 1, 'Jumat', 16, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42'),
+(96, 9, 1, 'Sabtu', 16, 'available', NULL, '2026-05-21 10:00:42', '2026-05-21 10:00:42');
+
 -- --------------------------------------------------------
 
 --
@@ -503,6 +726,20 @@ CREATE TABLE `dosen_mata_kuliah` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `dosen_mata_kuliah`
+--
+
+INSERT INTO `dosen_mata_kuliah` (`id`, `dosen_id`, `mata_kuliah_id`, `semester_id`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 10, 1, 1, 1, '2026-05-21 09:58:56', '2026-05-21 09:58:56'),
+(2, 10, 2, 1, 1, '2026-05-21 09:58:56', '2026-05-21 09:58:56'),
+(3, 10, 3, 1, 1, '2026-05-21 09:58:56', '2026-05-21 09:58:56'),
+(4, 1, 5, 1, 1, '2026-05-21 09:59:19', '2026-05-21 09:59:19'),
+(5, 1, 6, 1, 1, '2026-05-21 09:59:19', '2026-05-21 09:59:19'),
+(6, 1, 7, 1, 1, '2026-05-21 09:59:19', '2026-05-21 09:59:19'),
+(7, 9, 4, 1, 1, '2026-05-21 09:59:28', '2026-05-21 09:59:28'),
+(8, 9, 8, 1, 1, '2026-05-21 09:59:28', '2026-05-21 09:59:28');
+
 -- --------------------------------------------------------
 
 --
@@ -516,6 +753,13 @@ CREATE TABLE `dosen_pa` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `dosen_pa`
+--
+
+INSERT INTO `dosen_pa` (`id`, `dosen_id`, `mahasiswa_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 4, '2026-05-21 10:26:58', '2026-05-21 10:26:58');
 
 -- --------------------------------------------------------
 
@@ -543,7 +787,11 @@ CREATE TABLE `email_blast_logs` (
 --
 
 INSERT INTO `email_blast_logs` (`id`, `batch_id`, `mahasiswa_id`, `email_sent_to`, `subject`, `success`, `error_message`, `recipient_type`, `credential_type`, `sent_by`, `created_at`, `updated_at`) VALUES
-(1, 'credentials_blast_6a0d5b6f0fd0a', 6, 'gregoriusjoell@gmail.com', 'Akun Login SIAKAD - Email dan Password Kampus Anda', 1, NULL, 'student', 'none', 1, '2026-05-20 06:57:54', '2026-05-20 06:57:54');
+(1, 'credentials_blast_6a0fc0bbcfe84', 6, 'gregoriusjoel28@gmail.com', 'Akun Login SIAKAD - Email dan Password Kampus Anda', 1, NULL, 'student', 'none', 1, '2026-05-22 02:34:40', '2026-05-22 02:34:40'),
+(2, 'wisuda_notif_6a0fdc10ac71a', 6, 'jojo@student.stih.ac.id', 'Jadwal Wisuda Anda', 1, NULL, 'student', 'none', NULL, '2026-05-22 04:33:00', NULL),
+(3, 'wisuda_notif_6a0fe27757f25', 6, 'gregoriusjoel28@gmail.com', 'Jadwal Wisuda Anda', 1, NULL, 'student', 'none', NULL, '2026-05-22 04:58:50', NULL),
+(4, 'wisuda_notif_6a0fe3070544e', 6, 'gregoriusjoel28@gmail.com', 'Jadwal Wisuda Anda', 1, NULL, 'student', 'none', NULL, '2026-05-22 05:01:03', NULL),
+(5, 'wisuda_notif_6a0fe4e3f177c', 6, 'gregoriusjoel28@gmail.com', 'Jadwal Wisuda Anda', 1, NULL, 'student', 'none', NULL, '2026-05-22 05:09:04', NULL);
 
 -- --------------------------------------------------------
 
@@ -568,6 +816,16 @@ CREATE TABLE `email_outboxes` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `email_outboxes`
+--
+
+INSERT INTO `email_outboxes` (`id`, `batch_id`, `mahasiswa_id`, `target_email`, `subject`, `greeting`, `message_body`, `is_credentials_mode`, `credential_type`, `status`, `scheduled_at`, `sent_at`, `error_message`, `created_at`, `updated_at`) VALUES
+(1, 'wisuda_notif_6a0fdc10ac71a', 6, 'jojo@student.stih.ac.id', 'Jadwal Wisuda Anda', 'Yth. Jojo', 'Berikut jadwal wisuda Anda:\n\nBatch: Wisuda 22 Mei 2026\nTanggal: Jumat, 22 Mei 2026\nWaktu: 08:00 WIB\nLokasi: JICC\n', 0, 'none', 'sent', '2026-05-22 04:31:12', '2026-05-22 04:33:00', NULL, '2026-05-22 04:31:12', '2026-05-22 04:33:00'),
+(2, 'wisuda_notif_6a0fe27757f25', 6, 'gregoriusjoel28@gmail.com', 'Jadwal Wisuda Anda', 'Yth. Jojo', 'Berikut jadwal wisuda Anda:\n\nBatch: Wisuda 22 Mei 2026\nTanggal: Jumat, 22 Mei 2026\nWaktu: 08:00 WIB\nLokasi: JICC\n', 0, 'none', 'sent', '2026-05-22 04:58:31', '2026-05-22 04:58:50', NULL, '2026-05-22 04:58:31', '2026-05-22 04:58:50'),
+(3, 'wisuda_notif_6a0fe3070544e', 6, 'gregoriusjoel28@gmail.com', 'Jadwal Wisuda Anda', 'Yth. Jojo', 'Berikut jadwal wisuda Anda:\n\nBatch: Wisuda 22 Mei 2026\nTanggal: Jumat, 22 Mei 2026\nWaktu: 08:00 WIB\nLokasi: JICC\n', 0, 'none', 'sent', '2026-05-22 05:00:55', '2026-05-22 05:01:03', NULL, '2026-05-22 05:00:55', '2026-05-22 05:01:03'),
+(4, 'wisuda_notif_6a0fe4e3f177c', 6, 'gregoriusjoel28@gmail.com', 'Jadwal Wisuda Anda', 'Yth. Jojo', 'Berikut jadwal wisuda Anda:\n\nBatch: Wisuda 22 Mei 2026\nTanggal: Jumat, 22 Mei 2026\nWaktu: 08:00 WIB\nLokasi: JICC\n', 0, 'none', 'sent', '2026-05-22 05:08:51', '2026-05-22 05:09:04', NULL, '2026-05-22 05:08:51', '2026-05-22 05:09:04');
 
 -- --------------------------------------------------------
 
@@ -605,7 +863,8 @@ CREATE TABLE `fakultas` (
 --
 
 INSERT INTO `fakultas` (`id`, `kode_fakultas`, `nama_fakultas`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'FH', 'Fakultas Hukum', 'aktif', '2026-05-20 05:16:15', '2026-05-20 05:16:15');
+(1, 'FH', 'Fakultas Hukum', 'aktif', '2026-05-21 09:13:16', '2026-05-21 09:13:16'),
+(2, 'FTI', 'Fakultas Teknik Informatika', 'aktif', '2026-05-21 09:51:20', '2026-05-21 09:51:20');
 
 -- --------------------------------------------------------
 
@@ -633,7 +892,7 @@ CREATE TABLE `import_logs` (
 --
 
 INSERT INTO `import_logs` (`id`, `user_id`, `type`, `filename`, `total_rows`, `success_count`, `failed_count`, `skipped_count`, `details`, `imported_at`, `created_at`, `updated_at`) VALUES
-(1, 1, 'ruangan', 'template_ruangan (1).xlsx', 7, 7, 0, 0, '\"{\\\"success\\\":[5,6,7,8,9,10,11],\\\"failed\\\":[],\\\"skipped\\\":[]}\"', '2026-05-20 05:38:05', '2026-05-20 05:38:05', '2026-05-20 05:38:05');
+(1, 1, 'ruangan', 'template_ruangan (1).xlsx', 7, 7, 0, 0, '\"{\\\"success\\\":[5,6,7,8,9,10,11],\\\"failed\\\":[],\\\"skipped\\\":[]}\"', '2026-05-21 09:53:47', '2026-05-21 09:53:47', '2026-05-21 09:53:47');
 
 -- --------------------------------------------------------
 
@@ -821,6 +1080,20 @@ CREATE TABLE `jadwals` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `jadwals`
+--
+
+INSERT INTO `jadwals` (`id`, `kelas_id`, `hari`, `jam_mulai`, `jam_selesai`, `ruangan`, `is_outside_availability`, `outside_reason`, `kelas_perkuliahan_id`, `ruangan_id`, `status`, `catatan_dosen`, `catatan_admin`, `approved_by`, `approved_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Selasa', '13:45:00', '16:15:00', 'RI 1', 0, NULL, NULL, NULL, 'active', NULL, NULL, 18, '2026-05-21 10:01:11', '2026-05-21 10:01:11', '2026-05-21 10:01:11'),
+(2, 5, 'Selasa', '20:40:00', '22:10:00', 'R 1', 0, NULL, NULL, NULL, 'active', NULL, NULL, 18, '2026-05-21 10:01:12', '2026-05-21 10:01:12', '2026-05-21 10:01:12'),
+(3, 8, 'Senin', '10:30:00', '12:00:00', 'R 1', 0, NULL, NULL, NULL, 'active', NULL, NULL, 18, '2026-05-21 10:01:13', '2026-05-21 10:01:13', '2026-05-21 10:01:13'),
+(4, 2, 'Kamis', '13:45:00', '16:15:00', 'R 4', 0, NULL, NULL, NULL, 'active', NULL, NULL, 2, '2026-05-21 10:01:26', '2026-05-21 10:01:26', '2026-05-21 10:01:26'),
+(5, 3, 'Kamis', '19:55:00', '22:10:00', 'RI 1', 0, NULL, NULL, NULL, 'active', NULL, NULL, 2, '2026-05-21 10:01:28', '2026-05-21 10:01:28', '2026-05-21 10:01:28'),
+(6, 4, 'Rabu', '16:15:00', '18:30:00', 'R 2', 0, NULL, NULL, NULL, 'active', NULL, NULL, 2, '2026-05-21 10:01:29', '2026-05-21 10:01:29', '2026-05-21 10:01:29'),
+(7, 6, 'Jumat', '15:30:00', '16:55:00', 'R 2', 0, NULL, NULL, NULL, 'active', NULL, NULL, 17, '2026-05-21 10:01:38', '2026-05-21 10:01:38', '2026-05-21 10:01:38'),
+(8, 7, 'Jumat', '20:40:00', '22:10:00', 'R 1', 0, NULL, NULL, NULL, 'active', NULL, NULL, 17, '2026-05-21 10:01:39', '2026-05-21 10:01:39', '2026-05-21 10:01:39');
+
 -- --------------------------------------------------------
 
 --
@@ -842,6 +1115,20 @@ CREATE TABLE `jadwal_approvals` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `jadwal_approvals`
+--
+
+INSERT INTO `jadwal_approvals` (`id`, `jadwal_proposal_id`, `approved_by`, `role`, `action`, `alasan_penolakan`, `hari_pengganti`, `jam_mulai_pengganti`, `jam_selesai_pengganti`, `ruangan_pengganti`, `approved_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 18, 'dosen', 'approve', NULL, NULL, NULL, NULL, NULL, '2026-05-21 10:01:11', '2026-05-21 10:01:11', '2026-05-21 10:01:11'),
+(2, 5, 18, 'dosen', 'approve', NULL, NULL, NULL, NULL, NULL, '2026-05-21 10:01:12', '2026-05-21 10:01:12', '2026-05-21 10:01:12'),
+(3, 8, 18, 'dosen', 'approve', NULL, NULL, NULL, NULL, NULL, '2026-05-21 10:01:13', '2026-05-21 10:01:13', '2026-05-21 10:01:13'),
+(4, 2, 2, 'dosen', 'approve', NULL, NULL, NULL, NULL, NULL, '2026-05-21 10:01:26', '2026-05-21 10:01:26', '2026-05-21 10:01:26'),
+(5, 3, 2, 'dosen', 'approve', NULL, NULL, NULL, NULL, NULL, '2026-05-21 10:01:28', '2026-05-21 10:01:28', '2026-05-21 10:01:28'),
+(6, 4, 2, 'dosen', 'approve', NULL, NULL, NULL, NULL, NULL, '2026-05-21 10:01:29', '2026-05-21 10:01:29', '2026-05-21 10:01:29'),
+(7, 6, 17, 'dosen', 'approve', NULL, NULL, NULL, NULL, NULL, '2026-05-21 10:01:38', '2026-05-21 10:01:38', '2026-05-21 10:01:38'),
+(8, 7, 17, 'dosen', 'approve', NULL, NULL, NULL, NULL, NULL, '2026-05-21 10:01:39', '2026-05-21 10:01:39', '2026-05-21 10:01:39');
 
 -- --------------------------------------------------------
 
@@ -880,6 +1167,13 @@ CREATE TABLE `jadwal_generate_logs` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `jadwal_generate_logs`
+--
+
+INSERT INTO `jadwal_generate_logs` (`id`, `user_id`, `total_generated`, `total_failed`, `failed_items`, `status`, `error_message`, `created_at`, `updated_at`) VALUES
+(1, 1, 8, 0, NULL, 'completed', NULL, '2026-05-21 10:00:55', '2026-05-21 10:00:55');
+
 -- --------------------------------------------------------
 
 --
@@ -905,6 +1199,20 @@ CREATE TABLE `jadwal_proposals` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `jadwal_proposals`
+--
+
+INSERT INTO `jadwal_proposals` (`id`, `mata_kuliah_id`, `kelas_id`, `dosen_id`, `hari`, `jam_mulai`, `jam_selesai`, `ruangan`, `is_outside_availability`, `outside_reason`, `ruangan_id`, `status`, `catatan_generate`, `generated_by`, `generated_at`, `created_at`, `updated_at`) VALUES
+(1, 3, 1, 10, 'Selasa', '13:45:00', '16:15:00', 'RI 1', 0, NULL, NULL, 'approved_admin', 'Auto generated (sesuai ketersediaan dosen)', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55', '2026-05-21 10:01:11'),
+(2, 6, 2, 1, 'Kamis', '13:45:00', '16:15:00', 'R 4', 0, NULL, NULL, 'approved_admin', 'Auto generated (sesuai ketersediaan dosen)', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55', '2026-05-21 10:01:26'),
+(3, 7, 3, 1, 'Kamis', '19:55:00', '22:10:00', 'RI 1', 0, NULL, NULL, 'approved_admin', 'Auto generated (sesuai ketersediaan dosen)', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55', '2026-05-21 10:01:28'),
+(4, 5, 4, 1, 'Rabu', '16:15:00', '18:30:00', 'R 2', 0, NULL, NULL, 'approved_admin', 'Auto generated (sesuai ketersediaan dosen)', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55', '2026-05-21 10:01:29'),
+(5, 2, 5, 10, 'Selasa', '20:40:00', '22:10:00', 'R 1', 0, NULL, NULL, 'approved_admin', 'Auto generated (sesuai ketersediaan dosen)', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55', '2026-05-21 10:01:12'),
+(6, 8, 6, 9, 'Jumat', '15:30:00', '16:55:00', 'R 2', 0, NULL, NULL, 'approved_admin', 'Auto generated (sesuai ketersediaan dosen)', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55', '2026-05-21 10:01:38'),
+(7, 4, 7, 9, 'Jumat', '20:40:00', '22:10:00', 'R 1', 0, NULL, NULL, 'approved_admin', 'Auto generated (sesuai ketersediaan dosen)', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55', '2026-05-21 10:01:39'),
+(8, 1, 8, 10, 'Senin', '10:30:00', '12:00:00', 'R 1', 0, NULL, NULL, 'approved_admin', 'Auto generated (sesuai ketersediaan dosen)', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55', '2026-05-21 10:01:13');
 
 -- --------------------------------------------------------
 
@@ -1025,10 +1333,10 @@ CREATE TABLE `kategori_ruangans` (
 --
 
 INSERT INTO `kategori_ruangans` (`id`, `nama_kategori`, `deskripsi`, `warna_badge`, `urutan`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Kelas', 'Ruangan untuk pembelajaran teori di kelas', 'blue', 1, 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(2, 'Praktikum', 'Ruangan untuk praktikum dan latihan keterampilan', 'yellow', 2, 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(3, 'Sidang', 'Ruangan untuk sidang dan ujian skripsi', 'purple', 3, 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(4, 'Laboratorium', 'Ruangan untuk laboratorium dan penelitian', 'green', 4, 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20');
+(1, 'Kelas', 'Ruangan untuk pembelajaran teori di kelas', 'blue', 1, 'aktif', '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(2, 'Praktikum', 'Ruangan untuk praktikum dan latihan keterampilan', 'yellow', 2, 'aktif', '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(3, 'Sidang', 'Ruangan untuk sidang dan ujian skripsi', 'purple', 3, 'aktif', '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(4, 'Laboratorium', 'Ruangan untuk laboratorium dan penelitian', 'green', 4, 'aktif', '2026-05-21 09:13:24', '2026-05-21 09:13:24');
 
 -- --------------------------------------------------------
 
@@ -1047,6 +1355,20 @@ CREATE TABLE `kelas` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `kelas`
+--
+
+INSERT INTO `kelas` (`id`, `mata_kuliah_id`, `dosen_id`, `kapasitas`, `tahun_ajaran`, `semester_type`, `kelas_perkuliahan_id`, `created_at`, `updated_at`) VALUES
+(1, 3, 10, 40, '2025/2026', 'Ganjil', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55'),
+(2, 6, 1, 40, '2025/2026', 'Ganjil', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55'),
+(3, 7, 1, 40, '2025/2026', 'Ganjil', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55'),
+(4, 5, 1, 40, '2025/2026', 'Ganjil', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55'),
+(5, 2, 10, 40, '2025/2026', 'Ganjil', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55'),
+(6, 8, 9, 40, '2025/2026', 'Ganjil', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55'),
+(7, 4, 9, 40, '2025/2026', 'Ganjil', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55'),
+(8, 1, 10, 40, '2025/2026', 'Ganjil', 1, '2026-05-21 10:00:55', '2026-05-21 10:00:55');
 
 -- --------------------------------------------------------
 
@@ -1080,6 +1402,20 @@ CREATE TABLE `kelas_mata_kuliahs` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `kelas_mata_kuliahs`
+--
+
+INSERT INTO `kelas_mata_kuliahs` (`id`, `mata_kuliah_id`, `dosen_id`, `semester_id`, `kode_kelas`, `kapasitas`, `ruang`, `ruangan_id`, `hari`, `jam_mulai`, `jam_selesai`, `metode_pengajaran`, `online_meeting_link`, `online_link`, `asynchronous_tugas`, `asynchronous_file`, `qr_token`, `qr_enabled`, `qr_current_pertemuan`, `kelas_perkuliahan_id`, `qr_expires_at`, `created_at`, `updated_at`) VALUES
+(1, 3, 10, 1, '01', 40, 'RI 1', NULL, 'Selasa', '13:45:00', '16:15:00', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, NULL, '2026-05-21 10:01:11', '2026-05-21 10:01:11'),
+(2, 2, 10, 1, '01', 40, 'R 1', NULL, 'Selasa', '20:40:00', '22:10:00', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, NULL, '2026-05-21 10:01:12', '2026-05-21 10:01:12'),
+(3, 1, 10, 1, '01', 40, 'R 1', NULL, 'Senin', '10:30:00', '12:00:00', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, NULL, '2026-05-21 10:01:13', '2026-05-21 10:01:13'),
+(4, 6, 1, 1, '01', 40, 'R 4', NULL, 'Kamis', '13:45:00', '16:15:00', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, NULL, '2026-05-21 10:01:26', '2026-05-21 10:01:26'),
+(5, 7, 1, 1, '01', 40, 'RI 1', NULL, 'Kamis', '19:55:00', '22:10:00', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, NULL, '2026-05-21 10:01:28', '2026-05-21 10:01:28'),
+(6, 5, 1, 1, '01', 40, 'R 2', NULL, 'Rabu', '16:15:00', '18:30:00', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, NULL, '2026-05-21 10:01:29', '2026-05-21 10:01:29'),
+(7, 8, 9, 1, '01', 40, 'R 2', NULL, 'Jumat', '15:30:00', '16:55:00', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, NULL, '2026-05-21 10:01:38', '2026-05-21 10:01:38'),
+(8, 4, 9, 1, '01', 40, 'R 1', NULL, 'Jumat', '20:40:00', '22:10:00', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 1, NULL, '2026-05-21 10:01:39', '2026-05-21 10:01:39');
+
 -- --------------------------------------------------------
 
 --
@@ -1105,14 +1441,10 @@ CREATE TABLE `kelas_perkuliahans` (
 --
 
 INSERT INTO `kelas_perkuliahans` (`id`, `nama_kelas`, `tingkat`, `angkatan`, `kode_prodi`, `kode_kelas`, `prodi_id`, `tahun_akademik_id`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(40, '26HK01', 0, '2026', 'HK', '01', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
-(41, '26HK02', 0, '2026', 'HK', '02', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
-(42, '26HK03', 0, '2026', 'HK', '03', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
-(43, '26HK04', 0, '2026', 'HK', '04', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
-(44, '25HK01', 0, '2025', 'HK', '01', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
-(45, '25HK02', 0, '2025', 'HK', '02', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
-(46, '25HK03', 0, '2025', 'HK', '03', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02'),
-(47, '25HK04', 0, '2025', 'HK', '04', 1, 1, NULL, '2026-05-20 06:45:02', '2026-05-20 06:45:02');
+(1, '26HK01', 0, '2026', 'HK', '01', 1, 1, NULL, '2026-05-21 09:54:34', '2026-05-21 09:54:34'),
+(2, '26HK02', 0, '2026', 'HK', '02', 1, 1, NULL, '2026-05-21 09:54:34', '2026-05-21 09:54:34'),
+(3, '26HK03', 0, '2026', 'HK', '03', 1, 1, NULL, '2026-05-21 09:54:34', '2026-05-21 09:54:34'),
+(4, '26HK04', 0, '2026', 'HK', '04', 1, 1, NULL, '2026-05-21 09:54:34', '2026-05-21 09:54:34');
 
 -- --------------------------------------------------------
 
@@ -1174,58 +1506,136 @@ CREATE TABLE `krs` (
 --
 
 INSERT INTO `krs` (`id`, `mahasiswa_id`, `mata_kuliah_id`, `kelas_id`, `tahun_ajaran`, `status`, `keterangan`, `created_at`, `updated_at`, `ambil_mk`, `internship_id`, `is_internship_conversion`, `kelas_mata_kuliah_id`) VALUES
-(1, 4, 1, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(2, 4, 2, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(3, 4, 3, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(4, 4, 4, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(5, 4, 5, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(6, 4, 6, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(7, 4, 7, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(8, 4, 8, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(9, 4, 9, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(10, 4, 10, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(11, 4, 11, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(12, 4, 12, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(13, 4, 13, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(14, 4, 14, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(15, 4, 15, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(16, 4, 16, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(17, 4, 17, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(18, 4, 18, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(19, 4, 19, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(20, 4, 20, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(21, 4, 21, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(22, 4, 22, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(23, 4, 23, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(24, 4, 24, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(25, 4, 25, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(26, 4, 26, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(27, 4, 27, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(28, 4, 28, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(29, 4, 29, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(30, 4, 30, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(31, 4, 31, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(32, 4, 32, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(33, 4, 33, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(34, 4, 34, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(35, 4, 35, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(36, 4, 36, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(37, 4, 37, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(38, 4, 38, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(39, 4, 39, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(40, 4, 40, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(41, 4, 41, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(42, 4, 42, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(43, 4, 43, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(44, 4, 44, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(45, 4, 45, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(46, 4, 46, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(47, 4, 47, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(48, 4, 48, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(49, 4, 49, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(50, 4, 50, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(51, 4, 51, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL),
-(52, 4, 52, NULL, NULL, 'approved', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21', 'ya', NULL, 0, NULL);
+(1, 4, 1, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(2, 4, 2, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(3, 4, 3, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(4, 4, 4, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(5, 4, 5, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(6, 4, 6, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(7, 4, 7, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(8, 4, 8, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(9, 4, 9, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(10, 4, 10, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(11, 4, 11, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(12, 4, 12, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(13, 4, 13, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(14, 4, 14, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(15, 4, 15, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(16, 4, 16, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(17, 4, 17, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(18, 4, 18, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(19, 4, 19, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(20, 4, 20, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(21, 4, 21, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(22, 4, 22, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(23, 4, 23, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(24, 4, 24, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(25, 4, 25, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(26, 4, 26, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(27, 4, 27, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(28, 4, 28, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(29, 4, 29, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(30, 4, 30, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(31, 4, 31, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(32, 4, 32, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(33, 4, 33, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(34, 4, 34, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(35, 4, 35, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(36, 4, 36, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(37, 4, 37, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(38, 4, 38, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(39, 4, 39, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(40, 4, 40, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(41, 4, 41, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(42, 4, 42, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(43, 4, 43, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(44, 4, 44, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(45, 4, 45, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(46, 4, 46, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(47, 4, 47, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(48, 4, 48, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(49, 4, 49, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(50, 4, 50, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(51, 4, 51, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(52, 4, 52, NULL, NULL, 'approved', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24', 'ya', NULL, 0, NULL),
+(53, 6, 2, 5, '2026/2027', 'approved', NULL, '2026-05-22 02:44:54', '2026-05-22 04:05:18', 'ya', NULL, 0, 2),
+(54, 6, 3, 1, '2026/2027', 'approved', NULL, '2026-05-22 02:44:54', '2026-05-22 04:05:18', 'ya', NULL, 0, 1),
+(55, 6, 1, 8, '2026/2027', 'approved', NULL, '2026-05-22 02:44:54', '2026-05-22 04:05:18', 'ya', NULL, 0, 3),
+(56, 6, 5, 4, '2026/2027', 'approved', NULL, '2026-05-22 02:44:54', '2026-05-22 04:05:18', 'ya', NULL, 0, 6),
+(57, 6, 6, 2, '2026/2027', 'approved', NULL, '2026-05-22 02:44:54', '2026-05-22 04:05:18', 'ya', NULL, 0, 4),
+(58, 6, 7, 3, '2026/2027', 'approved', NULL, '2026-05-22 02:44:54', '2026-05-22 04:05:18', 'ya', NULL, 0, 5),
+(59, 6, 8, 6, '2026/2027', 'approved', NULL, '2026-05-22 02:44:54', '2026-05-22 04:05:18', 'ya', NULL, 0, 7),
+(60, 6, 4, 7, '2026/2027', 'approved', NULL, '2026-05-22 02:44:54', '2026-05-22 04:05:18', 'ya', NULL, 0, 8),
+(61, 6, 10, NULL, '2026/2027', 'approved', NULL, '2026-05-22 02:46:10', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(62, 6, 15, NULL, '2026/2027', 'approved', NULL, '2026-05-22 02:46:10', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(63, 6, 11, NULL, '2026/2027', 'approved', NULL, '2026-05-22 02:46:10', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(64, 6, 12, NULL, '2026/2027', 'approved', NULL, '2026-05-22 02:46:10', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(65, 6, 13, NULL, '2026/2027', 'approved', NULL, '2026-05-22 02:46:10', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(66, 6, 14, NULL, '2026/2027', 'approved', NULL, '2026-05-22 02:46:10', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(67, 6, 9, NULL, '2026/2027', 'approved', NULL, '2026-05-22 02:46:10', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(74, 6, 16, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:36', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(75, 6, 20, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:36', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(76, 6, 25, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:36', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(77, 6, 19, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:36', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(78, 6, 17, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:36', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(79, 6, 18, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:36', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(80, 6, 21, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:36', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(81, 6, 22, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:37', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(82, 6, 23, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:37', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(83, 6, 24, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:45:37', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(84, 6, 36, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(85, 6, 30, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(86, 6, 28, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(87, 6, 27, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(88, 6, 35, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(89, 6, 34, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(90, 6, 31, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(91, 6, 33, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(92, 6, 29, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(93, 6, 32, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(94, 6, 26, NULL, '2027/2028', 'approved', NULL, '2026-05-22 03:46:11', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(95, 6, 45, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(96, 6, 41, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(97, 6, 39, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(98, 6, 47, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(99, 6, 40, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(100, 6, 37, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(101, 6, 46, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(102, 6, 44, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(103, 6, 43, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(104, 6, 48, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(105, 6, 38, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(106, 6, 42, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:31', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(107, 6, 57, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(108, 6, 58, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(109, 6, 59, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(110, 6, 49, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(111, 6, 50, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(112, 6, 51, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(113, 6, 52, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(114, 6, 53, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(115, 6, 55, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(116, 6, 56, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(117, 6, 60, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(118, 6, 54, NULL, '2028/2029', 'approved', NULL, '2026-05-22 03:46:45', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(119, 6, 63, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(120, 6, 61, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(121, 6, 62, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(122, 6, 66, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(123, 6, 68, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(124, 6, 69, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(125, 6, 67, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(126, 6, 65, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(127, 6, 70, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(128, 6, 64, NULL, '2029/2030', 'approved', NULL, '2026-05-22 03:47:27', '2026-05-22 04:05:18', 'ya', NULL, 0, NULL),
+(129, 1, 2, 5, '2026/2027', 'sudah submit', NULL, '2026-05-22 07:49:05', '2026-05-22 07:49:05', 'ya', NULL, 0, 2),
+(130, 1, 3, 1, '2026/2027', 'sudah submit', NULL, '2026-05-22 07:49:05', '2026-05-22 07:49:05', 'ya', NULL, 0, 1),
+(131, 1, 1, 8, '2026/2027', 'sudah submit', NULL, '2026-05-22 07:49:05', '2026-05-22 07:49:05', 'ya', NULL, 0, 3),
+(132, 1, 5, 4, '2026/2027', 'sudah submit', NULL, '2026-05-22 07:49:05', '2026-05-22 07:49:05', 'ya', NULL, 0, 6),
+(133, 1, 6, 2, '2026/2027', 'sudah submit', NULL, '2026-05-22 07:49:05', '2026-05-22 07:49:05', 'ya', NULL, 0, 4),
+(134, 1, 7, 3, '2026/2027', 'sudah submit', NULL, '2026-05-22 07:49:05', '2026-05-22 07:49:05', 'ya', NULL, 0, 5),
+(135, 1, 8, 6, '2026/2027', 'sudah submit', NULL, '2026-05-22 07:49:05', '2026-05-22 07:49:05', 'ya', NULL, 0, 7),
+(136, 1, 4, 7, '2026/2027', 'sudah submit', NULL, '2026-05-22 07:49:05', '2026-05-22 07:49:05', 'ya', NULL, 0, 8);
 
 -- --------------------------------------------------------
 
@@ -1246,6 +1656,15 @@ CREATE TABLE `kuesioner_aktivasi` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `kuesioner_aktivasi`
+--
+
+INSERT INTO `kuesioner_aktivasi` (`id`, `mahasiswa_id`, `semester_id`, `fasilitas_kampus`, `sistem_akademik`, `kualitas_dosen`, `layanan_administrasi`, `kepuasan_keseluruhan`, `saran`, `created_at`, `updated_at`) VALUES
+(1, 6, 1, 5, 5, 5, 5, 5, 'cukup', '2026-05-22 07:45:56', '2026-05-22 07:45:56'),
+(2, 4, 1, 5, 5, 5, 5, 5, 'Cukup', '2026-05-22 07:46:50', '2026-05-22 07:46:50'),
+(3, 1, 1, 5, 5, 5, 5, 5, 'Cukup', '2026-05-22 07:49:38', '2026-05-22 07:49:38');
 
 -- --------------------------------------------------------
 
@@ -1278,9 +1697,9 @@ CREATE TABLE `kuesioner_mahasiswa_baru` (
 --
 
 INSERT INTO `kuesioner_mahasiswa_baru` (`id`, `mahasiswa_id`, `email`, `prodi`, `jenis_kelamin`, `angkatan`, `q1`, `q2`, `q3`, `q4`, `q5`, `q6`, `q7`, `saran`, `answers`, `created_at`, `updated_at`) VALUES
-(1, 6, 'jojo@student.stih.ac.id', 'Ilmu Hukum', 'Laki-Laki', 2026, 4, 4, 4, 4, 4, 4, 4, 'Cukup', NULL, '2026-05-20 06:58:54', '2026-05-20 06:58:54'),
-(2, 2, 'dewilestari@student.stih.ac.id', 'Ilmu Hukum', NULL, 2026, 4, 4, 4, 4, 4, 4, 4, 'tidak ada, cukup', NULL, '2026-05-20 08:01:18', '2026-05-20 08:01:18'),
-(3, 1, 'andipratama@student.stih.ac.id', 'Ilmu Hukum', NULL, 2024, 4, 4, 4, 4, 4, 4, 4, 'tidak', NULL, '2026-05-20 09:57:56', '2026-05-20 09:57:56');
+(1, 4, 'ahmadmahasiswa@student.stih.ac.id', 'Ilmu Hukum', NULL, 2026, 4, 4, 4, 4, 4, 4, 4, 'cukup', NULL, '2026-05-21 10:03:32', '2026-05-21 10:03:32'),
+(2, 6, 'jojo@student.stih.ac.id', 'Ilmu Hukum', 'Laki-Laki', 2026, 4, 4, 4, 4, 4, 4, 4, 'tidak ada, cukup', NULL, '2026-05-22 02:35:26', '2026-05-22 02:35:26'),
+(3, 1, 'andipratama@student.stih.ac.id', 'Ilmu Hukum', NULL, 2026, 4, 4, 4, 4, 4, 4, 4, 'Mantap', NULL, '2026-05-22 07:47:42', '2026-05-22 07:47:42');
 
 -- --------------------------------------------------------
 
@@ -1351,12 +1770,12 @@ CREATE TABLE `mahasiswas` (
 --
 
 INSERT INTO `mahasiswas` (`id`, `user_id`, `nim`, `prodi`, `prodi_id`, `angkatan`, `semester`, `tahun_akademik_id`, `last_semester_id`, `phone`, `no_hp`, `address`, `alamat`, `rt`, `rw`, `kota`, `kecamatan`, `desa`, `alamat_ktp`, `rt_ktp`, `rw_ktp`, `provinsi_ktp`, `kota_ktp`, `kecamatan_ktp`, `desa_ktp`, `provinsi`, `kabupaten`, `jenis_sekolah`, `jurusan_sekolah`, `tahun_lulus`, `nilai_kelulusan`, `foto`, `tempat_lahir`, `tanggal_lahir`, `jenis_kelamin`, `agama`, `status_sipil`, `status`, `status_akun`, `is_dokumen_unlocked`, `kelas_perkuliahan_id`, `new_survey_completed`, `created_at`, `updated_at`, `file_ijazah`, `file_transkrip`, `file_kk`, `file_ktp`, `email_pribadi`, `email_kampus`, `email_aktif`, `email_pribadi_verified_at`, `password_reset_token`, `is_default_password`, `account_automation_at`) VALUES
-(1, 5, '2024010001', 'Ilmu Hukum', 1, '2024', 1, 1, NULL, '081234567894', '081234567890', 'Jl. Mahasiswa No. 1', 'Jl. Test No. 123', '12', '12', 'KAB. ACEH BARAT', 'ARONGAN LAMBALEK', 'ALUE BAGOK', 'Jl. Test No. 123', '12', '12', 'ACEH', 'KAB. ACEH BARAT', 'ARONGAN LAMBALEK', 'ALUE BAGOK', 'ACEH', NULL, '1 - Umum', 'SMA', '2024', 85.50, NULL, 'Jakarta', '2000-01-15', 'Laki-Laki', 'Islam', 'Belum Menikah', 'aktif', 'baru', 0, NULL, 1, '2026-05-20 05:16:19', '2026-05-20 10:04:06', NULL, NULL, NULL, NULL, NULL, 'andipratama@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL),
-(2, 6, '2024010002', 'Ilmu Hukum', 1, '2026', 1, 1, NULL, '081234567895', NULL, 'Jl. Mahasiswa No. 2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, 40, 1, '2026-05-20 05:16:20', '2026-05-20 08:01:18', NULL, NULL, NULL, NULL, NULL, 'dewilestari@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL),
-(3, 7, '2024010003', 'Hukum Pidana', NULL, '2024', 1, NULL, NULL, '081234567896', NULL, 'Jl. Mahasiswa No. 3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, NULL, 0, '2026-05-20 05:16:20', '2026-05-20 05:16:20', NULL, NULL, NULL, NULL, NULL, NULL, 'pribadi', NULL, NULL, 1, NULL),
-(4, 10, '2024001', 'Ilmu Hukum', NULL, '2024', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, NULL, 0, '2026-05-20 05:16:21', '2026-05-20 05:16:21', NULL, NULL, NULL, NULL, NULL, NULL, 'pribadi', NULL, NULL, 1, NULL),
-(5, 11, '2024002', 'Ilmu Hukum', 1, '2025', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, 44, 0, '2026-05-20 05:16:21', '2026-05-20 06:52:09', NULL, NULL, NULL, NULL, NULL, 'sitimahasiswi@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL),
-(6, 29, '12345678', 'Ilmu Hukum', 1, '2026', 1, 1, NULL, NULL, '8111111111111', NULL, 'qwe', '123', '123', 'KAB. ACEH BARAT DAYA', 'BLANGPIDIE', 'GUDANG', 'qwe', '123', '123', 'ACEH', 'KAB. ACEH BARAT DAYA', 'BLANGPIDIE', 'GUDANG', 'ACEH', NULL, '1 - Umum', 'SMA', '2025', 100.00, NULL, 'Jakarta', '2000-10-10', 'Laki-Laki', 'Katolik', 'Cerai', 'aktif', 'baru', 0, 40, 1, '2026-05-20 06:56:46', '2026-05-20 10:05:27', NULL, NULL, NULL, NULL, 'gregoriusjoell@gmail.com', 'jojo@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL);
+(1, 5, '2024010001', 'Ilmu Hukum', 1, '2026', 2, 1, NULL, '081234567894', '1231231231231', 'Jl. Mahasiswa No. 1', '123', '12', '12', 'KAB. ACEH BARAT DAYA', 'LEMBAH SABIL', 'LADANG TUHA I', '123', '12', '12', 'ACEH', 'KAB. ACEH BARAT DAYA', 'LEMBAH SABIL', 'LADANG TUHA I', 'ACEH', NULL, '1 - Umum', 'SMA', '2026', 100.00, NULL, 'Jakarta', '2000-10-10', 'Laki-Laki', 'Katolik', 'Belum Menikah', 'aktif', 'baru', 0, 1, 1, '2026-05-21 09:13:23', '2026-05-22 07:49:20', '[\"documents\\/mahasiswa\\/ANDI_PRATAMA_2024010001\\/f54c30e6-eb0c-40fe-a7d9-0dd9aef01121.pdf\"]', '[\"documents\\/mahasiswa\\/ANDI_PRATAMA_2024010001\\/2525e546-e150-40f7-aa01-8f9c8af46f36.pdf\"]', '[\"documents\\/mahasiswa\\/ANDI_PRATAMA_2024010001\\/bb91228c-cb56-48c5-8800-624cb58d1c97.pdf\"]', '[\"documents\\/mahasiswa\\/ANDI_PRATAMA_2024010001\\/8ead5f91-9f2c-4d98-bcc6-814b14d6e7ac.pdf\"]', NULL, 'andipratama@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL),
+(2, 6, '2024010002', 'Hukum Bisnis', NULL, '2024', 1, NULL, NULL, '081234567895', NULL, 'Jl. Mahasiswa No. 2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, NULL, 0, '2026-05-21 09:13:23', '2026-05-21 09:13:23', NULL, NULL, NULL, NULL, NULL, NULL, 'pribadi', NULL, NULL, 1, NULL),
+(3, 7, '2024010003', 'Hukum Pidana', NULL, '2024', 1, NULL, NULL, '081234567896', NULL, 'Jl. Mahasiswa No. 3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, NULL, 0, '2026-05-21 09:13:23', '2026-05-21 09:13:23', NULL, NULL, NULL, NULL, NULL, NULL, 'pribadi', NULL, NULL, 1, NULL),
+(4, 10, '2024001', 'Ilmu Hukum', 1, '2026', 2, 1, NULL, NULL, '1231231231231', NULL, 'Jakarta', '12', '12', 'KAB. ACEH BARAT', 'ARONGAN LAMBALEK', 'ALUE SUNDAK', 'Jakarta', '12', '12', 'ACEH', 'KAB. ACEH BARAT', 'ARONGAN LAMBALEK', 'ALUE SUNDAK', 'ACEH', NULL, '1 - Umum', 'SMA', '2026', 100.00, NULL, 'Jakarta', '2000-10-10', 'Laki-Laki', 'Buddha', 'Belum Menikah', 'aktif', 'baru', 0, 1, 1, '2026-05-21 09:13:24', '2026-05-22 07:46:30', '[\"documents\\/mahasiswa\\/AHMAD_MAHASISWA_2024001\\/592bd5c7-f8e9-47a8-bf72-006c67b1f252.pdf\"]', '[\"documents\\/mahasiswa\\/AHMAD_MAHASISWA_2024001\\/0bc5dd24-4912-4018-863d-6a46d30e5294.pdf\"]', '[\"documents\\/mahasiswa\\/AHMAD_MAHASISWA_2024001\\/10ebf57a-ba43-4832-8bb9-ed944738a5be.pdf\"]', '[\"documents\\/mahasiswa\\/AHMAD_MAHASISWA_2024001\\/d5af8e70-0bb6-42bc-920f-db7472864937.pdf\"]', NULL, 'ahmadmahasiswa@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL),
+(5, 11, '2024002', 'Hukum Bisnis', NULL, '2024', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'aktif', 'baru', 0, NULL, 0, '2026-05-21 09:13:24', '2026-05-21 09:13:24', NULL, NULL, NULL, NULL, NULL, NULL, 'pribadi', NULL, NULL, 1, NULL),
+(6, 30, '50421684', 'Ilmu Hukum', 1, '2026', 7, 1, NULL, NULL, '82282228222', NULL, 'Jakarta', '12', '12', 'KOTA ADM. JAKARTA PUSAT', 'CEMPAKA PUTIH', 'CEMPAKA PUTIH BARAT', 'Jakarta', '12', '12', 'DKI JAKARTA', 'KOTA ADM. JAKARTA PUSAT', 'CEMPAKA PUTIH', 'CEMPAKA PUTIH BARAT', 'DKI JAKARTA', NULL, '1 - Umum', 'SMA', '2026', 100.00, 'images/mahasiswa/foto/JOJO_50421684/b617b89b-5e19-4338-8996-ec8e168371df.png', 'Jakarta', '2000-02-28', 'Laki-Laki', 'Katolik', 'Belum Menikah', 'aktif', 'baru', 0, 1, 1, '2026-05-22 02:34:13', '2026-05-22 03:46:54', '[\"documents\\/mahasiswa\\/JOJO_50421684\\/5cd84b5e-7cbc-4022-9f90-19218678b38a.pdf\"]', '[\"documents\\/mahasiswa\\/JOJO_50421684\\/00ad7ed6-9b7f-4cff-94c9-06c1344d4047.pdf\"]', '[\"documents\\/mahasiswa\\/JOJO_50421684\\/cbd00a11-75c7-46c8-993b-2f4180cba5f3.pdf\"]', '[\"documents\\/mahasiswa\\/JOJO_50421684\\/7318a893-fae4-4f36-9860-c173a4bac7e1.pdf\"]', 'gregoriusjoel28@gmail.com', 'jojo@student.stih.ac.id', 'kampus', NULL, NULL, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -1386,76 +1805,76 @@ CREATE TABLE `mata_kuliahs` (
 --
 
 INSERT INTO `mata_kuliahs` (`id`, `kode_mk`, `kode_id`, `nama_mk`, `praktikum`, `tipe`, `sks`, `semester`, `jenis`, `deskripsi`, `created_at`, `updated_at`, `prodi_id`, `fakultas_id`) VALUES
-(1, 'ADH10010', 'sms1', 'Ilmu Agama', NULL, 'teori', 2, 1, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(2, 'ADH10006', 'sms1', 'Bahasa Indonesia Hukum', NULL, 'teori', 2, 1, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(3, 'ADH10007', 'sms1', 'Pancasila & Kewargakabupatenan', NULL, 'teori', 3, 1, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(4, 'ADH30001', 'sms1', 'Ekonomi Pembangunan', NULL, 'teori', 2, 1, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(5, 'ADH20001', 'sms1', 'Ilmu Kabupaten', NULL, 'teori', 3, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(6, 'ADH20002', 'sms1', 'Pengantar Ilmu Hukum', NULL, 'teori', 3, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(7, 'ADH20003', 'sms1', 'Pengantar Hukum Indonesia', NULL, 'teori', 3, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(8, 'ADH20004', 'sms1', 'Hukum & Hak Asasi Manusia', NULL, 'teori', 2, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(9, 'ADH20050', 'sms2', 'Hukum Perdata', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(10, 'ADH20006', 'sms2', 'Hukum Pidana', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(11, 'ADH20009', 'sms2', 'Hukum Adat', NULL, 'teori', 4, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(12, 'ADH20010', 'sms2', 'Hukum Islam', NULL, 'teori', 2, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(13, 'ADH20012', 'sms2', 'Ilmu Perundang-undangan', 1, 'teori', 2, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(14, 'ADH20014', 'sms2', 'Hukum Internasional', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(15, 'ADH20007', 'sms2', 'Hukum Tata Kabupaten', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(16, 'ADH20005', 'sms3', 'Hukum Benda & Orang', NULL, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(17, 'ADH20015', 'sms3', 'Hukum Dagang', NULL, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(18, 'ADH20018', 'sms3', 'Hukum Acara Pidana', 1, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(19, 'ADH20013', 'sms3', 'Hukum Acara Perdata', 1, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(20, 'ADH20008', 'sms3', 'Hukum Administrasi Kabupaten', NULL, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(21, 'ADH20020', 'sms3', 'Kejaksaan dan Badan Peradilan di Indonesia', 1, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(22, 'ADH20040', 'sms3', 'Hukum Sanksi', 1, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(23, 'ADH20051', 'sms3', 'Penerapan Asas-Asas Hukum Pidana', NULL, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(24, 'ADH30011', 'sms3', 'Lembaga Kabupaten Indonesia', NULL, 'teori', 2, 3, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(25, 'ADH20011', 'sms3', 'Hukum Perikatan', NULL, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(26, 'ADH30002', 'sms4', 'Legal English', 1, 'teori', 2, 4, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(27, 'ADH20019', 'sms4', 'Hukum Acara Tata Usaha Kabupaten', 1, 'teori', 3, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(28, 'ADH20017', 'sms4', 'Hukum Agraria', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(29, 'ADH20047', 'sms4', 'Hukum Perdata Internasional', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(30, 'ADH20016', 'sms4', 'Hukum Ketenagakerjaan', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(31, 'ADH20026', 'sms4', 'Hukum Kekayaan Interlektual', 1, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(32, 'ADH20052', 'sms4', 'Kejaksaan Dalam Sistem Peradilan Pidana', 1, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(33, 'ADH20036', 'sms4', 'Praktik Pembuktian Pidana', 2, 'teori', 3, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 2', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(34, 'ADH20023', 'sms4', 'Hukum Lingkungan', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(35, 'ADH20022', 'sms4', 'Hukum Pajak', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(36, 'ADH10009', 'sms4', 'Logika Hukum', NULL, 'teori', 2, 4, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(37, 'ADH20033', 'sms5', 'Metode Penelitian Hukum & Penulisan Jurnal Ilmiah', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(38, 'ADH30005', 'sms5', 'Hukum Pidana Khusus', NULL, 'teori', 2, 5, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(39, 'ADH20027', 'sms5', 'Hukum Perlindungan Anak', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(40, 'ADH20029', 'sms5', 'Hukum Pidana Internasional', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(41, 'ADH20025', 'sms5', 'Hukum Acara Mahkamah Konstitusi', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(42, 'ADH30007', 'sms5', 'Hukum Siber', NULL, 'teori', 2, 5, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(43, 'ADH20048', 'sms5', 'Hukum Humaniter', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(44, 'ADH20035', 'sms5', 'Hukum Kepailitan', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(45, 'ADH20021', 'sms5', 'Hukum Perdata Islam', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(46, 'ADH20034', 'sms5', 'Pencucian Uang, Penyitaan & Pemulihan Aset', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(47, 'ADH20028', 'sms5', 'Hukum Antar Tata Hukum', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(48, 'ADH20053', 'sms5', 'Kejaksaan Dalam Bidang Perdata & Tata Usaha Kabupaten', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(49, 'ADH20037', 'sms6', 'Etika, Tanggung Jawab & Profesi Hukum', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(50, 'ADH20038', 'sms6', 'Filsafat Hukum', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(51, 'ADH20039', 'sms6', 'Legal Drafting', 2, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 2', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(52, 'ADH20041', 'sms6', 'Praktik Hukum Perdata', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(53, 'ADH20042', 'sms6', 'Praktik Hukum Tata Usaha Kabupaten', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(54, 'ADH40004', 'sms6', 'Kriminologi & Viktimologi', NULL, 'teori', 2, 6, 'peminatan', 'Mata Kuliah Peminatan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(55, 'ADH20044', 'sms6', 'Arbitrase & Alternative Dispute Resolution', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(56, 'ADH30004', 'sms6', 'Hukum Perusahaan, Persaingan Usaha & Jaminan', NULL, 'teori', 2, 6, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(57, 'ADH20030', 'sms6', 'Hukum Perbankan & Surat Berharga', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(58, 'ADH20031', 'sms6', 'Penyelesaian Sengketa Industrial', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(59, 'ADH20032', 'sms6', 'Perbandingan Hukum Pidana', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(60, 'ADH30010', 'sms6', 'Hukum Organisasi Internasional', NULL, 'teori', 2, 6, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(61, 'ADH20024', 'sms7', 'Hukum Administrasi Kabupaten Sektoral', 1, 'teori', 2, 7, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(62, 'ADH30003', 'sms7', 'Legal Enterpreneurship (Kewirausahaan)', 1, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(63, 'ADD20049', 'sms7', 'Penulisan Skripsi/ Penulisan Jurnal Ilmiah', 3, 'teori', 4, 7, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 3', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(64, 'ADH40001', 'sms7', 'Hukum Laut', NULL, 'teori', 2, 7, 'peminatan', 'Mata Kuliah Peminatan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(65, 'ADH30014', 'sms7', 'Hukum Perlindungan Konsumen', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(66, 'ADH30006', 'sms7', 'Hukum Jaminan', 1, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(67, 'ADH30012', 'sms7', 'Hukum Kesehatan & Medikolegal', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(68, 'ADH30008', 'sms7', 'Hukum Investasi', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(69, 'ADH30009', 'sms7', 'Hukum Perjanjian Internasional', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1),
-(70, 'ADH30015', 'sms7', 'Kapita Selekta Hukum Acara Pidana', 1, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-20 05:16:20', '2026-05-20 05:16:20', 1, 1);
+(1, 'ADH10010', 'sms1', 'Ilmu Agama', NULL, 'teori', 2, 1, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(2, 'ADH10006', 'sms1', 'Bahasa Indonesia Hukum', NULL, 'teori', 2, 1, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(3, 'ADH10007', 'sms1', 'Pancasila & Kewargakabupatenan', NULL, 'teori', 3, 1, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(4, 'ADH30001', 'sms1', 'Ekonomi Pembangunan', NULL, 'teori', 2, 1, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(5, 'ADH20001', 'sms1', 'Ilmu Kabupaten', NULL, 'teori', 3, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(6, 'ADH20002', 'sms1', 'Pengantar Ilmu Hukum', NULL, 'teori', 3, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(7, 'ADH20003', 'sms1', 'Pengantar Hukum Indonesia', NULL, 'teori', 3, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(8, 'ADH20004', 'sms1', 'Hukum & Hak Asasi Manusia', NULL, 'teori', 2, 1, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(9, 'ADH20050', 'sms2', 'Hukum Perdata', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(10, 'ADH20006', 'sms2', 'Hukum Pidana', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(11, 'ADH20009', 'sms2', 'Hukum Adat', NULL, 'teori', 4, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(12, 'ADH20010', 'sms2', 'Hukum Islam', NULL, 'teori', 2, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(13, 'ADH20012', 'sms2', 'Ilmu Perundang-undangan', 1, 'teori', 2, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(14, 'ADH20014', 'sms2', 'Hukum Internasional', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(15, 'ADH20007', 'sms2', 'Hukum Tata Kabupaten', NULL, 'teori', 3, 2, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(16, 'ADH20005', 'sms3', 'Hukum Benda & Orang', NULL, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(17, 'ADH20015', 'sms3', 'Hukum Dagang', NULL, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(18, 'ADH20018', 'sms3', 'Hukum Acara Pidana', 1, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(19, 'ADH20013', 'sms3', 'Hukum Acara Perdata', 1, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(20, 'ADH20008', 'sms3', 'Hukum Administrasi Kabupaten', NULL, 'teori', 3, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(21, 'ADH20020', 'sms3', 'Kejaksaan dan Badan Peradilan di Indonesia', 1, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(22, 'ADH20040', 'sms3', 'Hukum Sanksi', 1, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(23, 'ADH20051', 'sms3', 'Penerapan Asas-Asas Hukum Pidana', NULL, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(24, 'ADH30011', 'sms3', 'Lembaga Kabupaten Indonesia', NULL, 'teori', 2, 3, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(25, 'ADH20011', 'sms3', 'Hukum Perikatan', NULL, 'teori', 2, 3, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(26, 'ADH30002', 'sms4', 'Legal English', 1, 'teori', 2, 4, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(27, 'ADH20019', 'sms4', 'Hukum Acara Tata Usaha Kabupaten', 1, 'teori', 3, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(28, 'ADH20017', 'sms4', 'Hukum Agraria', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(29, 'ADH20047', 'sms4', 'Hukum Perdata Internasional', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(30, 'ADH20016', 'sms4', 'Hukum Ketenagakerjaan', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(31, 'ADH20026', 'sms4', 'Hukum Kekayaan Interlektual', 1, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(32, 'ADH20052', 'sms4', 'Kejaksaan Dalam Sistem Peradilan Pidana', 1, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(33, 'ADH20036', 'sms4', 'Praktik Pembuktian Pidana', 2, 'teori', 3, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 2', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(34, 'ADH20023', 'sms4', 'Hukum Lingkungan', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(35, 'ADH20022', 'sms4', 'Hukum Pajak', NULL, 'teori', 2, 4, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(36, 'ADH10009', 'sms4', 'Logika Hukum', NULL, 'teori', 2, 4, 'wajib_nasional', 'Mata Kuliah Wajib Nasional', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(37, 'ADH20033', 'sms5', 'Metode Penelitian Hukum & Penulisan Jurnal Ilmiah', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(38, 'ADH30005', 'sms5', 'Hukum Pidana Khusus', NULL, 'teori', 2, 5, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(39, 'ADH20027', 'sms5', 'Hukum Perlindungan Anak', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(40, 'ADH20029', 'sms5', 'Hukum Pidana Internasional', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(41, 'ADH20025', 'sms5', 'Hukum Acara Mahkamah Konstitusi', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(42, 'ADH30007', 'sms5', 'Hukum Siber', NULL, 'teori', 2, 5, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(43, 'ADH20048', 'sms5', 'Hukum Humaniter', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(44, 'ADH20035', 'sms5', 'Hukum Kepailitan', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(45, 'ADH20021', 'sms5', 'Hukum Perdata Islam', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(46, 'ADH20034', 'sms5', 'Pencucian Uang, Penyitaan & Pemulihan Aset', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(47, 'ADH20028', 'sms5', 'Hukum Antar Tata Hukum', NULL, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:23', '2026-05-21 09:13:23', 1, 1),
+(48, 'ADH20053', 'sms5', 'Kejaksaan Dalam Bidang Perdata & Tata Usaha Kabupaten', 1, 'teori', 2, 5, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(49, 'ADH20037', 'sms6', 'Etika, Tanggung Jawab & Profesi Hukum', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(50, 'ADH20038', 'sms6', 'Filsafat Hukum', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(51, 'ADH20039', 'sms6', 'Legal Drafting', 2, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 2', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(52, 'ADH20041', 'sms6', 'Praktik Hukum Perdata', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(53, 'ADH20042', 'sms6', 'Praktik Hukum Tata Usaha Kabupaten', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(54, 'ADH40004', 'sms6', 'Kriminologi & Viktimologi', NULL, 'teori', 2, 6, 'peminatan', 'Mata Kuliah Peminatan', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(55, 'ADH20044', 'sms6', 'Arbitrase & Alternative Dispute Resolution', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(56, 'ADH30004', 'sms6', 'Hukum Perusahaan, Persaingan Usaha & Jaminan', NULL, 'teori', 2, 6, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(57, 'ADH20030', 'sms6', 'Hukum Perbankan & Surat Berharga', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(58, 'ADH20031', 'sms6', 'Penyelesaian Sengketa Industrial', NULL, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(59, 'ADH20032', 'sms6', 'Perbandingan Hukum Pidana', 1, 'teori', 2, 6, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(60, 'ADH30010', 'sms6', 'Hukum Organisasi Internasional', NULL, 'teori', 2, 6, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(61, 'ADH20024', 'sms7', 'Hukum Administrasi Kabupaten Sektoral', 1, 'teori', 2, 7, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 1', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(62, 'ADH30003', 'sms7', 'Legal Enterpreneurship (Kewirausahaan)', 1, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(63, 'ADD20049', 'sms7', 'Penulisan Skripsi/ Penulisan Jurnal Ilmiah', 3, 'teori', 4, 7, 'wajib_prodi', 'Mata Kuliah Wajib Prodi • Praktikum: 3', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(64, 'ADH40001', 'sms7', 'Hukum Laut', NULL, 'teori', 2, 7, 'peminatan', 'Mata Kuliah Peminatan', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(65, 'ADH30014', 'sms7', 'Hukum Perlindungan Konsumen', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(66, 'ADH30006', 'sms7', 'Hukum Jaminan', 1, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(67, 'ADH30012', 'sms7', 'Hukum Kesehatan & Medikolegal', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(68, 'ADH30008', 'sms7', 'Hukum Investasi', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(69, 'ADH30009', 'sms7', 'Hukum Perjanjian Internasional', NULL, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1),
+(70, 'ADH30015', 'sms7', 'Kapita Selekta Hukum Acara Pidana', 1, 'teori', 2, 7, 'pilihan', 'Mata Kuliah Pilihan • Praktikum: 1', '2026-05-21 09:13:24', '2026-05-21 09:13:24', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -1475,6 +1894,82 @@ CREATE TABLE `mata_kuliah_semesters` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `mata_kuliah_semesters`
+--
+
+INSERT INTO `mata_kuliah_semesters` (`id`, `semester_id`, `mata_kuliah_id`, `status`, `source_semester_id`, `activated_at`, `deactivated_at`, `meta`, `created_at`, `updated_at`) VALUES
+(1, 1, 55, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(2, 1, 2, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(3, 1, 4, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(4, 1, 49, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(5, 1, 50, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(6, 1, 8, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(7, 1, 41, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(8, 1, 19, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(9, 1, 18, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(10, 1, 27, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(11, 1, 11, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(12, 1, 20, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(13, 1, 61, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(14, 1, 28, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(15, 1, 47, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(16, 1, 16, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(17, 1, 17, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(18, 1, 43, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(19, 1, 14, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(20, 1, 68, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(21, 1, 12, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(22, 1, 66, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(23, 1, 31, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(24, 1, 44, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(25, 1, 67, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(26, 1, 30, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(27, 1, 64, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(28, 1, 34, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(29, 1, 60, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(30, 1, 35, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(31, 1, 57, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(32, 1, 9, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(33, 1, 29, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(34, 1, 45, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(35, 1, 25, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(36, 1, 69, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(37, 1, 39, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(38, 1, 65, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(39, 1, 56, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(40, 1, 10, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(41, 1, 40, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(42, 1, 38, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(43, 1, 22, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(44, 1, 42, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(45, 1, 15, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(46, 1, 1, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(47, 1, 5, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(48, 1, 13, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(49, 1, 70, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(50, 1, 48, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(51, 1, 32, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(52, 1, 21, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(53, 1, 54, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(54, 1, 51, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(55, 1, 26, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(56, 1, 62, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(57, 1, 24, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(58, 1, 36, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(59, 1, 37, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(60, 1, 3, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(61, 1, 46, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(62, 1, 23, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(63, 1, 7, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(64, 1, 6, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(65, 1, 63, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(66, 1, 58, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(67, 1, 59, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(68, 1, 52, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(69, 1, 53, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45'),
+(70, 1, 33, 'active', NULL, '2026-05-21 16:51:45', NULL, NULL, '2026-05-21 09:51:45', '2026-05-21 09:51:45');
 
 -- --------------------------------------------------------
 
@@ -1688,7 +2183,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (172, '2026_05_05_000001_add_credential_recipient_type_to_email_blast_logs', 1),
 (173, '2026_05_05_000002_add_credential_type_to_email_outboxes', 1),
 (174, '2026_05_06_remove_section_from_kelas', 1),
-(175, '2026_05_08_000001_create_prestasi_tables', 1);
+(175, '2026_05_08_000001_create_prestasi_tables', 1),
+(176, '2026_05_21_000001_create_wisuda_tables', 1);
 
 -- --------------------------------------------------------
 
@@ -1721,58 +2217,128 @@ CREATE TABLE `nilai` (
 --
 
 INSERT INTO `nilai` (`id`, `krs_id`, `kelas_id`, `nilai_partisipatif`, `nilai_proyek`, `nilai_quiz`, `nilai_tugas`, `nilai_uts`, `nilai_uas`, `nilai_akhir`, `grade`, `bobot`, `is_published`, `published_at`, `published_by`, `created_at`, `updated_at`) VALUES
-(1, 1, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(2, 2, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(3, 3, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(4, 4, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(5, 5, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(6, 6, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(7, 7, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(8, 8, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(9, 9, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(10, 10, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(11, 11, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(12, 12, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(13, 13, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(14, 14, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(15, 15, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(16, 16, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(17, 17, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(18, 18, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(19, 19, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(20, 20, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(21, 21, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(22, 22, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(23, 23, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(24, 24, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(25, 25, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(26, 26, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(27, 27, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(28, 28, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(29, 29, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(30, 30, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(31, 31, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(32, 32, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(33, 33, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(34, 34, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(35, 35, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(36, 36, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(37, 37, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(38, 38, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(39, 39, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(40, 40, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(41, 41, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(42, 42, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(43, 43, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(44, 44, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(45, 45, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(46, 46, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(47, 47, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(48, 48, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(49, 49, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(50, 50, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(51, 51, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(52, 52, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-20 05:16:21', NULL, '2026-05-20 05:16:21', '2026-05-20 05:16:21');
+(1, 1, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(2, 2, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(3, 3, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(4, 4, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(5, 5, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(6, 6, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(7, 7, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(8, 8, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(9, 9, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(10, 10, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(11, 11, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(12, 12, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(13, 13, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(14, 14, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(15, 15, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(16, 16, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(17, 17, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(18, 18, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(19, 19, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(20, 20, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(21, 21, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(22, 22, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(23, 23, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(24, 24, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(25, 25, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(26, 26, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(27, 27, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(28, 28, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(29, 29, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(30, 30, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(31, 31, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(32, 32, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(33, 33, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(34, 34, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(35, 35, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(36, 36, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(37, 37, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(38, 38, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(39, 39, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(40, 40, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(41, 41, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(42, 42, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(43, 43, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(44, 44, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(45, 45, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(46, 46, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(47, 47, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(48, 48, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(49, 49, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(50, 50, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(51, 51, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(52, 52, NULL, 90.00, 90.00, 88.00, 90.00, 85.00, 90.00, 90.00, 'A', 4.00, 1, '2026-05-21 09:13:24', NULL, '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(53, 53, 5, 93.27, 92.73, 72.33, 87.69, 94.81, 87.97, 88.13, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(54, 54, 1, 97.18, 84.11, 95.95, 96.54, 77.71, 92.24, 90.62, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(55, 55, 8, 86.67, 92.68, 78.50, 87.88, 74.47, 87.00, 84.53, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(56, 56, 4, 94.40, 96.42, 78.61, 82.00, 83.90, 91.53, 87.81, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(57, 57, 2, 82.32, 86.19, 79.52, 75.46, 88.64, 92.78, 84.15, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(58, 58, 3, 90.11, 91.60, 75.04, 77.85, 94.77, 92.15, 86.92, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(59, 59, 6, 77.51, 81.71, 77.70, 84.72, 71.13, 87.83, 80.10, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(60, 60, 7, 87.22, 95.21, 80.72, 81.40, 70.63, 71.91, 81.18, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(61, 61, 1, 97.37, 95.17, 91.65, 77.33, 87.66, 93.02, 90.37, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(62, 62, 1, 75.20, 94.01, 94.39, 86.35, 91.77, 71.44, 85.53, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(63, 63, 1, 86.07, 78.57, 79.89, 88.34, 95.57, 71.16, 83.27, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(64, 64, 1, 77.33, 88.18, 77.38, 84.82, 89.58, 87.87, 84.19, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(65, 65, 1, 85.25, 76.04, 82.91, 85.37, 95.71, 85.74, 85.17, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(66, 66, 1, 95.29, 88.75, 74.73, 87.83, 91.19, 81.14, 86.49, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(67, 67, 1, 77.32, 94.71, 79.60, 91.89, 86.91, 77.65, 84.68, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(68, 74, 1, 75.09, 81.36, 74.17, 92.28, 88.80, 81.28, 82.16, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(69, 75, 1, 76.49, 93.77, 89.25, 97.78, 83.89, 92.47, 88.94, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(70, 76, 1, 76.63, 75.76, 90.70, 79.55, 90.53, 83.16, 82.72, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(71, 77, 1, 90.14, 90.62, 88.34, 85.03, 70.09, 80.82, 84.17, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(72, 78, 1, 77.43, 90.55, 73.10, 96.63, 89.88, 73.04, 83.44, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(73, 79, 1, 81.68, 83.83, 80.50, 81.52, 79.18, 74.07, 80.13, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(74, 80, 1, 81.79, 88.80, 74.85, 76.30, 93.63, 81.12, 82.75, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(75, 81, 1, 93.48, 88.44, 85.57, 93.61, 81.91, 94.02, 89.51, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(76, 82, 1, 77.06, 97.44, 74.29, 82.71, 76.33, 89.74, 82.93, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(77, 83, 1, 91.79, 81.17, 87.78, 80.82, 80.14, 79.21, 83.49, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(78, 84, 1, 78.55, 78.28, 80.16, 79.99, 81.14, 87.27, 80.90, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(79, 85, 1, 78.34, 96.06, 95.80, 76.07, 90.22, 88.37, 87.48, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(80, 86, 1, 96.54, 97.33, 90.93, 93.80, 79.44, 78.63, 89.45, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(81, 87, 1, 77.96, 82.10, 92.84, 92.97, 70.22, 92.21, 84.72, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(82, 88, 1, 90.53, 80.84, 97.30, 81.29, 81.20, 93.56, 87.45, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(83, 89, 1, 76.49, 93.72, 93.52, 90.70, 76.38, 77.42, 84.71, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(84, 90, 1, 92.28, 92.24, 83.93, 78.70, 95.39, 88.69, 88.54, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(85, 91, 1, 79.40, 92.89, 85.39, 94.30, 85.64, 71.56, 84.86, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(86, 92, 1, 91.60, 76.44, 96.72, 75.76, 86.96, 88.33, 85.97, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(87, 93, 1, 95.75, 90.68, 84.69, 91.26, 78.89, 92.79, 89.01, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(88, 94, 1, 82.79, 79.49, 94.99, 78.40, 73.88, 75.37, 80.82, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(89, 95, 1, 75.61, 82.14, 97.40, 75.59, 89.54, 85.29, 84.26, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(90, 96, 1, 82.05, 79.62, 85.48, 93.21, 90.84, 78.34, 84.92, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(91, 97, 1, 83.76, 84.77, 94.09, 93.60, 87.42, 81.66, 87.55, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(92, 98, 1, 86.02, 88.39, 89.46, 82.94, 92.35, 79.84, 86.50, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(93, 99, 1, 82.07, 76.05, 81.35, 97.47, 81.98, 71.81, 81.79, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(94, 100, 1, 83.00, 91.89, 70.81, 94.47, 78.85, 91.07, 85.02, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(95, 101, 1, 89.90, 80.24, 88.72, 90.64, 85.05, 86.32, 86.81, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(96, 102, 1, 80.01, 89.54, 83.57, 93.86, 81.73, 72.10, 83.47, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(97, 103, 1, 76.08, 80.94, 70.24, 89.84, 74.89, 94.24, 81.04, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(98, 104, 1, 78.08, 89.86, 73.51, 93.26, 71.43, 80.86, 81.17, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(99, 105, 1, 94.46, 96.46, 96.23, 96.63, 82.69, 80.40, 91.15, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(100, 106, 1, 92.23, 93.91, 85.87, 82.54, 81.61, 75.30, 85.24, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(101, 107, 1, 93.08, 95.36, 70.37, 88.65, 79.66, 86.30, 85.57, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(102, 108, 1, 80.36, 84.12, 72.37, 80.75, 79.52, 93.23, 81.73, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(103, 109, 1, 79.92, 88.84, 83.09, 96.44, 93.03, 78.75, 86.68, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(104, 110, 1, 83.00, 77.31, 80.99, 80.25, 74.52, 74.11, 78.36, 'A-', 3.67, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(105, 111, 1, 86.22, 81.46, 75.93, 93.89, 73.54, 88.26, 83.22, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(106, 112, 1, 94.38, 83.32, 83.66, 83.23, 88.80, 80.42, 85.64, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(107, 113, 1, 83.05, 76.94, 70.72, 95.90, 90.38, 86.34, 83.89, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(108, 114, 1, 79.70, 84.05, 88.69, 85.59, 74.03, 82.32, 82.40, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(109, 115, 1, 89.78, 89.06, 86.15, 89.75, 87.20, 74.50, 86.07, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(110, 116, 1, 79.07, 91.08, 80.45, 94.90, 71.62, 80.56, 82.95, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(111, 117, 1, 91.00, 86.35, 86.47, 85.48, 87.58, 95.91, 88.80, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(112, 118, 1, 85.99, 87.50, 97.04, 84.85, 87.57, 78.21, 86.86, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(113, 119, 1, 78.50, 75.72, 81.70, 95.64, 72.93, 89.36, 82.31, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(114, 120, 1, 89.15, 78.55, 90.51, 92.78, 85.17, 79.49, 85.94, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(115, 121, 1, 91.83, 81.53, 76.44, 78.57, 75.40, 94.18, 82.99, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(116, 122, 1, 90.25, 77.29, 83.58, 92.56, 82.64, 92.73, 86.51, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(117, 123, 1, 90.29, 93.36, 88.76, 89.96, 94.57, 84.11, 90.18, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(118, 124, 1, 78.94, 83.11, 75.83, 75.72, 74.44, 74.34, 77.06, 'A-', 3.67, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(119, 125, 1, 82.31, 87.98, 76.39, 79.80, 83.65, 82.40, 82.09, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(120, 126, 1, 83.26, 90.54, 95.19, 89.97, 86.67, 80.98, 87.77, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(121, 127, 1, 80.26, 85.62, 89.45, 82.82, 83.69, 76.34, 83.03, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06'),
+(122, 128, 1, 96.07, 87.47, 83.20, 82.84, 72.68, 83.84, 84.35, 'A', 4.00, 1, '2026-05-22 04:06:06', 1, '2026-05-22 04:06:06', '2026-05-22 04:06:06');
 
 -- --------------------------------------------------------
 
@@ -1830,8 +2396,9 @@ CREATE TABLE `parents` (
 --
 
 INSERT INTO `parents` (`id`, `hubungan`, `pekerjaan`, `user_id`, `mahasiswa_id`, `tipe_wali`, `nama_ayah`, `pendidikan_ayah`, `pekerjaan_ayah`, `agama_ayah`, `alamat_ayah`, `kota_ayah`, `kecamatan_ayah`, `propinsi_ayah`, `desa_ayah`, `handphone_ayah`, `nama_ibu`, `pendidikan_ibu`, `pekerjaan_ibu`, `agama_ibu`, `alamat_ibu`, `kota_ibu`, `kecamatan_ibu`, `propinsi_ibu`, `desa_ibu`, `handphone_ibu`, `phone`, `nama_wali`, `hubungan_wali`, `pendidikan_wali`, `pekerjaan_wali`, `agama_wali`, `alamat_wali`, `kota_wali`, `kecamatan_wali`, `provinsi_wali`, `handphone_wali`, `keluarga`, `address`, `created_at`, `updated_at`, `desa_wali`) VALUES
-(1, NULL, NULL, 5, 1, 'orang_tua', 'Budi Santoso', NULL, NULL, 'Islam', 'Jl. Ayah No. 1', NULL, NULL, NULL, 'Menteng Atas', '08111222333', 'Siti Aminah', NULL, 'Guru', 'Islam', 'Jl. Ibu No. 2', NULL, NULL, NULL, 'Menteng Atas', '08222333444', '081234567897', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Jl. Orang Tua No. 1', '2026-05-20 05:16:20', '2026-05-20 10:04:06', NULL),
-(2, NULL, NULL, 29, 6, 'orang_tua', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'budi', 'Paman', 'Tamat SMTP', 'Pelajar / Mahasiswa', 'Protestan', 'dadadada', 'KAB. KULON PROGO', 'GIRIMULYO', 'DAERAH ISTIMEWA YOGYAKARTA', '85285193499', NULL, NULL, '2026-05-20 10:05:27', '2026-05-20 10:05:27', 'GIRIPURWO');
+(1, NULL, NULL, 5, 1, 'orang_tua', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '081234567897', 'budi', 'Lainnya', 'Tamat SD', 'Tentara Nasional Indonesia', 'Protestan', 'jakarta', 'KAB. SERANG', 'BANDUNG', 'BANTEN', '822222222222', NULL, 'Jl. Orang Tua No. 1', '2026-05-21 09:13:23', '2026-05-22 07:48:45', 'BANDUNG'),
+(2, 'wali', 'Mengurus Rumah Tangga', 29, 4, 'wali', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '822222222222', 'Akbar', 'Paman', 'Tidak Sekolah', 'Mengurus Rumah Tangga', 'Protestan', 'Jakarta', 'KAB. SERANG', 'BAROS', 'BANTEN', '822222222222', NULL, 'Jakarta', '2026-05-21 10:06:25', '2026-05-21 10:25:44', 'PADASUKA'),
+(3, NULL, NULL, 30, 6, 'orang_tua', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Akbar', 'Paman', 'Tamat SMTA', 'Kepolisian RI', 'Katolik', 'Jakarta', 'KOTA ADM. JAKARTA PUSAT', 'CEMPAKA PUTIH', 'DKI JAKARTA', '822222222222', NULL, NULL, '2026-05-22 02:44:10', '2026-05-22 02:44:10', 'CEMPAKA PUTIH BARAT');
 
 -- --------------------------------------------------------
 
@@ -2144,10 +2711,10 @@ CREATE TABLE `prestasi_surat_settings` (
 --
 
 INSERT INTO `prestasi_surat_settings` (`id`, `jenis_surat`, `format_nomor`, `last_counter`, `reset_year`, `created_at`, `updated_at`) VALUES
-(1, 'tugas', '{counter}/STIH/ST/{month}/{year}', 0, '2026', '2026-05-20 05:16:18', '2026-05-20 05:16:18'),
-(2, 'rekomendasi', '{counter}/STIH/SR/{month}/{year}', 0, '2026', '2026-05-20 05:16:18', '2026-05-20 05:16:18'),
-(3, 'keterangan', '{counter}/STIH/SKP/{month}/{year}', 0, '2026', '2026-05-20 05:16:18', '2026-05-20 05:16:18'),
-(4, 'penghargaan', '{counter}/STIH/PP/{month}/{year}', 0, '2026', '2026-05-20 05:16:18', '2026-05-20 05:16:18');
+(1, 'tugas', '{counter}/STIH/ST/{month}/{year}', 0, '2026', '2026-05-21 09:13:22', '2026-05-21 09:13:22'),
+(2, 'rekomendasi', '{counter}/STIH/SR/{month}/{year}', 0, '2026', '2026-05-21 09:13:22', '2026-05-21 09:13:22'),
+(3, 'keterangan', '{counter}/STIH/SKP/{month}/{year}', 0, '2026', '2026-05-21 09:13:22', '2026-05-21 09:13:22'),
+(4, 'penghargaan', '{counter}/STIH/PP/{month}/{year}', 0, '2026', '2026-05-21 09:13:22', '2026-05-21 09:13:22');
 
 -- --------------------------------------------------------
 
@@ -2171,10 +2738,8 @@ CREATE TABLE `prodis` (
 --
 
 INSERT INTO `prodis` (`id`, `kode_prodi`, `fakultas_id`, `nama_prodi`, `jenjang`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'HK', 1, 'Ilmu Hukum', 'S1', 'aktif', '2026-05-20 05:16:15', '2026-05-20 05:51:24'),
-(2, 'INF', NULL, 'Informatika', 'S1', 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(3, 'MAN', NULL, 'Manajemen', 'S1', 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(4, 'AKT', NULL, 'Akuntansi', 'D3', 'aktif', '2026-05-20 05:16:20', '2026-05-20 05:16:20');
+(1, 'HK', 1, 'Ilmu Hukum', 'S1', 'aktif', '2026-05-21 09:13:16', '2026-05-21 09:50:53'),
+(2, 'INF', 2, 'Informatika', 'S1', 'aktif', '2026-05-21 09:13:23', '2026-05-21 09:51:31');
 
 -- --------------------------------------------------------
 
@@ -2195,13 +2760,13 @@ CREATE TABLE `religions` (
 --
 
 INSERT INTO `religions` (`id`, `code`, `name`, `created_at`, `updated_at`) VALUES
-(1, '1001001', 'Islam', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(2, '1001002', 'Protestan', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(3, '1001003', 'Hindu', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(4, '1001004', 'Buddha', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(5, '1001005', 'Katolik', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(6, '1001006', 'Khonghucu', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(7, '1001007', 'Penganut Kepercayaan Lainnya', '2026-05-20 05:16:20', '2026-05-20 05:16:20');
+(1, '1001001', 'Islam', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(2, '1001002', 'Protestan', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(3, '1001003', 'Hindu', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(4, '1001004', 'Buddha', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(5, '1001005', 'Katolik', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(6, '1001006', 'Khonghucu', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(7, '1001007', 'Penganut Kepercayaan Lainnya', '2026-05-21 09:13:23', '2026-05-21 09:13:23');
 
 -- --------------------------------------------------------
 
@@ -2227,13 +2792,13 @@ CREATE TABLE `ruangans` (
 --
 
 INSERT INTO `ruangans` (`id`, `kode_ruangan`, `nama_ruangan`, `gedung`, `lantai`, `kapasitas`, `status`, `kategori_id`, `created_at`, `updated_at`) VALUES
-(15, 'RI 1', 'Ruang Kelas Internasional 1', 'STIH Adhyaksa', 1, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
-(16, 'RI 2', 'Ruang Kelas Internasional 2', 'STIH Adhyaksa', 1, 30, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
-(17, 'RI 3', 'Ruang Kelas Internasional 3', 'STIH Adhyaksa', 1, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
-(18, 'R 1', 'Ruang Kelas R 1', 'STIH Adhyaksa', 2, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
-(19, 'R 2', 'Ruang Kelas R 2', 'STIH Adhyaksa', 2, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
-(20, 'R 3', 'Ruang Kelas R 3', 'STIH Adhyaksa', 2, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05'),
-(21, 'R 4', 'Ruang Kelas R 4', 'STIH Adhyaksa', 2, 50, 'aktif', NULL, '2026-05-20 05:38:05', '2026-05-20 05:38:05');
+(15, 'RI 1', 'Ruang Kelas Internasional 1', 'STIH Adhyaksa', 1, 50, 'aktif', 3, '2026-05-21 09:53:47', '2026-05-25 06:39:05'),
+(16, 'RI 2', 'Ruang Kelas Internasional 2', 'STIH Adhyaksa', 1, 30, 'aktif', NULL, '2026-05-21 09:53:47', '2026-05-21 09:53:47'),
+(17, 'RI 3', 'Ruang Kelas Internasional 3', 'STIH Adhyaksa', 1, 50, 'aktif', NULL, '2026-05-21 09:53:47', '2026-05-21 09:53:47'),
+(18, 'R 1', 'Ruang Kelas R 1', 'STIH Adhyaksa', 2, 50, 'aktif', 1, '2026-05-21 09:53:47', '2026-05-25 06:38:22'),
+(19, 'R 2', 'Ruang Kelas R 2', 'STIH Adhyaksa', 2, 50, 'aktif', 1, '2026-05-21 09:53:47', '2026-05-25 06:38:30'),
+(20, 'R 3', 'Ruang Kelas R 3', 'STIH Adhyaksa', 2, 50, 'aktif', 1, '2026-05-21 09:53:47', '2026-05-25 06:38:37'),
+(21, 'R 4', 'Ruang Kelas R 4', 'STIH Adhyaksa', 2, 50, 'aktif', 1, '2026-05-21 09:53:47', '2026-05-25 06:38:48');
 
 -- --------------------------------------------------------
 
@@ -2267,8 +2832,14 @@ CREATE TABLE `semesters` (
 --
 
 INSERT INTO `semesters` (`id`, `nama_semester`, `nama_semester_old`, `tahun_ajaran`, `status`, `is_active`, `is_locked`, `locked_at`, `locked_by`, `krs_dapat_diisi`, `max_sks_rendah`, `max_sks_tinggi`, `krs_mulai`, `krs_selesai`, `tanggal_mulai`, `tanggal_selesai`, `created_at`, `updated_at`) VALUES
-(1, 'Ganjil', NULL, '2025/2026', 'aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2026-05-20', '2026-11-20', '2026-05-20 05:17:57', '2026-05-20 05:17:57'),
-(2, 'Genap', NULL, '2025/2026', 'non-aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2026-11-21', '2027-05-21', '2026-05-20 06:18:35', '2026-05-20 06:18:35');
+(1, 'Ganjil', NULL, '2025/2026', 'aktif', 0, 0, NULL, NULL, 1, 20, 24, '2025-09-15', '2025-09-17', '2026-05-21', '2026-11-21', '2026-05-21 09:16:40', '2026-05-25 02:29:54'),
+(2, 'Genap', NULL, '2025/2026', 'non-aktif', 0, 0, NULL, NULL, 0, 20, 24, '2026-03-09', '2026-03-11', '2026-11-22', '2027-05-22', '2026-05-21 09:16:50', '2026-05-25 02:28:55'),
+(3, 'Ganjil', NULL, '2026/2027', 'non-aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2027-05-23', '2027-11-23', '2026-05-22 03:34:45', '2026-05-22 03:34:57'),
+(4, 'Genap', NULL, '2026/2027', 'non-aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2027-11-24', '2028-05-24', '2026-05-22 03:35:05', '2026-05-22 03:35:05'),
+(5, 'Ganjil', NULL, '2027/2028', 'non-aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2028-05-25', '2028-11-25', '2026-05-22 03:35:17', '2026-05-22 03:35:17'),
+(6, 'Genap', NULL, '2027/2028', 'non-aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2028-11-26', '2029-05-26', '2026-05-22 03:35:28', '2026-05-22 03:35:28'),
+(7, 'Ganjil', NULL, '2028/2029', 'non-aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2029-05-27', '2029-11-27', '2026-05-22 03:35:42', '2026-05-22 03:35:42'),
+(8, 'Genap', NULL, '2028/2029', 'non-aktif', 0, 0, NULL, NULL, 0, 20, 24, NULL, NULL, '2029-11-28', '2030-05-28', '2026-05-22 03:35:54', '2026-05-22 03:35:54');
 
 -- --------------------------------------------------------
 
@@ -2325,6 +2896,13 @@ CREATE TABLE `skripsi_revisions` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `skripsi_revisions`
+--
+
+INSERT INTO `skripsi_revisions` (`id`, `skripsi_submission_id`, `revision_file_path`, `original_name`, `notes`, `dosen_notes`, `approved_by_dosen_id`, `uploaded_at`, `approved_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 'skripsi/6/revisi/5tuC72isB6Q1gLRRmxuaX7nFw2BB6OS5pLPjo13c.pdf', 'KRS_50421684_7.pdf', NULL, NULL, 1, '2026-05-22 04:21:33', '2026-05-22 04:24:20', '2026-05-22 04:21:33', '2026-05-22 04:24:20');
+
 -- --------------------------------------------------------
 
 --
@@ -2341,6 +2919,18 @@ CREATE TABLE `skripsi_sidang_files` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `skripsi_sidang_files`
+--
+
+INSERT INTO `skripsi_sidang_files` (`id`, `sidang_registration_id`, `file_type`, `file_path`, `original_name`, `file_size`, `created_at`, `updated_at`) VALUES
+(1, 1, 'form_sidang', 'skripsi/6/sidang/form_sidang/GOb8X3R1UYJVEN5jkNgqpNQslahH2l9Np6M2J5dX.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:18:48', '2026-05-22 04:18:48'),
+(2, 1, 'bebas_pustaka', 'skripsi/6/sidang/bebas_pustaka/dFZMdWM4702ICPMpzbn9LBAOH0Ql532lSHgvOScR.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:19:00', '2026-05-22 04:19:00'),
+(3, 1, 'transkrip', 'skripsi/6/sidang/transkrip/wcqvnNY39mkuO1IGI1KICM86lqu283MPgm5yPf6M.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:19:07', '2026-05-22 04:19:07'),
+(4, 1, 'form_bimbingan', 'skripsi/6/sidang/form_bimbingan/qr6XDP52ghaIkuy2WVh6XprCX1gLIw3dYk1SSOl3.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:19:14', '2026-05-22 04:19:14'),
+(5, 1, 'file_skripsi', 'skripsi/6/sidang/file_skripsi/yNeC0qKZRIcGrSHDMVQJwyvmtZVbdNhEMlEUVEnW.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:19:19', '2026-05-22 04:19:19'),
+(6, 1, 'file_ppt', 'skripsi/6/sidang/file_ppt/bU36hXwSezQWCJHI0RLKks24vk3W8MVLP3I5op6N.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:19:23', '2026-05-22 04:19:23');
 
 -- --------------------------------------------------------
 
@@ -2361,6 +2951,13 @@ CREATE TABLE `skripsi_sidang_registrations` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `skripsi_sidang_registrations`
+--
+
+INSERT INTO `skripsi_sidang_registrations` (`id`, `skripsi_submission_id`, `status`, `notes`, `admin_note`, `verified_by`, `submitted_at`, `verified_at`, `rejected_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 'verified', NULL, NULL, 1, '2026-05-22 04:19:26', '2026-05-22 04:20:04', NULL, '2026-05-22 04:18:40', '2026-05-22 04:20:04');
 
 -- --------------------------------------------------------
 
@@ -2385,6 +2982,13 @@ CREATE TABLE `skripsi_sidang_schedules` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `skripsi_sidang_schedules`
+--
+
+INSERT INTO `skripsi_sidang_schedules` (`id`, `skripsi_submission_id`, `sidang_registration_id`, `tanggal`, `waktu_mulai`, `waktu_selesai`, `ruangan_id`, `ruangan_manual`, `pembimbing_id`, `penguji_1_id`, `penguji_2_id`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '2026-05-22', '11:20:00', NULL, 15, NULL, 1, 10, 9, NULL, 1, '2026-05-22 04:20:29', '2026-05-22 04:20:29');
 
 -- --------------------------------------------------------
 
@@ -2414,6 +3018,13 @@ CREATE TABLE `skripsi_submissions` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `skripsi_submissions`
+--
+
+INSERT INTO `skripsi_submissions` (`id`, `mahasiswa_id`, `semester_id`, `judul`, `deskripsi_proposal`, `proposal_file_path`, `requested_supervisor_id`, `approved_supervisor_id`, `status`, `total_bimbingan`, `logbook_file_path`, `logbook_original_name`, `logbook_uploaded_at`, `eligible_for_sidang_at`, `revision_approved_at`, `admin_note`, `reviewed_by`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 6, NULL, 'Analisis Sentimen DOSEN Resek', NULL, NULL, 1, 1, 'THESIS_COMPLETED', 0, 'skripsi/6/logbook/GiK1oqITgclqTVJInEnSnpHu0XJBAE1xr42H2JCK.pdf', 'KRS_50421684_7.pdf', '2026-05-22 04:18:34', '2026-05-22 04:18:34', '2026-05-22 04:24:20', NULL, 1, '2026-05-22 04:09:35', '2026-05-22 04:24:20', NULL);
 
 -- --------------------------------------------------------
 
@@ -2535,35 +3146,117 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `created_at`, `updated_at`) VALUES
-(1, 'Admin STIH', 'admin@stih.ac.id', NULL, '$2y$12$dEezDkUi08kIUCtGHpWVJ.QYVIydW3vkyBA7TBF//2.pLclQyF/8q', NULL, 'admin', '2026-05-20 05:16:19', '2026-05-20 05:16:19'),
-(2, 'Dr. Ahmad Fauzi, S.H., M.H.', 'ahmad.fauzi@stih.ac.id', NULL, '$2y$12$KVqF3bQ2EsL7gojylV8Vs..42Kxvlg4yqTAJGKBmW1hTWMzAnWM46', NULL, 'dosen', '2026-05-20 05:16:19', '2026-05-20 05:16:19'),
-(3, 'Prof. Dr. Siti Nurjanah, S.H., M.H.', 'siti.nurjanah@stih.ac.id', NULL, '$2y$12$jBEEkIxhlqxOarT8YpoMD.kRJbwnOyKxyJnAJQGDZQbegTsTqeIw.', NULL, 'dosen', '2026-05-20 05:16:19', '2026-05-20 05:16:19'),
-(4, 'Dr. Budi Santoso, S.H., M.H.', 'budi.santoso@stih.ac.id', NULL, '$2y$12$lIfQ53o7usCKt/y1kbnFMO5BXHM3DMElQ1yIvrz0zKWd3Toyk7gG6', NULL, 'dosen', '2026-05-20 05:16:19', '2026-05-20 05:16:19'),
-(5, 'Andi Pratama', 'andipratama@student.stih.ac.id', NULL, '$2y$12$c2oWuZ.KKw.vmAN6g9U3kexXaAAIJ0X5BL.Ez1Z3w9sAjt5vsxfbi', NULL, 'mahasiswa', '2026-05-20 05:16:19', '2026-05-20 09:57:33'),
-(6, 'Dewi Lestari', 'dewilestari@student.stih.ac.id', NULL, '$2y$12$zCd1lvph..5lnv8OeDh5/uAa8BL3cgHUQ33Oa7Gyc3KRz/qe3DL5O', NULL, 'mahasiswa', '2026-05-20 05:16:20', '2026-05-20 08:00:41'),
-(7, 'Rizki Firmansyah', 'rizki.firmansyah@student.stih.ac.id', NULL, '$2y$12$NygPRyuhpaAwXFEmc6abrOTpw4aTir3PHRoi5uJqUSacdmezoH.x2', NULL, 'mahasiswa', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(8, 'Bapak Pratama', 'parent.pratama@stih.ac.id', NULL, '$2y$12$i.CQ.eIHlXu0YOnRAx9cLuHSwgLlzuon1osu10zC9zcCSG/5p6CLG', NULL, 'parent', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(9, 'Staf Keuangan', 'finance@stih.ac.id', '2026-05-20 05:16:20', '$2y$12$negmtMBG0ep0WyA19PvLHOEV3kMuqWqG9i/6ZDE9Y5.HiWCE5wFB.', NULL, 'finance', '2026-05-20 05:16:20', '2026-05-20 05:16:20'),
-(10, 'Ahmad Mahasiswa', 'student1@stih.ac.id', '2026-05-20 05:16:21', '$2y$12$DI0tK9TbHBIks0amMuipHeFpPn1heC3CPMGdeIRxBS6Rge21At1AK', NULL, 'student', '2026-05-20 05:16:21', '2026-05-20 05:16:21'),
-(11, 'Siti Mahasiswi', 'sitimahasiswi@student.stih.ac.id', '2026-05-20 05:16:21', '$2y$12$X0mDEfow18rE1dojBlbR8eQqBKX173AEbc.e2w0IPgIX2xf6yI7xq', NULL, 'student', '2026-05-20 05:16:21', '2026-05-20 07:59:41'),
-(12, 'Dr. R Muhamad Ibnu Mazjah, S.H., M.H.', '417017906@stihadhyaksa.ac.id', NULL, '$2y$12$v.A2lc4GRk5PyGbRt4F8e.Exe6xjRkD6hJ2Ug7xO/bOUbG97ffkaO', NULL, 'dosen', '2026-05-20 06:36:26', '2026-05-20 06:36:26'),
-(13, 'Dr. Armansyah, S.H., M.H.', '301067501@stihadhyaksa.ac.id', NULL, '$2y$12$FHbw//1pdsTl5BWEOjHkGOClxLUpa4LYwvAhS1X6/tscf.O6cg2jO', NULL, 'dosen', '2026-05-20 06:36:27', '2026-05-20 06:36:27'),
-(14, 'Dr. Mukhlis, S.H., M.H.', '3146747648130140@stihadhyaksa.ac.id', NULL, '$2y$12$2G/PvRWNG2Heoj1YV86tpeZlmUqcdppPhA2wdSFXXHMO.8psB/CWu', NULL, 'dosen', '2026-05-20 06:36:27', '2026-05-20 06:36:27'),
-(15, 'Dr. Joko Cahyono, SH., MH.', '714076601@stihadhyaksa.ac.id', NULL, '$2y$12$DP3IwZ6ZTpjqgMYQfAr.C.Ot2wl2SU7eFqSlSdkDKMXoZJY1zf9Xa', NULL, 'dosen', '2026-05-20 06:36:27', '2026-05-20 06:36:27'),
-(16, 'Sandi Yudha Prayoga, S.H., M.H.', '302129701@stihadhyaksa.ac.id', NULL, '$2y$12$EYS0Ng5B1QoTB4qWKlGvGeYZDW.6DlZASju37iTsGFqLicqLY5SSO', NULL, 'dosen', '2026-05-20 06:36:27', '2026-05-20 06:36:27'),
-(17, 'Adilla Meytiara Intan, S.H., LL.M.', '302059501@stihadhyaksa.ac.id', NULL, '$2y$12$4HwsJpbUwoxJLu7yz0NJ.uhOVKv1P7TaoaFkdz6jte5Tbg7GY1MDC', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
-(18, 'Adery Ardhan Saputro, S.H., LL.M.', '313089202@stihadhyaksa.ac.id', NULL, '$2y$12$2zpkP.tbyEzU97ryQT5x5Op7l.s5EPZOid.QeHRqNaXPzyEzjMiie', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
-(19, 'Dio Ashar Wicaksana, S.H., M.A.', '307089005@stihadhyaksa.ac.id', NULL, '$2y$12$N13FmT2JDZd4qqyBL0nVyOgTtJuU3P1sZ8sMmbfGCUoBMlwIj0yJy', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
-(20, 'Prof. Dr. Bambang Sugeng Rukmono, S.H.,M.M., M.H.', '8918290024@stihadhyaksa.ac.id', NULL, '$2y$12$rOrGWjlDt9iwgmGxZTo2dOw3kEchDmiXAUkw3sxirz7qwDaIeuYtK', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
-(21, 'Maydika Ramadani, S.H., M.H.', '3860765666130310@stihadhyaksa.ac.id', NULL, '$2y$12$LIS0bqcEABzqBkQROjhtK.UkfR1ONF3GJHs9p9ELqpDpcbRTkU7Mi', NULL, 'dosen', '2026-05-20 06:36:28', '2026-05-20 06:36:28'),
-(22, 'Raul Gindo cahyono, S.H., M.H.', '1956751652130120@stihadhyaksa.ac.id', NULL, '$2y$12$T7UaNgouE.qbHeAMXPVw2eU7IFxcPrSabjQR0TSjfblAOefkTpNIy', NULL, 'dosen', '2026-05-20 06:36:29', '2026-05-20 06:36:29'),
-(23, 'Muhammad Arbani, S.H., M.Kn.', '3345774675130210@stihadhyaksa.ac.id', NULL, '$2y$12$T9qfb7FvUOOJ2Q55AcEWWeU10vHHJygJinUTZrQTMvd5SmsBBm2QW', NULL, 'dosen', '2026-05-20 06:36:29', '2026-05-20 06:36:29'),
-(24, 'Muhammad Rizqi Alfarizi, S.H., LL.M.', '4434778679130070@stihadhyaksa.ac.id', NULL, '$2y$12$s7W0igebJJZPJfcmWDMIpe89APEg0w/.2uzIgN4m/fr/UG4nch59e', NULL, 'dosen', '2026-05-20 06:36:29', '2026-05-20 06:36:29'),
-(25, 'Amir Firmansyah, S.H. M.H', '7641763664130240@stihadhyaksa.ac.id', NULL, '$2y$12$HlC2vaQe4lwTYQWTkj85quuIZcd0/tF4teFOx9nW0qmfD0V4ogOSC', NULL, 'dosen', '2026-05-20 06:36:29', '2026-05-20 06:36:29'),
-(26, 'Akhmad Ikraam, S.H., M.H.', '2150767668137030@stihadhyaksa.ac.id', NULL, '$2y$12$BO8Nwpd8SJypEp2KWTc2UeyxAW0EFlZUTmNwwIJIcnTKspczw79Dy', NULL, 'dosen', '2026-05-20 06:36:30', '2026-05-20 06:36:30'),
-(27, 'Zul Karnen, S.S., M.Si.', '3454762663130160@stihadhyaksa.ac.id', NULL, '$2y$12$n6el99ZIFEKKbMF3JXnmkucCmRrHN.1dbNG7o3bNcd3bjxhcWJx/W', NULL, 'dosen', '2026-05-20 06:36:30', '2026-05-20 06:36:30'),
-(28, 'Dr. Rudi Pradisetia Sudirdja., S.H., M.H.', '3204070406910000@stihadhyaksa.ac.id', NULL, '$2y$12$ObF74w/TFTKTcQZfVht4V.Q5XA57i4R.QdGTBpEBuw4qVMXQVRnUS', NULL, 'dosen', '2026-05-20 06:36:30', '2026-05-20 06:36:30'),
-(29, 'Jojo', 'jojo@student.stih.ac.id', NULL, '$2y$12$ME3DeLMuL48ho5J5XkzWZ.vmp0NEJaD06MtjsRf54O4LICzhk3ocy', NULL, 'mahasiswa', '2026-05-20 06:56:46', '2026-05-20 08:10:18');
+(1, 'Admin STIH', 'admin@stih.ac.id', NULL, '$2y$12$q6K1WOZ2vx1YfzAeD7O1H.z4stFmwd53gDwUfbJFvGt99BB0LP9bC', NULL, 'admin', '2026-05-21 09:13:22', '2026-05-21 09:13:22'),
+(2, 'Dr. Ahmad Fauzi, S.H., M.H.', 'ahmad.fauzi@stih.ac.id', NULL, '$2y$12$JRh9gIOW4h9GKPBVXd.K0Oi4n2f.5RG5cJBZB4JZl3rAQ0hkkH.Fq', NULL, 'dosen', '2026-05-21 09:13:22', '2026-05-21 09:13:22'),
+(3, 'Prof. Dr. Siti Nurjanah, S.H., M.H.', 'siti.nurjanah@stih.ac.id', NULL, '$2y$12$rZccE/s3cXPB1wUuWXaHK.qsPEODw//XzBJ2efYPttYokhj81unNy', NULL, 'dosen', '2026-05-21 09:13:22', '2026-05-21 09:13:22'),
+(4, 'Dr. Budi Santoso, S.H., M.H.', 'budi.santoso@stih.ac.id', NULL, '$2y$12$B7/74U1QdY5QAOZXtiPIcOjRANZ2R/lCUJDWTnC/fHTuoyGIcmZKy', NULL, 'dosen', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(5, 'Andi Pratama', 'andipratama@student.stih.ac.id', NULL, '$2y$12$oaybSqdoWTHRqAMY4v8SvevXoSPe9X9j9E1/b8tabDRvA85ZlPI9G', NULL, 'mahasiswa', '2026-05-21 09:13:23', '2026-05-22 07:47:25'),
+(6, 'Dewi Lestari', 'dewi.lestari@student.stih.ac.id', NULL, '$2y$12$Ik5Osq/fpUwURC5MtoIN1.MpqHhSaneP3mnR1E6C0zCjYLsSb83zS', NULL, 'mahasiswa', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(7, 'Rizki Firmansyah', 'rizki.firmansyah@student.stih.ac.id', NULL, '$2y$12$MJ70HOcHIyYaELGpeKGMxOxHZeptTFhN0L1VQ8clhS7urkhEj0ohO', NULL, 'mahasiswa', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(8, 'Bapak Pratama', 'parent.pratama@stih.ac.id', NULL, '$2y$12$Cl1zxHZVfsOaA6tn8DlN.uhHXlJmSa1FEUxe9QPKGoFpByz2eZVx2', NULL, 'parent', '2026-05-21 09:13:23', '2026-05-21 09:13:23'),
+(9, 'Staf Keuangan', 'finance@stih.ac.id', '2026-05-21 09:13:24', '$2y$12$BI9eqPw4mF.UKoouxrz9.OB.lAa3qIN19EOmJAKxq2ZY3i/LYGfDa', NULL, 'finance', '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(10, 'Ahmad Mahasiswa', 'ahmadmahasiswa@student.stih.ac.id', '2026-05-21 09:13:24', '$2y$12$QK4AObUgSTRkbN/J3e68xuO.0sOuKrFfHmLwLvOOXaHYzjh6ZjILu', NULL, 'mahasiswa', '2026-05-21 09:13:24', '2026-05-21 10:03:10'),
+(11, 'Siti Mahasiswi', 'student2@stih.ac.id', '2026-05-21 09:13:24', '$2y$12$TmgztbJcRfDA6zENe.i87eewl6dCsKP2.fVFPqSOMJljK4f18s6bO', NULL, 'student', '2026-05-21 09:13:24', '2026-05-21 09:13:24'),
+(12, 'Dr. R Muhamad Ibnu Mazjah, S.H., M.H.', '417017906@stihadhyaksa.ac.id', NULL, '$2y$12$WKMUmpmLAvM65h2ibzyllONYBMecsSKLlnOB1jZ2RURcfOEKDyt5G', NULL, 'dosen', '2026-05-21 09:16:13', '2026-05-21 09:16:13'),
+(13, 'Dr. Armansyah, S.H., M.H.', '301067501@stihadhyaksa.ac.id', NULL, '$2y$12$Z5Md0T/dfo3ZnHqv2XVLjOAS.Sic8yPnFeQGtF6zt7zeGbTVekzF6', NULL, 'dosen', '2026-05-21 09:16:13', '2026-05-21 09:16:13'),
+(14, 'Dr. Mukhlis, S.H., M.H.', '3146747648130140@stihadhyaksa.ac.id', NULL, '$2y$12$1FnLZQqKuqA6dNPX2XiiHeaag3t1bjxfcmv3rKWBBkwg8UjYb4Ylm', NULL, 'dosen', '2026-05-21 09:16:13', '2026-05-21 09:16:13'),
+(15, 'Dr. Joko Cahyono, SH., MH.', '714076601@stihadhyaksa.ac.id', NULL, '$2y$12$0ivQ4kWDRl6ZK9s6fFpZC.p7hUxBvwtAZF4le5aU9KiFHHyUzBIgC', NULL, 'dosen', '2026-05-21 09:16:13', '2026-05-21 09:16:13'),
+(16, 'Sandi Yudha Prayoga, S.H., M.H.', '302129701@stihadhyaksa.ac.id', NULL, '$2y$12$3GPq3C503kYJ15JYVDNDP.Qv2jeBURd.B4Eim1NRadDlFc7UMgEmi', NULL, 'dosen', '2026-05-21 09:16:14', '2026-05-21 09:16:14'),
+(17, 'Adilla Meytiara Intan, S.H., LL.M.', '302059501@stihadhyaksa.ac.id', NULL, '$2y$12$M/GXHGAvpDj0GGwY.L0D5OnMG3uOFDCzSGxsliscyK.VOBuTHeZEK', NULL, 'dosen', '2026-05-21 09:16:14', '2026-05-21 09:16:14'),
+(18, 'Adery Ardhan Saputro, S.H., LL.M.', '313089202@stihadhyaksa.ac.id', NULL, '$2y$12$ApVA5RDVAPwgcJDXePc9g.H/6XV4OW6m5BW4lJ.sVZb0cVfX3nXrC', NULL, 'dosen', '2026-05-21 09:16:14', '2026-05-21 09:16:14'),
+(19, 'Dio Ashar Wicaksana, S.H., M.A.', '307089005@stihadhyaksa.ac.id', NULL, '$2y$12$C04i/niaFs.0A2120IRZYOKK/GbqvD6Ko.oA/AdxQVCi/6JfNqh4G', NULL, 'dosen', '2026-05-21 09:16:14', '2026-05-21 09:16:14'),
+(20, 'Prof. Dr. Bambang Sugeng Rukmono, S.H.,M.M., M.H.', '8918290024@stihadhyaksa.ac.id', NULL, '$2y$12$.1BIzpn0kEcHHaQzLm4BD.8L0RFi/EDlmXeBY.2Q7F5PwkiHr9qma', NULL, 'dosen', '2026-05-21 09:16:15', '2026-05-21 09:16:15'),
+(21, 'Maydika Ramadani, S.H., M.H.', '3860765666130310@stihadhyaksa.ac.id', NULL, '$2y$12$FhpT93m4HtEwPpQFMIVdcuNIzjk3TSCL2idzbqBbJFcejYW0HXZzy', NULL, 'dosen', '2026-05-21 09:16:15', '2026-05-21 09:16:15'),
+(22, 'Raul Gindo cahyono, S.H., M.H.', '1956751652130120@stihadhyaksa.ac.id', NULL, '$2y$12$dMe6/u3WHZCQAL6IdrgBoukiz36Lxnaqt8VpY7B0nv7KwbephyWge', NULL, 'dosen', '2026-05-21 09:16:15', '2026-05-21 09:16:15'),
+(23, 'Muhammad Arbani, S.H., M.Kn.', '3345774675130210@stihadhyaksa.ac.id', NULL, '$2y$12$Ew0R2cU8tvXgQfIGaRP6/ODKPfpkIxrk4bdTcWD155WhK1LH5.K1u', NULL, 'dosen', '2026-05-21 09:16:15', '2026-05-21 09:16:15'),
+(24, 'Muhammad Rizqi Alfarizi, S.H., LL.M.', '4434778679130070@stihadhyaksa.ac.id', NULL, '$2y$12$2lViImnfakDuqTLoUdXZfergOVcqF9n1Kef3gg7UqFnLz2UTZHp3.', NULL, 'dosen', '2026-05-21 09:16:15', '2026-05-21 09:16:15'),
+(25, 'Amir Firmansyah, S.H. M.H', '7641763664130240@stihadhyaksa.ac.id', NULL, '$2y$12$JCIOTTrWnbJjGVdkRrIpX.GwxEKayR9h9.Jbn8Km.2vMJfdDC2/RS', NULL, 'dosen', '2026-05-21 09:16:16', '2026-05-21 09:16:16'),
+(26, 'Akhmad Ikraam, S.H., M.H.', '2150767668137030@stihadhyaksa.ac.id', NULL, '$2y$12$ZZ5YGqavRkVGBP.wKSbs0OVqz4xgWiORRpWzQq7Jw3a7CdNQc.coy', NULL, 'dosen', '2026-05-21 09:16:16', '2026-05-21 09:16:16'),
+(27, 'Zul Karnen, S.S., M.Si.', '3454762663130160@stihadhyaksa.ac.id', NULL, '$2y$12$vl1Fdhmcvs2/4WGTAVKLXOVGpo4Yk8pIt9zOmpzGhUv7adMJSVq5O', NULL, 'dosen', '2026-05-21 09:16:16', '2026-05-21 09:16:16'),
+(28, 'Dr. Rudi Pradisetia Sudirdja., S.H., M.H.', '3204070406910000@stihadhyaksa.ac.id', NULL, '$2y$12$fFy8UE2ECoKLF9JLqPwbH.43zyUc6IniwlA3Xe4ueYp6KVV2gxzbi', NULL, 'dosen', '2026-05-21 09:16:16', '2026-05-21 09:16:16'),
+(29, 'Akbar', '2024001@parent.stih.ac.id', NULL, '$2y$12$nxE9KQ.ShxHni1pXz8DyXOgszhQgA5LUtoIV/AgITGDCssuWToLUW', NULL, 'parent', '2026-05-21 10:25:44', '2026-05-21 10:25:44'),
+(30, 'Jojo', 'jojo@student.stih.ac.id', NULL, '$2y$12$rDiq1F/ybcBqJb8ok7q3uexFmZqalkcryvzF3uQKVXjoDX.dJKVxq', NULL, 'mahasiswa', '2026-05-22 02:34:13', '2026-05-22 02:44:20');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wisuda_batches`
+--
+
+CREATE TABLE `wisuda_batches` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama_batch` varchar(255) NOT NULL,
+  `tanggal` date NOT NULL,
+  `waktu_mulai` time NOT NULL,
+  `lokasi` varchar(255) NOT NULL,
+  `catatan` text DEFAULT NULL,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `wisuda_batches`
+--
+
+INSERT INTO `wisuda_batches` (`id`, `nama_batch`, `tanggal`, `waktu_mulai`, `lokasi`, `catatan`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 'Wisuda 22 Mei 2026', '2026-05-22', '08:00:00', 'JICC', NULL, 1, '2026-05-22 02:23:32', '2026-05-22 02:23:32');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wisuda_documents`
+--
+
+CREATE TABLE `wisuda_documents` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `wisuda_registration_id` bigint(20) UNSIGNED NOT NULL,
+  `file_type` enum('surat_penyerahan_skripsi','penyerahan_buku','keterangan_turnitin','pas_foto') NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `original_name` varchar(255) NOT NULL,
+  `file_size` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `wisuda_documents`
+--
+
+INSERT INTO `wisuda_documents` (`id`, `wisuda_registration_id`, `file_type`, `file_path`, `original_name`, `file_size`, `created_at`, `updated_at`) VALUES
+(1, 1, 'surat_penyerahan_skripsi', 'wisuda/6/surat_penyerahan_skripsi/1ZErt2vwCwoa0yxckcwvFB3cZh1cIL03LpdFAgjf.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:26:30', '2026-05-22 04:26:30'),
+(2, 1, 'penyerahan_buku', 'wisuda/6/penyerahan_buku/RbTEi8e9ilhzwcHVd04zcAdNjSjyBd8CqTjC73Gz.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:26:34', '2026-05-22 04:26:34'),
+(3, 1, 'keterangan_turnitin', 'wisuda/6/keterangan_turnitin/UsU0ojLdF6Tb4E55lUHzTtudYFLeY0b3beEeTJDk.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:26:38', '2026-05-22 04:26:38'),
+(4, 1, 'pas_foto', 'wisuda/6/pas_foto/uNG0tVpVu0W6ntNFVEIIaNjfaBPjaIOpXpIc0OUT.pdf', 'KRS_50421684_7.pdf', 29213, '2026-05-22 04:26:43', '2026-05-22 04:26:43');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wisuda_registrations`
+--
+
+CREATE TABLE `wisuda_registrations` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mahasiswa_id` bigint(20) UNSIGNED NOT NULL,
+  `skripsi_submission_id` bigint(20) UNSIGNED NOT NULL,
+  `wisuda_batch_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `no_hp` varchar(255) DEFAULT NULL,
+  `email_aktif` varchar(255) DEFAULT NULL,
+  `status` enum('pending','approved','rejected','scheduled') NOT NULL DEFAULT 'pending',
+  `rejection_note` text DEFAULT NULL,
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `reviewed_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `wisuda_registrations`
+--
+
+INSERT INTO `wisuda_registrations` (`id`, `mahasiswa_id`, `skripsi_submission_id`, `wisuda_batch_id`, `no_hp`, `email_aktif`, `status`, `rejection_note`, `submitted_at`, `reviewed_at`, `reviewed_by`, `created_at`, `updated_at`) VALUES
+(1, 6, 1, 1, '82282228222', 'gregoriusjoel28@gmail.com', 'scheduled', NULL, '2026-05-22 04:26:50', '2026-05-22 04:28:35', 1, '2026-05-22 04:26:08', '2026-05-22 04:58:31');
 
 --
 -- Indexes for dumped tables
@@ -2739,10 +3432,10 @@ ALTER TABLE `installments`
 --
 ALTER TABLE `installment_requests`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `installment_requests_student_id_foreign` (`student_id`),
   ADD KEY `installment_requests_reviewed_by_foreign` (`reviewed_by`),
   ADD KEY `installment_requests_invoice_id_status_index` (`invoice_id`,`status`),
-  ADD KEY `installment_requests_status_index` (`status`);
+  ADD KEY `installment_requests_status_index` (`status`),
+  ADD KEY `installment_requests_student_id_foreign` (`student_id`);
 
 --
 -- Indexes for table `internships`
@@ -3267,6 +3960,30 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `users_email_unique` (`email`);
 
 --
+-- Indexes for table `wisuda_batches`
+--
+ALTER TABLE `wisuda_batches`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `wisuda_batches_created_by_foreign` (`created_by`);
+
+--
+-- Indexes for table `wisuda_documents`
+--
+ALTER TABLE `wisuda_documents`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `wisuda_documents_wisuda_registration_id_foreign` (`wisuda_registration_id`);
+
+--
+-- Indexes for table `wisuda_registrations`
+--
+ALTER TABLE `wisuda_registrations`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `wisuda_registrations_skripsi_submission_id_foreign` (`skripsi_submission_id`),
+  ADD KEY `wisuda_registrations_wisuda_batch_id_foreign` (`wisuda_batch_id`),
+  ADD KEY `wisuda_registrations_reviewed_by_foreign` (`reviewed_by`),
+  ADD KEY `wisuda_registrations_mahasiswa_id_status_index` (`mahasiswa_id`,`status`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -3274,7 +3991,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `academic_events`
 --
 ALTER TABLE `academic_events`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `activity_logs`
@@ -3292,7 +4009,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=287;
 
 --
 -- AUTO_INCREMENT for table `bobot_penilaian`
@@ -3322,7 +4039,7 @@ ALTER TABLE `dosen_attendances`
 -- AUTO_INCREMENT for table `dosen_availabilities`
 --
 ALTER TABLE `dosen_availabilities`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `dosen_availability_checks`
@@ -3334,25 +4051,25 @@ ALTER TABLE `dosen_availability_checks`
 -- AUTO_INCREMENT for table `dosen_mata_kuliah`
 --
 ALTER TABLE `dosen_mata_kuliah`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `dosen_pa`
 --
 ALTER TABLE `dosen_pa`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `email_blast_logs`
 --
 ALTER TABLE `email_blast_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `email_outboxes`
 --
 ALTER TABLE `email_outboxes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -3364,7 +4081,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `fakultas`
 --
 ALTER TABLE `fakultas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `import_logs`
@@ -3412,19 +4129,19 @@ ALTER TABLE `internship_revisions`
 -- AUTO_INCREMENT for table `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `jadwals`
 --
 ALTER TABLE `jadwals`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `jadwal_approvals`
 --
 ALTER TABLE `jadwal_approvals`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `jadwal_exceptions`
@@ -3436,13 +4153,13 @@ ALTER TABLE `jadwal_exceptions`
 -- AUTO_INCREMENT for table `jadwal_generate_logs`
 --
 ALTER TABLE `jadwal_generate_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `jadwal_proposals`
 --
 ALTER TABLE `jadwal_proposals`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `jadwal_reschedules`
@@ -3472,19 +4189,19 @@ ALTER TABLE `kategori_ruangans`
 -- AUTO_INCREMENT for table `kelas`
 --
 ALTER TABLE `kelas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `kelas_mata_kuliahs`
 --
 ALTER TABLE `kelas_mata_kuliahs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `kelas_perkuliahans`
 --
 ALTER TABLE `kelas_perkuliahans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `kelas_reschedules`
@@ -3496,13 +4213,13 @@ ALTER TABLE `kelas_reschedules`
 -- AUTO_INCREMENT for table `krs`
 --
 ALTER TABLE `krs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=137;
 
 --
 -- AUTO_INCREMENT for table `kuesioner_aktivasi`
 --
 ALTER TABLE `kuesioner_aktivasi`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `kuesioner_mahasiswa_baru`
@@ -3526,7 +4243,7 @@ ALTER TABLE `mata_kuliahs`
 -- AUTO_INCREMENT for table `mata_kuliah_semesters`
 --
 ALTER TABLE `mata_kuliah_semesters`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
 -- AUTO_INCREMENT for table `materis`
@@ -3538,19 +4255,19 @@ ALTER TABLE `materis`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=176;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=177;
 
 --
 -- AUTO_INCREMENT for table `nilai`
 --
 ALTER TABLE `nilai`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
 
 --
 -- AUTO_INCREMENT for table `parents`
 --
 ALTER TABLE `parents`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `payments`
@@ -3652,7 +4369,7 @@ ALTER TABLE `ruangans`
 -- AUTO_INCREMENT for table `semesters`
 --
 ALTER TABLE `semesters`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `skripsi_guidances`
@@ -3664,31 +4381,31 @@ ALTER TABLE `skripsi_guidances`
 -- AUTO_INCREMENT for table `skripsi_revisions`
 --
 ALTER TABLE `skripsi_revisions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `skripsi_sidang_files`
 --
 ALTER TABLE `skripsi_sidang_files`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `skripsi_sidang_registrations`
 --
 ALTER TABLE `skripsi_sidang_registrations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `skripsi_sidang_schedules`
 --
 ALTER TABLE `skripsi_sidang_schedules`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `skripsi_submissions`
 --
 ALTER TABLE `skripsi_submissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `students`
@@ -3724,7 +4441,25 @@ ALTER TABLE `uploads`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `wisuda_batches`
+--
+ALTER TABLE `wisuda_batches`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `wisuda_documents`
+--
+ALTER TABLE `wisuda_documents`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `wisuda_registrations`
+--
+ALTER TABLE `wisuda_registrations`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
@@ -3843,7 +4578,8 @@ ALTER TABLE `installments`
 --
 ALTER TABLE `installment_requests`
   ADD CONSTRAINT `installment_requests_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `installment_requests_reviewed_by_foreign` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `installment_requests_reviewed_by_foreign` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `installment_requests_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `internships`
@@ -4181,6 +4917,27 @@ ALTER TABLE `students`
 --
 ALTER TABLE `uploads`
   ADD CONSTRAINT `uploads_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `wisuda_batches`
+--
+ALTER TABLE `wisuda_batches`
+  ADD CONSTRAINT `wisuda_batches_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `wisuda_documents`
+--
+ALTER TABLE `wisuda_documents`
+  ADD CONSTRAINT `wisuda_documents_wisuda_registration_id_foreign` FOREIGN KEY (`wisuda_registration_id`) REFERENCES `wisuda_registrations` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `wisuda_registrations`
+--
+ALTER TABLE `wisuda_registrations`
+  ADD CONSTRAINT `wisuda_registrations_mahasiswa_id_foreign` FOREIGN KEY (`mahasiswa_id`) REFERENCES `mahasiswas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `wisuda_registrations_reviewed_by_foreign` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `wisuda_registrations_skripsi_submission_id_foreign` FOREIGN KEY (`skripsi_submission_id`) REFERENCES `skripsi_submissions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `wisuda_registrations_wisuda_batch_id_foreign` FOREIGN KEY (`wisuda_batch_id`) REFERENCES `wisuda_batches` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

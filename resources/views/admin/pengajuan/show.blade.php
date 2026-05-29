@@ -44,6 +44,7 @@
                                     @case('cuti') bg-orange-50 text-orange-700 @break
                                     @case('dispensasi') bg-purple-50 text-purple-700 @break
                                     @case('izin_penelitian') bg-teal-50 text-teal-700 @break
+                                    @case('bebas_keuangan') bg-teal-50 text-teal-700 @break
                                     @default bg-blue-50 text-blue-700
                                 @endswitch">
                                 <i class="fas
@@ -51,6 +52,7 @@
                                         @case('cuti') fa-pause @break
                                         @case('dispensasi') fa-calendar-times @break
                                         @case('izin_penelitian') fa-flask @break
+                                        @case('bebas_keuangan') fa-file-invoice-dollar @break
                                         @default fa-file-signature
                                     @endswitch"></i>
                                 {{ $pengajuan->jenis_label }}
@@ -226,7 +228,7 @@
             {{-- Sidebar --}}
             <div class="flex flex-col gap-6 h-full">
                 
-                {{-- Student Info --}}
+                {{-- Info Mahasiswa --}}
                 <div class="bg-white dark:bg-bg-card rounded-2xl shadow-sm border border-border-color overflow-hidden shrink-0">
                     <div class="px-6 py-4 bg-gray-50 border-b border-border-color">
                         <h2 class="font-bold text-text-primary">Data Mahasiswa</h2>

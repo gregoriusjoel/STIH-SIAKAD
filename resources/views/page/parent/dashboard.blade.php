@@ -78,7 +78,7 @@
                     </div>
                 </div>
 
-                <!-- Student Info Strip -->
+                <!-- Info Mahasiswa -->
                 <div class="mt-8 glass-strip rounded-2xl p-4 md:p-5">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                         <div class="flex items-center gap-4">

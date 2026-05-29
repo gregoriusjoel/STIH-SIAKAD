@@ -15,7 +15,7 @@
                         alt="Logo STIH">
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
-                    Student Site Absensi
+                    Portal Absensi Mahasiswa
                 </h3>
             </div>
 

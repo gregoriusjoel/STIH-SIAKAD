@@ -225,6 +225,26 @@ $missingByTab[$info['tab']]++;
                     </div>
                 </div>
             </div>
+
+            {{-- Actions (inside Akademik tab) --}}
+            <div class="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-end gap-3">
+                <a href="{{ route('mahasiswa.profil.index') }}"
+                    class="w-full sm:w-auto px-8 py-3 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#4B5563] text-sm font-bold rounded-xl transition-all hover:-translate-y-0.5 text-center">
+                    <i class="fas fa-times mr-2 font-medium"></i> Batal
+                </a>
+
+                @if(!$isLocked)
+                <button type="submit"
+                    class="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] hover:from-[#6D1029] hover:to-[#550c20] text-white text-sm font-bold rounded-xl shadow-lg shadow-maroon/20 transition-all hover:-translate-y-0.5 flex items-center justify-center">
+                    <i class="fas fa-save mr-2 font-medium"></i> Update Profil Mahasiswa
+                </button>
+                @else
+                <button type="submit"
+                    class="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] hover:from-[#6D1029] hover:to-[#550c20] text-white text-sm font-bold rounded-xl shadow-lg shadow-maroon/20 transition-all hover:-translate-y-0.5 flex items-center justify-center">
+                    <i class="fas fa-save mr-2 font-medium"></i> Update Profil Mahasiswa
+                </button>
+                @endif
+            </div>
         </div>
 
         {{-- Tab Content: Data Lanjutan --}}
@@ -984,30 +1004,42 @@ $missingByTab[$info['tab']]++;
             <div>
                 <div class="flex items-center gap-3 mb-6 pb-2 border-b border-gray-100">
                     <h3 class="text-[#1A1A1A] font-bold text-base tracking-tight">Data Asal Sekolah</h3>
-                    <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Previous Education</span>
+                    <span class="px-2 py-0.5 bg-gray-100 text-[#6B7280] text-[10px] font-bold rounded uppercase">Pendidikan Sebelumnya</span>
                 </div>
                 <div class="space-y-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4" x-data="{
+                        jenisSekolah: '{{ $mahasiswa->jenis_sekolah ?? '' }}',
+                        jurusanSekolah: '{{ $mahasiswa->jurusan_sekolah ?? '' }}',
+                        onJenisSekolahChange() {
+                            if (this.jenisSekolah === '1 - Umum' && this.jurusanSekolah === 'SMK') {
+                                this.jurusanSekolah = '';
+                            } else if (this.jenisSekolah === '2 - Kejuruan' && (this.jurusanSekolah === 'SMA' || this.jurusanSekolah === 'MA')) {
+                                this.jurusanSekolah = '';
+                            } else if (!this.jenisSekolah) {
+                                this.jurusanSekolah = '';
+                            }
+                        }
+                    }">
                         {{-- Jenis Sekolah --}}
                         <div>
                             <label class="block text-sm text-gray-600 font-medium mb-2">Jenis Sekolah</label>
-                            <select name="jenis_sekolah"
+                            <select name="jenis_sekolah" x-model="jenisSekolah" @change="onJenisSekolahChange()"
                                 class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
                                 <option value="">Pilih Jenis Sekolah</option>
-                                <option value="1 - Umum" {{ $mahasiswa->jenis_sekolah === '1 - Umum' ? 'selected' : '' }}>1 - Umum</option>
-                                <option value="2 - Kejuruan" {{ $mahasiswa->jenis_sekolah === '2 - Kejuruan' ? 'selected' : '' }}>2 - Kejuruan</option>
+                                <option value="1 - Umum">1 - Umum</option>
+                                <option value="2 - Kejuruan">2 - Kejuruan</option>
                             </select>
                         </div>
 
                         {{-- Jurusan --}}
                         <div>
                             <label class="block text-sm text-gray-600 font-medium mb-2">Jurusan</label>
-                            <select name="jurusan_sekolah"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                <option value="">Pilih Jurusan</option>
-                                @foreach(['SMA', 'SMK', 'MA'] as $j)
-                                <option value="{{ $j }}" {{ $mahasiswa->jurusan_sekolah === $j ? 'selected' : '' }}>{{ $j }}</option>
-                                @endforeach
+                            <select name="jurusan_sekolah" x-model="jurusanSekolah" :disabled="!jenisSekolah"
+                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                <option value="" x-text="jenisSekolah ? 'Pilih Jurusan' : 'Pilih jenis sekolah terlebih dahulu'"></option>
+                                <option value="SMA" x-show="jenisSekolah === '1 - Umum'">SMA</option>
+                                <option value="MA" x-show="jenisSekolah === '1 - Umum'">MA</option>
+                                <option value="SMK" x-show="jenisSekolah === '2 - Kejuruan'">SMK</option>
                             </select>
                         </div>
 
@@ -1040,6 +1072,26 @@ $missingByTab[$info['tab']]++;
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {{-- Actions (inside Data Lanjutan tab) --}}
+            <div class="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-end gap-3">
+                <a href="{{ route('mahasiswa.profil.index') }}"
+                    class="w-full sm:w-auto px-8 py-3 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#4B5563] text-sm font-bold rounded-xl transition-all hover:-translate-y-0.5 text-center">
+                    <i class="fas fa-times mr-2 font-medium"></i> Batal
+                </a>
+
+                @if(!$isLocked)
+                <button type="submit"
+                    class="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] hover:from-[#6D1029] hover:to-[#550c20] text-white text-sm font-bold rounded-xl shadow-lg shadow-maroon/20 transition-all hover:-translate-y-0.5 flex items-center justify-center">
+                    <i class="fas fa-save mr-2 font-medium"></i> Update Profil Mahasiswa
+                </button>
+                @else
+                <button type="submit"
+                    class="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] hover:from-[#6D1029] hover:to-[#550c20] text-white text-sm font-bold rounded-xl shadow-lg shadow-maroon/20 transition-all hover:-translate-y-0.5 flex items-center justify-center">
+                    <i class="fas fa-save mr-2 font-medium"></i> Update Profil Mahasiswa
+                </button>
+                @endif
             </div>
         </div>
         {{-- Tab Content: Orang Tua / Wali --}}
@@ -2468,7 +2520,7 @@ $missingByTab[$info['tab']]++;
             'desa': 'input[name="desa"]',
             'jenis_sekolah': 'select[name="jenis_sekolah"]',
             'jurusan_sekolah': 'select[name="jurusan_sekolah"]',
-            'tahun_lulus': 'input[name="tahun_lulus"]',
+            'tahun_lulus': 'select[name="tahun_lulus"]',
             'nilai_kelulusan': 'input[name="nilai_kelulusan"]',
             'file_ijazah': 'input[name="file_ijazah[]"]',
             'file_transkrip': 'input[name="file_transkrip[]"]',

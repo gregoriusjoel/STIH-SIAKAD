@@ -38,7 +38,7 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {{-- Left Sidebar: Student Info --}}
+        {{-- Left Sidebar: Info Mahasiswa --}}
         <div class="lg:col-span-4 space-y-6">
             {{-- Profile Card --}}
             <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">

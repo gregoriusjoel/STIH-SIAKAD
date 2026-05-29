@@ -28,7 +28,7 @@ class MahasiswaPaymentController extends Controller
         $student = auth()->user()->student;
 
         if (!$student) {
-            abort(403, 'Student profile not found');
+            abort(403, 'Profil mahasiswa tidak ditemukan');
         }
 
         // Get new invoices from payment system

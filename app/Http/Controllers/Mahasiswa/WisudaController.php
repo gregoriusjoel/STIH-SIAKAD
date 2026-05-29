@@ -38,6 +38,12 @@ class WisudaController extends Controller
     {
         $mahasiswa = $this->getMahasiswa();
 
+        $unpaidSemesters = $this->eligibility->getUnpaidSemesters($mahasiswa);
+        if (!empty($unpaidSemesters)) {
+            return redirect()->route('mahasiswa.wisuda.index')
+                ->with('error', 'Anda belum melunasi pembayaran uang kuliah pada semester: ' . implode(', ', $unpaidSemesters));
+        }
+
         if (! $this->eligibility->isEligible($mahasiswa)) {
             return redirect()->route('mahasiswa.wisuda.index')
                 ->with('error', 'Anda belum memenuhi syarat untuk mendaftar wisuda.');
@@ -56,6 +62,13 @@ class WisudaController extends Controller
     public function store(StoreWisudaRegistrationRequest $request)
     {
         $mahasiswa  = $this->getMahasiswa();
+
+        $unpaidSemesters = $this->eligibility->getUnpaidSemesters($mahasiswa);
+        if (!empty($unpaidSemesters)) {
+            return redirect()->route('mahasiswa.wisuda.index')
+                ->with('error', 'Pendaftaran gagal. Anda belum melunasi pembayaran uang kuliah pada semester: ' . implode(', ', $unpaidSemesters));
+        }
+
         $submission = $this->eligibility->getEligibleSubmission($mahasiswa);
 
         if (! $submission || $this->eligibility->hasActiveRegistration($mahasiswa)) {

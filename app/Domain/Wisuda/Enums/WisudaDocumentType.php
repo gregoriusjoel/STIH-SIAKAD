@@ -7,6 +7,7 @@ enum WisudaDocumentType: string
     case SURAT_PENYERAHAN_SKRIPSI = 'surat_penyerahan_skripsi';
     case PENYERAHAN_BUKU          = 'penyerahan_buku';
     case KETERANGAN_TURNITIN      = 'keterangan_turnitin';
+    case SURAT_BEBAS_KEUANGAN     = 'surat_bebas_keuangan';
     case PAS_FOTO                 = 'pas_foto';
 
     public function label(): string
@@ -15,6 +16,7 @@ enum WisudaDocumentType: string
             self::SURAT_PENYERAHAN_SKRIPSI => 'Surat Penyerahan Skripsi',
             self::PENYERAHAN_BUKU          => 'Bukti Penyerahan Buku',
             self::KETERANGAN_TURNITIN      => 'Keterangan Turnitin',
+            self::SURAT_BEBAS_KEUANGAN     => 'Surat Bebas Keuangan',
             self::PAS_FOTO                 => 'Pas Foto',
         };
     }

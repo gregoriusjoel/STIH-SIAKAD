@@ -41,7 +41,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {{-- Left Column: Request Profile --}}
         <div class="lg:col-span-2 space-y-8">
-            {{-- Student & Invoice Context --}}
+            {{-- Mahasiswa & Invoice Context --}}
             <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden p-8">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                     <div class="flex items-center gap-5">

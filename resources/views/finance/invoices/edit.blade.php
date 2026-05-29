@@ -47,7 +47,7 @@
             @endif
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {{-- Student Selection (Full Width in Grid) --}}
+                {{-- Pilih Mahasiswa (Full Width in Grid) --}}
                 <div class="md:col-span-2 space-y-2">
                     <label for="student_id" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
                         Mahasiswa @if(!$invoice->auto_generated_from_krs)<span class="text-red-500">*</span>@endif

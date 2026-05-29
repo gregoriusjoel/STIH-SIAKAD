@@ -29,7 +29,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {{-- Left: Payment Details & Actions (4 cols) --}}
         <div class="lg:col-span-4 space-y-8">
-            {{-- Student Summary --}}
+            {{-- Ringkasan Mahasiswa --}}
             <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8">
                 <div class="flex items-center gap-4 mb-8">
                     <div class="size-14 rounded-2xl bg-[#8B1538]/5 border border-[#8B1538]/10 flex items-center justify-center text-[#8B1538] text-xl">

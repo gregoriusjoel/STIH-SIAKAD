@@ -96,8 +96,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-3">
                                         @php
-                                            $iconMap = ['cuti'=>'fa-pause-circle text-orange-600', 'dispensasi'=>'fa-calendar-times text-purple-600', 'izin_penelitian'=>'fa-search text-green-600'];
-                                            $bgMap   = ['cuti'=>'bg-orange-100', 'dispensasi'=>'bg-purple-100', 'izin_penelitian'=>'bg-green-100'];
+                                            $iconMap = ['cuti'=>'fa-pause-circle text-orange-600', 'dispensasi'=>'fa-calendar-times text-purple-600', 'izin_penelitian'=>'fa-search text-green-600', 'bebas_keuangan'=>'fa-file-invoice-dollar text-teal-600'];
+                                            $bgMap   = ['cuti'=>'bg-orange-100', 'dispensasi'=>'bg-purple-100', 'izin_penelitian'=>'bg-green-100', 'bebas_keuangan'=>'bg-teal-100'];
                                             $icon    = $iconMap[$p->jenis] ?? 'fa-file-signature text-blue-600';
                                             $bg      = $bgMap[$p->jenis] ?? 'bg-blue-100';
                                         @endphp

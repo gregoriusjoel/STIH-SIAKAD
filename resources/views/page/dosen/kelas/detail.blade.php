@@ -239,7 +239,7 @@
                 </div>
             </div>
 
-            <!-- Total Students -->
+            <!-- Total Mahasiswa -->
             <div
                 class="bg-white dark:bg-[#1a1d2e] p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
                 <div

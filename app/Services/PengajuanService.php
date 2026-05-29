@@ -6,6 +6,7 @@ use App\Jobs\GenerateLetterJob;
 use App\Models\Pengajuan;
 use App\Models\PengajuanRevision;
 use App\Support\LetterTemplateConfig;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -124,17 +125,54 @@ class PengajuanService
      * Admin – Approve pengajuan (status → APPROVED).
      * Nomor surat di-generate otomatis.
      */
-    public function approve(Pengajuan $pengajuan, int $approverId, ?string $adminNote = null): void
+    public function approve(Pengajuan $pengajuan, int $approverId, ?string $adminNote = null, ?UploadedFile $fileSurat = null): void
     {
         $nomorSurat = $this->generateNomorSurat($pengajuan);
 
-        $pengajuan->update([
+        $updateData = [
             'status'       => Pengajuan::STATUS_APPROVED,
             'approved_by'  => $approverId,
             'approved_at'  => now(),
             'admin_note'   => $adminNote,
             'nomor_surat'  => $nomorSurat,
-        ]);
+        ];
+
+        if ($pengajuan->jenis === 'bebas_keuangan') {
+            // Temporarily set the properties for rendering in the PDF correctly
+            $pengajuan->approved_by = $approverId;
+            $pengajuan->approved_at = $updateData['approved_at'];
+            $pengajuan->nomor_surat = $nomorSurat;
+            $pengajuan->load(['mahasiswa.user', 'approver']);
+
+            $pdf = Pdf::loadView('pdf.bebas-keuangan', compact('pengajuan'))
+                ->setPaper('a4', 'portrait');
+
+            // Delete old file if exists
+            if ($pengajuan->file_surat) {
+                Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($pengajuan->file_surat))->delete($pengajuan->file_surat);
+            }
+
+            $targetFolder = 'pengajuan/approved/' . $pengajuan->mahasiswa->storage_folder;
+            $fileName = \Illuminate\Support\Str::uuid() . '.pdf';
+            $storagePath = $targetFolder . '/' . $fileName;
+            $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($storagePath);
+            
+            Storage::disk($resolvedDisk)->put($storagePath, $pdf->output());
+            $updateData['file_surat'] = $storagePath;
+        } elseif ($fileSurat) {
+            // Delete old file if exists
+            if ($pengajuan->file_surat) {
+                Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($pengajuan->file_surat))->delete($pengajuan->file_surat);
+            }
+
+            $targetFolder = 'pengajuan/approved/' . $pengajuan->mahasiswa->storage_folder;
+            $fileName = \Illuminate\Support\Str::uuid() . '.' . $fileSurat->getClientOriginalExtension();
+            $resolvedDisk = \App\Helpers\FileHelper::resolveDiskForPath($targetFolder . '/' . $fileName);
+            $path = $fileSurat->storeAs($targetFolder, $fileName, $resolvedDisk);
+            $updateData['file_surat'] = $path;
+        }
+
+        $pengajuan->update($updateData);
     }
 
     /**

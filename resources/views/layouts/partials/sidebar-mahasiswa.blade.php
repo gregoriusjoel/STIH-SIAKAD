@@ -12,7 +12,7 @@
                 STIH Adhyaksa
             </h1>
             <p class="text-white/70 text-[10px] font-medium tracking-wider uppercase">
-                Student Site
+                Mahasiswa Site
             </p>
         </div>
     </div>
