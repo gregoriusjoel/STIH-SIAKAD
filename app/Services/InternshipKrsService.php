@@ -69,11 +69,12 @@ class InternshipKrsService
 
                 if ($existingKrs) {
                     // Stamp the existing KRS as a conversion entry — keeps kelas_id intact
-                    // so the student remains visible in the dosen's class list.
+                    // so the student remains visible in the dosen't class list.
                     $existingKrs->update([
                         'is_internship_conversion' => true,
                         'internship_id'            => $internship->id,
                         'keterangan'               => 'Konversi Magang - ' . $internship->instansi,
+                        'tahun_ajaran'             => $activeSemester->tahun_ajaran,
                     ]);
                     continue;
                 }
@@ -89,7 +90,7 @@ class InternshipKrsService
                     'mata_kuliah_id'           => $mapping->mata_kuliah_id,
                     'kelas_mata_kuliah_id'     => $kelasMk?->id,
                     'kelas_id'                 => $kelasMk?->kelas_id ?? null,
-                    'semester_id'              => $activeSemester->id,
+                    'tahun_ajaran'             => $activeSemester->tahun_ajaran,
                     'status'                   => 'sudah submit',
                     'keterangan'               => 'Konversi Magang - ' . $internship->instansi,
                     'internship_id'            => $internship->id,

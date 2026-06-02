@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'dosen' => \App\Http\Middleware\DosenMiddleware::class,
             'parent.role' => \App\Http\Middleware\ParentMiddleware::class,
             'finance' => \App\Http\Middleware\FinanceMiddleware::class,
             'mahasiswa.status' => \App\Http\Middleware\CheckMahasiswaStatus::class,

@@ -258,7 +258,20 @@ class InternshipController extends Controller
     {
         $request->validate([
             'periode_mulai'      => 'required|date',
-            'periode_selesai'    => 'required|date|after:periode_mulai',
+            'periode_selesai'    => [
+                'required',
+                'date',
+                'after:periode_mulai',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->filled('periode_mulai')) {
+                        $start = \Carbon\Carbon::parse($request->periode_mulai);
+                        $end = \Carbon\Carbon::parse($value);
+                        if ($start->copy()->addMonths(6)->lt($end)) {
+                            $fail('Durasi magang maksimal adalah 6 bulan.');
+                        }
+                    }
+                }
+            ],
             'date_change_reason' => 'required|string|max:500',
         ]);
 

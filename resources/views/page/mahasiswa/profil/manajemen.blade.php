@@ -68,6 +68,79 @@ $missingByTab[$info['tab']]++;
 {{-- Global villages data - load once to prevent memory exhaustion --}}
 <script>
     window.villagesData = @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'district_code' => $v['district_code']])->toArray());
+
+    function customSelectWrapper(selectId) {
+        return {
+            open: false,
+            search: '',
+            selected: '',
+            selectedText: '',
+            disabled: false,
+            options: [],
+            init() {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+
+                // Sync initial state
+                this.syncState(select);
+
+                // Listen to select value changes
+                select.addEventListener('change', () => {
+                    this.syncState(select);
+                });
+
+                // Listen to select changes
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'disabled') {
+                            this.disabled = select.disabled;
+                        }
+                        if (mutation.type === 'childList') {
+                            this.syncState(select);
+                        }
+                    });
+                });
+                observer.observe(select, { attributes: true, childList: true });
+            },
+            syncState(select) {
+                this.disabled = select.disabled;
+                this.selected = select.value;
+                
+                const opts = [];
+                let foundText = 'Pilih...';
+                
+                // Set custom placeholder based on select options or attribute
+                const firstOpt = select.options[0];
+                if (firstOpt && !firstOpt.value) {
+                    foundText = firstOpt.textContent;
+                }
+
+                for (let i = 0; i < select.options.length; i++) {
+                    const opt = select.options[i];
+                    opts.push({ value: opt.value, text: opt.textContent });
+                    if (opt.value === select.value && opt.value !== '') {
+                        foundText = opt.textContent;
+                    }
+                }
+                this.options = opts;
+                this.selectedText = foundText;
+            },
+            get filteredOptions() {
+                const term = this.search.toLowerCase().trim();
+                const activeOptions = this.options.filter(opt => opt.value !== '');
+                if (!term) return activeOptions;
+                return activeOptions.filter(opt => opt.text.toLowerCase().includes(term));
+            },
+            selectOption(opt) {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                select.value = opt.value;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                this.open = false;
+                this.search = '';
+            }
+        };
+    }
 </script>
 
 <div class="bg-white rounded-lg shadow-sm p-8" x-data="{ 
@@ -277,34 +350,22 @@ $missingByTab[$info['tab']]++;
                         </div>
 
                         {{-- Provinsi --}}
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
-                            <select name="provinsi" id="provinsiSelect"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                <option value="">Pilih Provinsi</option>
-                                @foreach($provinces as $prov)
-                                <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <x-ui.searchable-select id="provinsiSelect" name="provinsi" label="Provinsi" placeholder="Cari provinsi...">
+                            <option value="">Pilih Provinsi</option>
+                            @foreach($provinces as $prov)
+                            <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                            @endforeach
+                        </x-ui.searchable-select>
 
                         {{-- Kota/Kabupaten --}}
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
-                            <select name="kota" id="kotaSelect"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                <option value="">Pilih Kota/Kabupaten</option>
-                            </select>
-                        </div>
+                        <x-ui.searchable-select id="kotaSelect" name="kota" label="Kota/Kabupaten" placeholder="Cari kota/kabupaten...">
+                            <option value="">Pilih Kota/Kabupaten</option>
+                        </x-ui.searchable-select>
 
                         {{-- Kecamatan --}}
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
-                            <select name="kecamatan" id="kecamatanSelect"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                <option value="">Pilih Kecamatan</option>
-                            </select>
-                        </div>
+                        <x-ui.searchable-select id="kecamatanSelect" name="kecamatan" label="Kecamatan" placeholder="Cari kecamatan...">
+                            <option value="">Pilih Kecamatan</option>
+                        </x-ui.searchable-select>
 
                         {{-- Desa/Kelurahan --}}
                         <div class="space-y-2">
@@ -406,14 +467,12 @@ $missingByTab[$info['tab']]++;
                                             return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                         },
                                         get filteredOptions() {
-                                            // Only show options when user types at least 2 characters
-                                            if (!this.search || this.search.trim().length < 2) return [];
                                             const term = this.search.toLowerCase().trim();
-                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                            if (!term) return this.options;
+                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term));
                                         },
                                         get showHint() {
-                                            if (this.noKecamatanSelected) return false;
-                                            return !this.search || this.search.trim().length < 2;
+                                            return false;
                                         },
                                         get showNoCityMessage() {
                                             return this.noKecamatanSelected;
@@ -576,34 +635,22 @@ $missingByTab[$info['tab']]++;
                         </div>
 
                         {{-- Provinsi --}}
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Provinsi</label>
-                            <select name="provinsi_ktp" id="provinsiKtpSelect"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                <option value="">Pilih Provinsi</option>
-                                @foreach($provinces as $prov)
-                                <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi_ktp ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <x-ui.searchable-select id="provinsiKtpSelect" name="provinsi_ktp" label="Provinsi" placeholder="Cari provinsi...">
+                            <option value="">Pilih Provinsi</option>
+                            @foreach($provinces as $prov)
+                            <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($mahasiswa->provinsi_ktp ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                            @endforeach
+                        </x-ui.searchable-select>
 
                         {{-- Kota/Kabupaten --}}
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kota/Kabupaten</label>
-                            <select name="kota_ktp" id="kotaKtpSelect"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                <option value="">Pilih Kota/Kabupaten</option>
-                            </select>
-                        </div>
+                        <x-ui.searchable-select id="kotaKtpSelect" name="kota_ktp" label="Kota/Kabupaten" placeholder="Cari kota/kabupaten...">
+                            <option value="">Pilih Kota/Kabupaten</option>
+                        </x-ui.searchable-select>
 
                         {{-- Kecamatan --}}
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-[#6B7280] uppercase tracking-wider">Kecamatan</label>
-                            <select name="kecamatan_ktp" id="kecamatanKtpSelect"
-                                class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                <option value="">Pilih Kecamatan</option>
-                            </select>
-                        </div>
+                        <x-ui.searchable-select id="kecamatanKtpSelect" name="kecamatan_ktp" label="Kecamatan" placeholder="Cari kecamatan...">
+                            <option value="">Pilih Kecamatan</option>
+                        </x-ui.searchable-select>
 
                         {{-- Desa/Kelurahan --}}
                         <div class="space-y-2">
@@ -705,14 +752,12 @@ $missingByTab[$info['tab']]++;
                                             return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                         },
                                         get filteredOptions() {
-                                            // Only show options when user types at least 2 characters
-                                            if (!this.search || this.search.trim().length < 2) return [];
                                             const term = this.search.toLowerCase().trim();
-                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                            if (!term) return this.options;
+                                            return this.options.filter(opt => opt.text.toLowerCase().includes(term));
                                         },
                                         get showHint() {
-                                            if (this.noKecamatanSelected) return false;
-                                            return !this.search || this.search.trim().length < 2;
+                                            return false;
                                         },
                                         get showNoCityMessage() {
                                             return this.noKecamatanSelected;
@@ -1260,34 +1305,22 @@ $missingByTab[$info['tab']]++;
                             </div>
 
                             {{-- Provinsi --}}
-                            <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Provinsi</label>
-                                <select name="propinsi_ayah" id="provinsiAyahSelect"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                    <option value="">Pilih Provinsi</option>
-                                    @foreach($provinces as $prov)
-                                    <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->propinsi_ayah ?? $parent->propinsi_ortu ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <x-ui.searchable-select id="provinsiAyahSelect" name="propinsi_ayah" label="Provinsi" placeholder="Cari provinsi..." containerClass="" labelClass="block text-sm text-gray-600 font-medium mb-2">
+                                <option value="">Pilih Provinsi</option>
+                                @foreach($provinces as $prov)
+                                <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->propinsi_ayah ?? $parent->propinsi_ortu ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                                @endforeach
+                            </x-ui.searchable-select>
 
                             {{-- Kota/Kabupaten --}}
-                            <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Kota/Kabupaten</label>
-                                <select name="kota_ayah" id="kotaAyahSelect"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                    <option value="">Pilih Kota/Kabupaten</option>
-                                </select>
-                            </div>
+                            <x-ui.searchable-select id="kotaAyahSelect" name="kota_ayah" label="Kota/Kabupaten" placeholder="Cari kota/kabupaten..." containerClass="" labelClass="block text-sm text-gray-600 font-medium mb-2">
+                                <option value="">Pilih Kota/Kabupaten</option>
+                            </x-ui.searchable-select>
 
                             {{-- Kecamatan --}}
-                            <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Kecamatan</label>
-                                <select name="kecamatan_ayah" id="kecamatanAyahSelect"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                    <option value="">Pilih Kecamatan</option>
-                                </select>
-                            </div>
+                            <x-ui.searchable-select id="kecamatanAyahSelect" name="kecamatan_ayah" label="Kecamatan" placeholder="Cari kecamatan..." containerClass="" labelClass="block text-sm text-gray-600 font-medium mb-2">
+                                <option value="">Pilih Kecamatan</option>
+                            </x-ui.searchable-select>
 
                             {{-- Desa/Kelurahan --}}
                             <div>
@@ -1362,13 +1395,12 @@ $missingByTab[$info['tab']]++;
                                                 return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                             },
                                             get filteredOptions() {
-                                                if (!this.search || this.search.trim().length < 2) return [];
                                                 const term = this.search.toLowerCase().trim();
-                                                return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                                if (!term) return this.options;
+                                                return this.options.filter(opt => opt.text.toLowerCase().includes(term));
                                             },
                                             get showHint() {
-                                                if (this.noKecamatanSelected) return false;
-                                                return !this.search || this.search.trim().length < 2;
+                                                return false;
                                             },
                                             get showNoCityMessage() {
                                                 return this.noKecamatanSelected;
@@ -1434,34 +1466,22 @@ $missingByTab[$info['tab']]++;
                             </div>
 
                             {{-- Provinsi --}}
-                            <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Provinsi</label>
-                                <select name="propinsi_ibu" id="provinsiIbuSelect"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                    <option value="">Pilih Provinsi</option>
-                                    @foreach($provinces as $prov)
-                                    <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->propinsi_ibu ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <x-ui.searchable-select id="provinsiIbuSelect" name="propinsi_ibu" label="Provinsi" placeholder="Cari provinsi..." containerClass="" labelClass="block text-sm text-gray-600 font-medium mb-2">
+                                <option value="">Pilih Provinsi</option>
+                                @foreach($provinces as $prov)
+                                <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->propinsi_ibu ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                                @endforeach
+                            </x-ui.searchable-select>
 
                             {{-- Kota/Kabupaten --}}
-                            <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Kota/Kabupaten</label>
-                                <select name="kota_ibu" id="kotaIbuSelect"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                    <option value="">Pilih Kota/Kabupaten</option>
-                                </select>
-                            </div>
+                            <x-ui.searchable-select id="kotaIbuSelect" name="kota_ibu" label="Kota/Kabupaten" placeholder="Cari kota/kabupaten..." containerClass="" labelClass="block text-sm text-gray-600 font-medium mb-2">
+                                <option value="">Pilih Kota/Kabupaten</option>
+                            </x-ui.searchable-select>
 
                             {{-- Kecamatan --}}
-                            <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Kecamatan</label>
-                                <select name="kecamatan_ibu" id="kecamatanIbuSelect"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                    <option value="">Pilih Kecamatan</option>
-                                </select>
-                            </div>
+                            <x-ui.searchable-select id="kecamatanIbuSelect" name="kecamatan_ibu" label="Kecamatan" placeholder="Cari kecamatan..." containerClass="" labelClass="block text-sm text-gray-600 font-medium mb-2">
+                                <option value="">Pilih Kecamatan</option>
+                            </x-ui.searchable-select>
 
                             {{-- Desa/Kelurahan --}}
                             <div>
@@ -1536,13 +1556,12 @@ $missingByTab[$info['tab']]++;
                                                 return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                             },
                                             get filteredOptions() {
-                                                if (!this.search || this.search.trim().length < 2) return [];
                                                 const term = this.search.toLowerCase().trim();
-                                                return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                                if (!term) return this.options;
+                                                return this.options.filter(opt => opt.text.toLowerCase().includes(term));
                                             },
                                             get showHint() {
-                                                if (this.noKecamatanSelected) return false;
-                                                return !this.search || this.search.trim().length < 2;
+                                                return false;
                                             },
                                             get showNoCityMessage() {
                                                 return this.noKecamatanSelected;
@@ -1681,34 +1700,22 @@ $missingByTab[$info['tab']]++;
                             </div>
 
                             {{-- Provinsi --}}
-                            <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Provinsi</label>
-                                <select name="provinsi_wali" id="provinsiWaliSelect"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white">
-                                    <option value="">Pilih Provinsi</option>
-                                    @foreach($provinces as $prov)
-                                    <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->provinsi_wali ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <x-ui.searchable-select id="provinsiWaliSelect" name="provinsi_wali" label="Provinsi" placeholder="Cari provinsi..." containerClass="" labelClass="block text-sm text-gray-600 font-medium mb-2">
+                                <option value="">Pilih Provinsi</option>
+                                @foreach($provinces as $prov)
+                                <option value="{{ $prov['name'] }}" data-code="{{ $prov['province_code'] }}" {{ ($parent->provinsi_wali ?? '') === $prov['name'] ? 'selected' : '' }}>{{ $prov['name'] }}</option>
+                                @endforeach
+                            </x-ui.searchable-select>
 
                             {{-- Kota/Kabupaten --}}
-                            <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Kota/Kabupaten</label>
-                                <select name="kota_wali" id="kotaWaliSelect"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                    <option value="">Pilih Kota/Kabupaten</option>
-                                </select>
-                            </div>
+                            <x-ui.searchable-select id="kotaWaliSelect" name="kota_wali" label="Kota/Kabupaten" placeholder="Cari kota/kabupaten..." containerClass="" labelClass="block text-sm text-gray-600 font-medium mb-2">
+                                <option value="">Pilih Kota/Kabupaten</option>
+                            </x-ui.searchable-select>
 
                             {{-- Kecamatan --}}
-                            <div>
-                                <label class="block text-sm text-gray-600 font-medium mb-2">Kecamatan</label>
-                                <select name="kecamatan_wali" id="kecamatanWaliSelect"
-                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium bg-white disabled:bg-gray-50 disabled:cursor-not-allowed">
-                                    <option value="">Pilih Kecamatan</option>
-                                </select>
-                            </div>
+                            <x-ui.searchable-select id="kecamatanWaliSelect" name="kecamatan_wali" label="Kecamatan" placeholder="Cari kecamatan..." containerClass="" labelClass="block text-sm text-gray-600 font-medium mb-2">
+                                <option value="">Pilih Kecamatan</option>
+                            </x-ui.searchable-select>
 
                             {{-- Desa/Kelurahan --}}
                             <div>
@@ -1802,13 +1809,12 @@ $missingByTab[$info['tab']]++;
                                                 return this.allOptions.filter(opt => opt.district_code === this.currentDistrictCode);
                                             },
                                             get filteredOptions() {
-                                                if (!this.search || this.search.trim().length < 2) return [];
                                                 const term = this.search.toLowerCase().trim();
-                                                return this.options.filter(opt => opt.text.toLowerCase().includes(term)).slice(0, 20);
+                                                if (!term) return this.options;
+                                                return this.options.filter(opt => opt.text.toLowerCase().includes(term));
                                             },
                                             get showHint() {
-                                                if (this.noKecamatanSelected) return false;
-                                                return !this.search || this.search.trim().length < 2;
+                                                return false;
                                             },
                                             get showNoCityMessage() {
                                                 return this.noKecamatanSelected;

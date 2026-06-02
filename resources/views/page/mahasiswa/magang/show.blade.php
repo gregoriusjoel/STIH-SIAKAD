@@ -133,14 +133,25 @@
                 </div>
             </div>
             <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[18px] text-teal-500">assignment</span>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-teal-500 uppercase tracking-widest mb-0.5">Tipe Program</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $internship->type?->name ?? 'Magang Berdampak (MBKM)' }}</p>
+                </div>
+            </div>
+            @if($internship->type && $internship->type->is_conversion)
+            <div class="flex items-start gap-3">
                 <div class="w-9 h-9 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center shrink-0">
                     <span class="material-symbols-outlined text-[18px] text-purple-400">library_books</span>
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-purple-400/70 uppercase tracking-widest mb-0.5">Total SKS Konversi</p>
-                    <p class="text-sm font-semibold text-gray-800">{{ $internship->total_mapped_sks }} SKS <span class="text-gray-400 font-normal">(maks 16)</span></p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $internship->total_mapped_sks }} SKS <span class="text-gray-400 font-normal">(maks {{ $internship->type->max_conversion_sks }})</span></p>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 

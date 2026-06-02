@@ -25,7 +25,9 @@ class InternshipController extends Controller
         $internships = $mahasiswa->internships()->with('semester', 'supervisorDosen.user')->latest()->get();
         $semesters   = Semester::orderByDesc('id')->get();
 
-        return view('page.mahasiswa.magang.index', compact('internships', 'semesters'));
+        $internshipTypes = \App\Models\InternshipType::where('is_active', true)->get();
+
+        return view('page.mahasiswa.magang.index', compact('internships', 'semesters', 'internshipTypes'));
     }
 
     /**
@@ -59,7 +61,8 @@ class InternshipController extends Controller
                 ->with('error', 'Anda sudah memiliki magang yang telah disetujui. Pengajuan baru tidak dapat dilakukan.');
         }
 
-        return view('page.mahasiswa.magang.create', compact('activeSemester', 'mataKuliahs', 'mahasiswa'));
+        $internshipTypes = \App\Models\InternshipType::where('is_active', true)->get();
+        return view('page.mahasiswa.magang.create', compact('activeSemester', 'mataKuliahs', 'mahasiswa', 'internshipTypes'));
     }
 
     /**
@@ -68,11 +71,25 @@ class InternshipController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'internship_type_id'     => 'required|exists:internship_types,id',
             'instansi'               => 'required|string|max:255',
             'alamat_instansi'        => 'required|string|max:500',
             'posisi'                 => 'nullable|string|max:255',
             'periode_mulai'          => 'required|date',
-            'periode_selesai'        => 'required|date|after:periode_mulai',
+            'periode_selesai'        => [
+                'required',
+                'date',
+                'after:periode_mulai',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->filled('periode_mulai')) {
+                        $start = \Carbon\Carbon::parse($request->periode_mulai);
+                        $end = \Carbon\Carbon::parse($value);
+                        if ($start->copy()->addMonths(6)->lt($end)) {
+                            $fail('Durasi magang maksimal adalah 6 bulan.');
+                        }
+                    }
+                }
+            ],
             'deskripsi'              => 'nullable|string|max:2000',
             'pembimbing_lapangan_nama'  => 'nullable|string|max:255',
             'pembimbing_lapangan_telp'  => ['nullable', 'string', 'regex:/^[0-9]{12,13}$/'],
@@ -112,13 +129,18 @@ class InternshipController extends Controller
                 ->withInput();
         }
 
-        $data = $request->only([
-            'instansi', 'alamat_instansi', 'posisi',
-            'periode_mulai', 'periode_selesai', 'deskripsi',
-            'pembimbing_lapangan_nama', 'pembimbing_lapangan_telp',
-        ]);
-        $data['semester_mahasiswa'] = $mahasiswa->semester;
-
+        $data = [
+            'internship_type_id'        => $request->internship_type_id,
+            'instansi'                  => $request->instansi,
+            'alamat_instansi'           => $request->alamat_instansi,
+            'posisi'                    => $request->posisi,
+            'periode_mulai'             => $request->periode_mulai,
+            'periode_selesai'           => $request->periode_selesai,
+            'deskripsi'                 => $request->deskripsi,
+            'pembimbing_lapangan_nama'  => $request->pembimbing_lapangan_nama,
+            'pembimbing_lapangan_phone' => $request->pembimbing_lapangan_telp,
+            'semester_mahasiswa'        => $mahasiswa->semester,
+        ];
 
         if ($request->hasFile('dokumen_pendukung')) {
             $targetFolder = 'documents/internship/dokumen/' . $mahasiswa->storage_folder;
@@ -156,7 +178,8 @@ class InternshipController extends Controller
         }
 
         $activeSemester = Semester::where('is_active', true)->first();
-        return view('page.mahasiswa.magang.edit', compact('internship', 'activeSemester'));
+        $internshipTypes = \App\Models\InternshipType::where('is_active', true)->get();
+        return view('page.mahasiswa.magang.edit', compact('internship', 'activeSemester', 'internshipTypes'));
     }
 
     /**
@@ -167,11 +190,25 @@ class InternshipController extends Controller
         $this->authorizeView($internship);
 
         $request->validate([
+            'internship_type_id'     => 'required|exists:internship_types,id',
             'instansi'               => 'required|string|max:255',
             'alamat_instansi'        => 'required|string|max:500',
             'posisi'                 => 'nullable|string|max:255',
             'periode_mulai'          => 'required|date',
-            'periode_selesai'        => 'required|date|after:periode_mulai',
+            'periode_selesai'        => [
+                'required',
+                'date',
+                'after:periode_mulai',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->filled('periode_mulai')) {
+                        $start = \Carbon\Carbon::parse($request->periode_mulai);
+                        $end = \Carbon\Carbon::parse($value);
+                        if ($start->copy()->addMonths(6)->lt($end)) {
+                            $fail('Durasi magang maksimal adalah 6 bulan.');
+                        }
+                    }
+                }
+            ],
             'deskripsi'              => 'nullable|string|max:2000',
             'pembimbing_lapangan_nama'  => 'nullable|string|max:255',
             'pembimbing_lapangan_telp'  => ['nullable', 'string', 'regex:/^[0-9]{12,13}$/'],
@@ -179,11 +216,19 @@ class InternshipController extends Controller
             'pembimbing_lapangan_telp.regex' => 'No. Telp Pembimbing harus terdiri dari 12 hingga 13 angka.',
         ]);
 
-        $this->workflow->updateData($internship, $request->only([
-            'instansi', 'alamat_instansi', 'posisi',
-            'periode_mulai', 'periode_selesai', 'deskripsi',
-            'pembimbing_lapangan_nama', 'pembimbing_lapangan_telp',
-        ]));
+        $data = [
+            'internship_type_id'        => $request->internship_type_id,
+            'instansi'                  => $request->instansi,
+            'alamat_instansi'           => $request->alamat_instansi,
+            'posisi'                    => $request->posisi,
+            'periode_mulai'             => $request->periode_mulai,
+            'periode_selesai'           => $request->periode_selesai,
+            'deskripsi'                 => $request->deskripsi,
+            'pembimbing_lapangan_nama'  => $request->pembimbing_lapangan_nama,
+            'pembimbing_lapangan_phone' => $request->pembimbing_lapangan_telp,
+        ];
+
+        $this->workflow->updateData($internship, $data);
 
         return redirect()->route('mahasiswa.magang.show', $internship)
             ->with('success', 'Data magang berhasil diperbarui.');
@@ -298,6 +343,8 @@ class InternshipController extends Controller
         $this->authorizeView($internship);
 
         $path = $internship->admin_signed_pdf_path ?? $internship->admin_final_pdf_path;
+        $nim  = $internship->mahasiswa?->nim ?? $internship->id;
+        $ext  = pathinfo($path, PATHINFO_EXTENSION) ?: 'pdf';
 
         return \Illuminate\Support\Facades\Storage::disk(\App\Helpers\FileHelper::resolveDiskForPath($path))->download(
             $path,

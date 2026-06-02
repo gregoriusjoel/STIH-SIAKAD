@@ -38,48 +38,60 @@ class InternshipGradingService
      * Input grades for all conversion courses of an internship.
      *
      * @param Internship $internship
-     * @param array $grades  Keyed by mata_kuliah_id: ['id' => ['nilai_akhir' => 85, 'grade' => 'A']]
+     * @param array $grades  Keyed by mata_kuliah_id or 'final_score': ['id' => ['nilai_akhir' => 85, 'grade' => 'A']]
      */
     public function inputGrades(Internship $internship, array $grades): void
     {
-        if (!in_array($internship->status, [Internship::STATUS_COMPLETED, Internship::STATUS_GRADED])) {
+        if (!in_array($internship->status, [Internship::STATUS_COMPLETED, Internship::STATUS_GRADED, Internship::STATUS_CLOSED])) {
             throw new \LogicException('Nilai hanya bisa diinput saat magang sudah selesai (completed).');
         }
 
-        DB::transaction(function () use ($internship, $grades) {
-            $krsEntries = Krs::where('internship_id', $internship->id)
-                ->where('is_internship_conversion', true)
-                ->get();
+        if ($internship->type && !$internship->type->is_conversion) {
+            // JALUR MANDIRI: Simpan nilai langsung ke record magang utama
+            $nilaiAkhir = (float)($grades['final_score']['nilai_akhir'] ?? 0);
+            $grade = $grades['final_score']['grade'] ?? $this->calculateGrade($nilaiAkhir);
 
-            foreach ($krsEntries as $krs) {
-                $mkId = $krs->mata_kuliah_id;
-                if (!isset($grades[$mkId])) continue;
+            $internship->update([
+                'final_score' => $nilaiAkhir,
+                'final_grade' => $grade,
+            ]);
+        } else {
+            // JALUR MBKM (Berdampak): Simpan nilai ke tabel Nilai / KHS
+            DB::transaction(function () use ($internship, $grades) {
+                $krsEntries = Krs::where('internship_id', $internship->id)
+                    ->where('is_internship_conversion', true)
+                    ->get();
 
-                $gradeData = $grades[$mkId];
-                $nilaiAkhir = (float)($gradeData['nilai_akhir'] ?? 0);
-                $grade = $gradeData['grade'] ?? $this->calculateGrade($nilaiAkhir);
-                $bobot = self::GRADE_MAP[$grade]['bobot'] ?? 0;
+                foreach ($krsEntries as $krs) {
+                    $mkId = $krs->mata_kuliah_id;
+                    if (!isset($grades[$mkId])) continue;
 
-                Nilai::updateOrCreate(
-                    ['krs_id' => $krs->id],
-                    [
-                        'kelas_id'          => $krs->kelas_id,
-                        'nilai_akhir'       => $nilaiAkhir,
-                        'grade'             => $grade,
-                        'bobot'             => $bobot,
-                        'is_published'      => true,
-                        'published_at'      => now(),
-                        // Set all component scores to the same value (internship doesn't have component breakdown)
-                        'nilai_partisipatif' => $nilaiAkhir,
-                        'nilai_proyek'       => $nilaiAkhir,
-                        'nilai_quiz'         => $nilaiAkhir,
-                        'nilai_tugas'        => $nilaiAkhir,
-                        'nilai_uts'          => $nilaiAkhir,
-                        'nilai_uas'          => $nilaiAkhir,
-                    ]
-                );
-            }
-        });
+                    $gradeData = $grades[$mkId];
+                    $nilaiAkhir = (float)($gradeData['nilai_akhir'] ?? 0);
+                    $grade = $gradeData['grade'] ?? $this->calculateGrade($nilaiAkhir);
+                    $bobot = self::GRADE_MAP[$grade]['bobot'] ?? 0;
+
+                    Nilai::updateOrCreate(
+                        ['krs_id' => $krs->id],
+                        [
+                            'kelas_id'          => $krs->kelas_id,
+                            'nilai_akhir'       => $nilaiAkhir,
+                            'grade'             => $grade,
+                            'bobot'             => $bobot,
+                            'is_published'      => true,
+                            'published_at'      => now(),
+                            // Set all component scores to the same value (internship doesn't have component breakdown)
+                            'nilai_partisipatif' => $nilaiAkhir,
+                            'nilai_proyek'       => $nilaiAkhir,
+                            'nilai_quiz'         => $nilaiAkhir,
+                            'nilai_tugas'        => $nilaiAkhir,
+                            'nilai_uts'          => $nilaiAkhir,
+                            'nilai_uas'          => $nilaiAkhir,
+                        ]
+                    );
+                }
+            });
+        }
 
         Log::info("InternshipGradingService: Grades input for internship #{$internship->id}.");
     }
@@ -153,6 +165,21 @@ class InternshipGradingService
      */
     public function getGradeSummary(Internship $internship): array
     {
+        if ($internship->type && !$internship->type->is_conversion) {
+            return [
+                [
+                    'mata_kuliah_id'   => null,
+                    'kode_mk'         => 'MANDIRI',
+                    'nama_mk'         => 'Nilai Akhir Magang Mandiri',
+                    'sks'             => 0,
+                    'nilai_akhir'     => $internship->final_score,
+                    'grade'           => $internship->final_grade,
+                    'bobot'           => $internship->final_grade ? (self::GRADE_MAP[$internship->final_grade]['bobot'] ?? null) : null,
+                    'is_published'    => $internship->final_score !== null,
+                ]
+            ];
+        }
+
         $mappings = $internship->courseMappings()->with('mataKuliah')->get();
         $krsEntries = Krs::where('internship_id', $internship->id)
             ->where('is_internship_conversion', true)

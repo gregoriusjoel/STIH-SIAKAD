@@ -46,6 +46,7 @@ class AktivasiController extends Controller
         KuesionerAktivasi::create([
             'mahasiswa_id' => $mahasiswa->id,
             'semester_id' => $semester->id ?? null,
+            'semester_mahasiswa' => $mahasiswa->semester,
             'fasilitas_kampus' => $request->fasilitas_kampus,
             'sistem_akademik' => $request->sistem_akademik,
             'kualitas_dosen' => $request->kualitas_dosen,

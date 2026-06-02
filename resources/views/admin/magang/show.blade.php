@@ -122,6 +122,15 @@
                     <p class="text-sm font-semibold text-gray-800">{{ $internship->semester_mahasiswa ?? $internship->mahasiswa->semester ?? '-' }}</p>
                 </div>
             </div>
+            <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[18px] text-teal-500">assignment</span>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-teal-500 uppercase tracking-widest mb-0.5">Tipe Program</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $internship->type?->name ?? 'Magang Berdampak (MBKM)' }}</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -231,7 +240,11 @@
                 </form>
             @endif
 
-            @if(in_array($internship->status, [\App\Models\Internship::STATUS_COMPLETED, \App\Models\Internship::STATUS_GRADED]))
+            @php
+                $canInputGrades = in_array($internship->status, [\App\Models\Internship::STATUS_COMPLETED, \App\Models\Internship::STATUS_GRADED])
+                    || ($internship->status === \App\Models\Internship::STATUS_CLOSED && $internship->type && !$internship->type->is_conversion);
+            @endphp
+            @if($canInputGrades)
                 <button @click="showGradeForm = !showGradeForm" class="inline-flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-purple-600/20">
                     <span class="material-symbols-outlined text-[16px]">grade</span> Input Nilai
                 </button>
@@ -246,9 +259,11 @@
                 </form>
             @endif
 
+            @if($internship->type && $internship->type->is_conversion)
             <button @click="showMappingForm = !showMappingForm" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition">
                 <span class="material-symbols-outlined text-[16px]">library_books</span> Edit MK Konversi
             </button>
+            @endif
 
             {{-- Ubah Tanggal Magang (selalu tersedia untuk admin jika status sesuai) --}}
             @if(in_array($internship->status, [
@@ -574,93 +589,147 @@
     </div>
     @endif
 
-    {{-- Grade Input Form with Realtime Calculator (Hidden when CLOSED) --}}
-    @if($internship->status !== \App\Models\Internship::STATUS_CLOSED)
+    @php
+        $showGradeFormWrapper = $internship->status !== \App\Models\Internship::STATUS_CLOSED
+            || ($internship->type && !$internship->type->is_conversion);
+    @endphp
+    {{-- Grade Input Form with Realtime Calculator (Hidden when CLOSED for MBKM) --}}
+    @if($showGradeFormWrapper)
     <div x-show="showGradeForm" x-cloak class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 mb-6">
-        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[16px]">grade</span> Input Nilai Konversi
-        </h3>
-        @if($gradeSummary)
-        <div x-data="realtimeGradeCalc()"
-             x-init="initFromServer({{ json_encode(array_map(fn($g) => ['mk_id' => $g['mata_kuliah_id'], 'sks' => (int)$g['sks'], 'nilai' => $g['nilai_akhir'] ?? ''], $gradeSummary)) }})">
-
+        @if($internship->type && !$internship->type->is_conversion)
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">grade</span> Input Nilai Magang Mandiri
+            </h3>
             <form method="POST" action="{{ route('admin.magang.grades', $internship) }}" class="space-y-4">
                 @csrf
-                <div class="overflow-x-auto rounded-2xl border border-gray-100">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Mata Kuliah</th>
-                                <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">SKS</th>
-                                <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nilai Akhir (0–100)</th>
-                                <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Grade</th>
-                                <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Bobot</th>
-                                <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Mutu</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-50">
-                            @foreach($gradeSummary as $i => $gs)
-                            <tr>
-                                <td class="px-5 py-3.5 font-semibold text-gray-800">{{ $gs['kode_mk'] }} – {{ $gs['nama_mk'] }}</td>
-                                <td class="px-5 py-3.5 text-center font-bold text-purple-600">{{ $gs['sks'] }}</td>
-                                <td class="px-5 py-3.5 text-center">
-                                    <input type="number"
-                                           name="grades[{{ $gs['mata_kuliah_id'] }}][nilai_akhir]"
-                                           x-model.number="rows[{{ $i }}].nilai"
-                                           @input="compute()"
-                                           value="{{ $gs['nilai_akhir'] ?? '' }}"
-                                           min="0" max="100" step="0.01"
-                                           class="w-28 rounded-xl border-gray-200 bg-gray-50 text-sm px-3 py-2 text-center focus:ring-4 focus:ring-purple-100 focus:border-purple-400">
-                                </td>
-                                <td class="px-5 py-3.5 text-center font-black"
-                                    :class="gradeClass(rows[{{ $i }}].grade)">
-                                    <span x-text="rows[{{ $i }}].grade || '{{ $gs['grade'] ?? '-' }}'"></span>
-                                </td>
-                                <td class="px-5 py-3.5 text-center text-gray-600 font-semibold">
-                                    <span x-text="rows[{{ $i }}].bobot !== null ? rows[{{ $i }}].bobot.toFixed(2) : '{{ $gs['bobot'] ?? '-' }}'"></span>
-                                </td>
-                                <td class="px-5 py-3.5 text-center text-blue-600 font-semibold">
-                                    <span x-text="rows[{{ $i }}].mutu !== null ? rows[{{ $i }}].mutu.toFixed(2) : '-'"></span>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100" x-data="{ 
+                    nilai: '{{ $internship->final_score }}',
+                    get grade() {
+                        const n = parseFloat(this.nilai);
+                        if (isNaN(n)) return '-';
+                        if (n >= 80) return 'A';
+                        if (n >= 76) return 'A-';
+                        if (n >= 72) return 'B+';
+                        if (n >= 68) return 'B';
+                        if (n >= 64) return 'B-';
+                        if (n >= 60) return 'C+';
+                        if (n >= 56) return 'C';
+                        if (n >= 45) return 'D';
+                        return 'E';
+                    }
+                }">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Nilai Akhir Magang Mandiri (0–100) <span class="text-red-500">*</span></label>
+                    <div class="flex items-center gap-6">
+                        <input type="number"
+                               name="grades[final_score][nilai_akhir]"
+                               x-model="nilai"
+                               min="0" max="100" step="0.01" required
+                               class="w-32 rounded-xl border-gray-200 bg-white text-lg font-bold px-4 py-3 text-center focus:ring-4 focus:ring-purple-100 focus:border-purple-400 shadow-sm">
+                        
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-semibold text-gray-500">Grade:</span>
+                            <span class="text-xl font-black text-purple-600" x-text="grade"></span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">
+                        Nilai akan dikonversi menjadi Grade otomatis secara realtime.
+                    </p>
                 </div>
-
-                {{-- Realtime IPS Preview --}}
-                <div class="grid grid-cols-3 gap-4 p-4 bg-purple-50/70 border border-purple-100 rounded-2xl">
-                    <div class="text-center">
-                        <p class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">Total SKS Konversi</p>
-                        <p class="text-2xl font-black text-purple-700" x-text="totalSks"></p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">Total Mutu</p>
-                        <p class="text-2xl font-black text-purple-700" x-text="totalMutu.toFixed(2)"></p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">IPS Konversi (Preview)</p>
-                        <p class="text-2xl font-black text-green-600" x-text="ips.toFixed(2)"></p>
-                    </div>
-                </div>
-                <p class="text-[11px] text-gray-400 text-center">
-                    Preview dihitung <em>client-side</em> secara realtime. Nilai baru di-publish ke mahasiswa saat Anda klik Simpan.
-                </p>
 
                 <div class="flex justify-end pt-2">
                     <button type="submit"
-                            onclick="return confirm('Simpan & publish nilai ke mahasiswa?')"
+                            onclick="return confirm('Simpan & publish nilai magang mandiri?')"
                             class="inline-flex items-center gap-2 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-xl shadow-sm shadow-purple-600/20 transition">
                         <span class="material-symbols-outlined text-[16px]">save</span> Simpan & Publish Nilai
                     </button>
                 </div>
             </form>
-        </div>
         @else
-            <div class="text-center py-10">
-                <span class="material-symbols-outlined text-4xl text-gray-200 mb-2 block">library_books</span>
-                <p class="text-sm text-gray-400 font-medium">Belum ada mapping MK konversi untuk diisi nilainya.</p>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">grade</span> Input Nilai Konversi
+            </h3>
+            @if($gradeSummary)
+            <div x-data="realtimeGradeCalc()"
+                 x-init="initFromServer({{ json_encode(array_map(fn($g) => ['mk_id' => $g['mata_kuliah_id'], 'sks' => (int)$g['sks'], 'nilai' => $g['nilai_akhir'] ?? ''], $gradeSummary)) }})">
+
+                <form method="POST" action="{{ route('admin.magang.grades', $internship) }}" class="space-y-4">
+                    @csrf
+                    <div class="overflow-x-auto rounded-2xl border border-gray-100">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Mata Kuliah</th>
+                                    <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">SKS</th>
+                                    <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nilai Akhir (0–100)</th>
+                                    <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Grade</th>
+                                    <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Bobot</th>
+                                    <th class="px-5 py-3.5 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Mutu</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50">
+                                @foreach($gradeSummary as $i => $gs)
+                                <tr>
+                                    <td class="px-5 py-3.5 font-semibold text-gray-800">{{ $gs['kode_mk'] }} – {{ $gs['nama_mk'] }}</td>
+                                    <td class="px-5 py-3.5 text-center font-bold text-purple-600">{{ $gs['sks'] }}</td>
+                                    <td class="px-5 py-3.5 text-center">
+                                        <input type="number"
+                                               name="grades[{{ $gs['mata_kuliah_id'] }}][nilai_akhir]"
+                                               x-model.number="rows[{{ $i }}].nilai"
+                                               @input="compute()"
+                                               value="{{ $gs['nilai_akhir'] ?? '' }}"
+                                               min="0" max="100" step="0.01"
+                                               class="w-28 rounded-xl border-gray-200 bg-gray-50 text-sm px-3 py-2 text-center focus:ring-4 focus:ring-purple-100 focus:border-purple-400">
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center font-black"
+                                        :class="gradeClass(rows[{{ $i }}].grade)">
+                                        <span x-text="rows[{{ $i }}].grade || '{{ $gs['grade'] ?? '-' }}'"></span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center text-gray-600 font-semibold">
+                                        <span x-text="rows[{{ $i }}].bobot !== null ? rows[{{ $i }}].bobot.toFixed(2) : '{{ $gs['bobot'] ?? '-' }}'"></span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center text-blue-600 font-semibold">
+                                        <span x-text="rows[{{ $i }}].mutu !== null ? rows[{{ $i }}].mutu.toFixed(2) : '-'"></span>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- Realtime IPS Preview --}}
+                    <div class="grid grid-cols-3 gap-4 p-4 bg-purple-50/70 border border-purple-100 rounded-2xl">
+                        <div class="text-center">
+                            <p class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">Total SKS Konversi</p>
+                            <p class="text-2xl font-black text-purple-700" x-text="totalSks"></p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">Total Mutu</p>
+                            <p class="text-2xl font-black text-purple-700" x-text="totalMutu.toFixed(2)"></p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">IPS Konversi (Preview)</p>
+                            <p class="text-2xl font-black text-green-600" x-text="ips.toFixed(2)"></p>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-gray-400 text-center">
+                        Preview dihitung <em>client-side</em> secara realtime. Nilai baru di-publish ke mahasiswa saat Anda klik Simpan.
+                    </p>
+
+                    <div class="flex justify-end pt-2">
+                        <button type="submit"
+                                onclick="return confirm('Simpan & publish nilai ke mahasiswa?')"
+                                class="inline-flex items-center gap-2 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-xl shadow-sm shadow-purple-600/20 transition">
+                            <span class="material-symbols-outlined text-[16px]">save</span> Simpan & Publish Nilai
+                        </button>
+                    </div>
+                </form>
             </div>
+            @else
+                <div class="text-center py-10">
+                    <span class="material-symbols-outlined text-4xl text-gray-200 mb-2 block">library_books</span>
+                    <p class="text-sm text-gray-400 font-medium">Belum ada mapping MK konversi untuk diisi nilainya.</p>
+                </div>
+            @endif
         @endif
     </div>
     @endif

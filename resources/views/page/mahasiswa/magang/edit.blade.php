@@ -4,6 +4,9 @@
 @section('page-title', 'Edit Data Magang')
 
 @section('content')
+@php
+    $selectedType = $internshipTypes->firstWhere('id', $internship->internship_type_id) ?? $internshipTypes->first();
+@endphp
 <div class="max-w-[1600px] mx-auto px-4 py-8">
 
     {{-- Back --}}
@@ -46,6 +49,19 @@
         <form method="POST" action="{{ route('mahasiswa.magang.update', $internship) }}" class="space-y-8">
             @csrf @method('PUT')
 
+            {{-- Tipe Magang (Read-Only Premium Card) --}}
+            <input type="hidden" name="internship_type_id" value="{{ $selectedType->id }}">
+            <div class="p-6 rounded-2xl bg-gradient-to-r {{ $selectedType->is_conversion ? 'from-purple-500/5 to-indigo-500/5 border-purple-100' : 'from-teal-500/5 to-emerald-500/5 border-teal-100' }} border-2 flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl {{ $selectedType->is_conversion ? 'bg-purple-100 text-purple-700' : 'bg-teal-100 text-teal-700' }} flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[24px]">{{ $selectedType->is_conversion ? 'school' : 'work' }}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[10px] font-bold {{ $selectedType->is_conversion ? 'text-purple-500' : 'text-teal-600' }} uppercase tracking-widest leading-none">Tipe Program</p>
+                    <h4 class="text-base font-black text-gray-900 mt-1.5 leading-none">{{ $selectedType->name }}</h4>
+                    <p class="text-xs text-gray-400 font-medium mt-2 leading-relaxed">{{ $selectedType->description }}</p>
+                </div>
+            </div>
+
             {{-- Instansi & Posisi --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
@@ -86,7 +102,11 @@
                         }
                     },
                     calcEnd() {
-                        const m = this.custom ? parseInt(this.customMonth) : this.durasi;
+                        let m = this.custom ? parseInt(this.customMonth) : this.durasi;
+                        if (this.custom && m > 6) {
+                            this.customMonth = 6;
+                            m = 6;
+                        }
                         if (!this.startDate || !m) return;
                         const d = new Date(this.startDate);
                         d.setMonth(d.getMonth() + m);
@@ -106,7 +126,7 @@
                 {{-- Duration quick-pick --}}
                 <div class="flex flex-wrap items-center gap-2 mb-5">
                     <span class="text-xs font-bold text-gray-400">Durasi:</span>
-                    <template x-for="opt in [3,6,9]" :key="opt">
+                    <template x-for="opt in [3,6]" :key="opt">
                         <button type="button"
                                 @click="setDurasi(opt)"
                                 :class="durasi === opt && !custom
@@ -121,10 +141,10 @@
                             :class="custom ? 'bg-[#8B1538] text-white border-[#8B1538]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#8B1538] hover:text-[#8B1538]'"
                             class="text-xs font-bold px-3 py-1.5 rounded-lg border transition">Lain-lain</button>
                     <div x-show="custom" x-cloak class="flex items-center gap-1.5">
-                        <input type="number" x-model.number="customMonth" @input="calcEnd()" min="1" max="60"
-                               placeholder="e.g. 12"
-                               class="w-20 rounded-lg border-gray-200 bg-white text-sm px-3 py-1.5 text-center focus:ring-4 focus:ring-red-100 focus:border-[#8B1538]">
-                        <span class="text-xs text-gray-400 font-medium">bulan</span>
+                        <input type="number" x-model.number="customMonth" @input="calcEnd()" min="1" max="6"
+                               placeholder="maks 6"
+                               class="w-28 rounded-lg border-gray-200 bg-white text-sm px-3 py-1.5 text-center focus:ring-4 focus:ring-red-100 focus:border-[#8B1538]">
+                        <span class="text-xs text-gray-400 font-medium">bulan (maks 6)</span>
                     </div>
                 </div>
 

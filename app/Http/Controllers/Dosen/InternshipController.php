@@ -77,6 +77,10 @@ class InternshipController extends Controller
         $dosen = Auth::user()->dosen;
         if (!$dosen || $internship->supervisor_dosen_id !== $dosen->id) abort(403);
 
+        if ($logbook->internship_id !== $internship->id) {
+            abort(404, 'Logbook tidak ditemukan untuk magang ini.');
+        }
+
         $request->validate([
             'catatan_dosen' => 'required|string|max:2000',
         ]);

@@ -55,7 +55,7 @@ Route::post('/absen/login', [App\Http\Controllers\Absen\LoginController::class, 
 Route::get('/absen/thank-you', [App\Http\Controllers\Absen\LoginController::class, 'thankYou'])->middleware('auth:mahasiswa_absen')->name('absen.thankyou');
 
 // Dosen / Lecturer Portal Routes
-Route::prefix('dosen')->name('dosen.')->where(['pertemuan' => '[a-z0-9:]+'])->group(function () {
+Route::prefix('dosen')->name('dosen.')->middleware(['auth', 'dosen'])->where(['pertemuan' => '[a-z0-9:]+'])->group(function () {
     Route::get('/dashboard', [LecturerController::class, 'dashboard'])->name('dashboard');
     
     // Profil Dosen Routes

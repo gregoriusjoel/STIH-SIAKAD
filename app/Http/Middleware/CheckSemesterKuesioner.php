@@ -52,9 +52,13 @@ class CheckSemesterKuesioner
             return $next($request);
         }
         
-        // Check if kuesioner already filled for this semester
+        // Check if kuesioner already filled for this semester and student's semester number
         $hasKuesioner = KuesionerAktivasi::where('mahasiswa_id', $mahasiswa->id)
             ->where('semester_id', $currentSemester->id)
+            ->where(function ($query) use ($mahasiswa) {
+                $query->where('semester_mahasiswa', $mahasiswa->semester)
+                    ->orWhereNull('semester_mahasiswa'); // fallback for migrated/existing entries
+            })
             ->exists();
         
         // If not filled and this is not the questionnaire page itself, redirect

@@ -12,6 +12,7 @@ class KuesionerAktivasi extends Model
     protected $fillable = [
         'mahasiswa_id',
         'semester_id',
+        'semester_mahasiswa',
         'fasilitas_kampus',
         'sistem_akademik',
         'kualitas_dosen',

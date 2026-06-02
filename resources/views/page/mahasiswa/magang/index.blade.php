@@ -19,7 +19,7 @@
         ->whereIn('status', $blockedStatuses)
         ->exists();
 @endphp
-<div class="px-4 py-6 max-w-[1600px] mx-auto space-y-6">
+<div class="px-4 py-6 max-w-[1600px] mx-auto space-y-6" x-data="{ showTypeModal: false, selectedType: '{{ $internshipTypes->first()?->id ?? '' }}' }">
 
     {{-- Premium Header Card --}}
     <div class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8 shadow-sm relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-6">
@@ -45,12 +45,12 @@
                 </div>
             @elseif($canApplyMagang)
                 <div class="shadow-lg shadow-[#8B1538]/10 rounded-xl">
-                    <a href="{{ route('mahasiswa.magang.create') }}"
+                    <button @click="showTypeModal = true"
                        class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#8B1538] to-[#6D1029] text-white rounded-xl font-bold transition-all hover:shadow-xl hover:shadow-red-900/30 overflow-hidden relative">
                         <span class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
                         <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">add_circle</span>
                         <span class="relative">Ajukan Magang</span>
-                    </a>
+                    </button>
                 </div>
             @else
                 <div class="inline-flex items-center gap-2 px-5 py-3 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl text-sm font-semibold cursor-not-allowed" title="Anda belum memenuhi syarat semester untuk mendaftar magang">
@@ -88,10 +88,10 @@
             </div>
             <h3 class="text-lg font-bold text-gray-800 mb-2">Belum Ada Pengajuan Magang</h3>
             <p class="text-gray-500 mb-6 max-w-md mx-auto text-sm">Anda belum memiliki riwayat pengajuan magang aktif. Silakan buat pengajuan baru untuk memulai proses magang Anda.</p>
-            <a href="{{ route('mahasiswa.magang.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20">
+            <button @click="showTypeModal = true" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20">
                 <span class="material-symbols-outlined text-lg">add</span>
                 Buat Pengajuan Pertama
-            </a>
+            </button>
         </div>
     @else
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -115,6 +115,11 @@
                             <p class="text-sm font-bold text-gray-500 mt-0.5 line-clamp-1">
                                 {{ $internship->posisi ?? 'Posisi belum ditentukan' }}
                             </p>
+                            <div class="mt-1.5">
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide {{ $internship->type && $internship->type->is_conversion ? 'bg-purple-100 text-purple-700 ring-1 ring-inset ring-purple-200' : 'bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-200' }}">
+                                    {{ $internship->type?->name ?? 'Magang Berdampak (MBKM)' }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     
@@ -153,5 +158,71 @@
             @endforeach
         </div>
     @endif
+
+    {{-- Modal Pilihan Tipe Magang --}}
+    <div x-show="showTypeModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" @click="showTypeModal = false"></div>
+
+        {{-- Content --}}
+        <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-lg p-8 z-10 border border-gray-100 dark:border-gray-700 overflow-hidden transform transition-all">
+            <!-- Decorative Accent -->
+            <div class="absolute top-0 right-0 -mt-8 -mr-8 w-28 h-28 bg-gradient-to-br from-[#8B1538]/10 to-transparent rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#8B1538]/5 border border-[#8B1538]/10 flex items-center justify-center text-[#8B1538]">
+                        <span class="material-symbols-outlined text-[22px]">assignment</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-gray-900 dark:text-white">Pilih Program Magang</h3>
+                        <p class="text-xs text-gray-400 font-medium">Tentukan tipe program magang yang ingin Anda ajukan</p>
+                    </div>
+                </div>
+                <button @click="showTypeModal = false" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                @foreach($internshipTypes as $type)
+                    <div @click="selectedType = '{{ $type->id }}'"
+                         :class="selectedType === '{{ $type->id }}'
+                            ? 'border-[#8B1538] bg-[#8B1538]/5 ring-2 ring-[#8B1538]/20'
+                            : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-red-200 hover:bg-red-50/20'"
+                         class="p-5 border rounded-2xl cursor-pointer transition-all duration-200 flex items-start gap-4 group">
+                        
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                             :class="selectedType === '{{ $type->id }}' ? 'bg-[#8B1538] text-white' : 'bg-gray-50 dark:bg-gray-700 text-gray-400 group-hover:text-[#8B1538] group-hover:bg-[#8B1538]/5'">
+                            <span class="material-symbols-outlined text-[20px]">{{ $type->is_conversion ? 'school' : 'work' }}</span>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#8B1538] transition-colors">{{ $type->name }}</h4>
+                                <div class="w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all"
+                                     :class="selectedType === '{{ $type->id }}' ? 'border-[#8B1538] bg-[#8B1538]' : 'border-gray-200'">
+                                    <div x-show="selectedType === '{{ $type->id }}'" class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 font-medium mt-1 leading-relaxed">{{ $type->description }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="flex gap-3 mt-8">
+                <button type="button" @click="showTypeModal = false"
+                        class="flex-1 px-5 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm font-bold text-gray-600 transition-colors text-center">
+                    Batal
+                </button>
+                <a :href="'{{ route('mahasiswa.magang.create') }}?internship_type_id=' + selectedType"
+                   :class="selectedType ? 'bg-[#8B1538] hover:bg-[#6D1029] text-white shadow-lg shadow-red-900/20' : 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none'"
+                   class="flex-1 px-5 py-3 rounded-xl text-sm font-bold transition-all text-center flex items-center justify-center gap-1.5">
+                    Lanjutkan <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Auditable;
 
 class Internship extends Model
 {
+    use Auditable;
+
     // ── Status constants (state machine) ──
     const STATUS_DRAFT                  = 'draft';
     const STATUS_SUBMITTED              = 'submitted';
@@ -33,11 +36,11 @@ class Internship extends Model
         self::STATUS_UNDER_REVIEW            => [self::STATUS_APPROVED, self::STATUS_REJECTED],
         self::STATUS_APPROVED                => [self::STATUS_SENT_TO_STUDENT],
         self::STATUS_SENT_TO_STUDENT         => [self::STATUS_SUPERVISOR_ASSIGNED],
-        self::STATUS_REJECTED                => [self::STATUS_SUBMITTED], // revise & resubmit
+        self::STATUS_REJECTED                => [self::STATUS_SUBMITTED, self::STATUS_UNDER_REVIEW], // revise & resubmit
         self::STATUS_SUPERVISOR_ASSIGNED     => [self::STATUS_ACCEPTANCE_LETTER_READY],
         self::STATUS_ACCEPTANCE_LETTER_READY => [self::STATUS_ONGOING],
         self::STATUS_ONGOING                 => [self::STATUS_COMPLETED],
-        self::STATUS_COMPLETED               => [self::STATUS_GRADED],
+        self::STATUS_COMPLETED               => [self::STATUS_GRADED, self::STATUS_CLOSED], // For Mandiri, it can directly close
         self::STATUS_GRADED                  => [self::STATUS_CLOSED],
         self::STATUS_CLOSED                  => [],
     ];
@@ -78,6 +81,7 @@ class Internship extends Model
 
     protected $fillable = [
         'mahasiswa_id',
+        'internship_type_id',
         'semester_id',
         'semester_mahasiswa',
         'instansi',
@@ -94,6 +98,8 @@ class Internship extends Model
         'supervisor_dosen_id',
         'supervisor_assigned_at',
         'converted_sks',
+        'final_score',
+        'final_grade',
         'request_letter_generated_path',
         'request_letter_signed_path',
         'acceptance_letter_path',
@@ -114,6 +120,7 @@ class Internship extends Model
     ];
 
     protected $casts = [
+        'internship_type_id'     => 'integer',
         'periode_mulai'          => 'date',
         'periode_selesai'        => 'date',
         'supervisor_assigned_at' => 'datetime',
@@ -122,10 +129,16 @@ class Internship extends Model
         'sent_to_student_at'     => 'datetime',
         'date_changed_at'        => 'datetime',
         'converted_sks'          => 'integer',
+        'final_score'            => 'float',
         'revision_no'            => 'integer',
     ];
 
     // ── Relationships ──
+
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(InternshipType::class, 'internship_type_id');
+    }
 
     public function mahasiswa(): BelongsTo
     {

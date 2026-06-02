@@ -93,7 +93,14 @@
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                         <td class="px-6 py-4 font-mono text-xs">{{ $i->mahasiswa?->nim ?? '-' }}</td>
                         <td class="px-6 py-4">{{ $i->mahasiswa?->user?->name ?? '-' }}</td>
-                        <td class="px-6 py-4">{{ $i->instansi }}</td>
+                        <td class="px-6 py-4">
+                            <div>{{ $i->instansi }}</div>
+                            <div class="mt-1">
+                                <span class="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide {{ $i->type && $i->type->is_conversion ? 'bg-purple-100 text-purple-700' : 'bg-teal-50 text-teal-700' }}">
+                                    {{ $i->type?->name ?? 'Magang Berdampak (MBKM)' }}
+                                </span>
+                            </div>
+                        </td>
                         <td class="px-6 py-4 text-xs">{{ $i->periode_mulai?->format('d/m/Y') }} – {{ $i->periode_selesai?->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 text-xs">{{ $i->supervisorDosen?->user?->name ?? '-' }}</td>
                         <td class="px-6 py-4">

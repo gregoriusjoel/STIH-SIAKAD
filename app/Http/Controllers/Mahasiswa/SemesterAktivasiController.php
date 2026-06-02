@@ -33,9 +33,10 @@ class SemesterAktivasiController extends Controller
                 ->with('error', 'Tidak ada semester aktif saat ini');
         }
         
-        // Check if already filled for this semester
+        // Check if already filled for this semester and student's semester number
         $existing = KuesionerAktivasi::where('mahasiswa_id', $mahasiswa->id)
             ->where('semester_id', $currentSemester->id)
+            ->where('semester_mahasiswa', $mahasiswa->semester)
             ->first();
         
         if ($existing) {
@@ -75,6 +76,7 @@ class SemesterAktivasiController extends Controller
         // Check again if already filled (prevent duplicate)
         $existing = KuesionerAktivasi::where('mahasiswa_id', $mahasiswa->id)
             ->where('semester_id', $currentSemester->id)
+            ->where('semester_mahasiswa', $mahasiswa->semester)
             ->first();
         
         if ($existing) {
@@ -85,6 +87,7 @@ class SemesterAktivasiController extends Controller
         KuesionerAktivasi::create([
             'mahasiswa_id' => $mahasiswa->id,
             'semester_id' => $currentSemester->id,
+            'semester_mahasiswa' => $mahasiswa->semester,
             'fasilitas_kampus' => $validated['fasilitas_kampus'],
             'sistem_akademik' => $validated['sistem_akademik'],
             'kualitas_dosen' => $validated['kualitas_dosen'],

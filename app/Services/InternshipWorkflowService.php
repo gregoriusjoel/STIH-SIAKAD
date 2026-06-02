@@ -325,11 +325,13 @@ class InternshipWorkflowService
     {
         $internship->transitionTo(Internship::STATUS_ONGOING);
 
-        // Auto-inject KRS konversi magang
-        try {
-            $this->krsService->injectConversionCourses($internship);
-        } catch (\Throwable $e) {
-            Log::warning("InternshipWorkflow: gagal inject KRS konversi untuk internship #{$internship->id}: " . $e->getMessage());
+        // Auto-inject KRS konversi magang if conversion is enabled
+        if ($internship->type && $internship->type->is_conversion) {
+            try {
+                $this->krsService->injectConversionCourses($internship);
+            } catch (\Throwable $e) {
+                Log::warning("InternshipWorkflow: gagal inject KRS konversi untuk internship #{$internship->id}: " . $e->getMessage());
+            }
         }
     }
 
@@ -338,7 +340,11 @@ class InternshipWorkflowService
      */
     public function markCompleted(Internship $internship): void
     {
-        $internship->transitionTo(Internship::STATUS_COMPLETED);
+        if ($internship->type && !$internship->type->is_conversion) {
+            $internship->transitionTo(Internship::STATUS_CLOSED);
+        } else {
+            $internship->transitionTo(Internship::STATUS_COMPLETED);
+        }
     }
 
     /**
@@ -346,7 +352,11 @@ class InternshipWorkflowService
      */
     public function markGraded(Internship $internship): void
     {
-        $internship->transitionTo(Internship::STATUS_GRADED);
+        if ($internship->type && !$internship->type->is_conversion) {
+            $internship->transitionTo(Internship::STATUS_CLOSED);
+        } else {
+            $internship->transitionTo(Internship::STATUS_GRADED);
+        }
     }
 
     /**

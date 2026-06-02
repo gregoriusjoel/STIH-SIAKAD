@@ -29,7 +29,12 @@ class InternshipAttendanceResolver
 
         $internship = $krs->internship ?? Internship::find($krs->internship_id);
 
-        return $internship && $internship->isOngoing();
+        return $internship && in_array($internship->status, [
+            Internship::STATUS_ONGOING,
+            Internship::STATUS_COMPLETED,
+            Internship::STATUS_GRADED,
+            Internship::STATUS_CLOSED
+        ]);
     }
 
     /**
