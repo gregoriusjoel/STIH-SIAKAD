@@ -9,10 +9,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 use App\Traits\Auditable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, Auditable;
+    use HasFactory, Notifiable, Auditable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -75,29 +76,34 @@ class User extends Authenticatable
         return $this->hasOne(ParentModel::class);
     }
 
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('super_admin') || $this->role === 'super_admin';
+    }
+
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->hasRole('akademik') || $this->hasRole('super_admin') || in_array($this->role, ['admin', 'akademik', 'super_admin']);
     }
 
     public function isDosen(): bool
     {
-        return $this->role === 'dosen';
+        return $this->hasRole('dosen') || $this->role === 'dosen';
     }
 
     public function isMahasiswa(): bool
     {
-        return $this->role === 'mahasiswa';
+        return $this->hasRole('mahasiswa') || in_array($this->role, ['mahasiswa', 'student']);
     }
 
     public function isParent(): bool
     {
-        return $this->role === 'parent';
+        return $this->hasRole('parents') || in_array($this->role, ['parent', 'parents']);
     }
 
     public function isFinance(): bool
     {
-        return $this->role === 'finance';
+        return $this->hasRole('keuangan') || in_array($this->role, ['finance', 'keuangan']);
     }
 
     /**

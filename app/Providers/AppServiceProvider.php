@@ -8,10 +8,14 @@ use App\Models\Invoice;
 use App\Models\PaymentProof;
 use App\Policies\InstallmentRequestPolicy;
 use App\Policies\InvoicePolicy;
+use App\Policies\InternshipPolicy;
 use App\Policies\PaymentProofPolicy;
 use App\Services\SchedulingLogService;
 use App\Services\ConflictCheckerService;
 use App\Services\RoomMatcherService;
+use App\Listeners\LogUserLogout;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -53,9 +57,17 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        // Global Bypass for Super Admin
+        Gate::before(function ($user, $ability) {
+            return $user->isSuperAdmin() ? true : null;
+        });
+
         // Register Payment System Policies
         Gate::policy(Invoice::class, InvoicePolicy::class);
         Gate::policy(InstallmentRequest::class, InstallmentRequestPolicy::class);
         Gate::policy(PaymentProof::class, PaymentProofPolicy::class);
+
+        // Audit Trail: Log user logout events
+        Event::listen(Logout::class, LogUserLogout::class);
     }
 }

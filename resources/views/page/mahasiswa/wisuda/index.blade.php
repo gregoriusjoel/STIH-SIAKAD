@@ -91,7 +91,7 @@
                     <span class="material-symbols-outlined text-2xl sm:text-[28px]">school</span>
                 </div>
                 <div>
-                    <h1 class="font-garamond text-xl sm:text-2xl font-bold text-gray-900 tracking-tight leading-tight">Pendaftaran Wisuda</h1>
+                    <h1 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight leading-tight">Pendaftaran Wisuda</h1>
                     <p class="text-xs text-gray-500 mt-0.5 font-medium">Pantau status pendaftaran dan jadwal wisuda Anda secara real-time.</p>
                 </div>
             </div>
@@ -145,7 +145,7 @@
                         <span class="material-symbols-outlined text-2xl">credit_card_off</span>
                     </div>
                     <div>
-                        <h3 class="font-garamond text-lg font-bold text-red-900">Pembayaran Belum Lengkap</h3>
+                        <h3 class="text-lg font-bold text-red-900">Pembayaran Belum Lengkap</h3>
                         <p class="text-sm text-red-700/95 mt-1 leading-relaxed">
                             Anda belum melunasi tagihan uang kuliah pada semester: <strong class="text-red-950 font-black">{{ implode(', ', $summary['unpaid_semesters']) }}</strong>.
                         </p>
@@ -166,7 +166,7 @@
                             <span class="material-symbols-outlined text-2xl">verified</span>
                         </div>
                         <div>
-                            <h3 class="font-garamond text-lg font-bold text-emerald-900">Anda Memenuhi Syarat Pendaftaran Wisuda</h3>
+                            <h3 class="text-lg font-bold text-emerald-900">Anda Memenuhi Syarat Pendaftaran Wisuda</h3>
                             <p class="text-sm text-emerald-700/80 mt-1 leading-relaxed max-w-xl">
                                 Skripsi Anda telah disetujui secara resmi dengan status <strong class="text-emerald-800">ACC Revisi</strong>. Silakan isi form pendaftaran wisuda untuk memulai proses pengunggahan berkas kelengkapan.
                             </p>
@@ -195,7 +195,7 @@
 
             {{-- Locked steps --}}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 class="font-garamond font-bold text-gray-700 mb-4 flex items-center gap-2 text-base">
+                <h2 class="font-bold text-gray-700 mb-4 flex items-center gap-2 text-base">
                     <span class="material-symbols-outlined text-[18px] text-gray-400">task_alt</span>
                     Syarat Kelulusan & Wisuda
                 </h2>
@@ -274,7 +274,7 @@
                                 <span class="material-symbols-outlined text-white text-2xl">celebration</span>
                             </div>
                             <div>
-                                <h2 class="font-garamond text-xl font-bold text-gray-900 leading-tight">Selamat! Jadwal Wisuda Anda Telah Rilis</h2>
+                                <h2 class="text-xl font-bold text-gray-900 leading-tight">Selamat! Jadwal Wisuda Anda Telah Rilis</h2>
                                 <p class="text-xs text-gray-500 mt-1 font-medium">Harap hadir tepat waktu sesuai jadwal dan lokasi yang tertera di bawah.</p>
                             </div>
                         </div>
@@ -475,7 +475,7 @@
         @if($status->value !== 'scheduled')
         <div class="space-y-4">
             <div class="flex items-center gap-3">
-                <h2 class="font-garamond text-base font-bold text-gray-800 flex items-center gap-2">
+                <h2 class="text-base font-bold text-gray-800 flex items-center gap-2">
                     <span class="material-symbols-outlined text-[20px] text-gray-400">folder_open</span>
                     Dokumen Kelengkapan Wisuda
                 </h2>
@@ -575,7 +575,7 @@
     ════════════════════════════════════════════════════════════════ --}}
     @if((!isset($status) || $status->value !== 'scheduled') && isset($summary['rejected_registrations']) && $summary['rejected_registrations']->isNotEmpty())
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-            <h3 class="font-garamond font-bold text-gray-800 text-base flex items-center gap-2">
+            <h3 class="font-bold text-gray-800 text-base flex items-center gap-2">
                 <span class="material-symbols-outlined text-[20px] text-red-400">history</span>
                 Riwayat Penolakan Pendaftaran
             </h3>

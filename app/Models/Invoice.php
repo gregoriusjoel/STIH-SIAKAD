@@ -104,4 +104,9 @@ class Invoice extends Model
             default => $this->status,
         };
     }
+
+    public function getInvoiceNumberAttribute(): string
+    {
+        return '#' . str_pad($this->id, 5, '0', STR_PAD_LEFT);
+    }
 }

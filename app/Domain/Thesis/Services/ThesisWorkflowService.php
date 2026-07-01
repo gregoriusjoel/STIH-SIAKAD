@@ -112,11 +112,19 @@ class ThesisWorkflowService
      */
     public function uploadLogbook(ThesisSubmission $submission): void
     {
+        $updates = [];
+
+        if ($submission->total_bimbingan < ThesisEligibilityService::MIN_BIMBINGAN) {
+            $updates['total_bimbingan'] = ThesisEligibilityService::MIN_BIMBINGAN;
+        }
+
         if ($submission->status === ThesisStatus::BIMBINGAN_ACTIVE) {
-            $submission->update([
-                'status'                => ThesisStatus::ELIGIBLE_SIDANG,
-                'eligible_for_sidang_at'=> now(),
-            ]);
+            $updates['status']                = ThesisStatus::ELIGIBLE_SIDANG;
+            $updates['eligible_for_sidang_at'] = now();
+        }
+
+        if (!empty($updates)) {
+            $submission->update($updates);
         }
         // If already ELIGIBLE_SIDANG or later, no status change needed (re-upload)
     }

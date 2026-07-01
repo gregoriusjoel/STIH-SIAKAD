@@ -7,6 +7,14 @@ use App\Models\User;
 
 class PaymentProofPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+        return null;
+    }
+
     /**
      * Determine if the user can view the payment proof.
      */

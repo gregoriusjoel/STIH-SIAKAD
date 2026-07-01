@@ -19,24 +19,29 @@ class SkripsiFileService
 {
     public const DISK = 's3';
 
+    public function getDisk(): string
+    {
+        return config('filesystems.default', 's3local');
+    }
+
     public function storeProposal(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/proposal", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->id}/proposal", $this->getDisk());
     }
 
     public function storeGuidanceFile(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/bimbingan", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->id}/bimbingan", $this->getDisk());
     }
 
     public function storeSidangFile(Mahasiswa $mahasiswa, string $type, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/sidang/{$type}", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->id}/sidang/{$type}", $this->getDisk());
     }
 
     public function storeRevision(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/revisi", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->id}/revisi", $this->getDisk());
     }
 
     public function processSidangFiles(
@@ -69,19 +74,19 @@ class SkripsiFileService
 
     public function delete(string $path): void
     {
-        if ($path && Storage::disk(self::DISK)->exists($path)) {
-            Storage::disk(self::DISK)->delete($path);
+        if ($path && Storage::disk($this->getDisk())->exists($path)) {
+            Storage::disk($this->getDisk())->delete($path);
         }
     }
 
     public function downloadResponse(string $path, string $name): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        return Storage::disk(self::DISK)->download($path, $name);
+        return Storage::disk($this->getDisk())->download($path, $name);
     }
 
     public function previewResponse(string $path): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $disk = Storage::disk(self::DISK);
+        $disk = Storage::disk($this->getDisk());
         $mimeType = $disk->mimeType($path) ?: 'application/octet-stream';
 
         return response()->stream(function () use ($disk, $path) {
@@ -100,7 +105,7 @@ class SkripsiFileService
 
     public function storeLogbook(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->id}/logbook", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->id}/logbook", $this->getDisk());
     }
 
     public function generateLogbookTemplate(SkripsiSubmission $submission): string

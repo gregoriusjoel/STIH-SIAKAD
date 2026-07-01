@@ -148,8 +148,11 @@
                                         <p class="text-[10px] text-gray-400 mt-1">PDF/DOCX Max 10MB</p>
                                     </div>
                                 </div>
-                                <input type="file" name="proposal_file" class="hidden" accept=".pdf,.doc,.docx">
+                                <input type="file" name="proposal_file" class="hidden" accept=".pdf,.doc,.docx" onchange="updateFileName(this)">
                             </label>
+                            @error('proposal_file')
+                            <p class="mt-1.5 text-xs text-red-500 px-1">{{ $message }}</p>
+                            @enderror
                             @if($submission?->proposal_file_path)
                             <div class="mt-2 flex items-center gap-1.5 px-2">
                                 <span class="material-symbols-outlined text-[14px] text-green-500">check_circle</span>
@@ -176,3 +179,27 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function updateFileName(input) {
+    const container = input.closest('label');
+    const pElements = container.querySelectorAll('p');
+    if (pElements.length >= 2) {
+        const titleText = pElements[0];
+        const subText = pElements[1];
+        if (input.files && input.files.length > 0) {
+            titleText.textContent = 'File Terpilih:';
+            subText.textContent = input.files[0].name;
+            subText.style.color = '#10B981';
+            subText.style.fontWeight = 'bold';
+        } else {
+            titleText.textContent = 'Pilih Berkas';
+            subText.textContent = 'PDF/DOCX Max 10MB';
+            subText.style.color = '';
+            subText.style.fontWeight = '';
+        }
+    }
+}
+</script>
+@endpush

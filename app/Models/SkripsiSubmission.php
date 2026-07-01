@@ -120,4 +120,9 @@ class SkripsiSubmission extends Model
     {
         return !empty($this->logbook_file_path);
     }
+
+    public function getKeteranganAttribute(): ?string
+    {
+        return $this->admin_note;
+    }
 }

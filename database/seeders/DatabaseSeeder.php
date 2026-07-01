@@ -209,5 +209,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PopulateMataKuliahTipsSeeder::class);
         $this->call(UpdateUserRolesSeeder::class);
         $this->call(JojoSkripsiSeeder::class);
+        $this->call(RoleAndPermissionSeeder::class);
     }
 }

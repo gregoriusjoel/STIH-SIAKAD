@@ -350,7 +350,72 @@ Route::get('/kelas-perkuliahan/options', [App\Http\Controllers\Admin\KelasPerkul
     ->middleware(['auth', 'admin'])
     ->name('kelas-perkuliahan.options');
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+Route::get('/admin/{any?}', function ($any = null) {
+    return redirect('/akademik/' . ($any ? $any : 'dashboard'));
+})->where('any', '.*');
+
+Route::prefix('super-admin')
+    ->name('super-admin.')
+    ->middleware(['auth', 'super-admin'])
+    ->group(function () {
+
+        // ── Dashboard Redirects ───────────────────────────────────────────
+        Route::redirect('/', '/super-admin/search');
+        Route::redirect('/dashboard', '/super-admin/search')->name('dashboard');
+        Route::get('/search', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'globalSearch'])->name('search');
+
+        // ── Student 360 ───────────────────────────────────────────────────
+        Route::get('/student-360', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'student360Search'])->name('student-360-search');
+        Route::get('/student-360/{mahasiswa}', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'student360'])->name('student-360');
+
+        // ── Impersonation ─────────────────────────────────────────────────
+        Route::get('/impersonation', [\App\Http\Controllers\SuperAdmin\ImpersonationController::class, 'center'])->name('impersonation-center');
+        Route::post('/impersonate/{user}', [\App\Http\Controllers\SuperAdmin\ImpersonationController::class, 'start'])->name('impersonate');
+        Route::post('/impersonate-stop', [\App\Http\Controllers\SuperAdmin\ImpersonationController::class, 'stop'])->name('impersonate-stop');
+
+        Route::prefix('override')->name('override.')->middleware('throttle:30,1')->group(function () {
+            // Dedicated Override Center Pages (GET)
+            Route::get('/academic', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'academicCenter'])->name('academic-center');
+            Route::get('/financial', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'financialCenter'])->name('financial-center');
+            Route::get('/internship', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'internshipCenter'])->name('internship-center');
+            Route::get('/thesis', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'thesisCenter'])->name('thesis-center');
+            Route::get('/graduation', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'graduationCenter'])->name('graduation-center');
+
+            // Override POST endpoints (existing + new)
+            Route::post('/nilai/{nilai}', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'overrideGrade'])->name('nilai');
+            Route::post('/krs/{krs}', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'overrideKrs'])->name('krs');
+            Route::post('/invoice/{invoice}', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'overrideInvoice'])->name('invoice');
+            Route::post('/internship/{internship}', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'overrideInternship'])->name('internship');
+            Route::post('/skripsi/{skripsi}', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'overrideSkripsi'])->name('skripsi');
+            Route::post('/wisuda/{wisuda}', [\App\Http\Controllers\SuperAdmin\OverrideController::class, 'overrideWisuda'])->name('wisuda');
+        });
+
+        // ── System & Access ───────────────────────────────────────────────
+        Route::get('/users', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'userManagement'])->name('user-management');
+        Route::get('/roles', [\App\Http\Controllers\SuperAdmin\RoleManagementController::class, 'index'])->name('role-management');
+        Route::post('/roles/{role}/permissions', [\App\Http\Controllers\SuperAdmin\RoleManagementController::class, 'updatePermissions'])->name('role-management.update-permissions');
+        Route::get('/permissions', [\App\Http\Controllers\SuperAdmin\PermissionManagementController::class, 'index'])->name('permission-management');
+        Route::post('/permissions/assign', [\App\Http\Controllers\SuperAdmin\PermissionManagementController::class, 'assign'])->name('permission-management.assign');
+        Route::post('/permissions/revoke', [\App\Http\Controllers\SuperAdmin\PermissionManagementController::class, 'revoke'])->name('permission-management.revoke');
+
+        // ── Monitoring ────────────────────────────────────────────────────
+        Route::get('/audit-logs', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'auditLogs'])->name('audit-logs');
+        Route::get('/audit-logs/export', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'exportAuditLogs'])->name('audit-logs.export');
+        Route::get('/activity-monitor', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'activityMonitor'])->name('activity-monitor');
+        Route::get('/system-health', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'systemHealth'])->name('system-health');
+
+        // ── System Configuration ──────────────────────────────────────────
+        Route::get('/config', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'systemConfig'])->name('system-config');
+        Route::post('/config', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'systemConfigUpdate'])->name('system-config.update');
+        Route::get('/semester', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'semesterConfig'])->name('semester-config');
+        Route::get('/backup', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'backup'])->name('backup');
+        Route::post('/backup/create', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'createBackup'])->name('backup.create');
+        Route::get('/backup/download/{filename}', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'downloadBackup'])->name('backup.download');
+        Route::post('/backup/delete/{filename}', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'deleteBackup'])->name('backup.delete');
+    });
+
+
+Route::prefix('akademik')->name('admin.')->middleware(['auth', 'akademik'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 

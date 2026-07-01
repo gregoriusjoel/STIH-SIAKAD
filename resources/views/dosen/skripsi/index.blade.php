@@ -83,10 +83,10 @@
                                     Terima
                                 </button>
                             </form>
-                            <form action="{{ route('dosen.skripsi.supervisor.reject', $skripsi) }}" method="POST" onsubmit="return collectRejectNote(this);" class="flex-1">
+                            <form action="{{ route('dosen.skripsi.supervisor.reject', $skripsi) }}" method="POST" class="flex-1">
                                 @csrf
                                 <input type="hidden" name="note" value="" />
-                                <button type="submit" class="w-full bg-white border border-red-100 text-red-600 hover:bg-red-50 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                                <button type="button" onclick="confirmRejection(this)" class="w-full bg-white border border-red-100 text-red-600 hover:bg-red-50 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
                                     <span class="material-symbols-outlined text-[18px]">close</span>
                                     Tolak
                                 </button>
@@ -249,15 +249,22 @@
 
 @push('scripts')
 <script>
-function collectRejectNote(form) {
-    var note = prompt('Silakan masukkan alasan penolakan (opsional):');
-    if (note === null) {
-        // user cancelled
-        return false;
-    }
-    var input = form.querySelector('input[name="note"]');
-    if (input) input.value = note;
-    return true;
+function confirmRejection(button) {
+    const form = button.closest('form');
+    swalPromptAsync('Tolak Permintaan Pembimbing', {
+        input: 'textarea',
+        inputPlaceholder: 'Tulis alasan penolakan di sini...',
+        confirmButtonText: 'Ya, Tolak',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const input = form.querySelector('input[name="note"]');
+            if (input) {
+                input.value = result.value || '';
+            }
+            form.submit();
+        }
+    });
 }
 </script>
 @endpush

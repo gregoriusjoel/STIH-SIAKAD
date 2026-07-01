@@ -20,25 +20,30 @@ class ThesisFileService
 {
     public const DISK = 's3';
 
+    public function getDisk(): string
+    {
+        return config('filesystems.default', 's3local');
+    }
+
 
     public function storeProposal(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->storage_folder}/proposal", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/proposal", $this->getDisk());
     }
 
     public function storeGuidanceFile(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->storage_folder}/bimbingan", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/bimbingan", $this->getDisk());
     }
 
     public function storeSidangFile(Mahasiswa $mahasiswa, string $type, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->storage_folder}/sidang/{$type}", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/sidang/{$type}", $this->getDisk());
     }
 
     public function storeRevision(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->storage_folder}/revisi", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/revisi", $this->getDisk());
     }
 
     /**
@@ -78,8 +83,8 @@ class ThesisFileService
      */
     public function delete(string $path): void
     {
-        if ($path && Storage::disk(self::DISK)->exists($path)) {
-            Storage::disk(self::DISK)->delete($path);
+        if ($path && Storage::disk($this->getDisk())->exists($path)) {
+            Storage::disk($this->getDisk())->delete($path);
         }
     }
 
@@ -88,7 +93,7 @@ class ThesisFileService
      */
     public function downloadResponse(string $path, string $name): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        return Storage::disk(self::DISK)->download($path, $name);
+        return Storage::disk($this->getDisk())->download($path, $name);
     }
 
     /**
@@ -96,7 +101,7 @@ class ThesisFileService
      */
     public function previewResponse(string $path): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $disk = Storage::disk(self::DISK);
+        $disk = Storage::disk($this->getDisk());
         $mimeType = $disk->mimeType($path) ?: 'application/octet-stream';
 
         return response()->stream(function () use ($disk, $path) {
@@ -118,7 +123,7 @@ class ThesisFileService
      */
     public function storeLogbook(Mahasiswa $mahasiswa, UploadedFile $file): string
     {
-        return $file->store("skripsi/{$mahasiswa->storage_folder}/logbook", self::DISK);
+        return $file->store("skripsi/{$mahasiswa->storage_folder}/logbook", $this->getDisk());
     }
 
     /**

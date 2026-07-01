@@ -7,12 +7,9 @@ use App\Models\User;
 
 class InternshipPolicy
 {
-    /**
-     * Admin can do everything.
-     */
     public function before(User $user, string $ability): ?bool
     {
-        if ($user->role === 'admin') {
+        if ($user->isSuperAdmin() || $user->isAdmin()) {
             return true;
         }
         return null;
@@ -20,7 +17,7 @@ class InternshipPolicy
 
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['mahasiswa', 'dosen', 'admin']);
+        return $user->isSuperAdmin() || $user->isAdmin() || in_array($user->role, ['mahasiswa', 'dosen']);
     }
 
     public function view(User $user, Internship $internship): bool

@@ -16,6 +16,7 @@ class AuditLog extends Model
         'actor_id',
         'actor_role',
         'action',
+        'module',
         'auditable_type',
         'auditable_id',
         'meta',
@@ -23,6 +24,7 @@ class AuditLog extends Model
         'after',
         'ip_address',
         'user_agent',
+        'session_id',
         'created_at',
     ];
 
@@ -32,6 +34,18 @@ class AuditLog extends Model
         'after' => 'array',
         'created_at' => 'datetime',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($log) {
+            if (empty($log->module) && !empty($log->action)) {
+                $log->module = static::deriveModuleFromAction($log->action);
+            }
+            if (empty($log->session_id) && request()->hasSession()) {
+                $log->session_id = request()->session()->getId();
+            }
+        });
+    }
 
     public function actor(): BelongsTo
     {
@@ -64,7 +78,51 @@ class AuditLog extends Model
     }
 
     /**
-     * Resolve actor role from auth guard
+     * Derive module from action name
+     */
+    public static function deriveModuleFromAction(string $action): string
+    {
+        $action = strtolower($action);
+        
+        if (str_contains($action, 'login') || str_contains($action, 'logout') || str_contains($action, 'impersonat')) {
+            return 'auth';
+        }
+        
+        if (str_starts_with($action, 'system.') || str_contains($action, 'backup') || str_contains($action, 'config')) {
+            return 'system';
+        }
+        
+        if (str_contains($action, 'krs') || str_contains($action, 'nilai') || str_contains($action, 'grade') || str_contains($action, 'academic') || str_contains($action, 'matakuliah') || str_contains($action, 'kelas')) {
+            return 'akademik';
+        }
+        
+        if (str_contains($action, 'finance') || str_contains($action, 'invoice') || str_contains($action, 'payment') || str_contains($action, 'tagihan') || str_contains($action, 'pembayaran')) {
+            return 'keuangan';
+        }
+        
+        if (str_contains($action, 'internship') || str_contains($action, 'magang')) {
+            return 'magang';
+        }
+        
+        if (str_contains($action, 'skripsi') || str_contains($action, 'thesis') || str_contains($action, 'proposal')) {
+            return 'skripsi';
+        }
+        
+        if (str_contains($action, 'wisuda') || str_contains($action, 'graduation')) {
+            return 'wisuda';
+        }
+        
+        if (str_contains($action, 'user') || str_contains($action, 'role') || str_contains($action, 'permission')) {
+            return 'system';
+        }
+        
+        return 'system';
+    }
+
+    /**
+     * Resolve actor role from auth guard.
+     * IMPORTANT: super_admin MUST be checked before isAdmin()
+     * because isSuperAdmin() is a subset of isAdmin().
      */
     protected static function resolveActorRole(): string
     {
@@ -74,8 +132,17 @@ class AuditLog extends Model
 
         $user = auth()->user();
 
+        // Check super_admin FIRST — isSuperAdmin() ⊂ isAdmin()
+        if ($user->isSuperAdmin()) {
+            return 'super_admin';
+        }
+
         if ($user->isAdmin()) {
-            return 'admin';
+            return 'akademik';
+        }
+
+        if ($user->isFinance()) {
+            return 'keuangan';
         }
 
         if ($user->isDosen()) {
@@ -87,7 +154,7 @@ class AuditLog extends Model
         }
 
         if ($user->isParent()) {
-            return 'parent';
+            return 'parents';
         }
 
         return 'user';

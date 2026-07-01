@@ -7,6 +7,14 @@ use App\Models\User;
 
 class InvoicePolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+        return null;
+    }
+
     /**
      * Determine if the user can view any invoices.
      */

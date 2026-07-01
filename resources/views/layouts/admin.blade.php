@@ -93,6 +93,32 @@
             color: #ffffff;
         }
 
+        /* Super Admin Header Style */
+        .header-super {
+            background-color: #1e293b;
+            color: #f8fafc;
+            border-bottom: 1px solid #334155;
+            box-shadow: none;
+        }
+
+        .header-super .breadcrumb {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .header-super .breadcrumb .muted {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .header-super .search-input {
+            background: #0f172a;
+            color: #f8fafc;
+            border-color: #334155;
+        }
+
+        .header-super .user-name {
+            color: #ffffff;
+        }
+
         /* Header tweaks */
         .top-badge {
             background: linear-gradient(90deg, #ff7b7b, #b22222);
@@ -247,12 +273,16 @@
 
     <div class="flex h-screen overflow-hidden relative">
         <!-- Sidebar -->
-        @include('admin.sidebar-admin')
+        @if(auth()->check() && auth()->user()->isSuperAdmin())
+            @include('super-admin.sidebar')
+        @else
+            @include('admin.sidebar-admin')
+        @endif
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden w-full">
             <!-- Top Navbar -->
-            <header class="header-maroon relative z-40 overflow-visible">
+            <header class="{{ auth()->check() && auth()->user()->isSuperAdmin() ? 'header-super' : 'header-maroon' }} relative z-40 overflow-visible">
                 <div class="admin-topbar-row flex items-center justify-between px-6">
                     <div class="flex items-center gap-4 min-h-11">
                         <button class="text-white md:hidden focus:outline-none" id="sidebar-toggle">

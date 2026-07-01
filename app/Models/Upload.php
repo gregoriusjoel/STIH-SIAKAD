@@ -49,7 +49,7 @@ class Upload extends Model
      */
     public function getUrlAttribute(): string
     {
-        return Storage::disk($this->disk ?? 's3')->url($this->file_path);
+        return Storage::disk($this->disk ?? config('filesystems.default', 's3local'))->url($this->file_path);
     }
 
     /**
@@ -80,7 +80,7 @@ class Upload extends Model
 
         static::deleting(function (Upload $upload) {
             if ($upload->file_path) {
-                Storage::disk($upload->disk ?? 's3')->delete($upload->file_path);
+                Storage::disk($upload->disk ?? config('filesystems.default', 's3local'))->delete($upload->file_path);
             }
         });
     }

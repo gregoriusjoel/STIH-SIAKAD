@@ -94,11 +94,19 @@ class SkripsiWorkflowService
 
     public function uploadLogbook(SkripsiSubmission $submission): void
     {
+        $updates = [];
+
+        if ($submission->total_bimbingan < SkripsiEligibilityService::MIN_BIMBINGAN) {
+            $updates['total_bimbingan'] = SkripsiEligibilityService::MIN_BIMBINGAN;
+        }
+
         if ($submission->status === SkripsiStatus::BIMBINGAN_ACTIVE) {
-            $submission->update([
-                'status'                => SkripsiStatus::ELIGIBLE_SIDANG,
-                'eligible_for_sidang_at'=> now(),
-            ]);
+            $updates['status']                = SkripsiStatus::ELIGIBLE_SIDANG;
+            $updates['eligible_for_sidang_at'] = now();
+        }
+
+        if (!empty($updates)) {
+            $submission->update($updates);
         }
     }
 

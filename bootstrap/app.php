@@ -20,7 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', \App\Http\Middleware\SecureCsrfCookie::class);
 
         $middleware->alias([
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'admin' => \App\Http\Middleware\AkademikMiddleware::class,
+            'akademik' => \App\Http\Middleware\AkademikMiddleware::class,
+            'super-admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
             'dosen' => \App\Http\Middleware\DosenMiddleware::class,
             'parent.role' => \App\Http\Middleware\ParentMiddleware::class,
             'finance' => \App\Http\Middleware\FinanceMiddleware::class,

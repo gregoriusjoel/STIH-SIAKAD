@@ -12,28 +12,31 @@ use Illuminate\Support\Facades\Storage;
  */
 class WisudaFileService
 {
-    public const DISK = 's3';
+    public function getDisk(): string
+    {
+        return config('filesystems.default', 's3local');
+    }
 
     public function storeDocument(Mahasiswa $mahasiswa, string $type, UploadedFile $file): string
     {
-        return $file->store("wisuda/{$mahasiswa->id}/{$type}", self::DISK);
+        return $file->store("wisuda/{$mahasiswa->id}/{$type}", $this->getDisk());
     }
 
     public function delete(string $path): void
     {
-        if ($path && Storage::disk(self::DISK)->exists($path)) {
-            Storage::disk(self::DISK)->delete($path);
+        if ($path && Storage::disk($this->getDisk())->exists($path)) {
+            Storage::disk($this->getDisk())->delete($path);
         }
     }
 
     public function downloadResponse(string $path, string $name): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        return Storage::disk(self::DISK)->download($path, $name);
+        return Storage::disk($this->getDisk())->download($path, $name);
     }
 
     public function previewResponse(string $path): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $disk     = Storage::disk(self::DISK);
+        $disk     = Storage::disk(self::getDisk());
         $mimeType = $disk->mimeType($path) ?: 'application/octet-stream';
 
         return response()->stream(function () use ($disk, $path) {

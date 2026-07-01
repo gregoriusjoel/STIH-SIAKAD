@@ -64,4 +64,34 @@ class ParentModel extends Model
     {
         return $this->belongsTo(Mahasiswa::class);
     }
+
+    public function getNamaAttribute(): string
+    {
+        if ($this->nama_wali) return $this->nama_wali;
+        if ($this->nama_ayah) return $this->nama_ayah;
+        if ($this->nama_ibu) return $this->nama_ibu;
+        return $this->user->name ?? '-';
+    }
+
+    public function getTeleponAttribute(): ?string
+    {
+        if ($this->handphone_wali) return $this->handphone_wali;
+        if ($this->handphone_ayah) return $this->handphone_ayah;
+        if ($this->handphone_ibu) return $this->handphone_ibu;
+        return $this->phone;
+    }
+
+    public function getPekerjaanAttribute(): ?string
+    {
+        if ($this->pekerjaan_wali) return $this->pekerjaan_wali;
+        if ($this->pekerjaan_ayah) return $this->pekerjaan_ayah;
+        if ($this->pekerjaan_ibu) return $this->pekerjaan_ibu;
+        return $this->attributes['pekerjaan'] ?? null;
+    }
+
+    public function getHubunganAttribute(): ?string
+    {
+        if ($this->hubungan_wali) return $this->hubungan_wali;
+        return $this->attributes['hubungan'] ?? 'Orang Tua';
+    }
 }

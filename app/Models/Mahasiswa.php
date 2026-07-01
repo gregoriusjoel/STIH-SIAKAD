@@ -148,6 +148,11 @@ class Mahasiswa extends Model
         return $this->user?->name ?? '';
     }
 
+    public function getIpkAttribute(): float
+    {
+        return app(\App\Services\SuperAdmin\AcademicOverrideService::class)->calculateIpk($this->id);
+    }
+
     public function parents(): HasMany
     {
         return $this->hasMany(ParentModel::class);

@@ -17,7 +17,9 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->role === 'admin') {
+            if ($user->role === 'super_admin') {
+                return redirect()->route('super-admin.search');
+            } elseif ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             } elseif ($user->role === 'mahasiswa') {
                 return redirect()->route('mahasiswa.dashboard');
@@ -81,8 +83,8 @@ class LoginController extends Controller
     {
         $user = Auth::user();
 
-        // Allow admin, dosen, mahasiswa, parent, and finance roles
-        if (!in_array($user->role, ['admin', 'dosen', 'mahasiswa', 'parent', 'finance', 'keuangan'])) {
+        // Allow super_admin, admin, dosen, mahasiswa, parent, and finance roles
+        if (!in_array($user->role, ['super_admin', 'admin', 'dosen', 'mahasiswa', 'parent', 'finance', 'keuangan'])) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -105,7 +107,10 @@ class LoginController extends Controller
         ]);
 
         // Redirect based on role
-        if ($user->role === 'admin') {
+        if ($user->role === 'super_admin') {
+            return redirect()->route('super-admin.search')
+                ->with('login_success', 'Selamat datang, ' . $user->name . '!');
+        } elseif ($user->role === 'admin') {
             return redirect()->route('admin.dashboard')
                 ->with('login_success', 'Selamat datang, ' . $user->name . '!');
         } elseif ($user->role === 'mahasiswa') {
