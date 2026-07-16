@@ -29,3 +29,10 @@ Schedule::command('email:process-outbox')
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/email-outbox.log'));
+
+// Generate Daily Developer Report (runs daily at 17:30)
+Schedule::command('devdocs:generate-daily-report')
+    ->dailyAt('17:30')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/devdocs-daily-report.log'));

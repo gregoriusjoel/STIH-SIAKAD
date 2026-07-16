@@ -551,10 +551,10 @@ class JadwalController extends Controller
      */
     public function getDosensByMataKuliah($mataKuliahId)
     {
-        // Cari dosen yang memiliki mata_kuliah_id di dalam kolom JSON mata_kuliah_ids
-        // Karena DosenController menyimpan data ke kolom JSON, bukan pivot table
-        $dosens = \App\Models\Dosen::whereJsonContains('mata_kuliah_ids', (string) $mataKuliahId)
-            ->orWhereJsonContains('mata_kuliah_ids', (int) $mataKuliahId)
+        // Cari dosen yang memiliki mata_kuliah_id menggunakan relasi pivot
+        $dosens = \App\Models\Dosen::whereHas('mataKuliahs', function ($q) use ($mataKuliahId) {
+            $q->where('mata_kuliahs.id', $mataKuliahId);
+        })
             ->with('user')
             ->get();
 

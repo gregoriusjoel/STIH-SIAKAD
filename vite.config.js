@@ -17,14 +17,11 @@ export default defineConfig(({ mode }) => {
                     'resources/css/app.css',
                     'resources/js/app.js',
                     // Per-page lazy entries (opt-in via @vite([...]) di blade)
-                    'resources/js/select2.js',
                     'resources/js/fullcalendar.js',
-                    'resources/js/charts.js',
                     'resources/js/tom-select.js',
                     'resources/js/cropper.js',
                     'resources/js/html-to-image.js',
                     'resources/js/pdfjs.js',
-                    'resources/js/tinymce.js',
                     'resources/js/ckeditor.js',
                 ],
                 refresh: true,
@@ -51,9 +48,6 @@ export default defineConfig(({ mode }) => {
                 output: {
                     manualChunks(id) {
                         if (id.includes('node_modules')) {
-                            if (id.includes('tinymce')) {
-                                return 'vendor-tinymce';
-                            }
                             if (id.includes('ckeditor5')) {
                                 return 'vendor-ckeditor';
                             }

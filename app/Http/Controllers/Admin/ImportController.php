@@ -29,8 +29,8 @@ class ImportController extends Controller
                 'angkatan' => 'angkatan',
                 'semester' => 'semester',
                 'jenis_kelamin' => 'jenis_kelamin',
-                'telefon' => 'phone',
-                'alamat' => 'address',
+                'telefon' => 'no_hp',
+                'alamat' => 'alamat',
             ],
         ],
         'dosen' => [
@@ -306,8 +306,8 @@ class ImportController extends Controller
                 'angkatan' => '2024',
                 'semester' => '1',
                 'jenis_kelamin' => 'Laki-Laki',
-                'phone' => '081234567890',
-                'address' => 'Jl. Contoh No. 123',
+                'no_hp' => '081234567890',
+                'alamat' => 'Jl. Contoh No. 123',
             ],
             'dosen' => [
                 'nidn' => '0123456789',

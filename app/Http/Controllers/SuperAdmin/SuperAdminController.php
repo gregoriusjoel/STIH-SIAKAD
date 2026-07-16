@@ -81,7 +81,7 @@ class SuperAdminController extends Controller
     public function student360(Mahasiswa $mahasiswa)
     {
         $mahasiswa->load([
-            'user', 'parents', 'invoices', 'pembayaran', 
+            'user', 'parents', 'invoices', 
             'krs.kelas.mataKuliah', 'krs.nilai', 'internships', 
             'prestasis', 'wisudaRegistrations', 'prodiData'
         ]);

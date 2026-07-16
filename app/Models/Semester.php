@@ -13,6 +13,19 @@ class Semester extends Model
 {
     use Auditable;
 
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::saving(function ($semester) {
+            if ($semester->isDirty('status')) {
+                $semester->is_active = ($semester->status === 'aktif');
+            } elseif ($semester->isDirty('is_active')) {
+                $semester->status = $semester->is_active ? 'aktif' : 'non-aktif';
+            }
+        });
+    }
+
     protected $fillable = [
         'nama_semester',
         'tahun_ajaran',

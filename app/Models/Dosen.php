@@ -24,14 +24,12 @@ class Dosen extends Model
         'phone',
         'address',
         'status',
-        'mata_kuliah_ids',
         'dosen_tetap',
         'jabatan_fungsional',
         'kuota',
     ];
 
     protected $casts = [
-        'mata_kuliah_ids' => 'array',
         'prodi' => 'array',
         'pendidikan_terakhir' => 'array',
         'universitas' => 'array',

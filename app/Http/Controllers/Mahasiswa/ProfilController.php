@@ -5,142 +5,68 @@ namespace App\Http\Controllers\Mahasiswa;
 use App\Http\Controllers\Controller;
 use App\Models\ParentModel;
 use App\Services\FileStorageService;
+use App\Http\Requests\Mahasiswa\UpdateProfilRequest;
+use App\Http\Requests\Mahasiswa\UpdatePasswordRequest;
+use App\Http\Requests\Mahasiswa\UpdateFotoRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 class ProfilController extends Controller
 {
     public function __construct(private FileStorageService $storage) {}
+
     public function index()
     {
-        $mahasiswa = Auth::user()->mahasiswa;
-        $user = Auth::user();
-        $parent = $mahasiswa->parents()->first();
+        $user      = Auth::user();
+        $mahasiswa = $user->mahasiswa;
+        $parent    = $mahasiswa->parents()->first();
 
         return view('page.mahasiswa.profil.index', compact('mahasiswa', 'user', 'parent'));
     }
 
     public function manajemen()
     {
-        $mahasiswa = Auth::user()->mahasiswa;
-        $user = Auth::user();
-        $parent = $mahasiswa->parents()->first();
+        $user      = Auth::user();
+        $mahasiswa = $user->mahasiswa;
+        $parent    = $mahasiswa->parents()->first();
 
-        // Read provinces from CSV
-        $provinces = collect();
-        $provincesPath = base_path('master/provinces.csv');
-        if (file_exists($provincesPath)) {
-            $handle = fopen($provincesPath, 'r');
-            $header = fgetcsv($handle); // skip header
-            while (($row = fgetcsv($handle)) !== false) {
-                if (count($row) >= 4 && !empty($row[3])) {
-                    $provinces->push([
-                        'id' => $row[0],
-                        'province_code' => $row[2],
-                        'name' => $row[3],
-                    ]);
-                }
-            }
-            fclose($handle);
-        }
-        $provinces = $provinces->sortBy('name')->values();
-
-        // Read cities from CSV
-        $cities = collect();
-        $citiesPath = base_path('master/cities.csv');
-        if (file_exists($citiesPath)) {
-            $handle = fopen($citiesPath, 'r');
-            $header = fgetcsv($handle); // skip header
-            while (($row = fgetcsv($handle)) !== false) {
-                if (count($row) >= 5 && !empty($row[4])) {
-                    $cities->push([
-                        'id' => $row[0],
-                        'province_code' => $row[2],
-                        'city_code' => $row[3],
-                        'name' => $row[4],
-                    ]);
-                }
-            }
-            fclose($handle);
-        }
-        $cities = $cities->sortBy('name')->values();
-
-        // Read religions if available (CSV uses semicolon delimiter)
-        $religions = collect();
-        $religionsPath = base_path('master/Religion.csv');
-        if (file_exists($religionsPath)) {
-            $handle = fopen($religionsPath, 'r');
-            $header = fgetcsv($handle, 0, ';'); // skip header, semicolon delimiter
-            while (($row = fgetcsv($handle, 0, ';')) !== false) {
-                if (count($row) >= 2 && !empty($row[1])) {
-                    $religions->push((object)['id' => $row[0], 'name' => trim($row[1])]);
-                }
-            }
-            fclose($handle);
-        }
-
-        // Read districts from CSV
-        $districts = collect();
-        $districtsPath = base_path('master/districts.csv');
-        if (file_exists($districtsPath)) {
-            $handle = fopen($districtsPath, 'r');
-            $header = fgetcsv($handle); // skip header
-            while (($row = fgetcsv($handle)) !== false) {
-                // CSV format: id, province_code, city_code, district_code, district, created_at, updated_at
-                if (count($row) >= 5 && !empty($row[4])) {
-                    $districts->push([
-                        'id' => $row[0],
-                        'city_code' => $row[2],
-                        'district_code' => $row[3],
-                        'name' => $row[4],
-                    ]);
-                }
-            }
-            fclose($handle);
-        }
-        $districts = $districts->sortBy('name')->values();
-
-        // Read all villages from CSV
-        $villages = collect();
-        $villagesPath = base_path('master/villages.csv');
-        if (file_exists($villagesPath)) {
-            $handle = fopen($villagesPath, 'r');
-            $header = fgetcsv($handle); // skip header
-            while (($row = fgetcsv($handle)) !== false) {
-                // CSV format: id, province_code, city_code, district_code, village_code, village
-                if (count($row) >= 6 && !empty($row[5])) {
-                    $villages->push([
-                        'id' => $row[0],
-                        'city_code' => $row[2],
-                        'district_code' => $row[3],
-                        'name' => $row[5],
-                    ]);
-                }
-            }
-            fclose($handle);
-        }
-        $villages = $villages->sortBy('name')->values();
-
-        // Read pekerjaan (occupations) from CSV
-        $pekerjaans = collect();
-        $pekerjaanPath = base_path('master/pekerjaan.csv');
-        if (file_exists($pekerjaanPath)) {
-            $handle = fopen($pekerjaanPath, 'r');
-            $header = fgetcsv($handle); // skip header
-            while (($row = fgetcsv($handle)) !== false) {
-                if (count($row) >= 2 && !empty($row[1])) {
-                    $pekerjaans->push((object)['id' => $row[0], 'name' => trim($row[1])]);
-                }
-            }
-            fclose($handle);
-        }
-
-        return view('page.mahasiswa.profil.manajemen', compact('mahasiswa', 'user', 'parent', 'provinces', 'cities', 'religions', 'districts', 'villages', 'pekerjaans'));
+        return view('page.mahasiswa.profil.manajemen', [
+            'mahasiswa'  => $mahasiswa,
+            'user'       => $user,
+            'parent'     => $parent,
+            'provinces'  => $this->loadCsv('provinces',
+                fn($r) => count($r) >= 4 && !empty($r[3]),
+                fn($r) => ['id' => $r[0], 'province_code' => $r[2], 'name' => $r[3]],
+                'name'
+            ),
+            'cities'     => $this->loadCsv('cities',
+                fn($r) => count($r) >= 5 && !empty($r[4]),
+                fn($r) => ['id' => $r[0], 'province_code' => $r[2], 'city_code' => $r[3], 'name' => $r[4]],
+                'name'
+            ),
+            'districts'  => $this->loadCsv('districts',
+                fn($r) => count($r) >= 5 && !empty($r[4]),
+                fn($r) => ['id' => $r[0], 'city_code' => $r[2], 'district_code' => $r[3], 'name' => $r[4]],
+                'name'
+            ),
+            'religions'  => $this->loadCsv('Religion',
+                fn($r) => count($r) >= 2 && !empty($r[1]),
+                fn($r) => (object) ['id' => $r[0], 'name' => trim($r[1])],
+                null,
+                ';'
+            ),
+            'pekerjaans' => $this->loadCsv('pekerjaan',
+                fn($r) => count($r) >= 2 && !empty($r[1]),
+                fn($r) => (object) ['id' => $r[0], 'name' => trim($r[1])]
+            ),
+            // ponytail: villages not loaded server-side; AJAX via getVillages() instead | upgrade: preload if AJAX removed
+        ]);
     }
 
     /**
-     * Get villages by city code (AJAX endpoint)
+     * Get villages by city code (AJAX endpoint).
      */
     public function getVillages(Request $request)
     {
@@ -150,290 +76,155 @@ class ProfilController extends Controller
             return response()->json([]);
         }
 
-        $villages = collect();
-        $villagesPath = base_path('master/villages.csv');
+        $villages = $this->loadCsv('villages',
+            fn($r) => count($r) >= 6 && !empty($r[5]),
+            fn($r) => ['id' => $r[0], 'city_code' => $r[2], 'district_code' => $r[3], 'village_code' => $r[4], 'name' => $r[5]],
+            'name'
+        );
 
-        if (file_exists($villagesPath)) {
-            $handle = fopen($villagesPath, 'r');
-            $header = fgetcsv($handle); // skip header
-
-            while (($row = fgetcsv($handle)) !== false) {
-                // CSV format: id, province_code, city_code, district_code, village_code, village
-                if (count($row) >= 6 && $row[2] === $cityCode && !empty($row[5])) {
-                    $villages->push([
-                        'id' => $row[0],
-                        'city_code' => $row[2],
-                        'village_code' => $row[4],
-                        'name' => $row[5],
-                    ]);
-                }
-            }
-            fclose($handle);
-        }
-
-        return response()->json($villages->sortBy('name')->values());
+        return response()->json(
+            $villages->filter(fn($v) => ($v['city_code'] ?? null) === $cityCode)->values()
+        );
     }
 
-    public function update(Request $request)
+    public function update(UpdateProfilRequest $request)
     {
-        $user = Auth::user();
+        $user      = Auth::user();
         $mahasiswa = $user->mahasiswa;
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email_pribadi' => 'nullable|email|max:255|unique:mahasiswas,email_pribadi,' . $mahasiswa->id,
-            'no_hp' => 'required|digits_between:11,13',
-            'alamat' => 'required|string',
-            'tempat_lahir' => 'required|string|max:255',
-            'tanggal_lahir' => 'required|date',
-            'jenis_kelamin' => 'required|in:Laki-Laki,Perempuan',
-            'agama' => 'required|string|max:255',
-            'status_sipil' => 'required|in:Belum Menikah,Menikah,Cerai',
-            'rt' => 'nullable|string|max:10',
-            'rw' => 'nullable|string|max:10',
-            'kota' => 'required|string|max:255',
-            'kecamatan' => 'required|string|max:255',
-            'desa' => 'required|string|max:255',
-            'provinsi' => 'required|string|max:255',
-            'alamat_ktp' => 'nullable|string',
-            'rt_ktp' => 'nullable|string|max:10',
-            'rw_ktp' => 'nullable|string|max:10',
-            'provinsi_ktp' => 'nullable|string|max:255',
-            'kota_ktp' => 'nullable|string|max:255',
-            'kecamatan_ktp' => 'nullable|string|max:255',
-            'desa_ktp' => 'nullable|string|max:255',
-            'jenis_sekolah' => 'nullable|string|max:255',
-            'jurusan_sekolah' => 'nullable|string|max:255',
-            'tahun_lulus' => 'nullable|string|max:4',
-            'nilai_kelulusan' => 'nullable|numeric|min:0|max:100',
-            'nama_ayah' => 'nullable|string|max:255',
-            'pendidikan_ayah' => 'nullable|string|max:255',
-            'pekerjaan_ayah' => 'nullable|string|max:255',
-            'agama_ayah' => 'nullable|string|max:255',
-            'nama_ibu' => 'nullable|string|max:255',
-            'pendidikan_ibu' => 'nullable|string|max:255',
-            'pekerjaan_ibu' => 'nullable|string|max:255',
-            'agama_ibu' => 'nullable|string|max:255',
-            'alamat_ayah' => 'nullable|string',
-            'kota_ayah' => 'nullable|string|max:255',
-            'kecamatan_ayah' => 'nullable|string|max:255',
-            'desa_ayah' => 'nullable|string|max:255',
-            'propinsi_ayah' => 'nullable|string|max:255',
-            'handphone_ayah' => 'nullable|digits_between:11,13',
-            'alamat_ibu' => 'nullable|string',
-            'kota_ibu' => 'nullable|string|max:255',
-            'kecamatan_ibu' => 'nullable|string|max:255',
-            'desa_ibu' => 'nullable|string|max:255',
-            'propinsi_ibu' => 'nullable|string|max:255',
-            'handphone_ibu' => 'nullable|digits_between:11,13',
-            'tipe_wali' => 'nullable|in:orang_tua,wali',
-            'nama_wali' => 'nullable|string|max:255',
-            'hubungan_wali' => 'nullable|string|max:255',
-            'pendidikan_wali' => 'nullable|string|max:255',
-            'pekerjaan_wali' => 'nullable|string|max:255',
-            'agama_wali' => 'nullable|string|max:255',
-            'alamat_wali' => 'nullable|string',
-            'kota_wali' => 'nullable|string|max:255',
-            'kecamatan_wali' => 'nullable|string|max:255',
-            'desa_wali' => 'nullable|string|max:255',
-            'provinsi_wali' => 'nullable|string|max:255',
-            'handphone_wali' => 'nullable|digits_between:11,13',
-            'keluarga' => 'nullable|array',
-            'keluarga.*.nama' => 'nullable|string|max:255',
-            'keluarga.*.hubungan' => 'nullable|string|max:255',
-            'keluarga.*.pendidikan' => 'nullable|string|max:255',
-            'keluarga.*.pekerjaan' => 'nullable|string|max:255',
-            'keluarga.*.agama' => 'nullable|string|max:255',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'password' => 'nullable|min:8',
-            'file_ijazah.*' => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
-            'file_transkrip.*' => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
-            'file_kk.*' => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
-            'file_ktp.*' => 'nullable|file|mimes:pdf,jpeg,jpg,png|max:5120',
-        ]);
-
-        // Require at least one source of contact: either parent (ayah/ibu) or wali
         $hasParentName = filled($request->input('nama_ayah')) || filled($request->input('nama_ibu'));
-        $hasWaliName = filled($request->input('nama_wali'));
+        $hasWaliName   = filled($request->input('nama_wali'));
 
-        if (! $hasParentName && ! $hasWaliName) {
+        if (!$hasParentName && !$hasWaliName) {
             return back()
                 ->withErrors(['orang_tua_wali' => 'Mohon isi data Orang Tua (Nama Ayah atau Nama Ibu) atau isi data Wali.'])
                 ->withInput();
         }
 
-        // Update user
         $user->name = $request->name;
-
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
         $user->save();
 
-        // Update mahasiswa
-        $mahasiswaData = [
-            'email_pribadi' => $request->email_pribadi,
-            'no_hp' => $request->no_hp,
-            'alamat' => $request->alamat,
-            'tempat_lahir' => $request->tempat_lahir,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'agama' => $request->agama,
-            'status_sipil' => $request->status_sipil,
-            'rt' => $request->rt,
-            'rw' => $request->rw,
-            'kota' => $request->kota,
-            'kecamatan' => $request->kecamatan,
-            'desa' => $request->desa,
-            'provinsi' => $request->provinsi,
-            'alamat_ktp' => $request->alamat_ktp,
-            'rt_ktp' => $request->rt_ktp,
-            'rw_ktp' => $request->rw_ktp,
-            'provinsi_ktp' => $request->provinsi_ktp,
-            'kota_ktp' => $request->kota_ktp,
-            'kecamatan_ktp' => $request->kecamatan_ktp,
-            'desa_ktp' => $request->desa_ktp,
-            'jenis_sekolah' => $request->jenis_sekolah,
-            'jurusan_sekolah' => $request->jurusan_sekolah,
-            'tahun_lulus' => $request->tahun_lulus,
-            'nilai_kelulusan' => $request->nilai_kelulusan,
-        ];
+        $mahasiswaData = $request->only([
+            'email_pribadi', 'no_hp', 'alamat', 'tempat_lahir', 'tanggal_lahir',
+            'jenis_kelamin', 'agama', 'status_sipil', 'rt', 'rw', 'kota', 'kecamatan',
+            'desa', 'provinsi', 'alamat_ktp', 'rt_ktp', 'rw_ktp', 'provinsi_ktp',
+            'kota_ktp', 'kecamatan_ktp', 'desa_ktp', 'jenis_sekolah', 'jurusan_sekolah',
+            'tahun_lulus', 'nilai_kelulusan',
+        ]);
 
-        // Handle foto upload
         if ($request->hasFile('foto')) {
-            // Delete old foto from S3 if exists
-            if ($mahasiswa->foto) {
-                $this->storage->delete($mahasiswa->foto);
-            }
-
-            $fotoPath = $this->storage->upload($request->file('foto'), 'images/mahasiswa/foto/' . $mahasiswa->storage_folder);
-            $mahasiswaData['foto'] = $fotoPath;
+            $mahasiswaData['foto'] = $this->uploadFoto($request->file('foto'), $mahasiswa);
         }
 
-        // Handle document uploads
-        $documentTypes = ['file_ijazah', 'file_transkrip', 'file_kk', 'file_ktp'];
-        foreach ($documentTypes as $docType) {
+        foreach (['file_ijazah', 'file_transkrip', 'file_kk', 'file_ktp'] as $docType) {
             if ($request->hasFile($docType)) {
-                // Delete existing files from S3 first
-                $existingFiles = $mahasiswa->$docType ?? [];
-                foreach ($existingFiles as $existingFile) {
-                    $this->storage->delete($existingFile);
+                foreach ($mahasiswa->$docType ?? [] as $old) {
+                    $this->storage->delete($old);
                 }
-
-                // Upload new files to S3
-                $uploadedFiles = [];
-                foreach ($request->file($docType) as $file) {
-                    $path = $this->storage->upload($file, 'documents/mahasiswa/' . $mahasiswa->storage_folder);
-                    $uploadedFiles[] = $path;
-                }
-
-                // Replace with new files only
-                $mahasiswaData[$docType] = $uploadedFiles;
+                $mahasiswaData[$docType] = collect($request->file($docType))
+                    ->map(fn($f) => $this->storage->upload($f, 'documents/mahasiswa/' . $mahasiswa->storage_folder))
+                    ->all();
             }
         }
 
-        // Lock document upload again after submission
         $mahasiswaData['is_dokumen_unlocked'] = false;
-
         $mahasiswa->update($mahasiswaData);
 
-        // Update or create parent data
-        $parent = $mahasiswa->parents()->first();
-        $parentData = [
-            'user_id' => $user->id,
-            'mahasiswa_id' => $mahasiswa->id,
-            'tipe_wali' => $request->tipe_wali ?? 'orang_tua',
-            'nama_ayah' => $request->nama_ayah,
-            'pendidikan_ayah' => $request->pendidikan_ayah,
-            'pekerjaan_ayah' => $request->pekerjaan_ayah,
-            'agama_ayah' => $request->agama_ayah,
-            'nama_ibu' => $request->nama_ibu,
-            'pendidikan_ibu' => $request->pendidikan_ibu,
-            'pekerjaan_ibu' => $request->pekerjaan_ibu,
-            'agama_ibu' => $request->agama_ibu,
-            'alamat_ayah' => $request->alamat_ayah,
-            'kota_ayah' => $request->kota_ayah,
-            'kecamatan_ayah' => $request->kecamatan_ayah,
-            'desa_ayah' => $request->desa_ayah,
-            'propinsi_ayah' => $request->propinsi_ayah,
-            'handphone_ayah' => $request->handphone_ayah,
-            'alamat_ibu' => $request->alamat_ibu,
-            'kota_ibu' => $request->kota_ibu,
-            'kecamatan_ibu' => $request->kecamatan_ibu,
-            'desa_ibu' => $request->desa_ibu,
-            'propinsi_ibu' => $request->propinsi_ibu,
-            'handphone_ibu' => $request->handphone_ibu,
-            'nama_wali' => $request->nama_wali,
-            'hubungan_wali' => $request->hubungan_wali,
-            'pendidikan_wali' => $request->pendidikan_wali,
-            'pekerjaan_wali' => $request->pekerjaan_wali,
-            'agama_wali' => $request->agama_wali,
-            'alamat_wali' => $request->alamat_wali,
-            'kota_wali' => $request->kota_wali,
-            'kecamatan_wali' => $request->kecamatan_wali,
-            'desa_wali' => $request->desa_wali,
-            'provinsi_wali' => $request->provinsi_wali,
-            'handphone_wali' => $request->handphone_wali,
-            'keluarga' => $request->keluarga,
-        ];
+        $parentData = $request->only([
+            'tipe_wali', 'nama_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'agama_ayah',
+            'nama_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'agama_ibu',
+            'alamat_ayah', 'kota_ayah', 'kecamatan_ayah', 'desa_ayah', 'propinsi_ayah', 'handphone_ayah',
+            'alamat_ibu', 'kota_ibu', 'kecamatan_ibu', 'desa_ibu', 'propinsi_ibu', 'handphone_ibu',
+            'nama_wali', 'hubungan_wali', 'pendidikan_wali', 'pekerjaan_wali', 'agama_wali',
+            'alamat_wali', 'kota_wali', 'kecamatan_wali', 'desa_wali', 'provinsi_wali', 'handphone_wali',
+            'keluarga',
+        ]) + ['user_id' => $user->id, 'mahasiswa_id' => $mahasiswa->id];
 
-        if ($parent) {
-            $parent->update($parentData);
-        } else {
-            ParentModel::create($parentData);
-        }
+        $parentData['tipe_wali'] ??= 'orang_tua';
+
+        $parent = $mahasiswa->parents()->first();
+        $parent ? $parent->update($parentData) : ParentModel::create($parentData);
 
         return redirect()->route('mahasiswa.profil.index')
             ->with('success', 'Profil berhasil diperbarui!');
     }
 
-    public function updatePassword(Request $request)
+    public function updatePassword(UpdatePasswordRequest $request)
     {
-        $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|min:8|confirmed'
-        ]);
-
         $user = Auth::user();
 
-        // Check current password
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->with('error', 'Password lama tidak sesuai!');
         }
 
-        // Update password
-        $user->update([
-            'password' => $request->new_password
-        ]);
+        $user->update(['password' => Hash::make($request->new_password)]);
 
         return back()->with('success', 'Password berhasil diubah!');
     }
 
-    public function updateFoto(Request $request)
+    public function updateFoto(UpdateFotoRequest $request)
     {
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
-
-        $user = Auth::user();
+        $user      = Auth::user();
         $mahasiswa = $user->mahasiswa;
 
-        if ($request->hasFile('foto')) {
-            // Delete old foto from S3 if exists
-            if ($mahasiswa->foto) {
-                $this->storage->delete($mahasiswa->foto);
-            }
-
-            $fotoPath = $this->storage->upload($request->file('foto'), 'images/mahasiswa/foto/' . $mahasiswa->storage_folder);
-
-            $mahasiswa->update([
-                'foto' => $fotoPath
-            ]);
-
-            return back()->with('success', 'Foto profil berhasil diperbarui!');
+        if (!$request->hasFile('foto')) {
+            return back()->with('error', 'Gagal mengupload foto.');
         }
 
-        return back()->with('error', 'Gagal mengupload foto.');
+        $mahasiswa->update(['foto' => $this->uploadFoto($request->file('foto'), $mahasiswa)]);
+
+        return back()->with('success', 'Foto profil berhasil diperbarui!');
+    }
+
+    // ── Private helpers ──────────────────────────────────────────────
+
+    /**
+     * Delete old foto and upload new one. Shared by update() and updateFoto().
+     */
+    private function uploadFoto($file, $mahasiswa): string
+    {
+        if ($mahasiswa->foto) {
+            $this->storage->delete($mahasiswa->foto);
+        }
+
+        return $this->storage->upload($file, 'images/mahasiswa/foto/' . $mahasiswa->storage_folder);
+    }
+
+    /**
+     * Read and cache a master CSV from base_path('master/{name}.csv').
+     *
+     * @param  string       $name       CSV filename without extension
+     * @param  callable     $filter     Row filter — receives raw string[]
+     * @param  callable     $mapper     Row mapper — receives raw string[], returns array|object
+     * @param  string|null  $sortBy     Collection key to sort by, or null to skip sort
+     * @param  string       $delimiter  CSV delimiter (default comma)
+     */
+    private function loadCsv(
+        string $name,
+        callable $filter,
+        callable $mapper,
+        ?string $sortBy = null,
+        string $delimiter = ','
+    ): \Illuminate\Support\Collection {
+        return Cache::remember("master_csv_{$name}", 3600, function () use ($name, $filter, $mapper, $sortBy, $delimiter) {
+            $path = base_path("master/{$name}.csv");
+
+            if (!file_exists($path)) {
+                return collect();
+            }
+
+            $handle = fopen($path, 'r');
+            fgetcsv($handle, 0, $delimiter); // skip header
+
+            $rows = collect();
+            while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+                if ($filter($row)) {
+                    $rows->push($mapper($row));
+                }
+            }
+            fclose($handle);
+
+            return $sortBy ? $rows->sortBy($sortBy)->values() : $rows;
+        });
     }
 }

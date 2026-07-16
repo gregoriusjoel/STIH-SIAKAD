@@ -135,15 +135,6 @@ class TeachingAssignmentService
             if (!empty($rows)) {
                 DB::table('dosen_mata_kuliah')->insert($rows);
             }
-
-            // Also sync dosens.mata_kuliah_ids JSON for backward compatibility
-            $allMkIds = DB::table('dosen_mata_kuliah')
-                ->where('dosen_id', $dosen->id)
-                ->pluck('mata_kuliah_id')
-                ->unique()
-                ->values()
-                ->toArray();
-            $dosen->update(['mata_kuliah_ids' => $allMkIds]);
         });
 
         return [
@@ -163,17 +154,6 @@ class TeachingAssignmentService
             ->where('mata_kuliah_id', $mataKuliahId)
             ->where('semester_id', $semesterId)
             ->delete();
-
-        if ($deleted) {
-            // Sync backward compat JSON
-            $allMkIds = DB::table('dosen_mata_kuliah')
-                ->where('dosen_id', $dosen->id)
-                ->pluck('mata_kuliah_id')
-                ->unique()
-                ->values()
-                ->toArray();
-            $dosen->update(['mata_kuliah_ids' => $allMkIds]);
-        }
 
         return $deleted > 0;
     }
@@ -224,15 +204,6 @@ class TeachingAssignmentService
 
         if (!empty($rows)) {
             DB::table('dosen_mata_kuliah')->insert($rows);
-
-            // Sync backward compat JSON
-            $allMkIds = DB::table('dosen_mata_kuliah')
-                ->where('dosen_id', $dosen->id)
-                ->pluck('mata_kuliah_id')
-                ->unique()
-                ->values()
-                ->toArray();
-            $dosen->update(['mata_kuliah_ids' => $allMkIds]);
         }
 
         return [

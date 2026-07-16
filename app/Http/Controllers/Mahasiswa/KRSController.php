@@ -28,16 +28,14 @@ class KRSController extends Controller
             return $newPath;
         }
 
-        // For reading/checking: check NEW path first
-        $newDisk = \App\Helpers\FileHelper::resolveDiskForPath($newPath);
-        if (Storage::disk($newDisk)->exists($newPath)) {
+        $storage = app(\App\Services\FileStorageService::class);
+        if ($storage->exists($newPath)) {
             return $newPath;
         }
         
         // Fallback to OLD path (mahasiswa_id)
         $oldPath = 'krs/' . $mahasiswa->id . '/' . $filename;
-        $oldDisk = \App\Helpers\FileHelper::resolveDiskForPath($oldPath);
-        if (Storage::disk($oldDisk)->exists($oldPath)) {
+        if ($storage->exists($oldPath)) {
             return $oldPath;
         }
         
@@ -257,6 +255,35 @@ class KRSController extends Controller
             }
         }
 
+        // Get SKS Limit based on previous semester's IPS
+        $previousSemesterNum = $mahasiswaSemester - 1;
+        $maxSksLimit = 20; // Default fallback
+
+        if ($previousSemesterNum > 0) {
+            // Find the previous semester's tahun_ajaran
+            $baseYear = (int) $mahasiswa->angkatan;
+            $yearOffset = floor(($previousSemesterNum - 1) / 2);
+            $academicStartYear = $baseYear + $yearOffset;
+            $academicEndYear = $academicStartYear + 1;
+            $prevTahunAjaran = $academicStartYear . '/' . $academicEndYear;
+
+            // Calculate IPS of previous semester
+            $prevIps = app(\App\Services\SuperAdmin\AcademicOverrideService::class)->calculateIps($mahasiswa->id, $prevTahunAjaran);
+
+            // Fetch SKS limits from the active KRS semester
+            $maxRendah = $krsSemester ? $krsSemester->max_sks_rendah : 20;
+            $maxTinggi = $krsSemester ? $krsSemester->max_sks_tinggi : 24;
+
+            if ($prevIps >= 3.0) {
+                $maxSksLimit = $maxTinggi;
+            } else {
+                $maxSksLimit = $maxRendah;
+            }
+        } else {
+            // For Semester 1 students, default to the lower limit (max_sks_rendah) or 20
+            $maxSksLimit = $krsSemester ? $krsSemester->max_sks_rendah : 20;
+        }
+
         $statusKrs = $existingKrs->first()->status ?? null;
         
         // Determine if form is locked based on actual KRS status
@@ -361,6 +388,7 @@ class KRSController extends Controller
             'additionalMataKuliah' => $additionalMataKuliah,
             'existingKrs' => $existingKrs,
             'totalSks' => $totalSks,
+            'maxSksLimit' => $maxSksLimit,
             'statusKrs' => $displayStatusKrs ?? null,
             'isLocked' => $isLocked,
             'semesterAktif' => $semesterAktif,
@@ -584,7 +612,38 @@ class KRSController extends Controller
                 $totalSks += $mk->sks ?? 0;
             }
 
-            // Max SKS limit removed — no server-side SKS cap enforced here
+            // Get SKS Limit based on previous semester's IPS
+            $previousSemesterNum = $mahasiswaSemester - 1;
+            $maxSksLimit = 20; // Default fallback
+
+            if ($previousSemesterNum > 0) {
+                // Find the previous semester's tahun_ajaran
+                $baseYear = (int) $mahasiswa->angkatan;
+                $yearOffset = floor(($previousSemesterNum - 1) / 2);
+                $academicStartYear = $baseYear + $yearOffset;
+                $academicEndYear = $academicStartYear + 1;
+                $prevTahunAjaran = $academicStartYear . '/' . $academicEndYear;
+
+                // Calculate IPS of previous semester
+                $prevIps = app(\App\Services\SuperAdmin\AcademicOverrideService::class)->calculateIps($mahasiswa->id, $prevTahunAjaran);
+
+                // Fetch SKS limits from the active KRS semester
+                $maxRendah = $krsSemester ? $krsSemester->max_sks_rendah : 20;
+                $maxTinggi = $krsSemester ? $krsSemester->max_sks_tinggi : 24;
+
+                if ($prevIps >= 3.0) {
+                    $maxSksLimit = $maxTinggi;
+                } else {
+                    $maxSksLimit = $maxRendah;
+                }
+            } else {
+                // For Semester 1 students, default to the lower limit (max_sks_rendah) or 20
+                $maxSksLimit = $krsSemester ? $krsSemester->max_sks_rendah : 20;
+            }
+
+            if ($totalSks > $maxSksLimit) {
+                return back()->with('error', "Total SKS yang Anda pilih ({$totalSks} SKS) melebihi batas maksimal SKS Anda ({$maxSksLimit} SKS) berdasarkan IP semester lalu.");
+            }
         }
 
         $currentKodeId = 'sms' . $mahasiswaSemester;
@@ -629,11 +688,21 @@ class KRSController extends Controller
             $calculatedTahunAjaran = $academicStartYear . '/' . $academicEndYear;
 
             // Create new KRS entries for selected mata kuliah
+            $selectedMkIds = [];
             foreach ($request->mata_kuliah as $mkId => $ambil) {
                 if ($ambil === 'ya') {
-                    // Try to associate the KRS with an existing Kelas and KelasMataKuliah
-                    $kelasRecord = \App\Models\Kelas::where('mata_kuliah_id', $mkId)->first();
-                    $kelasMkRecord = \App\Models\KelasMataKuliah::where('mata_kuliah_id', $mkId)->first();
+                    $selectedMkIds[] = $mkId;
+                }
+            }
+
+            if (!empty($selectedMkIds)) {
+                // Batch query Kelas and KelasMataKuliah records in O(1)
+                $kelasRecords = \App\Models\Kelas::whereIn('mata_kuliah_id', $selectedMkIds)->get()->keyBy('mata_kuliah_id');
+                $kelasMkRecords = \App\Models\KelasMataKuliah::whereIn('mata_kuliah_id', $selectedMkIds)->get()->keyBy('mata_kuliah_id');
+
+                foreach ($selectedMkIds as $mkId) {
+                    $kelasRecord = $kelasRecords->get($mkId);
+                    $kelasMkRecord = $kelasMkRecords->get($mkId);
 
                     $createData = [
                         'mahasiswa_id' => $mahasiswa->id,

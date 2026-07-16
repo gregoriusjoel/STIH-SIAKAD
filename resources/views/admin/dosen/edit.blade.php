@@ -186,32 +186,25 @@
             margin-top: 0.375rem;
         }
 
-        .select2-container--default .select2-selection--single {
+        .ts-wrapper.single .ts-control {
             height: 44px;
-            padding: 0 0.5rem;
+            padding: 0.5rem 1rem;
             border: 1px solid var(--border);
             border-radius: 0.5rem;
+            background-color: #ffffff;
+            transition: all 0.2s ease;
         }
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 42px;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 42px;
-        }
-        .select2-container--default.select2-container--focus .select2-selection--single {
+        .ts-wrapper.focus .ts-control {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
         }
-        .select2-dropdown {
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
+        .ts-dropdown {
+            border-radius: 0.5rem !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+            margin-top: 4px !important;
         }
-        .select2-search--dropdown .select2-search__field {
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
-            padding: 0.5rem 0.75rem;
-        }
-        .select2-results__option--highlighted {
+        .ts-dropdown .option.active {
             background-color: #f3e8e8 !important;
             color: var(--primary) !important;
         }
@@ -571,15 +564,16 @@
 @endsection
 
 @push('scripts')
-{{-- Select2 di-bundle lokal via Vite (jQuery sudah global). --}}
-@vite('resources/js/select2.js')
+{{-- TomSelect di-bundle lokal via Vite. --}}
+@vite('resources/js/tom-select.js')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Select2 for existing mata kuliah dropdowns
-        $('.mk-select').select2({
-            placeholder: 'Cari Mata Kuliah...',
-            allowClear: true,
-            width: '100%'
+        // Initialize TomSelect for existing mata kuliah dropdowns
+        document.querySelectorAll('.mk-select').forEach(el => {
+            new TomSelect(el, {
+                placeholder: 'Cari Mata Kuliah...',
+                allowEmptyOption: true
+            });
         });
         // Password Toggle
         const pw = document.getElementById('dosen_password');
@@ -728,6 +722,9 @@
                     if (opt.value === '') return;
                     opt.disabled = opt.value !== currentValue && selectedValues.includes(opt.value);
                 });
+                if (select.tomselect) {
+                    select.tomselect.sync();
+                }
             });
             updateMkAddButtonVisibility();
         }
@@ -759,21 +756,23 @@
             `;
                 mkList.appendChild(row);
 
-                // Initialize Select2 for the new dropdown
-                $(row).find('.mk-select').select2({
+                // Initialize TomSelect for the new dropdown
+                const selectEl = row.querySelector('.mk-select');
+                const ts = new TomSelect(selectEl, {
                     placeholder: 'Cari Mata Kuliah...',
-                    allowClear: false,
-                    width: '100%'
+                    allowEmptyOption: true
                 });
 
                 row.querySelector('.remove-mk')?.addEventListener('click', function(e) {
                     e.preventDefault();
-                    $(row).find('.mk-select').select2('destroy');
+                    if (selectEl.tomselect) {
+                        selectEl.tomselect.destroy();
+                    }
                     row.remove();
                     syncMkOptions();
                     updateMkRemoveButtons();
                 });
-                $(row).find('.mk-select').on('change', syncMkOptions);
+                ts.on('change', syncMkOptions);
 
                 updateMkRemoveButtons();
                 updateMkAddButtonVisibility();

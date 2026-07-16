@@ -86,7 +86,7 @@
                     </div>
                     <div class="flex gap-2">
                         <i class="fas fa-check text-blue-600 flex-shrink-0 mt-0.5"></i>
-                        <span>Maksimal <strong>24 SKS</strong> per semester</span>
+                        <span>Maksimal <strong>{{ $maxSksLimit }} SKS</strong> per semester</span>
                     </div>
                     <div class="flex gap-2">
                         <i class="fas fa-check text-blue-600 flex-shrink-0 mt-0.5"></i>
@@ -670,7 +670,7 @@
                             </div>
                             <div>
                                 <p class="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-1">Maksimal SKS:</p>
-                                <p class="text-xl sm:text-2xl font-bold text-gray-500">24</p>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-500" id="maxSksLimitVal">{{ $maxSksLimit }}</p>
                             </div>
                         </div>
 
@@ -732,7 +732,8 @@
 
             const totalSksEl = document.getElementById('totalSks');
             totalSksEl.classList.remove('text-gray-800', 'text-red-600', 'text-green-600');
-            if (totalSks > 24) totalSksEl.classList.add('text-red-600');
+            const maxSksLimit = parseInt(document.getElementById('maxSksLimitVal')?.textContent) || 24;
+            if (totalSks > maxSksLimit) totalSksEl.classList.add('text-red-600');
             else if (totalSks > 0) totalSksEl.classList.add('text-green-600');
             else totalSksEl.classList.add('text-gray-800');
         }
@@ -766,8 +767,9 @@
 
             // SKS limit
             const currentSks = parseInt(document.getElementById('totalSks').textContent) || 0;
-            if (currentSks + sks > 24) { 
-                showError('Total SKS akan melebihi batas maksimal (24 SKS)!');
+            const maxSksLimit = parseInt(document.getElementById('maxSksLimitVal')?.textContent) || 24;
+            if (currentSks + sks > maxSksLimit) { 
+                showError(`Total SKS akan melebihi batas maksimal (${maxSksLimit} SKS)!`);
                 return;
             }
 
@@ -840,9 +842,10 @@
         // Form submit validation
         document.getElementById('krsForm')?.addEventListener('submit', function(e){
             const totalSks = parseInt(document.getElementById('totalSks').textContent)||0;
-            if (totalSks > 24) { 
+            const maxSksLimit = parseInt(document.getElementById('maxSksLimitVal')?.textContent) || 24;
+            if (totalSks > maxSksLimit) { 
                 e.preventDefault();
-                showError('Total SKS melebihi batas maksimal (24 SKS)!');
+                showError(`Total SKS melebihi batas maksimal (${maxSksLimit} SKS)!`);
                 return false;
             }
             if (totalSks === 0) { 

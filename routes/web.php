@@ -11,7 +11,7 @@ use App\Http\Controllers\Mahasiswa\SemesterAktivasiController;
 use App\Http\Controllers\Mahasiswa\KRSController;
 use App\Http\Controllers\Mahasiswa\NilaiController;
 use App\Http\Controllers\Mahasiswa\JadwalController as MahasiswaJadwalController;
-use App\Http\Controllers\Mahasiswa\PembayaranController;
+use App\Http\Controllers\Mahasiswa\MahasiswaPaymentController;
 use App\Http\Controllers\Mahasiswa\ProfilController;
 use App\Http\Controllers\Mahasiswa\PengajuanController;
 use App\Http\Controllers\StorageController;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Storage;
 
 // Authentication Routes
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/', [LoginController::class, 'login'])->name('login.post');
+Route::post('/', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Secure Private File Access
@@ -46,8 +46,8 @@ Route::post('/absensi/kelas/{token}', function ($token) {
     return redirect()->route('absen.login', ['token' => $token]);
 })->name('absensi.submit');
 
-// keep the legacy thank-you route mapping (optional)
-Route::get('/absensi/terima-kasih', [App\Http\Controllers\AttendanceController::class, 'thanks'])->name('absensi.thanks');
+// keep the legacy thank-you route mapping as a redirect to the new route
+Route::get('/absensi/terima-kasih', fn() => redirect()->route('absen.thankyou'))->name('absensi.thanks');
 
 // Absen berbasis login (separate flow)
 Route::get('/absen/login', [App\Http\Controllers\Absen\LoginController::class, 'showLoginForm'])->name('absen.login');
@@ -218,7 +218,7 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         Route::get('/jadwal', [MahasiswaJadwalController::class, 'index'])->name('jadwal.index');
 
         // Pembayaran
-        Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+        Route::get('/pembayaran', [MahasiswaPaymentController::class, 'index'])->name('pembayaran.index');
 
         // Kelas Saya
         Route::get('/kelas', [App\Http\Controllers\Mahasiswa\KelasController::class, 'index'])->name('kelas.index');
@@ -736,3 +736,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/uploads/{upload}', [App\Http\Controllers\UploadController::class, 'show'])->name('uploads.show');
     Route::delete('/uploads/{upload}', [App\Http\Controllers\UploadController::class, 'destroy'])->name('uploads.destroy');
 });
+
+// Local Development Workspace Documentation
+if (app()->environment('local')) {
+    Route::middleware(['web'])->prefix('dev-docs')->name('dev-docs.')->group(function () {
+        Route::get('/', [App\Http\Controllers\DevDocsController::class, 'index'])->name('index');
+        Route::post('/save', [App\Http\Controllers\DevDocsController::class, 'save'])->name('save');
+        Route::post('/create', [App\Http\Controllers\DevDocsController::class, 'create'])->name('create');
+        Route::post('/delete', [App\Http\Controllers\DevDocsController::class, 'delete'])->name('delete');
+    });
+}
+

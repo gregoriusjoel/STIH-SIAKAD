@@ -150,7 +150,7 @@
                         Distribusi Jawaban
                     </h3>
                     <div class="h-[300px] mb-8">
-                        <canvas id="distributionChart"></canvas>
+                        <div id="distributionChart"></div>
                     </div>
 
                     {{-- Distribution Table to fill space --}}
@@ -227,12 +227,9 @@
 </div>
 
 @push('scripts')
-{{-- Chart.js + datalabels di-bundle lokal via Vite. --}}
-@vite('resources/js/charts.js')
+{{-- ApexCharts dimuat secara global via app.js layout, tidak butuh script loader tambahan. --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('distributionChart').getContext('2d');
-        
         // Calculate aggregate distribution from rekap
         @php
             $aggregateFreq = array_values(collect($stats['rekap'])->pluck('freq')->reduce(function($carry, $freq) {
@@ -244,61 +241,41 @@
         @endphp
         const aggregateFreq = @json($aggregateFreq);
 
-        new Chart(ctx, {
-            type: 'doughnut',
-            plugins: [ChartDataLabels],
-            data: {
-                labels: ['1 - Sangat Buruk', '2 - Buruk', '3 - Cukup', '4 - Baik', '5 - Sangat Baik'],
-                datasets: [{
-                    data: aggregateFreq,
-                    backgroundColor: [
-                        '#ef4444', // red
-                        '#f97316', // orange
-                        '#3b82f6', // blue
-                        '#8b1538', // primary maroon
-                        '#22c55e'  // green
-                    ],
-                    borderWidth: 0,
-                    hoverOffset: 20
-                }]
+        const options = {
+            chart: {
+                type: 'donut',
+                height: 300,
+                fontFamily: 'Inter, sans-serif'
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 25,
-                            font: {
-                                size: 11,
-                                weight: 'bold'
-                            },
-                            usePointStyle: true
-                        }
-                    },
-                    datalabels: {
-                        color: '#fff',
-                        font: {
-                            weight: 'bold',
-                            size: 12
-                        },
-                        formatter: (value, ctx) => {
-                            let sum = 0;
-                            let dataArr = ctx.chart.data.datasets[0].data;
-                            dataArr.map(data => {
-                                sum += data;
-                            });
-                            let percentage = (value * 100 / sum).toFixed(0) + "%";
-                            return value > 0 ? percentage : '';
-                        },
-                        anchor: 'center',
-                        align: 'center'
+            series: aggregateFreq,
+            labels: ['1 - Sangat Buruk', '2 - Buruk', '3 - Cukup', '4 - Baik', '5 - Sangat Baik'],
+            colors: ['#ef4444', '#f97316', '#3b82f6', '#8b1538', '#22c55e'],
+            dataLabels: {
+                enabled: true,
+                formatter: function (val, opts) {
+                    return val.toFixed(0) + "%";
+                }
+            },
+            legend: {
+                position: 'bottom',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                itemMargin: {
+                    horizontal: 8,
+                    vertical: 4
+                }
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '65%'
                     }
-                },
-                cutout: '65%'
+                }
             }
-        });
+        };
+
+        const chart = new ApexCharts(document.getElementById('distributionChart'), options);
+        chart.render();
     });
 </script>
 <style>

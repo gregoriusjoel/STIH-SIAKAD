@@ -58,12 +58,11 @@ class Mahasiswa extends Model
         'nim',
         'prodi',
         'prodi_id',
+        'agama_id',
         'angkatan',
         'semester',
         'tahun_akademik_id',
         'last_semester_id',
-        'phone',
-        'address',
         'status',
         'status_akun',
         'foto',
@@ -168,10 +167,6 @@ class Mahasiswa extends Model
         return $this->hasMany(KuesionerAktivasi::class);
     }
 
-    public function pembayaran(): HasMany
-    {
-        return $this->hasMany(Pembayaran::class);
-    }
 
     public function lastSemester(): BelongsTo
     {
@@ -345,6 +340,11 @@ class Mahasiswa extends Model
     public function prodiData(): BelongsTo
     {
         return $this->belongsTo(Prodi::class, 'prodi_id');
+    }
+
+    public function religionData(): BelongsTo
+    {
+        return $this->belongsTo(Religion::class, 'agama_id');
     }
 
     public function tahunAkademik(): BelongsTo
@@ -771,5 +771,41 @@ class Mahasiswa extends Model
         }
 
         return $missing;
+    }
+
+    /* ─── Normalization Accessors & Mutators ─── */
+
+    public function getProdiAttribute(): ?string
+    {
+        return $this->prodiData?->nama_prodi;
+    }
+
+    public function setProdiAttribute(?string $value): void
+    {
+        if (empty($value)) {
+            $this->attributes['prodi_id'] = null;
+            return;
+        }
+        $prodi = Prodi::where('nama_prodi', $value)->first();
+        if ($prodi) {
+            $this->attributes['prodi_id'] = $prodi->id;
+        }
+    }
+
+    public function getAgamaAttribute(): ?string
+    {
+        return $this->religionData?->name;
+    }
+
+    public function setAgamaAttribute(?string $value): void
+    {
+        if (empty($value)) {
+            $this->attributes['agama_id'] = null;
+            return;
+        }
+        $religion = Religion::where('name', $value)->first();
+        if ($religion) {
+            $this->attributes['agama_id'] = $religion->id;
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Semester;
 use App\Models\Mahasiswa;
-use App\Models\ActivityLog;
+use App\Models\AuditLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -190,24 +190,19 @@ class SemesterTransitionService
     protected function logTransition(Semester $oldSemester, Semester $newSemester, int $updatedCount): void
     {
         try {
-            ActivityLog::create([
-                'log_name' => 'semester_transition',
-                'description' => "Transisi semester otomatis: {$oldSemester->nama_semester} {$oldSemester->tahun_ajaran} → {$newSemester->nama_semester} {$newSemester->tahun_ajaran}",
-                'subject_type' => Semester::class,
-                'subject_id' => $newSemester->id,
-                'causer_type' => 'System',
-                'causer_id' => null,
-                'properties' => json_encode([
+            AuditLog::log(
+                'semester.transition',
+                $newSemester,
+                [
+                    'description' => "Transisi semester otomatis: {$oldSemester->nama_semester} {$oldSemester->tahun_ajaran} → {$newSemester->nama_semester} {$newSemester->tahun_ajaran}",
                     'old_semester_id' => $oldSemester->id,
                     'new_semester_id' => $newSemester->id,
                     'mahasiswa_updated' => $updatedCount,
                     'transition_date' => Carbon::now()->toDateTimeString()
-                ]),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::warning('Failed to create activity log: ' . $e->getMessage());
+            Log::warning('Failed to create audit log for semester transition: ' . $e->getMessage());
         }
     }
 

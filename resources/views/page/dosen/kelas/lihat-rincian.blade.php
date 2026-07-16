@@ -1364,23 +1364,30 @@
             });
         @endif
     </script>
-    {{-- TinyMCE di-bundle lokal via Vite (akses lewat window.tinymce). --}}
-    @vite('resources/js/tinymce.js')
+    {{-- CKEditor 5 Classic di-bundle lokal via Vite (akses lewat window.ClassicEditor). --}}
+    @vite('resources/js/ckeditor.js')
     <script>
         document.addEventListener('alpine:init', () => {
-            tinymce.init({
-                selector: '#description',
-                height: 300,
-                menubar: false,
-                plugins: 'lists link',
-                toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link | removeformat',
-                content_style: 'body { font-family:Inter,sans-serif; font-size:14px }',
-                setup: function (editor) {
-                    editor.on('change', function () {
-                        editor.save(); 
-                    });
-                }
-            });
+            ClassicEditor
+                .create(document.querySelector('#description'), {
+                    licenseKey: 'GPL',
+                    plugins: Object.values(window.CKEditorPlugins),
+                    toolbar: {
+                        items: [
+                            'heading', '|',
+                            'bold', 'italic', 'underline', 'strikethrough', '|',
+                            'bulletedList', 'numberedList', '|',
+                            'outdent', 'indent', '|',
+                            'link', 'blockQuote', '|',
+                            'undo', 'redo'
+                        ],
+                        shouldNotGroupWhenFull: true
+                    },
+                    placeholder: 'Jelaskan instruksi pengerjaan tugas...'
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         });
     </script>
     <script>

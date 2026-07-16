@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateDosenRequest;
+use App\Http\Requests\Admin\StoreDosenRequest;
 use App\Models\Dosen;
 use App\Models\Semester;
 use App\Models\User;
@@ -248,28 +249,37 @@ class DosenController extends Controller
 
         DB::beginTransaction();
         try {
-            foreach ($sourceRows as $row) {
-                $exists = DB::table('dosen_mata_kuliah')
-                    ->where('dosen_id', $row->dosen_id)
-                    ->where('mata_kuliah_id', $row->mata_kuliah_id)
-                    ->where('semester_id', $targetSemId)
-                    ->exists();
+            // Batch check existing target assignments in O(1)
+            $existing = DB::table('dosen_mata_kuliah')
+                ->where('semester_id', $targetSemId)
+                ->get(['dosen_id', 'mata_kuliah_id'])
+                ->map(fn($r) => $r->dosen_id . '-' . $r->mata_kuliah_id)
+                ->flip()
+                ->toArray();
 
-                if ($exists) {
+            $insertData = [];
+            foreach ($sourceRows as $row) {
+                $key = $row->dosen_id . '-' . $row->mata_kuliah_id;
+                if (isset($existing[$key])) {
                     $skipped++;
                     continue;
                 }
 
-                DB::table('dosen_mata_kuliah')->insert([
+                $insertData[] = [
                     'dosen_id' => $row->dosen_id,
                     'mata_kuliah_id' => $row->mata_kuliah_id,
                     'semester_id' => $targetSemId,
                     'created_by' => $userId,
                     'created_at' => $now,
                     'updated_at' => $now,
-                ]);
+                ];
                 $copied++;
             }
+
+            if (!empty($insertData)) {
+                DB::table('dosen_mata_kuliah')->insert($insertData);
+            }
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -298,35 +308,8 @@ class DosenController extends Controller
         return view('admin.dosen.create', compact('mataKuliahs', 'prodis', 'fakultas'));
     }
 
-    public function store(Request $request)
+    public function store(StoreDosenRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'nullable|min:6',
-            'fakultas_id' => 'required|exists:fakultas,id',
-            'nidn' => 'required|digits_between:1,16|unique:dosens,nidn',
-            'pendidikan_terakhir' => 'required|array|min:1',
-            'pendidikan_terakhir.*' => 'string',
-            'universitas' => 'required|array|min:1',
-            'universitas.*' => 'string',
-            'dosen_tetap' => 'required|in:ya,tidak',
-            'jabatan_fungsional' => 'nullable|string|max:255',
-            'jabatan_fungsional_custom' => 'nullable|string|max:255',
-            'prodi' => 'required|array|min:1',
-            'prodi.*' => 'string',
-            'phone' => 'nullable|digits_between:11,13',
-            'address' => 'nullable|string',
-            'mata_kuliah_ids' => 'nullable|array',
-            'mata_kuliah_ids.*' => 'exists:mata_kuliahs,id',
-        ], [
-            'mata_kuliah_ids.*.exists' => 'Mata kuliah yang dipilih tidak valid. Silakan pilih mata kuliah yang tersedia.',
-            'fakultas_id.required' => 'Fakultas wajib dipilih.',
-            'fakultas_id.exists' => 'Fakultas yang dipilih tidak valid.',
-            'prodi.required' => 'Program studi harus dipilih minimal 1.',
-            'prodi.min' => 'Program studi harus dipilih minimal 1.',
-        ]);
-
         DB::beginTransaction();
         try {
             $plainPassword = $request->filled('password') ? $request->password : 'dosen123';
@@ -356,9 +339,19 @@ class DosenController extends Controller
                 'status' => 'aktif',
             ]);
 
-            // store mata_kuliah ids directly on dosens table as JSON
+            // store mata_kuliah ids directly to pivot table dosen_mata_kuliah for active semester
             if ($request->filled('mata_kuliah_ids') && $dosen) {
-                $dosen->update(['mata_kuliah_ids' => array_values($request->mata_kuliah_ids)]);
+                $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+                if ($activeSemester) {
+                    $syncData = [];
+                    foreach ($request->mata_kuliah_ids as $mkId) {
+                        $syncData[$mkId] = [
+                            'semester_id' => $activeSemester->id,
+                            'created_by' => auth()->id()
+                        ];
+                    }
+                    $dosen->mataKuliahs()->sync($syncData);
+                }
             }
 
             DB::commit();
@@ -616,10 +609,20 @@ class DosenController extends Controller
 
                             $dosen->update($updateData);
 
-                            // try syncing pivot if exists
+                            // try syncing pivot if exists for active semester
                             try {
                                 if (!empty($mkIds) && method_exists($dosen, 'mataKuliahs')) {
-                                    $dosen->mataKuliahs()->sync($mkIds);
+                                    $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+                                    if ($activeSemester) {
+                                        $syncData = [];
+                                        foreach ($mkIds as $mkId) {
+                                            $syncData[$mkId] = [
+                                                'semester_id' => $activeSemester->id,
+                                                'created_by' => auth()->id()
+                                            ];
+                                        }
+                                        $dosen->mataKuliahs()->sync($syncData);
+                                    }
                                 }
                             } catch (\Throwable $e) {
                                 // ignore if pivot table missing
@@ -687,7 +690,17 @@ class DosenController extends Controller
 
                             try {
                                 if (!empty($mkIds) && method_exists($dosen, 'mataKuliahs')) {
-                                    $dosen->mataKuliahs()->sync($mkIds);
+                                    $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+                                    if ($activeSemester) {
+                                        $syncData = [];
+                                        foreach ($mkIds as $mkId) {
+                                            $syncData[$mkId] = [
+                                                'semester_id' => $activeSemester->id,
+                                                'created_by' => auth()->id()
+                                            ];
+                                        }
+                                        $dosen->mataKuliahs()->sync($syncData);
+                                    }
                                 }
                             } catch (\Throwable $e) {
                                 // ignore if pivot table missing
@@ -765,7 +778,17 @@ class DosenController extends Controller
 
                         try {
                             if (!empty($mkIds) && method_exists($dosen, 'mataKuliahs')) {
-                                $dosen->mataKuliahs()->sync($mkIds);
+                                $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+                                if ($activeSemester) {
+                                    $syncData = [];
+                                    foreach ($mkIds as $mkId) {
+                                        $syncData[$mkId] = [
+                                            'semester_id' => $activeSemester->id,
+                                            'created_by' => auth()->id()
+                                        ];
+                                    }
+                                    $dosen->mataKuliahs()->sync($syncData);
+                                }
                             }
                         } catch (\Throwable $e) {
                             // ignore if pivot table missing

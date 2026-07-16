@@ -10,7 +10,6 @@ use App\Models\InstallmentRequest;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentProof;
-use App\Models\Pembayaran;
 use App\Services\FileStorageService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -25,27 +24,38 @@ class MahasiswaPaymentController extends Controller
      */
     public function index()
     {
-        $student = auth()->user()->student;
+        $student = auth()->user()->mahasiswa;
 
         if (!$student) {
             abort(403, 'Profil mahasiswa tidak ditemukan');
         }
 
-        // Get new invoices from payment system
+        // Get new system invoices
         $invoices = Invoice::where('student_id', $student->id)
-            ->whereIn('status', ['PUBLISHED', 'IN_INSTALLMENT', 'LUNAS'])
-            ->with(['installments', 'installmentRequest'])
-            ->orderByDesc('tahun_ajaran')
-            ->orderByDesc('semester')
+            ->with(['installments', 'paymentProofs'])
+            ->latest()
             ->get();
 
-        // Get existing payments from old system
-        $existingPayments = Pembayaran::where('mahasiswa_id', $student->id)
-            ->with('semester')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Get existing payment data from old system (deprecated - return empty)
+        $existingPayments = collect();
 
-        return view('page.mahasiswa.pembayaran.invoices.index', compact('invoices', 'existingPayments'));
+        // Check for upcoming payments (H-7)
+        $upcomingPayment = null;
+        foreach ($invoices as $invoice) {
+            if ($invoice->status === 'LUNAS') continue;
+
+            foreach ($invoice->installments as $inst) {
+                if ($inst->status === 'UNPAID' && $inst->due_date) {
+                    $diff = now()->diffInDays($inst->due_date, false);
+                    if ($diff >= 0 && $diff <= 7) {
+                        $upcomingPayment = $inst;
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        return view('page.mahasiswa.pembayaran.invoices.index', compact('invoices', 'existingPayments', 'upcomingPayment'));
     }
 
     /**
@@ -77,7 +87,7 @@ class MahasiswaPaymentController extends Controller
      */
     public function createInstallmentRequest(Invoice $invoice)
     {
-        $student = auth()->user()->student;
+        $student = auth()->user()->mahasiswa;
 
         if (!$student || $invoice->student_id !== $student->id) {
             abort(403);
@@ -100,7 +110,7 @@ class MahasiswaPaymentController extends Controller
      */
     public function storeInstallmentRequest(StoreInstallmentRequest $request, Invoice $invoice)
     {
-        $student = auth()->user()->student;
+        $student = auth()->user()->mahasiswa;
 
         InstallmentRequest::create([
             'invoice_id' => $invoice->id,
@@ -120,7 +130,7 @@ class MahasiswaPaymentController extends Controller
      */
     public function createPaymentProof(Installment $installment)
     {
-        $student = auth()->user()->student;
+        $student = auth()->user()->mahasiswa;
         $invoice = $installment->invoice;
 
         if (!$student || $invoice->student_id !== $student->id) {
@@ -151,7 +161,7 @@ class MahasiswaPaymentController extends Controller
     {
         $this->authorize('view', $invoice);
 
-        $student = auth()->user()->student;
+        $student = auth()->user()->mahasiswa;
 
         if (!$student || $invoice->student_id !== $student->id) {
             abort(403);
@@ -186,7 +196,7 @@ class MahasiswaPaymentController extends Controller
      */
     public function storePaymentProof(StorePaymentProofRequest $request)
     {
-        $student = auth()->user()->student;
+        $student = auth()->user()->mahasiswa;
         $installment = null;
         $invoice = null;
 
@@ -250,11 +260,11 @@ class MahasiswaPaymentController extends Controller
             'invoice_id' => $invoice->id,
             'installment_id' => $installment?->id,
             'uploaded_by' => auth()->id(),
-            'transfer_date' => $request->transfer_date,
-            'amount_submitted' => $request->amount_submitted,
-            'method' => $request->method,
+            'transfer_date' => $request->input('transfer_date'),
+            'amount_submitted' => $request->input('amount_submitted'),
+            'method' => $request->input('method'),
             'file_path' => $filePath,
-            'student_notes' => $request->student_notes,
+            'student_notes' => $request->input('student_notes'),
             'status' => 'UPLOADED',
         ]);
 
@@ -275,7 +285,7 @@ class MahasiswaPaymentController extends Controller
      */
     public function paymentHistory()
     {
-        $student = auth()->user()->student;
+        $student = auth()->user()->mahasiswa;
 
         if (!$student) {
             abort(403);

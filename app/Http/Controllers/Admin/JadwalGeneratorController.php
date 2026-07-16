@@ -196,59 +196,48 @@ class JadwalGeneratorController extends Controller
                 ->pluck('kode_ruangan')
                 ->toArray();
 
-            // Generate berdasarkan mata_kuliah_ids dari tabel dosens
-            $dosens = DB::table('dosens')
+            // Generate berdasarkan data relasi tabel pivot dosen_mata_kuliah untuk semester ini
+            $assignments = DB::table('dosen_mata_kuliah')
+                ->join('dosens', 'dosen_mata_kuliah.dosen_id', '=', 'dosens.id')
                 ->join('users', 'dosens.user_id', '=', 'users.id')
-                ->select('dosens.id', 'dosens.mata_kuliah_ids', 'users.name as dosen_nama')
-                ->whereNotNull('dosens.mata_kuliah_ids')
-                ->where('dosens.mata_kuliah_ids', '!=', '')
-                ->where('dosens.mata_kuliah_ids', '!=', '[]')
-                ->where('dosens.mata_kuliah_ids', '!=', 'null')
+                ->join('mata_kuliahs', 'dosen_mata_kuliah.mata_kuliah_id', '=', 'mata_kuliahs.id')
+                ->select(
+                    'dosens.id as dosen_id',
+                    'users.name as dosen_nama',
+                    'mata_kuliahs.id as mata_kuliah_id',
+                    'mata_kuliahs.nama_mk',
+                    'mata_kuliahs.sks',
+                    'mata_kuliahs.kode_mk'
+                )
+                ->where('dosen_mata_kuliah.semester_id', $semester->id)
                 ->get();
 
             $kelasMataKuliahs = collect();
 
-            foreach ($dosens as $dosen) {
-                // Parse JSON mata_kuliah_ids
-                $mkIds = json_decode($dosen->mata_kuliah_ids, true);
+            foreach ($assignments as $row) {
+                // Cek apakah sudah ada di kelas_mata_kuliahs (untuk ambil preferensi)
+                $kmk = DB::table('kelas_mata_kuliahs')
+                    ->where('mata_kuliah_id', $row->mata_kuliah_id)
+                    ->where('dosen_id', $row->dosen_id)
+                    ->first();
 
-                if (!is_array($mkIds) || empty($mkIds)) {
-                    continue;
-                }
-
-                // Untuk setiap mata kuliah yang diampu dosen ini
-                foreach ($mkIds as $mkId) {
-                    // Ambil data mata kuliah
-                    $mataKuliah = DB::table('mata_kuliahs')->where('id', $mkId)->first();
-
-                    if (!$mataKuliah) {
-                        continue;
-                    }
-
-                    // Cek apakah sudah ada di kelas_mata_kuliahs (untuk ambil preferensi)
-                    $kmk = DB::table('kelas_mata_kuliahs')
-                        ->where('mata_kuliah_id', $mkId)
-                        ->where('dosen_id', $dosen->id)
-                        ->first();
-
-                    // Buat object untuk generate
-                    $kelasMataKuliahs->push((object) [
-                        'id' => $kmk->id ?? null,
-                        'mata_kuliah_id' => $mkId,
-                        'dosen_id' => $dosen->id,
-                        'kode_kelas' => $kmk->kode_kelas ?? '01',
-                        'kapasitas' => $kmk->kapasitas ?? 40,
-                        'kelas_perkuliahan_id' => $kmk->kelas_perkuliahan_id ?? null,
-                        'ruang' => $kmk->ruang ?? null,
-                        'hari' => $kmk->hari ?? null,
-                        'jam_mulai' => $kmk->jam_mulai ?? null,
-                        'jam_selesai' => $kmk->jam_selesai ?? null,
-                        'mata_kuliah_nama' => $mataKuliah->nama_mk,
-                        'sks' => $mataKuliah->sks,
-                        'kelas_nama' => ($kmk->kode_kelas ?? $mataKuliah->kode_mk . '-A'),
-                        'dosen_nama' => $dosen->dosen_nama,
-                    ]);
-                }
+                // Buat object untuk generate
+                $kelasMataKuliahs->push((object) [
+                    'id' => $kmk->id ?? null,
+                    'mata_kuliah_id' => $row->mata_kuliah_id,
+                    'dosen_id' => $row->dosen_id,
+                    'kode_kelas' => $kmk->kode_kelas ?? '01',
+                    'kapasitas' => $kmk->kapasitas ?? 40,
+                    'kelas_perkuliahan_id' => $kmk->kelas_perkuliahan_id ?? null,
+                    'ruang' => $kmk->ruang ?? null,
+                    'hari' => $kmk->hari ?? null,
+                    'jam_mulai' => $kmk->jam_mulai ?? null,
+                    'jam_selesai' => $kmk->jam_selesai ?? null,
+                    'mata_kuliah_nama' => $row->nama_mk,
+                    'sks' => $row->sks,
+                    'kelas_nama' => ($kmk->kode_kelas ?? $row->kode_mk . '-A'),
+                    'dosen_nama' => $row->dosen_nama,
+                ]);
             }
 
             // Sort classes by priority (limited availability first, high SKS first)
@@ -552,28 +541,29 @@ class JadwalGeneratorController extends Controller
     {
         $ruangList = $this->ruangList;
 
-        // Randomize ruangan jika diminta untuk variasi
         if ($randomize) {
             shuffle($ruangList);
         }
 
+        // Ambil semua ruangan terpakai di jadwal aktif pada hari dan jam tersebut (1 query)
+        $bookedRoomsJadwal = Jadwal::where('hari', $hari)
+            ->where('jam_mulai', '<', $jamSelesai)
+            ->where('jam_selesai', '>', $jamMulai)
+            ->pluck('ruangan')
+            ->toArray();
+
+        // Ambil semua ruangan terpakai di proposal (1 query)
+        $bookedRoomsProposal = JadwalProposal::where('hari', $hari)
+            ->where('jam_mulai', '<', $jamSelesai)
+            ->where('jam_selesai', '>', $jamMulai)
+            ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
+            ->pluck('ruangan')
+            ->toArray();
+
+        $bookedRooms = array_merge($bookedRoomsJadwal, $bookedRoomsProposal);
+
         foreach ($ruangList as $ruang) {
-            // Cek apakah ruang sudah terpakai di jadwal aktif
-            $ruangTerpakai = Jadwal::where('hari', $hari)
-                ->where('ruangan', $ruang)
-                ->where('jam_mulai', '<', $jamSelesai)
-                ->where('jam_selesai', '>', $jamMulai)
-                ->exists();
-
-            // Cek apakah ruang sudah terpakai di proposal (include pending_dosen)
-            $ruangTerpakaiProposal = JadwalProposal::where('hari', $hari)
-                ->where('ruangan', $ruang)
-                ->where('jam_mulai', '<', $jamSelesai)
-                ->where('jam_selesai', '>', $jamMulai)
-                ->whereIn('status', ['pending_dosen', 'approved_dosen', 'pending_admin', 'approved_admin'])
-                ->exists();
-
-            if (!$ruangTerpakai && !$ruangTerpakaiProposal) {
+            if (!in_array($ruang, $bookedRooms)) {
                 return $ruang;
             }
         }

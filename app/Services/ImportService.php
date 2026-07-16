@@ -24,10 +24,10 @@ class ImportService
                 'prodi' => 'prodi',
                 'angkatan' => 'angkatan',
                 'semester' => 'semester',
-                'phone' => 'phone',
-                'telefon' => 'phone',              // alias untuk phone
-                'address' => 'address',
-                'alamat' => 'address',             // alias untuk address
+                'phone' => 'no_hp',
+                'telefon' => 'no_hp',              // alias untuk phone
+                'address' => 'alamat',
+                'alamat' => 'alamat',             // alias untuk address
                 'jenis_kelamin' => 'jenis_kelamin',
             ],
             'unique_column' => 'nim',
@@ -609,8 +609,8 @@ class ImportService
             'prodi' => $data['prodi'] ?? null,
             'angkatan' => $data['angkatan'] ?? date('Y'),
             'semester' => $data['semester'] ?? 1,
-            'phone' => $data['phone'] ?? null,
-            'address' => $data['address'] ?? null,
+            'no_hp' => $data['no_hp'] ?? null,
+            'alamat' => $data['alamat'] ?? null,
             'jenis_kelamin' => $data['jenis_kelamin'] ?? null,
             'status' => 'aktif',
             'status_akun' => 'aktif',

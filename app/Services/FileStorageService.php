@@ -100,7 +100,7 @@ class FileStorageService
         $filename  = Str::uuid() . '.' . $extension;
         $path      = $folder . '/' . $filename;
 
-        Storage::disk($this->getDisk())->putFileAs($folder, $file, $filename);
+        Storage::disk($this->getDisk($path))->putFileAs($folder, $file, $filename);
 
         return \App\Models\Upload::create([
             'user_id'       => $userId,
@@ -123,7 +123,7 @@ class FileStorageService
      */
     public function put(string $path, string $content): void
     {
-        Storage::disk($this->getDisk())->put($path, $content);
+        Storage::disk($this->getDisk($path))->put($path, $content);
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -135,8 +135,8 @@ class FileStorageService
      */
     public function delete(?string $path): void
     {
-        if ($path && Storage::disk($this->getDisk())->exists($path)) {
-            Storage::disk($this->getDisk())->delete($path);
+        if ($path && Storage::disk($this->getDisk($path))->exists($path)) {
+            Storage::disk($this->getDisk($path))->delete($path);
         }
     }
 
@@ -166,7 +166,7 @@ class FileStorageService
      */
     public function temporaryUrl(string $path, int $minutes = 5): string
     {
-        return Storage::disk($this->getDisk())->temporaryUrl(
+        return Storage::disk($this->getDisk($path))->temporaryUrl(
             $path, now()->addMinutes($minutes)
         );
     }
@@ -180,7 +180,7 @@ class FileStorageService
             return false;
         }
 
-        return Storage::disk($this->getDisk())->exists($path);
+        return Storage::disk($this->getDisk($path))->exists($path);
     }
 
     /**
@@ -191,7 +191,7 @@ class FileStorageService
     {
         $name ??= basename($path);
 
-        return Storage::disk($this->getDisk())->download($path, $name);
+        return Storage::disk($this->getDisk($path))->download($path, $name);
     }
 
     /**
@@ -201,7 +201,7 @@ class FileStorageService
     {
         $name ??= basename($path);
 
-        return Storage::disk($this->getDisk())->response($path, $name);
+        return Storage::disk($this->getDisk($path))->response($path, $name);
     }
 
     // ──────────────────────────────────────────────────────────────

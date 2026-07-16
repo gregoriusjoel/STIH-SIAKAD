@@ -28,8 +28,8 @@ class UpsertMahasiswaRequest extends FormRequest
             'semester' => ['required', 'integer', 'min:1', 'max:8'],
             'jenis_kelamin' => [$mahasiswaId ? 'nullable' : 'required', 'string', 'max:50'],
             'status' => ['required', 'string', Rule::in(['aktif', 'cuti', 'lulus', 'do'])],
-            'phone' => ['nullable', 'digits_between:11,13'],
-            'address' => ['nullable', 'string', 'max:1000'],
+            'no_hp' => ['nullable', 'digits_between:11,13'],
+            'alamat' => ['nullable', 'string', 'max:1000'],
             'kelas_perkuliahan_id' => ['nullable', 'integer', 'exists:kelas_perkuliahans,id'],
             'tahun_akademik_id' => ['nullable', 'integer', 'exists:semesters,id'],
         ];

@@ -15,7 +15,7 @@ class StoreInstallmentRequest extends FormRequest
             return false;
         }
 
-        $student = $this->user()->student;
+        $student = $this->user()->mahasiswa;
         return $student && $invoice->student_id === $student->id;
     }
 

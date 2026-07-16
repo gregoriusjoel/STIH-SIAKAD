@@ -8,7 +8,6 @@ use App\Models\Mahasiswa;
 use App\Models\SkripsiSubmission;
 use App\Models\WisudaRegistration;
 use App\Models\Invoice;
-use App\Models\Pembayaran;
 use App\Models\Krs;
 
 class WisudaEligibilityService
@@ -122,19 +121,8 @@ class WisudaEligibilityService
                 continue; // Skip legacy check if new invoice exists for this semester
             }
 
-            // 2. Check legacy system payment
-            $legacyPayment = Pembayaran::where('mahasiswa_id', $mahasiswa->id)
-                ->whereHas('semester', function ($q) use ($i) {
-                    $q->where('nama_semester', 'like', "%{$i}%");
-                })
-                ->first();
-
-            if ($legacyPayment) {
-                if ($legacyPayment->status !== 'lunas') {
-                    $unpaid[] = $i;
-                }
-            } else {
-                // If neither invoice nor legacy payment exists, check if they enrolled (KRS existed)
+            else {
+                // If no invoice exists, check if they enrolled (KRS existed)
                 $semesterKodeId = 'sms' . $i;
                 $hasKrs = Krs::where('mahasiswa_id', $mahasiswa->id)
                     ->whereHas('mataKuliah', function ($q) use ($semesterKodeId) {

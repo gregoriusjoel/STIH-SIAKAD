@@ -10,19 +10,13 @@ use App\Models\Prodi;
 use App\Models\Dosen;
 use App\Models\MataKuliah;
 use App\Models\SurveyQuestion;
-use App\Services\ExportKuisionerExcelService;
+use App\Exports\KuisionerExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class HasilKuisionerController extends Controller
 {
-    protected $excelService;
-
-    public function __construct(ExportKuisionerExcelService $excelService)
-    {
-        $this->excelService = $excelService;
-    }
-
     public function index()
     {
         $currentSemester = Semester::where('is_active', true)->first();
@@ -77,7 +71,8 @@ class HasilKuisionerController extends Controller
         $results = $query->get();
         $stats = $this->calculateStats($type, $results);
 
-        return $this->excelService->export($type, $results, $stats);
+        $fileName = 'Hasil_Kuisioner_' . ucfirst($type) . '_' . date('Y-m-d_His') . '.xlsx';
+        return Excel::download(new KuisionerExport($type, $results, $stats), $fileName);
     }
 
     protected function getQuery($type, Request $request)
