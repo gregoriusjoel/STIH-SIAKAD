@@ -100,7 +100,6 @@ class DashboardController extends Controller
         foreach($activeKrs as $krs) {
             if ($krs->mata_kuliah_id) $mataKuliahIds[] = $krs->mata_kuliah_id;
             if ($krs->kelas_mata_kuliah_id) $kelasIds[] = $krs->kelas_mata_kuliah_id;
-            if ($krs->kelas_id) $kelasIds[] = $krs->kelas_id;
         }
 
         $tugasKuliah = collect();

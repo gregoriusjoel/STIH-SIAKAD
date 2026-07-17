@@ -15,7 +15,6 @@ class Krs extends Model
         'mahasiswa_id',
         'mata_kuliah_id',
         'kelas_mata_kuliah_id',
-        'kelas_id',
         'tahun_ajaran',
         'status',
         'keterangan',
@@ -36,7 +35,7 @@ class Krs extends Model
 
     public function kelas(): BelongsTo
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->belongsTo(KelasMataKuliah::class, 'kelas_mata_kuliah_id');
     }
 
     public function kelasMataKuliah(): BelongsTo

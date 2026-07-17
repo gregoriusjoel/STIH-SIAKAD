@@ -80,7 +80,7 @@ class KelasController extends Controller
 
         // Verify student has APPROVED KRS for this class
         $krs = Krs::where('mahasiswa_id', $mahasiswa->id)
-            ->where('kelas_id', $id)
+            ->where('kelas_mata_kuliah_id', $id)
             ->where('status', 'sudah submit')
             ->firstOrFail();
 

@@ -696,12 +696,10 @@ class KRSController extends Controller
             }
 
             if (!empty($selectedMkIds)) {
-                // Batch query Kelas and KelasMataKuliah records in O(1)
-                $kelasRecords = \App\Models\Kelas::whereIn('mata_kuliah_id', $selectedMkIds)->get()->keyBy('mata_kuliah_id');
+                // Batch query KelasMataKuliah records in O(1)
                 $kelasMkRecords = \App\Models\KelasMataKuliah::whereIn('mata_kuliah_id', $selectedMkIds)->get()->keyBy('mata_kuliah_id');
 
                 foreach ($selectedMkIds as $mkId) {
-                    $kelasRecord = $kelasRecords->get($mkId);
                     $kelasMkRecord = $kelasMkRecords->get($mkId);
 
                     $createData = [
@@ -712,9 +710,6 @@ class KRSController extends Controller
                         'tahun_ajaran' => $calculatedTahunAjaran,
                     ];
 
-                    if ($kelasRecord) {
-                        $createData['kelas_id'] = $kelasRecord->id;
-                    }
                     if ($kelasMkRecord) {
                         $createData['kelas_mata_kuliah_id'] = $kelasMkRecord->id;
                     }

@@ -90,19 +90,22 @@
 
     <script>
         // Scroll to top functionality
-        $(document).ready(function () {
-            $(window).scroll(function () {
-                if ($(this).scrollTop() > 200) {
-                    $('#scrollToTop').removeClass('hidden');
-                } else {
-                    $('#scrollToTop').addClass('hidden');
-                }
-            });
+        document.addEventListener('DOMContentLoaded', () => {
+            const scrollToTop = document.getElementById('scrollToTop');
+            if (scrollToTop) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 200) {
+                        scrollToTop.classList.remove('hidden');
+                    } else {
+                        scrollToTop.classList.add('hidden');
+                    }
+                });
 
-            $('#scrollToTop').click(function (e) {
-                e.preventDefault();
-                $('html, body').animate({ scrollTop: 0 }, 500);
-            });
+                scrollToTop.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
         });
     </script>
 

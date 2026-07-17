@@ -74,7 +74,7 @@ class InternshipGradingService
                     Nilai::updateOrCreate(
                         ['krs_id' => $krs->id],
                         [
-                            'kelas_id'          => $krs->kelas_id,
+                            'kelas_id'          => $krs->kelas_mata_kuliah_id,
                             'nilai_akhir'       => $nilaiAkhir,
                             'grade'             => $grade,
                             'bobot'             => $bobot,

@@ -17,7 +17,7 @@
             <a href="{{ route('admin.jadwal_admin_approval.index') }}" class="flex-1 md:flex-none justify-center px-4 py-2 bg-white hover:bg-gray-100 text-maroon rounded-lg font-semibold transition-all duration-200 shadow-sm inline-flex items-center text-sm md:text-base">
                 <i class="fas fa-eye mr-2"></i>Lihat Data Dosen
             </a>
-            <button @click="modalOpen = true; $refs.genModal.classList.remove('hidden'); $refs.genModal.style.display = 'flex'; document.querySelector('header')?.classList.add('blur-sm'); document.body.classList.add('overflow-hidden');" 
+            <button @click="modalOpen = true; document.querySelector('header')?.classList.add('blur-sm'); document.body.classList.add('overflow-hidden');" 
                 class="flex-1 md:flex-none justify-center px-4 py-2 bg-white hover:bg-gray-100 text-maroon rounded-lg font-semibold transition-all duration-200 shadow-sm text-sm md:text-base">
                 <i class="fas fa-plus mr-2"></i>Generate Jadwal
             </button>
@@ -96,17 +96,17 @@
 
     {{-- Generate Modal (simple) --}}
     {{-- Generate Modal (Improved) --}}
-    <div x-ref="genModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center" style="display: none;" 
+    <div x-show="modalOpen" x-cloak class="fixed inset-0 z-[9999] flex items-center justify-center" style="display: none;" 
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         @click.away=\"$refs.genModal.classList.add('hidden'); $refs.genModal.style.display = 'none'; document.querySelector('header')?.classList.remove('blur-sm'); document.body.classList.remove('overflow-hidden');\">
+         @click.away="modalOpen = false; document.querySelector('header')?.classList.remove('blur-sm'); document.body.classList.remove('overflow-hidden');">
         
         {{-- Backdrop with blur effect --}}
-        <div class="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity z-[-1]" @click="$refs.genModal.classList.add('hidden'); $refs.genModal.style.display = 'none'; document.querySelector('header')?.classList.remove('blur-sm'); document.body.classList.remove('overflow-hidden');"></div>
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity z-[-1]" @click="modalOpen = false; document.querySelector('header')?.classList.remove('blur-sm'); document.body.classList.remove('overflow-hidden');"></div>
 
         {{-- Modal Content --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full z-[10000] overflow-hidden transform transition-all scale-100 mx-4 relative">
@@ -115,7 +115,7 @@
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">
                     <i class="fas fa-magic text-white/80"></i> Generate Jadwal Kuliah
                 </h3>
-                <button type="button" @click="$refs.genModal.classList.add('hidden'); $refs.genModal.style.display = 'none'; document.querySelector('header')?.classList.remove('blur-sm'); document.body.classList.remove('overflow-hidden');" class="text-white/70 hover:text-white transition-colors">
+                <button type="button" @click="modalOpen = false; document.querySelector('header')?.classList.remove('blur-sm'); document.body.classList.remove('overflow-hidden');" class="text-white/70 hover:text-white transition-colors">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -180,7 +180,7 @@
 
                 {{-- Footer --}}
                 <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3 rounded-b-xl">
-                    <button type="button" @click="$refs.genModal.classList.add('hidden'); $refs.genModal.style.display = 'none'; document.querySelector('header')?.classList.remove('blur-sm'); document.body.classList.remove('overflow-hidden');" 
+                    <button type="button" @click="modalOpen = false; document.querySelector('header')?.classList.remove('blur-sm'); document.body.classList.remove('overflow-hidden');" 
                         class="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors text-sm">
                         Batal
                     </button>

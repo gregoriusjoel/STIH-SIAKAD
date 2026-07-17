@@ -500,17 +500,8 @@ class KelasMataKuliahController extends Controller
             $topik = $materi->judul ?? '-';
         }
 
-        // Get students from KRS (checking both specific KMK and generic Kelas)
-        $students = \App\Models\Krs::where(function($q) use ($id, $kelasMataKuliah) {
-                $q->where('kelas_mata_kuliah_id', $id);
-                // Fallback to finding students linked to any "Kelas" that matches this MK and KP
-                $kelasId = \App\Models\Kelas::where('mata_kuliah_id', $kelasMataKuliah->mata_kuliah_id)
-                    ->where('kelas_perkuliahan_id', $kelasMataKuliah->kelas_perkuliahan_id)
-                    ->value('id');
-                if ($kelasId) {
-                    $q->orWhere('kelas_id', $kelasId);
-                }
-            })
+        // Get students from KRS (checking specific KMK)
+        $students = \App\Models\Krs::where('kelas_mata_kuliah_id', $id)
             ->with(['mahasiswa.user'])
             ->get();
 

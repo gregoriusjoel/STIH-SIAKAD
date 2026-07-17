@@ -517,10 +517,10 @@ class JadwalGeneratorController extends Controller
 
     private function hasDosenConflictByKelas($dosenId, $hari, $jamMulai, $jamSelesai)
     {
-        // Cek di tabel jadwal yang sudah aktif -> join kelas untuk mengetahui dosen yang bertugas pada kelas tersebut
+        // Cek di tabel jadwal yang sudah aktif -> join kelas_mata_kuliahs untuk mengetahui dosen yang bertugas pada kelas tersebut
         $existingJadwal = DB::table('jadwals')
-            ->join('kelas', 'jadwals.kelas_id', '=', 'kelas.id')
-            ->where('kelas.dosen_id', $dosenId)
+            ->join('kelas_mata_kuliahs', 'jadwals.kelas_id', '=', 'kelas_mata_kuliahs.id')
+            ->where('kelas_mata_kuliahs.dosen_id', $dosenId)
             ->where('jadwals.hari', $hari)
             ->where('jadwals.jam_mulai', '<', $jamSelesai)
             ->where('jadwals.jam_selesai', '>', $jamMulai)

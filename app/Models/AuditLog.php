@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Jenssegers\Agent\Agent;
 
 class AuditLog extends Model
 {
@@ -55,6 +56,58 @@ class AuditLog extends Model
     public function auditable()
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Parse user_agent into structured device info using jenssegers/agent.
+     * Returns: browser, browser_version, os, os_version, device_type, device_name, platform
+     */
+    public function getDeviceInfoAttribute(): array
+    {
+        if (empty($this->user_agent)) {
+            return [
+                'browser'          => 'Unknown',
+                'browser_version'  => null,
+                'os'               => 'Unknown',
+                'os_version'       => null,
+                'device_type'      => 'Unknown',
+                'device_name'      => null,
+                'platform'         => 'Unknown',
+            ];
+        }
+
+        $agent = new Agent();
+        $agent->setUserAgent($this->user_agent);
+
+        if ($agent->isTablet()) {
+            $deviceType = 'Tablet';
+        } elseif ($agent->isMobile()) {
+            $deviceType = 'Mobile';
+        } else {
+            $deviceType = 'Desktop';
+        }
+
+        $browser        = $agent->browser() ?: 'Unknown';
+        $browserVersion = $agent->version($browser) ?: null;
+        $os             = $agent->platform() ?: 'Unknown';
+        $osVersion      = $agent->version($os) ?: null;
+        $deviceName     = $agent->device() ?: null;
+
+        // Normalize agent response
+        if ($browserVersion && str_contains($browserVersion, '.')) {
+            $parts          = explode('.', $browserVersion);
+            $browserVersion = $parts[0] . (isset($parts[1]) ? '.' . $parts[1] : '');
+        }
+
+        return [
+            'browser'         => $browser,
+            'browser_version' => $browserVersion,
+            'os'              => $os,
+            'os_version'      => $osVersion,
+            'device_type'     => $deviceType,
+            'device_name'     => ($deviceName && $deviceName !== 'WebKit') ? $deviceName : null,
+            'platform'        => $os . ($osVersion ? ' ' . $osVersion : ''),
+        ];
     }
 
     /**

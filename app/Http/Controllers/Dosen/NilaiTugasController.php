@@ -31,7 +31,7 @@ class NilaiTugasController extends Controller
     private function mahasiswaKelas(int $kelasId): \Illuminate\Support\Collection
     {
         return Krs::with(['mahasiswa.user'])
-            ->where('kelas_id', $kelasId)
+            ->where('kelas_mata_kuliah_id', $kelasId)
             ->where('status', 'sudah submit')
             ->get()
             ->map(fn($krs) => $krs->mahasiswa)
@@ -57,7 +57,12 @@ class NilaiTugasController extends Controller
         // Group tugas by pertemuan untuk tampilan yang lebih rapi
         $tugasGrouped = $tugasList->groupBy('pertemuan');
 
-        return view('page.dosen.nilai-tugas.index', compact('kelas', 'tugasList', 'tugasGrouped'));
+        // Hitung total mahasiswa terdaftar sekali saja
+        $totalMahasiswa = Krs::where('kelas_mata_kuliah_id', $kelasId)
+            ->where('status', 'sudah submit')
+            ->count();
+
+        return view('page.dosen.nilai-tugas.index', compact('kelas', 'tugasList', 'tugasGrouped', 'totalMahasiswa'));
     }
 
     // ─── Input Nilai untuk Tugas Tertentu ──────────────────────────────

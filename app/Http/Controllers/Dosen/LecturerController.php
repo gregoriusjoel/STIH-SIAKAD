@@ -141,7 +141,11 @@ class LecturerController extends Controller
         });
 
         // Merge and deduplicate by day+time+code
-        $merged = collect(array_merge($mappedJadwals->toArray(), $mappedKmk->toArray()));
+        $merged = collect(array_merge($mappedJadwals->toArray(), $mappedKmk->toArray()))
+            ->unique(function ($item) {
+                return ($item['day'] ?? '') . '-' . ($item['time'] ?? '') . '-' . ($item['code'] ?? '');
+            })
+            ->values();
 
         // Today's schedules
         $today = now()->locale('id')->isoFormat('dddd');
@@ -366,14 +370,9 @@ class LecturerController extends Controller
                     ->first();
             }
 
-            // Calculate student count from both possible foreign keys
             $krsCount = \App\Models\Krs::where('status', 'sudah submit')
-                ->where(function ($q) use ($kmk, $kelas) {
-                    $q->where('kelas_mata_kuliah_id', $kmk->id);
-                    if ($kelas) {
-                        $q->orWhere('kelas_id', $kelas->id);
-                    }
-                })->count();
+                ->where('kelas_mata_kuliah_id', $kmk->id)
+                ->count();
 
             return [
                 // Prefer the actual Kelas id for routing; fallback to KelasMataKuliah id only if no Kelas exists
@@ -491,13 +490,10 @@ class LecturerController extends Controller
             ->where('dosen_id', $kelas->dosen_id)
             ->first();
 
+        $targetKmkId = $kelasMataKuliah?->id ?? $kelas->id;
         $krsCollection = \App\Models\Krs::where('status', 'sudah submit')
-            ->where(function ($q) use ($kelasMataKuliah, $kelas) {
-                $q->where('kelas_id', $kelas->id);
-                if ($kelasMataKuliah) {
-                    $q->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
-                }
-            })->with('mahasiswa')
+            ->where('kelas_mata_kuliah_id', $targetKmkId)
+            ->with('mahasiswa')
             ->get();
 
         $students = $krsCollection->map(function ($krs) use ($kelasMataKuliah) {
@@ -778,13 +774,10 @@ class LecturerController extends Controller
                 ->first();
         }
 
+        $targetKmkId = $kelasMataKuliah?->id ?? $kelas->id;
         $krsCollection = \App\Models\Krs::where('status', 'sudah submit')
-            ->where(function ($q) use ($kelasMataKuliah, $kelas) {
-                $q->where('kelas_id', $kelas->id);
-                if ($kelasMataKuliah) {
-                    $q->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
-                }
-            })->with('mahasiswa')
+            ->where('kelas_mata_kuliah_id', $targetKmkId)
+            ->with('mahasiswa')
             ->get();
 
         // Fetch attendance records for this meeting
@@ -956,10 +949,7 @@ class LecturerController extends Controller
 
         // Block manual attendance change for internship conversion students (auto-hadir)
         $isInternshipKrs = \App\Models\Krs::where('mahasiswa_id', $studentId)
-            ->where(function($q) use ($kelas, $kelasMataKuliah) {
-                $q->where('kelas_id', $kelas->id)
-                  ->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
-            })
+            ->where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
             ->where('is_internship_conversion', true)
             ->exists();
 
@@ -982,7 +972,7 @@ class LecturerController extends Controller
                 'tanggal' => now()->toDateString(),
                 'waktu' => now(),
                 'krs_id' => \App\Models\Krs::where('mahasiswa_id', $studentId)
-                            ->where('kelas_id', $kelas->id)
+                            ->where('kelas_mata_kuliah_id', $kelasMataKuliah->id)
                             ->where('status', 'sudah submit')
                             ->value('id')
             ]
@@ -1217,7 +1207,7 @@ class LecturerController extends Controller
         );
         
         // Get students from KRS
-        $students = \App\Models\Krs::where('kelas_id', $id)
+        $students = \App\Models\Krs::where('kelas_mata_kuliah_id', $id)
             ->where('status', 'sudah submit')
             ->with(['mahasiswa.user', 'nilai'])
             ->get()
@@ -1554,7 +1544,7 @@ class LecturerController extends Controller
 
         $bobot = \App\Models\BobotPenilaian::where('kelas_id', $id)->first();
 
-        $students = \App\Models\Krs::where('kelas_id', $id)
+        $students = \App\Models\Krs::where('kelas_mata_kuliah_id', $id)
             ->where('status', 'sudah submit')
             ->with(['mahasiswa.user', 'nilai'])
             ->get();
@@ -1615,7 +1605,7 @@ class LecturerController extends Controller
         }
 
         // Build NIM → krs_id lookup
-        $krsRecords = \App\Models\Krs::where('kelas_id', $id)
+        $krsRecords = \App\Models\Krs::where('kelas_mata_kuliah_id', $id)
             ->where('status', 'sudah submit')
             ->with('mahasiswa')
             ->get();
@@ -1980,13 +1970,10 @@ class LecturerController extends Controller
             ?? Semester::latest()->first();
 
         // Count total students
+        $targetKmkId = $kelasMataKuliah?->id ?? $kelas->id;
         $totalStudents = \App\Models\Krs::where('status', 'sudah submit')
-            ->where(function ($q) use ($kelasMataKuliah, $kelas) {
-                $q->where('kelas_id', $kelas->id);
-                if ($kelasMataKuliah) {
-                    $q->orWhere('kelas_mata_kuliah_id', $kelasMataKuliah->id);
-                }
-            })->count();
+            ->where('kelas_mata_kuliah_id', $targetKmkId)
+            ->count();
 
         // Load pertemuans if available
         $pertemuans = collect();

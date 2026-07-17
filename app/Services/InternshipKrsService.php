@@ -89,7 +89,6 @@ class InternshipKrsService
                     'mahasiswa_id'             => $internship->mahasiswa_id,
                     'mata_kuliah_id'           => $mapping->mata_kuliah_id,
                     'kelas_mata_kuliah_id'     => $kelasMk?->id,
-                    'kelas_id'                 => $kelasMk?->kelas_id ?? null,
                     'tahun_ajaran'             => $activeSemester->tahun_ajaran,
                     'status'                   => 'sudah submit',
                     'keterangan'               => 'Konversi Magang - ' . $internship->instansi,

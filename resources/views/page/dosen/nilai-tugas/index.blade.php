@@ -78,7 +78,7 @@
                                     <span><i class="fas fa-star mr-1"></i>Max: {{ $tugas->max_score }}</span>
                                     @php 
                                         $graded = $tugas->submissions()->whereNotNull('score')->count();
-                                        $total = \App\Models\Krs::where('kelas_id', $kelas->id)->where('status', 'sudah submit')->count();
+                                        $total = $totalMahasiswa;
                                     @endphp
                                     <span><i class="fas fa-check-circle mr-1"></i>Dinilai: {{ $graded }}/{{ $total }}</span>
                                     @if($tugas->deadline)

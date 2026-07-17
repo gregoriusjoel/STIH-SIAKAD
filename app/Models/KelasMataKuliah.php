@@ -154,4 +154,46 @@ class KelasMataKuliah extends Model
     {
         return empty($this->kelas_perkuliahan_id);
     }
+
+    /* ─── Added Relations & Accessors for Legacy Kelas Merging ─── */
+
+    public function jadwals(): HasMany
+    {
+        return $this->hasMany(Jadwal::class, 'kelas_id', 'id');
+    }
+
+    public function bobotPenilaian(): HasOne
+    {
+        return $this->hasOne(BobotPenilaian::class, 'kelas_id');
+    }
+
+    public function dokumen(): HasMany
+    {
+        return $this->hasMany(DokumenKelas::class, 'kelas_id');
+    }
+
+    public function silabus(): HasOne
+    {
+        return $this->hasOne(DokumenKelas::class, 'kelas_id')->where('tipe_dokumen', 'silabus');
+    }
+
+    public function rps(): HasOne
+    {
+        return $this->hasOne(DokumenKelas::class, 'kelas_id')->where('tipe_dokumen', 'rps');
+    }
+
+    public function mahasiswas()
+    {
+        return $this->belongsToMany(Mahasiswa::class, 'krs', 'kelas_mata_kuliah_id', 'mahasiswa_id')
+            ->withPivot('status')
+            ->wherePivot('status', 'sudah submit');
+    }
+
+    public function getResolvedKelasNameAttribute(): string
+    {
+        if (!$this->kelas_perkuliahan_id) {
+            return $this->kode_kelas ?? '-';
+        }
+        return $this->kelasPerkuliahan?->nama_kelas ?? $this->kelasPerkuliahan?->kode_kelas ?? '-';
+    }
 }

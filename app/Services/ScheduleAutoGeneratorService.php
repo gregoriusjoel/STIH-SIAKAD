@@ -425,7 +425,7 @@ class ScheduleAutoGeneratorService
         $mataKuliahTipe = $mataKuliahForLog ? $mataKuliahForLog->tipe : 'unknown';
         
         $this->logService->logSchedulingFailed('No suitable slot found', [
-            'kelas_id' => $kmk->kelas_id ?? 'N/A',
+            'kelas_id' => $kmk->id ?? 'N/A',
             'dosen_id' => $kmk->dosen_id,
             'mata_kuliah_id' => $kmk->mata_kuliah_id ?? 'N/A',
             'mata_kuliah_tipe' => $mataKuliahTipe,
@@ -511,7 +511,7 @@ class ScheduleAutoGeneratorService
         }
         
         // Check kelas conflict
-        if (isset($kmk->kelas_id) && $this->hasKelasConflict($kmk->kelas_id, $slot['hari'], $slot['jam_mulai'], $slot['jam_selesai'])) {
+        if (isset($kmk->id) && $this->hasKelasConflict($kmk->id, $slot['hari'], $slot['jam_mulai'], $slot['jam_selesai'])) {
             return true;
         }
         

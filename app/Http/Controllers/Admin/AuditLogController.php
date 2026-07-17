@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class AuditLogController extends Controller
 {
     /**
-     * Display a listing of general audit logs.
+     * Display a listing of general audit logs with full device & session filtering.
      */
     public function index(Request $request)
     {
@@ -19,20 +19,35 @@ class AuditLogController extends Controller
         if ($request->filled('action')) {
             $query->where('action', $request->action);
         }
-        
+
+        if ($request->filled('actor_role')) {
+            $query->where('actor_role', $request->actor_role);
+        }
+
         if ($request->filled('actor_id')) {
             $query->where('actor_id', $request->actor_id);
         }
-        
+
         if ($request->filled('entity_type')) {
-            // Support partial matches for partial class names
             $query->where('auditable_type', 'like', "%{$request->entity_type}%");
         }
 
-        $logs = $query->paginate(10)->withQueryString();
+        if ($request->filled('ip_address')) {
+            $query->where('ip_address', 'like', "%{$request->ip_address}%");
+        }
 
-        $actions = AuditLog::distinct()->pluck('action');
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
 
-        return view('admin.audit-log.index', compact('logs', 'actions'));
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $logs    = $query->paginate(20)->withQueryString();
+        $actions = AuditLog::distinct()->orderBy('action')->pluck('action');
+        $roles   = AuditLog::distinct()->orderBy('actor_role')->pluck('actor_role')->filter();
+
+        return view('admin.audit-log.index', compact('logs', 'actions', 'roles'));
     }
 }
