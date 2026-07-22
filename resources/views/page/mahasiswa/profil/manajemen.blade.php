@@ -65,9 +65,9 @@ $missingByTab[$info['tab']]++;
 </div>
 @endif
 
-{{-- Global villages data - load once to prevent memory exhaustion --}}
+{{-- Global villages data - populated via AJAX on district change --}}
 <script>
-    window.villagesData = @json(collect($villages)->map(fn($v) => ['value' => $v['name'], 'text' => $v['name'], 'district_code' => $v['district_code']])->toArray());
+    window.villagesData = [];
 
     function customSelectWrapper(selectId) {
         return {

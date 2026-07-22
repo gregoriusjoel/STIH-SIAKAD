@@ -12,6 +12,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->redirectTo(function ($request) {
+            // Deteksi domain/path untuk menentukan rute login yang tepat bagi tamu tak terautentikasi
+            $host = strtolower($request->getHost());
+            if ($request->is('mahasiswa*') || str_contains($host, 'mahasiswa')) {
+                return route('login.mahasiswa');
+            }
+            if ($request->is('dosen*') || str_contains($host, 'dosen')) {
+                return route('login.dosen');
+            }
+            if ($request->is('parent*') || str_contains($host, 'parent')) {
+                return route('login.parent');
+            }
+            return route('login'); // Fallback ke Admin / Staff
+        });
+
         $middleware->append(\App\Http\Middleware\ConvertEmptyStringsToNull::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 

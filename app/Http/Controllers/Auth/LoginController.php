@@ -13,7 +13,7 @@ class LoginController extends Controller
     /**
      * Show the login form.
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
         if (Auth::check()) {
             $user = Auth::user();
@@ -31,15 +31,29 @@ class LoginController extends Controller
             return redirect()->route('dosen.dashboard');
         }
 
+        // 1. Deteksi portal login berdasarkan path URL atau Subdomain
+        $host = strtolower($request->getHost());
+        
+        if ($request->is('mahasiswa*') || str_starts_with($host, 'mahasiswa.')) {
+            return view('auth.login_mahasiswa');
+        }
+        
+        if ($request->is('dosen*') || str_starts_with($host, 'dosen.')) {
+            return view('auth.login_dosen');
+        }
+        
+        if ($request->is('parent*') || str_starts_with($host, 'parent.')) {
+            return view('auth.login_parent');
+        }
+
+        // Fallback ke login utama (Admin/Staff/Keuangan)
         return view('auth.login');
     }
 
     /**
      * Handle login request.
-     * Support login dengan:
-     * 1. User email biasa
-     * 2. Email pribadi mahasiswa (email_pribadi)
-     * 3. Email kampus mahasiswa (email_kampus)
+     * Support login dengan email utama, email_pribadi, atau email_kampus,
+     * serta memvalidasi kesesuaian peran dengan portal masuk.
      */
     public function login(Request $request)
     {
@@ -52,25 +66,53 @@ class LoginController extends Controller
         $remember = $request->has('remember');
         $email = $credentials['email'];
 
-        // ✅ Coba login dengan email biasa di User table
-        if (Auth::attempt($credentials, $remember)) {
-            return $this->handleSuccessfulLogin($request);
+        // Deteksi portal login berdasarkan rute/request saat ini
+        $portal = 'admin'; // default
+        $host = strtolower($request->getHost());
+        if ($request->is('mahasiswa*') || str_starts_with($host, 'mahasiswa.')) {
+            $portal = 'mahasiswa';
+        } elseif ($request->is('dosen*') || str_starts_with($host, 'dosen.')) {
+            $portal = 'dosen';
+        } elseif ($request->is('parent*') || str_starts_with($host, 'parent.')) {
+            $portal = 'parent';
         }
 
-        // ✅ Jika gagal, coba cari mahasiswa dengan email_pribadi atau email_kampus
-        $mahasiswa = \App\Models\Mahasiswa::where('email_pribadi', $email)
-            ->orWhere('email_kampus', $email)
-            ->first();
-
-        if ($mahasiswa && $mahasiswa->user) {
-            // Coba login dengan user yang terkait
-            if (Hash::check($credentials['password'], $mahasiswa->user->password)) {
-                Auth::login($mahasiswa->user, $remember);
-                return $this->handleSuccessfulLogin($request);
+        // Cari user yang sesuai berdasarkan email login
+        $user = \App\Models\User::where('email', $email)->first();
+        if (!$user) {
+            $mahasiswa = \App\Models\Mahasiswa::where('email_pribadi', $email)
+                ->orWhere('email_kampus', $email)
+                ->first();
+            if ($mahasiswa) {
+                $user = $mahasiswa->user;
             }
         }
 
-        // ✅ Jika semua gagal, return error
+        // Cek kecocokan password & batasan hak akses portal
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+            // Batasan hak akses portal HANYA diaktifkan jika diakses lewat subdomain domain asli (bukan IP lokal / localhost)
+            $isIpOrLocal = filter_var($host, FILTER_VALIDATE_IP) || $host === 'localhost' || $host === '127.0.0.1';
+            
+            if (!$isIpOrLocal) {
+                if ($portal === 'mahasiswa' && $user->role !== 'mahasiswa') {
+                    return back()->with('error', 'Akun Anda tidak terdaftar sebagai Mahasiswa pada portal ini.')->withInput($request->only('email'));
+                }
+                if ($portal === 'dosen' && $user->role !== 'dosen') {
+                    return back()->with('error', 'Akun Anda tidak terdaftar sebagai Dosen pada portal ini.')->withInput($request->only('email'));
+                }
+                if ($portal === 'parent' && $user->role !== 'parent') {
+                    return back()->with('error', 'Akun Anda tidak terdaftar sebagai Orang Tua/Wali pada portal ini.')->withInput($request->only('email'));
+                }
+                if ($portal === 'admin' && !in_array($user->role, ['super_admin', 'admin', 'finance', 'keuangan'])) {
+                    return back()->with('error', 'Akun Anda tidak memiliki akses ke portal Admin/Staff.')->withInput($request->only('email'));
+                }
+            }
+
+            // Sukses verifikasi role, jalankan session login Laravel
+            Auth::login($user, $remember);
+            return $this->handleSuccessfulLogin($request);
+        }
+
         return back()
             ->with('error', 'Email atau password salah.')
             ->withInput($request->only('email'));
@@ -133,10 +175,21 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        $host = strtolower($request->getHost());
+
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        // Redirect ke portal login yang sesuai berdasarkan host asal request logout
+        if (str_starts_with($host, 'mahasiswa.')) {
+            return redirect()->route('login.mahasiswa')->with('success', 'Anda telah logout.');
+        } elseif (str_starts_with($host, 'dosen.')) {
+            return redirect()->route('login.dosen')->with('success', 'Anda telah logout.');
+        } elseif (str_starts_with($host, 'parent.')) {
+            return redirect()->route('login.parent')->with('success', 'Anda telah logout.');
+        }
 
         return redirect()->route('login')
             ->with('success', 'Anda telah logout.');

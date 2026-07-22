@@ -124,6 +124,61 @@
             font-weight: 700;
         }
 
+        /* ── Accordion Group Styles ── */
+        .doc-group {
+            margin-bottom: 6px;
+        }
+
+        .doc-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            cursor: pointer;
+            user-select: none;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.15s ease;
+        }
+
+        .doc-group-header:hover {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-primary);
+        }
+
+        .doc-group-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .doc-group-chevron {
+            font-size: 9px;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .doc-group.open .doc-group-chevron {
+            transform: rotate(90deg);
+        }
+
+        .doc-group-content {
+            display: none;
+            padding-left: 8px;
+            margin-top: 4px;
+            border-left: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .doc-group.open .doc-group-content {
+            display: block;
+        }
+
         .doc-item {
             display: flex;
             align-items: center;
@@ -906,7 +961,6 @@
         .kanban-board-wrapper {
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 120px);
             padding: 20px 0;
             overflow-x: auto;
             width: 100%;
@@ -1291,7 +1345,7 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <div class="logo-icon">
-                <i class="fa-solid fa-square-terminal"></i>
+                <i class="fa-solid fa-terminal"></i>
             </div>
             <div class="logo-text">
                 <h1 onclick="window.location.href='/dev-docs'">DevDocs</h1>
@@ -1313,28 +1367,93 @@
                 </span>
             </div>
 
-            <h2 class="section-title" style="margin-top: 24px;">Dokumentasi</h2>
-            @foreach($documents as $doc)
-                @php
-                    $icon = match ($doc) {
+            <h2 class="section-title" style="margin-top: 24px; margin-bottom: 8px;">Dokumentasi</h2>
+            @php
+                // Clean and parse titles and dates
+                $cleanedDocs = [];
+                foreach($documents as $doc) {
+                    $filename = $doc['filename'];
+                    $title = $doc['title'];
+                    
+                    // Format/clean title
+                    $title = preg_replace('/\s*-\s*\d{1,2}\s+[a-zA-Z]+\s+\d{4}$/i', '', $title);
+                    $title = str_ireplace(['Sistem SIAKAD', ' - SIAKAD SATU', ' SIAKAD'], '', $title);
+                    
+                    // Icon
+                    $icon = match ($filename) {
                         'changelog.md' => 'fa-solid fa-history',
                         'todo.md' => 'fa-solid fa-list-check',
                         'panduan.md' => 'fa-solid fa-graduation-cap',
                         'credentials.md' => 'fa-solid fa-key',
                         default => 'fa-regular fa-file-lines'
                     };
+
+                    $cleanedDocs[] = [
+                        'filename' => $filename,
+                        'title' => $title,
+                        'date' => $doc['date'],
+                        'icon' => $icon
+                    ];
+                }
+
+                // Group by date
+                $groupedDocs = [];
+                foreach ($cleanedDocs as $doc) {
+                    $groupedDocs[$doc['date']][] = $doc;
+                }
+                
+                // Sort groups so 'Lainnya' is at the bottom
+                uksort($groupedDocs, function($a, $b) {
+                    if ($a === 'Lainnya') return 1;
+                    if ($b === 'Lainnya') return -1;
+                    return strcmp($b, $a); // Descending date
+                });
+            @endphp
+
+            @foreach($groupedDocs as $date => $docs)
+                @php
+                    $hasActive = false;
+                    foreach ($docs as $doc) {
+                        if ($activeDoc === $doc['filename']) {
+                            $hasActive = true;
+                            break;
+                        }
+                    }
+                    $dateSlug = Str::slug($date);
+                    // Format date to be human readable
+                    $dateLabel = $date;
+                    if ($date !== 'Lainnya') {
+                        try {
+                            $dateLabel = \Carbon\Carbon::parse($date)->translatedFormat('d F Y');
+                        } catch (\Exception $e) {
+                            $dateLabel = $date;
+                        }
+                    }
                 @endphp
-                <div class="doc-item {{ $activeDoc === $doc ? 'active' : '' }}" onclick="switchDoc('{{ $doc }}')">
-                    <span class="doc-item-title">
-                        <i class="{{ $icon }}"></i>
-                        {{ basename($doc, '.md') }}
-                    </span>
-                    @if($doc !== 'changelog.md')
-                        <button class="btn-delete-doc" onclick="event.stopPropagation(); confirmDeleteDoc('{{ $doc }}')"
-                            title="Hapus Dokumen">
-                            <i class="fa-regular fa-trash-can"></i>
-                        </button>
-                    @endif
+                <div class="doc-group {{ $hasActive ? 'open' : '' }}" id="group-{{ $dateSlug }}">
+                    <div class="doc-group-header" onclick="toggleGroup('{{ $dateSlug }}')">
+                        <span class="doc-group-title">
+                            <i class="fa-solid fa-calendar-day" style="font-size: 11px;"></i>
+                            {{ $dateLabel }}
+                        </span>
+                        <i class="fa-solid fa-chevron-right doc-group-chevron"></i>
+                    </div>
+                    <div class="doc-group-content">
+                        @foreach($docs as $doc)
+                            <div class="doc-item {{ $activeDoc === $doc['filename'] ? 'active' : '' }}" onclick="switchDoc('{{ $doc['filename'] }}')">
+                                <span class="doc-item-title" title="{{ $doc['title'] }}">
+                                    <i class="{{ $doc['icon'] }}"></i>
+                                    {{ $doc['title'] }}
+                                </span>
+                                @if($doc['filename'] !== 'changelog.md' && $doc['filename'] !== 'panduan.md')
+                                    <button class="btn-delete-doc" onclick="event.stopPropagation(); confirmDeleteDoc('{{ $doc['filename'] }}')"
+                                        title="Hapus Dokumen">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             @endforeach
         </div>
@@ -1376,7 +1495,7 @@
 
         @if($activeDoc === 'board.json')
             <!-- Kanban Board Content -->
-            <div class="page-container" style="max-width: 100%; padding: 40px 40px 120px 40px;">
+            <div class="page-container" style="max-width: 100%; padding: 40px 40px 40px 40px;">
                 <div class="page-meta" style="margin-bottom: 24px;">
                     <div
                         style="font-size: 14px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
@@ -1498,7 +1617,13 @@
                         </div>
                         @foreach($documents as $doc)
                             @php
-                                $icon = match ($doc) {
+                                $filename = $doc['filename'];
+                                $title = $doc['title'];
+                                // Format/clean title
+                                $title = preg_replace('/\s*-\s*\d{1,2}\s+[a-zA-Z]+\s+\d{4}$/i', '', $title);
+                                $title = str_ireplace(['Sistem SIAKAD', ' - SIAKAD SATU', ' SIAKAD'], '', $title);
+
+                                $icon = match ($filename) {
                                     'changelog.md' => 'fa-solid fa-history',
                                     'todo.md' => 'fa-solid fa-list-check',
                                     'panduan.md' => 'fa-solid fa-graduation-cap',
@@ -1506,9 +1631,9 @@
                                     default => 'fa-regular fa-file-lines'
                                 };
                             @endphp
-                            <div class="welcome-card" onclick="switchDoc('{{ $doc }}')">
+                            <div class="welcome-card" onclick="switchDoc('{{ $filename }}')">
                                 <i class="{{ $icon }}"></i>
-                                <div class="welcome-card-title">{{ basename($doc, '.md') }}</div>
+                                <div class="welcome-card-title">{{ $title }}</div>
                                 <div class="welcome-card-desc">Buka dokumen ini</div>
                             </div>
                         @endforeach
@@ -1619,16 +1744,43 @@
 
     <!-- Modal Buat Dokumen Baru -->
     <div class="modal-overlay" id="create-modal-overlay" onclick="closeCreateModal()">
-        <div class="modal" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3>Dokumen Baru</h3>
-                <p>Nama berkas hanya boleh berisi huruf, angka, strip (-), dan underscore (_).</p>
+        <div class="modal" style="max-width: 450px;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="margin-bottom: 20px;">
+                <h3 style="font-size: 16px; font-weight: 700; color: #fff;">Dokumen Baru</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Tambahkan dokumen baru ke workspace Anda.</p>
             </div>
-            <input type="text" class="modal-input" id="new-doc-name" placeholder="misal: todo-besok"
-                onkeydown="if(event.key === 'Enter') submitCreateDoc()">
-            <div class="modal-footer">
-                <button class="btn-modal btn-modal-secondary" onclick="closeCreateModal()">Batal</button>
-                <button class="btn-modal btn-modal-primary" onclick="submitCreateDoc()">Buat Dokumen</button>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+                <!-- Judul Dokumen -->
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Judul Dokumen</label>
+                    <input type="text" class="modal-input" id="new-doc-title" placeholder="misal: Laporan Harian Perbaikan" style="width: 100%; margin: 0;" onkeydown="if(event.key === 'Enter') submitCreateDoc()">
+                </div>
+
+                <!-- Pilihan Grup -->
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Pilih Grup / Tanggal</label>
+                    <select id="new-doc-group-select" class="modal-input" style="width: 100%; margin: 0; background: #161618; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 13px;" onchange="handleGroupSelectChange()">
+                        <option value="none">Tanpa Grup (Masuk ke "Lainnya")</option>
+                        @foreach(array_keys($groupedDocs) as $gDate)
+                            @if($gDate !== 'Lainnya')
+                                <option value="{{ $gDate }}">Grup Tanggal: {{ $gDate }}</option>
+                            @endif
+                        @endforeach
+                        <option value="new">+ Buat Grup Tanggal Baru</option>
+                    </select>
+                </div>
+
+                <!-- Input Tanggal Baru (Hidden by default) -->
+                <div id="new-group-date-container" style="display: none; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Pilih Tanggal Baru</label>
+                    <input type="date" class="modal-input" id="new-doc-date" value="{{ date('Y-m-d') }}" style="width: 100%; margin: 0; background: #161618; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 13px;" onkeydown="if(event.key === 'Enter') submitCreateDoc()">
+                </div>
+            </div>
+
+            <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding-top: 16px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn-modal btn-modal-secondary" onclick="closeCreateModal()" style="margin: 0;">Batal</button>
+                <button class="btn-modal btn-modal-primary" onclick="submitCreateDoc()" style="margin: 0;">Buat Dokumen</button>
             </div>
         </div>
     </div>
@@ -1852,6 +2004,14 @@
             window.location.href = '?doc=' + filename;
         }
 
+        // Toggle accordion group
+        function toggleGroup(dateSlug) {
+            const group = document.getElementById('group-' + dateSlug);
+            if (group) {
+                group.classList.toggle('open');
+            }
+        }
+
         // Save active document
         function saveDocument(silent = false) {
             if (!activeDoc) return;
@@ -1920,23 +2080,54 @@
         // Create doc modal handlers
         function openCreateModal() {
             document.getElementById('create-modal-overlay').classList.add('show');
-            document.getElementById('new-doc-name').focus();
+            document.getElementById('new-doc-title').focus();
         }
 
         // Close doc modal
         function closeCreateModal() {
             document.getElementById('create-modal-overlay').classList.remove('show');
-            document.getElementById('new-doc-name').value = '';
+            document.getElementById('new-doc-title').value = '';
+            document.getElementById('new-doc-group-select').value = 'none';
+            document.getElementById('new-group-date-container').style.display = 'none';
+        }
+
+        // Handle group selection change
+        function handleGroupSelectChange() {
+            const select = document.getElementById('new-doc-group-select');
+            const dateContainer = document.getElementById('new-group-date-container');
+            if (select.value === 'new') {
+                dateContainer.style.display = 'flex';
+            } else {
+                dateContainer.style.display = 'none';
+            }
         }
 
         // Submit new doc creation
         function submitCreateDoc() {
-            const nameInput = document.getElementById('new-doc-name');
-            const name = nameInput.value.trim();
+            const titleInput = document.getElementById('new-doc-title');
+            const select = document.getElementById('new-doc-group-select');
+            const dateInput = document.getElementById('new-doc-date');
 
-            if (!name) {
-                showToast('Nama dokumen tidak boleh kosong', true);
+            const title = titleInput.value.trim();
+            const groupSelect = select.value;
+            let groupDate = null;
+
+            if (!title) {
+                showToast('Judul dokumen tidak boleh kosong', true);
                 return;
+            }
+
+            let groupType = 'none';
+            if (groupSelect === 'new') {
+                groupType = 'new';
+                groupDate = dateInput.value;
+                if (!groupDate) {
+                    showToast('Silakan pilih tanggal untuk grup baru', true);
+                    return;
+                }
+            } else if (groupSelect !== 'none') {
+                groupType = 'existing';
+                groupDate = groupSelect;
             }
 
             fetch('{{ route("dev-docs.create") }}', {
@@ -1945,7 +2136,11 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken
                 },
-                body: JSON.stringify({ name: name })
+                body: JSON.stringify({ 
+                    title: title,
+                    group_type: groupType,
+                    group_date: groupDate
+                })
             })
                 .then(res => res.json())
                 .then(data => {

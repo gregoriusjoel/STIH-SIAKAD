@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Dosen\LecturerController;
 use App\Http\Controllers\Dosen\JadwalController;
 use App\Http\Controllers\Dosen\ProfilController as DosenProfilController;
@@ -17,9 +18,97 @@ use App\Http\Controllers\Mahasiswa\PengajuanController;
 use App\Http\Controllers\StorageController;
 use Illuminate\Support\Facades\Storage;
 
-// Authentication Routes
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.post');
+// Authentication Routes (Dinamis: Subdomain atau Path URL)
+$subdomainMode = env('APP_SUBDOMAIN_MODE', false);
+$baseDomain = env('APP_DOMAIN', 'localhost');
+
+// Deteksi dinamis: Jika diakses lewat IP langsung atau localhost, paksa matikan mode subdomain untuk request ini.
+// Hal ini membuat IP http://192.168.1.7:8000/ dan subdomain adhyaksa.local bisa aktif dan diuji secara bersamaan!
+$requestHost = request()->getHost();
+if (filter_var($requestHost, FILTER_VALIDATE_IP) || $requestHost === 'localhost' || $requestHost === '127.0.0.1') {
+    $subdomainMode = false;
+}
+
+// Prefix Paths (kosong jika mode subdomain aktif, terisi jika path prefix mode aktif)
+$dosenPrefix = $subdomainMode ? '' : 'dosen';
+$mahasiswaPrefix = $subdomainMode ? '' : 'mahasiswa';
+$parentPrefix = $subdomainMode ? '' : 'parent';
+
+if ($subdomainMode) {
+    // -------------------------------------------------------------
+    // A. MODE SUBDOMAIN (Production / Subdomain Testing)
+    // -------------------------------------------------------------
+
+    // Fallback main domain (tanpa subdomain) -> redirect ke admin
+    Route::domain($baseDomain)->group(function () use ($baseDomain) {
+        Route::get('/', function () use ($baseDomain) {
+            $port = request()->getPort();
+            $portSuffix = ($port && $port != 80 && $port != 443) ? ':' . $port : '';
+            return redirect('http://admin.' . $baseDomain . $portSuffix);
+        });
+    });
+
+    // Portal Admin / Staff (admin.adhyaksa.ac.id)
+    Route::domain('admin.' . $baseDomain)->group(function () {
+        Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
+        Route::get('/login', [LoginController::class, 'showLoginForm']);
+        Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.post');
+    });
+
+    // Portal Mahasiswa (mahasiswa.adhyaksa.ac.id)
+    Route::domain('mahasiswa.' . $baseDomain)->group(function () {
+        Route::get('/', [LoginController::class, 'showLoginForm'])->name('login.mahasiswa');
+        Route::get('/login', [LoginController::class, 'showLoginForm']);
+        Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.mahasiswa.post');
+        
+        // Forgot & Reset Password Routes
+        Route::get('/forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+        Route::post('/forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+        Route::get('/reset-password/{token}', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+        Route::post('/reset-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])->name('password.update');
+    });
+
+    // Portal Dosen (dosen.adhyaksa.ac.id)
+    Route::domain('dosen.' . $baseDomain)->group(function () {
+        Route::get('/', [LoginController::class, 'showLoginForm'])->name('login.dosen');
+        Route::get('/login', [LoginController::class, 'showLoginForm']);
+        Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.dosen.post');
+    });
+
+    // Portal Orang Tua / Wali (parent.adhyaksa.ac.id)
+    Route::domain('parent.' . $baseDomain)->group(function () {
+        Route::get('/', [LoginController::class, 'showLoginForm'])->name('login.parent');
+        Route::get('/login', [LoginController::class, 'showLoginForm']);
+        Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.parent.post');
+    });
+
+} else {
+    // -------------------------------------------------------------
+    // B. MODE PATH PREFIX (Default Local Fallback)
+    // -------------------------------------------------------------
+    Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.post');
+
+    // Rute Login Mahasiswa (Alias ke root)
+    Route::get('/login/mahasiswa', fn() => redirect('/'))->name('login.mahasiswa');
+    Route::post('/login/mahasiswa', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.mahasiswa.post');
+
+    // Rute Login Dosen (Alias ke root)
+    Route::get('/login/dosen', fn() => redirect('/'))->name('login.dosen');
+    Route::post('/login/dosen', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.dosen.post');
+
+    // Rute Login Orang Tua / Wali (Alias ke root)
+    Route::get('/login/parent', fn() => redirect('/'))->name('login.parent');
+    Route::post('/login/parent', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.parent.post');
+
+    // Forgot & Reset Password Routes (Path Prefix Mode)
+    Route::get('/forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])->name('password.update');
+}
+
+// Rute Logout Umum
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Secure Private File Access
@@ -55,7 +144,11 @@ Route::post('/absen/login', [App\Http\Controllers\Absen\LoginController::class, 
 Route::get('/absen/thank-you', [App\Http\Controllers\Absen\LoginController::class, 'thankYou'])->middleware('auth:mahasiswa_absen')->name('absen.thankyou');
 
 // Dosen / Lecturer Portal Routes
-Route::prefix('dosen')->name('dosen.')->middleware(['auth', 'dosen'])->where(['pertemuan' => '[a-z0-9:]+'])->group(function () {
+$dosenGroup = Route::prefix($dosenPrefix)->name('dosen.')->middleware(['auth', 'dosen'])->where(['pertemuan' => '[a-z0-9:]+']);
+if ($subdomainMode) {
+    $dosenGroup->domain('dosen.' . $baseDomain);
+}
+$dosenGroup->group(function () use ($subdomainMode) {
     Route::get('/dashboard', [LecturerController::class, 'dashboard'])->name('dashboard');
     
     // Profil Dosen Routes
@@ -173,13 +266,17 @@ Route::prefix('dosen')->name('dosen.')->middleware(['auth', 'dosen'])->where(['p
     });
 
     // Fallback thesis to skripsi
-    Route::prefix('thesis')->group(function () {
-        Route::any('/{any?}', fn(string $any = '') => redirect('/dosen/skripsi/'.$any))->where('any', '.*');
+    Route::prefix('thesis')->group(function () use ($subdomainMode) {
+        Route::any('/{any?}', fn(string $any = '') => redirect($subdomainMode ? '/skripsi/'.$any : '/dosen/skripsi/'.$any))->where('any', '.*');
     });
 });
 
 // Mahasiswa Portal Routes
-Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(function () {
+$mahasiswaGroup = Route::prefix($mahasiswaPrefix)->name('mahasiswa.')->middleware(['auth']);
+if ($subdomainMode) {
+    $mahasiswaGroup->domain('mahasiswa.' . $baseDomain);
+}
+$mahasiswaGroup->group(function () use ($subdomainMode) {
     // Aktivasi (tidak perlu middleware status check)
     Route::get('/aktivasi', [AktivasiController::class, 'index'])->name('aktivasi.index');
     Route::post('/aktivasi', [AktivasiController::class, 'store'])->name('aktivasi.store');
@@ -327,13 +424,17 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
         Route::get('/kartu-undangan', [App\Http\Controllers\Mahasiswa\WisudaController::class, 'printCard'])->name('print-card');
     });
 
-    Route::prefix('thesis')->group(function () {
-        Route::any('/{any?}', fn(string $any = '') => redirect('/mahasiswa/skripsi/'.$any))->where('any', '.*');
+    Route::prefix('thesis')->group(function () use ($subdomainMode) {
+        Route::any('/{any?}', fn(string $any = '') => redirect($subdomainMode ? '/skripsi/'.$any : '/mahasiswa/skripsi/'.$any))->where('any', '.*');
     });
 
 });
 
-Route::prefix('parent')->name('parent.')->middleware(['auth', 'parent.role'])->group(function () {
+$parentGroup = Route::prefix($parentPrefix)->name('parent.')->middleware(['auth', 'parent.role']);
+if ($subdomainMode) {
+    $parentGroup->domain('parent.' . $baseDomain);
+}
+$parentGroup->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Parent\ParentController::class, 'dashboard'])->name('dashboard');
     Route::get('/nilai', [App\Http\Controllers\Parent\ParentController::class, 'nilai'])->name('nilai');
     Route::get('/jadwal', [App\Http\Controllers\Parent\ParentController::class, 'jadwal'])->name('jadwal');

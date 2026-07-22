@@ -27,47 +27,38 @@
         </div>
     </div>
 
-    <div x-data="{ selectedMahasiswa: null }" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg  overflow-hidden">
+    <div x-data="{ selectedMahasiswa: null }" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700/50 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border-separate"
-                style="border-spacing: 0;">
-                <thead class="bg-maroon text-white rounded-t-xl">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border-separate m-0"
+                style="border-spacing: 0; margin-bottom: 0;">
+                <thead class="bg-maroon text-white">
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tl-xl">
-                            <i class=""></i>No
+                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider rounded-tl-xl w-14">
+                            No
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-id-card mr-2"></i>NIM
+                            Mahasiswa
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-user mr-2"></i>Nama
+                            Kontak
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-envelope mr-2"></i>Email (Pribadi / Kampus)
+                            Akademik
                         </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-graduation-cap mr-2"></i>Prodi
+                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider w-28">
+                            Angkatan
                         </th>
-                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-layer-group mr-2"></i>Semester
+                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider w-36">
+                            Status
                         </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-school mr-2"></i>Kelas
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-calendar mr-2"></i>Angkatan
-                        </th>
-                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">
-                            <i class="fas fa-info-circle mr-2"></i>Status
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider rounded-tr-xl">
-                            <i class="fas fa-cog mr-2"></i>Aksi
+                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider rounded-tr-xl w-36">
+                            Aksi
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse($mahasiswas as $mahasiswa)
-                                    <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition cursor-pointer" @click="selectedMahasiswa = {{ Js::from([
+                        <tr class="hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition cursor-pointer" @click="selectedMahasiswa = {{ Js::from([
                             'nim' => $mahasiswa->nim,
                             'name' => $mahasiswa->user->name,
                             'email' => $mahasiswa->user->email,
@@ -80,105 +71,142 @@
                             'status' => ucfirst($mahasiswa->status),
                             'foto' => $mahasiswa->foto ? \App\Helpers\FileHelper::fileUrl($mahasiswa->foto) : null,
                         ]) }}"
-                                        :class="{ 'bg-blue-50 dark:bg-blue-900/30': selectedMahasiswa && selectedMahasiswa.nim === '{{ $mahasiswa->nim }}' }">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
-                                            {{ ($mahasiswas->currentPage() - 1) * $mahasiswas->perPage() + $loop->iteration }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-maroon dark:text-red-400">
+                            :class="{ 'bg-blue-50/70 dark:bg-blue-900/20': selectedMahasiswa && selectedMahasiswa.nim === '{{ $mahasiswa->nim }}' }">
+                            
+                            <!-- No -->
+                            <td class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 font-semibold">
+                                {{ ($mahasiswas->currentPage() - 1) * $mahasiswas->perPage() + $loop->iteration }}
+                            </td>
+                            
+                            <!-- Mahasiswa (Avatar + Nama + NIM) -->
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="relative flex-shrink-0">
+                                        @if($mahasiswa->foto)
+                                            <img src="{{ \App\Helpers\FileHelper::fileUrl($mahasiswa->foto) }}" 
+                                                 class="w-11 h-11 rounded-full object-cover border-2 border-gray-100 dark:border-gray-700 shadow-sm" 
+                                                 alt="{{ $mahasiswa->user->name }}">
+                                        @else
+                                            <div class="bg-maroon/10 dark:bg-maroon/20 text-maroon dark:text-red-400 rounded-full w-11 h-11 flex items-center justify-center font-bold text-sm border border-maroon/10 shadow-sm">
+                                                {{ strtoupper(substr($mahasiswa->user->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="flex flex-col min-w-0">
+                                        <span class="text-base font-bold text-gray-900 dark:text-gray-100 truncate max-w-[220px]" title="{{ $mahasiswa->user->name }}">
+                                            {{ $mahasiswa->user->name }}
+                                        </span>
+                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 font-mono mt-0.5">
                                             {{ $mahasiswa->nim }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="bg-maroon text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-3">
-                                                    {{ strtoupper(substr($mahasiswa->user->name, 0, 1)) }}
-                                                </div>
-                                                <span
-                                                    class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $mahasiswa->user->name }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                            <div class="space-y-1">
-                                                <div class="flex items-center">
-                                                    <i class="fas fa-envelope text-blue-400 dark:text-blue-500 mr-1"></i>
-                                                    <span class="font-medium">{{ $mahasiswa->email_kampus }}</span>
-                                                    <span
-                                                        class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full font-semibold">Login</span>
-                                                </div>
-                                                @if($mahasiswa->email_pribadi)
-                                                    <div class="flex items-center">
-                                                        <i class="fas fa-envelope text-gray-400 dark:text-gray-500 mr-1"></i>
-                                                        <span class="text-sm">{{ $mahasiswa->email_pribadi }}</span>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            <span
-                                                class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                {{ $mahasiswa->prodi }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- Kontak (Email) -->
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col min-w-0 text-sm">
+                                    <div class="flex items-center gap-2 text-gray-800 dark:text-gray-200">
+                                        <i class="fa-regular fa-envelope text-blue-500 flex-shrink-0"></i>
+                                        <span class="truncate max-w-[200px] font-semibold" title="{{ $mahasiswa->email_kampus }}">{{ $mahasiswa->email_kampus }}</span>
+                                        <span class="flex-shrink-0 px-2 py-0.5 bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-400 text-[10px] rounded-full font-extrabold uppercase tracking-wide">Login</span>
+                                    </div>
+                                    @if($mahasiswa->email_pribadi)
+                                        <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400 mt-1">
+                                            <i class="fa-regular fa-envelope flex-shrink-0"></i>
+                                            <span class="truncate max-w-[200px]" title="{{ $mahasiswa->email_pribadi }}">{{ $mahasiswa->email_pribadi }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </td>
+                            
+                            <!-- Akademik (Prodi + Smt / Kelas) -->
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col gap-1.5">
+                                    <div>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-100 dark:border-purple-900/30">
+                                            {{ $mahasiswa->prodi }}
+                                        </span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5 font-medium">
+                                        <span>Smt {{ $mahasiswa->semester ?? '-' }}</span>
+                                        <span class="text-gray-300 dark:text-gray-700">•</span>
+                                        @if($mahasiswa->kelas_perkuliahan_id)
+                                            <span class="text-green-600 dark:text-green-400 font-semibold">
+                                                {{ $mahasiswa->display_kelas }}
                                             </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-400">
-                                            <span class="font-semibold text-gray-700 dark:text-gray-200">{{ $mahasiswa->semester ?? '-' }}</span>
-                                            <div class="text-xs text-gray-400 dark:text-gray-500">Tingkat {{ $mahasiswa->tingkat ?? '-' }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            @if($mahasiswa->kelas_perkuliahan_id)
-                                                <span class="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-semibold">
-                                                    {{ $mahasiswa->display_kelas }}
-                                                </span>
-                                            @elseif($mahasiswa->display_kelas)
-                                                <span class="px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold">
-                                                    {{ $mahasiswa->display_kelas }} (legacy)
-                                                </span>
-                                            @else
-                                                <span class="text-xs text-gray-400">Belum punya kelas</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            <i class="fas fa-calendar-alt text-gray-400 dark:text-gray-500 mr-1"></i>
-                                            {{ $mahasiswa->angkatan }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">
-                                            <span
-                                                class="px-3 py-1 inline-flex items-center justify-center mx-auto text-xs leading-5 font-semibold rounded-full 
-                                                                {{ $mahasiswa->status == 'aktif' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' : '' }}
-                                                                {{ $mahasiswa->status == 'cuti' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' : '' }}
-                                                                {{ $mahasiswa->status == 'lulus' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' : '' }}
-                                                                {{ $mahasiswa->status == 'do' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' : '' }}">
-                                                <i class="fas fa-circle text-xs mr-1"></i>
-                                                {{ $mahasiswa->status === 'do' ? 'Drop Out' : ucfirst($mahasiswa->status) }}
+                                        @elseif($mahasiswa->display_kelas)
+                                            <span class="text-amber-600 dark:text-amber-400 font-semibold">
+                                                {{ $mahasiswa->display_kelas }}
                                             </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex items-center justify-center gap-1.5" @click.stop>
-                                                <a href="{{ route('admin.mahasiswa.show', $mahasiswa) }}"
-                                                    class="action-btn w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                                                    title="Detail">
-                                                    <i class="fas fa-eye text-xs"></i>
-                                                </a>
-                                                <a href="{{ route('admin.mahasiswa.edit', $mahasiswa) }}"
-                                                    class="action-btn w-8 h-8 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 flex items-center justify-center hover:bg-yellow-100 dark:hover:bg-yellow-900/40"
-                                                    title="Edit">
-                                                    <i class="fas fa-edit text-xs"></i>
-                                                </a>
-                                                <form action="{{ route('admin.mahasiswa.destroy', $mahasiswa) }}" method="POST"
-                                                    class="inline delete-form">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="action-btn w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40"
-                                                        title="Hapus">
-                                                        <i class="fas fa-trash text-xs"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                        @else
+                                            <span class="text-gray-400 italic">Tanpa Kelas</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- Angkatan -->
+                            <td class="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 font-bold">
+                                {{ $mahasiswa->angkatan }}
+                            </td>
+                            
+                            <!-- Status -->
+                            <td class="px-6 py-4 text-center">
+                                @php
+                                    $statusClasses = match($mahasiswa->status) {
+                                        'aktif' => 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30',
+                                        'cuti' => 'bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-900/30',
+                                        'lulus' => 'bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-900/30',
+                                        default => 'bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-100 dark:border-rose-900/30',
+                                    };
+                                    $dotColor = match($mahasiswa->status) {
+                                        'aktif' => 'bg-emerald-500',
+                                        'cuti' => 'bg-amber-500',
+                                        'lulus' => 'bg-blue-500',
+                                        default => 'bg-rose-500',
+                                    };
+                                @endphp
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border {{ $statusClasses }}">
+                                    <span class="relative flex h-1.5 w-1.5">
+                                        @if($mahasiswa->status === 'aktif')
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        @endif
+                                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 {{ $dotColor }}"></span>
+                                    </span>
+                                    {{ $mahasiswa->status === 'do' ? 'Drop Out' : ucfirst($mahasiswa->status) }}
+                                </span>
+                            </td>
+                            
+                            <!-- Aksi -->
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-center gap-1.5" @click.stop>
+                                    <a href="{{ route('admin.mahasiswa.show', $mahasiswa) }}"
+                                        class="w-9 h-9 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/40 dark:hover:text-blue-400 transition shadow-sm"
+                                        title="Detail">
+                                        <i class="fa-regular fa-eye text-sm"></i>
+                                    </a>
+                                    <a href="{{ route('admin.mahasiswa.edit', $mahasiswa) }}"
+                                        class="w-9 h-9 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-950/40 dark:hover:text-amber-400 transition shadow-sm"
+                                        title="Edit">
+                                        <i class="fa-regular fa-pen-to-square text-sm"></i>
+                                    </a>
+                                    <form action="{{ route('admin.mahasiswa.destroy', $mahasiswa) }}" method="POST"
+                                        class="inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="w-9 h-9 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition shadow-sm"
+                                            title="Hapus">
+                                            <i class="fa-regular fa-trash-can text-sm"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                                 <i class="fas fa-inbox text-gray-300 dark:text-gray-600 text-5xl mb-3"></i>
                                 <p class="text-lg">Belum ada data mahasiswa</p>
                             </td>
@@ -187,8 +215,7 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="mt-6">
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/30 dark:bg-gray-800/30">
             {{ $mahasiswas->links() }}
         </div>
     </div>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'SIAKAD STIH') - Parent Panel</title>
+    <title>@yield('title', 'SATU ADHYAKSA') - Parent Panel</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logo_stih_white.png') }}">
 
@@ -153,7 +153,7 @@
                         onerror="this.src='{{ asset('images/logo_stih_white.png') }}';" alt="Logo STIH"
                         class="w-full h-full object-contain" />
                 </div>
-                <h1 class="text-2xl font-black text-white tracking-tight drop-shadow-md">SIAKAD STIH</h1>
+                <h1 class="text-2xl font-black text-white tracking-tight drop-shadow-md">SATU ADHYAKSA</h1>
                 <p class="text-white/80 text-[10px] font-bold tracking-[0.3em] uppercase mt-1">Orang Tua/Wali</p>
             </div>
 

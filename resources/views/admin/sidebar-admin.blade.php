@@ -54,7 +54,7 @@
             <img src="{{ asset('images/logo_stih_white.png') }}" alt="STIH" class="w-full h-full object-contain">
         </div>
         <div class="flex flex-col">
-            <h1 class="font-bold text-white">SIAKAD STIH</h1>
+            <h1 class="font-bold text-white">SATU ADHYAKSA</h1>
             <p class="text-white">Admin Panel</p>
         </div>
     </div>

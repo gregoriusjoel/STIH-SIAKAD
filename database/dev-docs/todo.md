@@ -13,5 +13,4 @@ Daftar rencana kerja, ide, dan perbaikan proyek selanjutnya.
 ---
 
 ## 💡 Ide / Eksperimen
-*   Eksperimen menggunakan Redis sebagai caching driver lokal untuk menguji kecepatan load query KRS.
-*   Penerapan dual-factor authentication (2FA) opsional untuk dosen dan administrator.
+*   Pembuatan sistem penelitian dari pengajuan bahkan sampe pembyaran pengajua

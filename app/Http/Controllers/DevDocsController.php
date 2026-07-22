@@ -35,7 +35,33 @@ class DevDocsController extends Controller
         
         foreach ($files as $file) {
             if ($file->getExtension() === 'md' && $file->getFilename() !== 'todo.md') {
-                $documents[] = $file->getFilename();
+                $filename = $file->getFilename();
+                $filePath = $file->getPathname();
+                
+                // Baca baris pertama untuk mendapatkan judul
+                $title = basename($filename, '.md');
+                if (File::exists($filePath)) {
+                    $handle = fopen($filePath, 'r');
+                    if ($handle) {
+                        $firstLine = fgets($handle);
+                        fclose($handle);
+                        if ($firstLine && str_starts_with(trim($firstLine), '#')) {
+                            $title = trim(ltrim(trim($firstLine), '#'));
+                        }
+                    }
+                }
+                
+                // Cari kecocokan tanggal YYYY-MM-DD
+                $date = 'Lainnya';
+                if (preg_match('/^(\d{4}-\d{2}-\d{2})/', $filename, $matches)) {
+                    $date = $matches[1];
+                }
+                
+                $documents[] = [
+                    'filename' => $filename,
+                    'title' => $title,
+                    'date' => $date
+                ];
             }
         }
 
@@ -43,10 +69,17 @@ class DevDocsController extends Controller
         if (empty($documents)) {
             $defaultFile = 'changelog.md';
             File::put($this->docsPath . '/' . $defaultFile, "# Dokumentasi Proyek\n\nSelamat datang di dokumentasi pengembang.");
-            $documents[] = $defaultFile;
+            $documents[] = [
+                'filename' => $defaultFile,
+                'title' => 'Dokumentasi Proyek',
+                'date' => 'Lainnya'
+            ];
         }
 
-        sort($documents);
+        // Sort documents by filename descending (newer dates first)
+        usort($documents, function ($a, $b) {
+            return strcmp($b['filename'], $a['filename']);
+        });
 
         // Tentukan dokumen aktif (hanya jika diminta secara eksplisit)
         $activeDoc = null;
@@ -159,23 +192,33 @@ class DevDocsController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:50',
+            'title' => 'required|string|max:100',
+            'group_type' => 'required|string|in:existing,new,none',
+            'group_date' => 'nullable|date_format:Y-m-d',
         ]);
 
-        $name = preg_replace('/[^a-zA-Z0-9_\-]/', '', $request->input('name'));
-        $filename = strtolower($name) . '.md';
+        $title = trim($request->input('title'));
+        $slug = \Illuminate\Support\Str::slug($title);
         
+        $groupType = $request->input('group_type');
+        $groupDate = $request->input('group_date');
+
+        if (($groupType === 'existing' || $groupType === 'new') && $groupDate) {
+            $filename = $groupDate . '-' . $slug . '.md';
+        } else {
+            $filename = $slug . '.md';
+        }
+
         $filePath = $this->docsPath . '/' . $filename;
 
         if (File::exists($filePath)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Dokumen dengan nama tersebut sudah ada!'
+                'message' => 'Dokumen dengan nama/judul tersebut sudah ada!'
             ], 422);
         }
 
-        // Tulis template default
-        $title = ucwords(str_replace(['-', '_'], ' ', $name));
+        // Tulis template default dengan Judul asli
         File::put($filePath, "# {$title}\n\nTulis dokumentasi Anda di sini.");
 
         return response()->json([

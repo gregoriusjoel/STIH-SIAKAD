@@ -107,13 +107,26 @@
                     <div>
                         <h3 class="font-medium text-gray-800 mb-4 border-b pb-2">Kontak & Akun</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Email</label>
-                                <div class="text-gray-800">{{ $user->email }}</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-gray-400 uppercase">Email Akun (Login)</label>
+                                    <div class="text-gray-800 flex items-center gap-2 mt-1">
+                                        <span class="font-semibold">{{ $user->email ?? '-' }}</span>
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-800 text-[10px] rounded-full font-bold uppercase">Login</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-gray-400 uppercase">Email Kampus</label>
+                                    <div class="text-gray-800 mt-1">{{ $mahasiswa->email_kampus ?? 'Belum diisi' }}</div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-gray-400 uppercase">Email Pribadi</label>
+                                    <div class="text-gray-800 mt-1">{{ $mahasiswa->email_pribadi ?? 'Belum diisi' }}</div>
+                                </div>
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 uppercase">Nomor HP</label>
-                                <div class="text-gray-800">{{ $mahasiswa->no_hp ?? 'Belum diisi' }}</div>
+                                <div class="text-gray-800 mt-1">{{ $mahasiswa->no_hp ?? 'Belum diisi' }}</div>
                             </div>
                         </div>
                     </div>

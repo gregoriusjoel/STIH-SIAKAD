@@ -52,7 +52,7 @@
         </div>
         <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">
             <p class="text-xs text-center text-gray-400">
-                &copy; {{ date('Y') }} SIAKAD STIH. All rights reserved.
+                &copy; {{ date('Y') }} SATU ADHYAKSA. All rights reserved.
             </p>
         </div>
     </div>

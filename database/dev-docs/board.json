@@ -3,47 +3,55 @@
         {
             "id": "col-1784173088315",
             "title": "Pending",
-            "cards": []
-        },
-        {
-            "id": "backlog",
-            "title": "Revisi Baru (Backlog)",
             "cards": [
                 {
                     "id": "card-1784173222430",
                     "title": "Pembuatan Fitur Penelitian",
                     "desc": "Belum ada flow pasti untuk penelitian, karena ada sistem pembayaran jadi belum pasti",
-                    "date": "2026-07-16"
+                    "date": "2026-07-22"
                 }
             ]
+        },
+        {
+            "id": "backlog",
+            "title": "Revisi Baru (Backlog)",
+            "cards": []
         },
         {
             "id": "progress",
             "title": "Sedang Dikerjakan",
             "cards": [
                 {
-                    "id": "card-2",
-                    "title": "Menyatukan modul pembayaran",
-                    "desc": "Drop tabel pembayaran legacy dan pindahkan dashboard untuk memuat data dari tabel invoices.",
-                    "date": "2026-07-16"
-                },
-                {
-                    "id": "card-1",
-                    "title": "Mengoptimasi database perkuliahan",
-                    "desc": "Lakukan perapihan indeks unik dan hapus indeks yang redundan.",
-                    "date": "2026-07-16"
+                    "id": "card-1784685884354",
+                    "title": "Testing website",
+                    "desc": "Testing website karena baru ada beberapa perubahan di database dan refactor code serta perbaikkan database",
+                    "date": "2026-07-22"
                 }
             ]
         },
         {
             "id": "testing",
             "title": "Uji Coba (Testing)",
-            "cards": []
+            "cards": [
+                {
+                    "id": "card-1",
+                    "title": "Mengoptimasi database perkuliahan",
+                    "desc": "Lakukan perapihan indeks unik dan hapus indeks yang redundan.",
+                    "date": "2026-07-22"
+                }
+            ]
         },
         {
             "id": "done",
             "title": "Selesai (Done)",
-            "cards": []
+            "cards": [
+                {
+                    "id": "card-2",
+                    "title": "Menyatukan modul pembayaran",
+                    "desc": "Drop tabel pembayaran legacy dan pindahkan dashboard untuk memuat data dari tabel invoices.",
+                    "date": "2026-07-22"
+                }
+            ]
         }
     ]
 }

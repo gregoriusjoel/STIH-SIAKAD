@@ -64,7 +64,7 @@
             <img src="{{ asset('images/logo_stih_white.png') }}" alt="STIH" class="object-contain">
         </div>
         <div class="flex flex-col">
-            <h1 class="font-bold text-white text-sm tracking-wide">SIAKAD STIH</h1>
+            <h1 class="font-bold text-white text-sm tracking-wide">SATU ADHYAKSA</h1>
             <p class="text-[10px] text-amber-400 font-semibold uppercase tracking-widest">Control Center</p>
         </div>
     </div>
