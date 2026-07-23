@@ -51,6 +51,21 @@
                             required>
                     </div>
 
+                    <!-- Username -->
+                    <div>
+                        <label for="username" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Username (Opsional untuk login)
+                        </label>
+                        <input type="text" id="username" name="username" value="{{ old('username', $user->username) }}" 
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-[#0f1117] text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Contoh: dosen_stih"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z0-9_\-]/g, '').toLowerCase()">
+                        <p class="mt-1.5 text-xs text-gray-400 font-medium italic">Hanya huruf, angka, underscore (_), dan dash (-). Harus unik.</p>
+                        @error('username')
+                            <p class="mt-1 text-xs text-red-500 font-semibold">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Phone -->
                     <div>
                         <label for="phone" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">

@@ -58,7 +58,7 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -77,8 +77,11 @@ class LoginController extends Controller
             $portal = 'parent';
         }
 
-        // Cari user yang sesuai berdasarkan email login
-        $user = \App\Models\User::where('email', $email)->first();
+        // Cari user yang sesuai berdasarkan email login atau username
+        $user = \App\Models\User::where(function($query) use ($email) {
+            $query->where('email', $email)
+                  ->orWhere('username', $email);
+        })->first();
         if (!$user) {
             $mahasiswa = \App\Models\Mahasiswa::where('email_pribadi', $email)
                 ->orWhere('email_kampus', $email)

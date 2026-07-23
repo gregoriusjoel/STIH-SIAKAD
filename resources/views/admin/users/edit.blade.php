@@ -21,6 +21,18 @@
                             type="email" name="email" value="{{ old('email', $user->email) }}"
                             class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition"
                             required></div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <i class="fas fa-at text-gray-400 dark:text-gray-500 mr-1"></i>Username (Opsional)
+                        </label>
+                        <input type="text" name="username" value="{{ old('username', $user->username) }}"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-maroon-500 focus:border-transparent transition"
+                            placeholder="Contoh: admin_stih"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z0-9_\-]/g, '').toLowerCase()">
+                        @error('username')
+                            <p class="mt-1 text-xs text-red-500 font-semibold">{{ $message }}</p>
+                        @enderror
+                    </div>
                     <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"><i
                                 class="fas fa-shield-alt text-gray-400 dark:text-gray-500 mr-1"></i>Role *</label><select
                             name="role"

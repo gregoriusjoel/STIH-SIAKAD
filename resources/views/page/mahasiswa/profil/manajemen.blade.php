@@ -247,6 +247,19 @@ $missingByTab[$info['tab']]++;
                                 <p class="mt-1.5 text-[11px] text-gray-400 font-medium italic">Hanya huruf dan spasi (angka & karakter khusus otomatis hilang)</p>
                             </div>
 
+                            {{-- Username --}}
+                            <div>
+                                <label class="block text-sm text-gray-600 font-medium mb-2">Username (Opsional untuk login)</label>
+                                <input type="text" name="username" value="{{ old('username', $user->username) }}"
+                                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl text-sm focus:border-[#8B1538] focus:ring-4 focus:ring-[#8B1538]/5 transition-all outline-none font-medium"
+                                    placeholder="Masukkan username unik Anda"
+                                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9_\-]/g, '').toLowerCase()">
+                                <p class="mt-1.5 text-[11px] text-gray-400 font-medium italic">Hanya huruf, angka, underscore (_), dan dash (-). Harus unik.</p>
+                                @error('username')
+                                    <p class="mt-1 text-xs text-red-500 font-semibold">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             {{-- Email --}}
                             <div>
                                 <label class="block text-sm text-gray-600 font-medium mb-2">Email Kampus <span class="text-red-500">*</span></label>

@@ -42,6 +42,7 @@ class ParentController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'username' => 'nullable|string|alpha_dash|max:50|unique:users,username',
             'password' => 'required|min:6',
             'mahasiswa_id' => 'required|exists:mahasiswas,id',
             'hubungan' => 'required|in:ayah,ibu,wali',
@@ -55,6 +56,7 @@ class ParentController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
+                'username' => $request->username,
                 'password' => Hash::make($request->password),
                 'role' => 'parent',
             ]);
@@ -121,6 +123,7 @@ class ParentController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $userIdToIgnore,
+            'username' => 'nullable|string|alpha_dash|max:50|unique:users,username,' . $userIdToIgnore,
             'password' => 'nullable|min:6',
             'mahasiswa_id' => 'nullable|exists:mahasiswas,id',
             'hubungan' => 'required|in:ayah,ibu,wali',
@@ -137,7 +140,11 @@ class ParentController extends Controller
 
                 $targetUser = $userIdToIgnore !== $parent->user_id ? User::find($userIdToIgnore) : $parent->user;
 
-                $userData = ['name' => $request->name, 'email' => $request->email];
+                $userData = [
+                    'name' => $request->name, 
+                    'email' => $request->email,
+                    'username' => $request->username
+                ];
                 if ($request->filled('password')) {
                     $userData['password'] = Hash::make($request->password);
                 }
@@ -154,6 +161,7 @@ class ParentController extends Controller
                 $newUser = User::create([
                     'name' => $request->name,
                     'email' => $request->email,
+                    'username' => $request->username,
                     'password' => Hash::make($request->password ?? 'parent123'),
                     'role' => 'parent',
                 ]);

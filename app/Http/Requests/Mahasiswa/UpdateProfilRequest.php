@@ -18,6 +18,7 @@ class UpdateProfilRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255',
+            'username' => 'nullable|string|alpha_dash|max:50|unique:users,username,' . Auth::id(),
             'email_pribadi' => 'nullable|email|max:255|unique:mahasiswas,email_pribadi,' . $mahasiswa->id,
             'no_hp' => 'required|digits_between:11,13',
             'alamat' => 'required|string',

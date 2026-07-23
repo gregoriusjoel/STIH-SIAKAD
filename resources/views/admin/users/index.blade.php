@@ -42,8 +42,14 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 dark:text-gray-300"><i
-                                    class="fas fa-envelope text-maroon mr-2"></i>{{ $u->email }}</td>
+                            <td class="px-6 py-4 dark:text-gray-300">
+                                <div><i class="fas fa-envelope text-maroon mr-2"></i>{{ $u->email }}</div>
+                                @if(!empty($u->username))
+                                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400 font-semibold">
+                                        <i class="fas fa-at text-gray-400 mr-1"></i>{{ $u->username }}
+                                    </div>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-center">
                                 @if($u->role == 'admin')
                                     <span

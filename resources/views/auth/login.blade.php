@@ -457,10 +457,10 @@
             <form action="{{ route('login.post') }}" method="POST">
                 @csrf
                 <div class="input-group">
-                    <label class="input-label">Alamat Email</label>
+                    <label class="input-label">Username atau Email</label>
                     <div class="input-wrapper">
-                        <input type="email" name="email" value="{{ old('email') }}" class="input-field"
-                            placeholder="nama@stih.com" required autofocus>
+                        <input type="text" name="email" value="{{ old('email') }}" class="input-field"
+                            placeholder="Username atau email" required autofocus>
                         <i class="fas fa-envelope input-icon"></i>
                     </div>
                     @error('email')
@@ -473,7 +473,10 @@
                     <label class="input-label">Kata Sandi</label>
                     <div class="input-wrapper">
                         <input type="password" name="password" id="password" class="input-field" placeholder="••••••••"
-                            required>
+                            required
+                            oncopy="return this.type !== 'password'" 
+                            onpaste="return this.type !== 'password'" 
+                            oncut="return this.type !== 'password'">
                         <i class="fas fa-lock input-icon"></i>
                         <span class="password-toggle" onclick="togglePassword()">
                             <i class="fas fa-eye" id="eye-icon"></i>

@@ -113,6 +113,7 @@
                             @php
                                 $loginName = $parent->user->name;
                                 $loginEmail = $parent->user->email;
+                                $loginUsername = $parent->user ? $parent->user->username : '';
                                 $loginPassword = '';
                                 $isMahasiswaAccount = $parent->user && $parent->user->role === 'mahasiswa';
 
@@ -178,6 +179,19 @@
                                 <input type="email" name="email" id="email" value="{{ old('email', $loginEmail) }}"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
                                     required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-at text-gray-400 mr-1"></i>
+                                    Username (Opsional)
+                                </label>
+                                <input type="text" name="username" id="username" value="{{ old('username', $loginUsername) }}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maroon focus:border-transparent transition"
+                                    placeholder="Contoh: parent_stih"
+                                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9_\-]/g, '').toLowerCase()">
+                                @error('username')
+                                    <p class="mt-1 text-xs text-red-500 font-semibold">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>

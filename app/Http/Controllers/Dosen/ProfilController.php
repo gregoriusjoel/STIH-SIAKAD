@@ -65,6 +65,7 @@ class ProfilController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'username' => 'nullable|string|alpha_dash|max:50|unique:users,username,' . $user->id,
             'phone' => 'nullable|digits_between:11,13',
             'address' => 'nullable|string|max:500',
             'nidn' => 'nullable|string|max:20|unique:dosens,nidn,' . $dosen->id,
@@ -79,6 +80,7 @@ class ProfilController extends Controller
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'username' => $validated['username'],
         ]);
         
         // Update dosen data - convert string values to arrays for array-cast fields

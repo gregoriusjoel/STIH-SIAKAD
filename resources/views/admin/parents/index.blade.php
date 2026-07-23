@@ -68,6 +68,7 @@
                                         // Determine actual parent name if user_id belongs to mahasiswa
                                         $parentName = $parent->user->name;
                                         $parentEmail = $parent->user->email;
+                                        $parentUsername = $parent->user ? $parent->user->username : '';
                                         if ($parent->user && $parent->user->role === 'mahasiswa') {
                                             if ($parent->hubungan === 'ayah' && $parent->nama_ayah) $parentName = $parent->nama_ayah;
                                             elseif ($parent->hubungan === 'ibu' && $parent->nama_ibu) $parentName = $parent->nama_ibu;
@@ -77,6 +78,7 @@
                                             elseif ($parent->nama_ibu) $parentName = $parent->nama_ibu;
                                             elseif ($parent->nama_wali) $parentName = $parent->nama_wali;
                                             $parentEmail = '- (Belum ada Akun Valid)';
+                                            $parentUsername = '';
                                         }
                                     @endphp
                                     <div
@@ -91,6 +93,11 @@
                                             @endif
                                             {{ $parentEmail }}
                                         </div>
+                                        @if(!empty($parentUsername))
+                                            <div class="text-xs text-gray-500 mt-0.5 font-semibold">
+                                                <i class="fas fa-at text-gray-400 mr-1"></i>{{ $parentUsername }}
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </td>

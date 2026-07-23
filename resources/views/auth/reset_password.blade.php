@@ -84,7 +84,7 @@
         }
 
         .univ-title {
-            font-size: 22px;
+            font-size: 28px;
             font-weight: 800;
             letter-spacing: -0.02em;
             color: var(--maroon);
@@ -248,24 +248,40 @@
         /* RIGHT SIDE: Campus Visuals */
         .feature-side {
             flex: 1;
-            background: url('{{ asset('images/bg.png') }}') no-repeat center center;
-            background-size: cover;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 241, 242, 0.6) 0%, rgba(253, 244, 245, 0.8) 90%),
+                radial-gradient(circle, rgba(112, 26, 45, 0.05) 1.5px, transparent 1.5px);
+            background-size: 100% 100%, 24px 24px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 40px;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             border-radius: 36px 0 0 36px;
+            z-index: 2;
         }
 
+        /* Removed dark premium overlay for light style */
         .feature-side::before {
-            content: '';
+            display: none;
+        }
+
+        /* Brand Label at the Top Left of Right Side */
+        .feature-side-brand {
             position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(76, 5, 25, 0.65) 0%, rgba(28, 0, 8, 0.75) 100%);
-            z-index: 1;
+            top: 40px;
+            left: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--maroon);
+            letter-spacing: 0.12em;
+            z-index: 10;
+            opacity: 0.85;
         }
 
         .mockup-wrapper {
@@ -276,15 +292,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 28px;
-            padding: 40px 30px;
-            box-shadow: 
-                0 30px 60px -15px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
         /* Glowing Orbs for modern feel */
@@ -293,14 +300,14 @@
             border-radius: 50%;
             filter: blur(100px);
             z-index: 0;
-            opacity: 0.45;
+            opacity: 0.35;
             pointer-events: none;
         }
 
         .feature-orb-1 {
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(244, 63, 94, 0.25) 0%, transparent 70%);
             top: -50px;
             right: -50px;
         }
@@ -308,17 +315,17 @@
         .feature-orb-2 {
             width: 400px;
             height: 400px;
-            background: radial-gradient(circle, var(--maroon-light) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(112, 26, 45, 0.15) 0%, transparent 70%);
             bottom: -100px;
             left: -100px;
         }
 
         .illustration-box {
             position: relative;
-            width: 100%;
-            max-width: 380px;
+            width: 115%;
+            max-width: 520px;
             height: auto;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -327,15 +334,99 @@
         .campus-svg-illustration {
             width: 100%;
             height: auto;
-            max-height: 280px;
-            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.25));
+            max-height: 340px;
+            transform: translateX(-40px);
+            filter: drop-shadow(-20px 25px 35px rgba(112, 26, 45, 0.16));
             animation: float-illustration 6s ease-in-out infinite alternate;
-            z-index: 2;
+            z-index: 10;
         }
 
         @keyframes float-illustration {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-10px) scale(1.03); }
+            0% { transform: translateX(-40px) translateY(0); }
+            100% { transform: translateX(-40px) translateY(-12px); }
+        }
+
+        /* Floating Widgets */
+        .floating-widget {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255, 255, 255, 0.95);
+            border-radius: 18px;
+            padding: 10px 16px;
+            box-shadow: 
+                0 15px 35px -5px rgba(112, 26, 45, 0.1),
+                0 5px 15px -2px rgba(0, 0, 0, 0.05);
+            z-index: 12;
+            animation: float-widget 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes float-widget {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+
+        /* Position and color individual widgets */
+        .widget-krs {
+            top: 20px;
+            left: -20px;
+            animation-delay: 0s;
+        }
+        .widget-nilai {
+            top: 100px;
+            right: -30px;
+            animation-delay: -1.5s;
+        }
+        .widget-jadwal {
+            bottom: 60px;
+            left: -35px;
+            animation-delay: -3s;
+        }
+        .widget-dosen {
+            bottom: 140px;
+            right: -25px;
+            animation-delay: -4.5s;
+        }
+
+        .widget-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .widget-krs .widget-icon { background: var(--maroon); }
+        .widget-nilai .widget-icon { background: #fbbf24; color: #1e293b; }
+        .widget-jadwal .widget-icon { background: var(--accent); }
+        .widget-dosen .widget-icon { background: #06b6d4; }
+
+        .widget-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .widget-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.25;
+        }
+
+        .widget-desc {
+            font-size: 10px;
+            font-weight: 600;
+            color: #64748b;
+            margin-top: 2px;
         }
 
         .promo-text {
@@ -344,18 +435,18 @@
         }
 
         .promo-text h3 {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
-            color: #ffffff;
-            margin: 0 0 10px;
-            line-height: 1.4;
+            color: var(--maroon);
+            margin: 0 0 12px;
+            line-height: 1.35;
         }
 
         .promo-text p {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.75);
+            color: #475569;
             margin: 0;
-            line-height: 1.5;
+            line-height: 1.6;
             font-weight: 500;
         }
 
@@ -375,7 +466,6 @@
                     <img src="{{ asset('images/logo_stih_white.png') }}" alt="Logo" style="filter: brightness(0.2) sepia(1) hue-rotate(-50deg) saturate(5);">
                     <div class="brand-text">
                         <span class="univ-title">Universitas Adhyaksa</span>
-                        <span class="site-title">StudentSite</span>
                     </div>
                 </div>
 
@@ -402,7 +492,10 @@
                     <div class="input-group">
                         <div class="input-wrapper">
                             <input type="password" name="password" id="password" class="input-field"
-                                placeholder="Password baru" required autofocus>
+                                placeholder="Password baru" required autofocus
+                                oncopy="return this.type !== 'password'" 
+                                onpaste="return this.type !== 'password'" 
+                                oncut="return this.type !== 'password'">
                             <i class="fas fa-lock input-icon"></i>
                             <i class="fas fa-eye password-toggle" onclick="togglePassword('password', this)"></i>
                         </div>
@@ -414,7 +507,10 @@
                     <div class="input-group">
                         <div class="input-wrapper">
                             <input type="password" name="password_confirmation" id="password_confirmation" class="input-field"
-                                placeholder="Konfirmasi password baru" required>
+                                placeholder="Konfirmasi password baru" required
+                                oncopy="return this.type !== 'password'" 
+                                onpaste="return this.type !== 'password'" 
+                                oncut="return this.type !== 'password'">
                             <i class="fas fa-shield-halved input-icon"></i>
                             <i class="fas fa-eye password-toggle" onclick="togglePassword('password_confirmation', this)"></i>
                         </div>
@@ -435,12 +531,47 @@
 
         <!-- RIGHT PANEL: Campus Visuals -->
         <div class="feature-side">
+            <!-- Brand watermark watermark -->
+            <div class="feature-side-brand">
+                <span>STUDENTSITE</span>
+            </div>
+
             <div class="feature-orb feature-orb-1"></div>
             <div class="feature-orb feature-orb-2"></div>
 
             <div class="mockup-wrapper">
                 <div class="illustration-box">
                     <img src="{{ asset('images/college campus-amico.svg') }}" alt="Kampus Universitas Adhyaksa" class="campus-svg-illustration">
+
+                    <!-- Floating Widgets -->
+                    <div class="floating-widget widget-krs">
+                        <div class="widget-icon"><i class="fas fa-book-open"></i></div>
+                        <div class="widget-info">
+                            <span class="widget-title">KRS Online</span>
+                            <span class="widget-desc">Pengisian Cepat</span>
+                        </div>
+                    </div>
+                    <div class="floating-widget widget-nilai">
+                        <div class="widget-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <div class="widget-info">
+                            <span class="widget-title">KHS & Nilai</span>
+                            <span class="widget-desc">Hasil Studi</span>
+                        </div>
+                    </div>
+                    <div class="floating-widget widget-jadwal">
+                        <div class="widget-icon"><i class="fas fa-calendar-days"></i></div>
+                        <div class="widget-info">
+                            <span class="widget-title">Jadwal Kuliah</span>
+                            <span class="widget-desc">Real-time</span>
+                        </div>
+                    </div>
+                    <div class="floating-widget widget-dosen">
+                        <div class="widget-icon"><i class="fas fa-laptop-code"></i></div>
+                        <div class="widget-info">
+                            <span class="widget-title">E-learning</span>
+                            <span class="widget-desc">Materi Kuliah</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="promo-text">
                     <h3>Password Berhasil Diverifikasi</h3>

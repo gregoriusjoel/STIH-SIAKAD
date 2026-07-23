@@ -102,6 +102,7 @@ class ProfilController extends Controller
         }
 
         $user->name = $request->name;
+        $user->username = $request->username;
         $user->save();
 
         $mahasiswaData = $request->only([
