@@ -292,43 +292,70 @@
             position: relative;
             z-index: 5;
             width: 100%;
-            max-width: 440px;
+            max-width: 450px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            padding: 40px 30px;
+            box-shadow: 
+                0 30px 60px -15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        /* Glowing Orbs for modern feel */
+        .feature-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        .feature-orb-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            top: -50px;
+            right: -50px;
+        }
+
+        .feature-orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--maroon-light) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
         }
 
         .illustration-box {
             position: relative;
-            width: 240px;
-            height: 240px;
+            width: 100%;
+            max-width: 380px;
+            height: auto;
             margin-bottom: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .main-illustration-icon {
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 56px;
-            position: relative;
+        .campus-svg-illustration {
+            width: 100%;
+            height: auto;
+            max-height: 280px;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.25));
+            animation: float-illustration 6s ease-in-out infinite alternate;
             z-index: 2;
-            background: rgba(244, 63, 94, 0.15);
-            color: #f43f5e;
-            border: 2px solid rgba(244, 63, 94, 0.35);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(244, 63, 94, 0.25);
-            backdrop-filter: blur(12px);
-            animation: float-icon 6s infinite alternate ease-in-out;
         }
 
-        @keyframes float-icon {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-12px); }
+        @keyframes float-illustration {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-10px) scale(1.03); }
         }
 
         .promo-text {
@@ -437,11 +464,12 @@
 
         <!-- RIGHT PANEL: Campus Visuals -->
         <div class="feature-side">
+            <div class="feature-orb feature-orb-1"></div>
+            <div class="feature-orb feature-orb-2"></div>
+
             <div class="mockup-wrapper">
                 <div class="illustration-box">
-                    <div class="main-illustration-icon">
-                        <i class="fas fa-key"></i>
-                    </div>
+                    <img src="{{ asset('images/college campus-amico.svg') }}" alt="Kampus Universitas Adhyaksa" class="campus-svg-illustration">
                 </div>
                 <div class="promo-text">
                     <h3>Keamanan Akun Mahasiswa</h3>

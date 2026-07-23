@@ -374,31 +374,71 @@
             position: relative;
             z-index: 5;
             width: 100%;
-            max-width: 440px;
+            max-width: 450px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            padding: 40px 30px;
+            box-shadow: 
+                0 30px 60px -15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        /* Glowing Orbs for modern feel */
+        .feature-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        .feature-orb-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            top: -50px;
+            right: -50px;
+        }
+
+        .feature-orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--maroon-light) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
         }
 
         /* Main Illustration container in CSS */
         .illustration-box {
             position: relative;
-            width: 280px;
-            height: 280px;
-            margin-bottom: 40px;
+            width: 100%;
+            max-width: 380px;
+            height: auto;
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Rotating thought/energy swirls from reference */
-        .swirls-bg {
-            position: absolute;
-            inset: -20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1;
+        .campus-svg-illustration {
+            width: 100%;
+            height: auto;
+            max-height: 280px;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.25));
+            animation: float-illustration 6s ease-in-out infinite alternate;
+            z-index: 2;
+        }
+
+        @keyframes float-illustration {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-10px) scale(1.03); }
         }
 
         .rotating-swirl {
@@ -701,47 +741,8 @@
 
             <div class="mockup-wrapper">
                 <div class="illustration-box">
-                    <!-- Rotating energy swirls -->
-                    <div class="swirls-bg">
-                        <svg viewBox="0 0 200 200" class="rotating-swirl">
-                            <path d="M100 10 C 130 10, 190 70, 190 100 C 190 130, 130 190, 100 190 C 70 190, 10 130, 10 100 C 10 70, 70 10, 100 10" fill="none" stroke="rgba(255, 255, 255, 0.35)" stroke-width="2.5" stroke-dasharray="8 8" />
-                            <path d="M100 25 C 120 25, 175 75, 175 100 C 175 125, 120 175, 100 175 C 80 175, 25 125, 25 100 C 25 75, 80 25, 100 25" fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1.5" />
-                        </svg>
-                    </div>
-                    
-                    <!-- Central student vector -->
-                    <div class="student-vector">
-                        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M50 160 C55 140, 145 140, 150 160 C135 170, 65 170, 50 160 Z" fill="rgba(255, 255, 255, 0.15)" stroke="rgba(255, 255, 255, 0.5)" stroke-width="2" />
-                            <path d="M80 110 L120 110 L115 150 L85 150 Z" fill="#9f1239" stroke="rgba(255, 255, 255, 0.6)" stroke-width="1.5" />
-                            <rect x="96" y="95" width="8" height="16" rx="2" fill="#fbcfe8" />
-                            <circle cx="100" cy="80" r="18" fill="#fbcfe8" />
-                            <path d="M82 80 C82 65, 118 65, 118 80 C118 88, 112 95, 100 95 C88 95, 82 88, 82 80 Z" fill="#1c0008" />
-                            <path d="M100 124 C98 120, 92 120, 92 125 C92 130, 100 135, 100 135 C100 135, 108 130, 108 125 C108 120, 102 120, 100 124 Z" fill="#f43f5e" />
-                            <circle cx="60" cy="130" r="5" fill="#fbcfe8" />
-                            <circle cx="140" cy="130" r="5" fill="#fbcfe8" />
-                            <path d="M60 130 C70 120, 75 115, 80 115" stroke="#fbcfe8" stroke-width="2" stroke-linecap="round" fill="none" />
-                            <path d="M140 130 C130 120, 125 115, 120 115" stroke="#fbcfe8" stroke-width="2" stroke-linecap="round" fill="none" />
-                        </svg>
-                    </div>
-
-                    <!-- 4 floating badges representing key student activities -->
-                    <!-- Top-Left: Book (KRS & Materi) -->
-                    <div class="avatar-float" style="left: -24px; top: 12px; background: var(--maroon-light); animation: float-left 5s infinite alternate ease-in-out;">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <!-- Top-Right: Graduation Cap (Nilai & Prestasi) -->
-                    <div class="avatar-float" style="right: -24px; top: 12px; background: #fbbf24; color: #1e293b; animation: float-right 5.5s infinite alternate ease-in-out;">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <!-- Bottom-Left: Calendar (Jadwal & Absensi) -->
-                    <div class="avatar-float" style="left: -24px; bottom: 24px; background: var(--accent); animation: float-right 5s infinite alternate ease-in-out; animation-delay: -1.5s;">
-                        <i class="fas fa-calendar-days"></i>
-                    </div>
-                    <!-- Bottom-Right: Laptop (SIAKAD & E-learning) -->
-                    <div class="avatar-float" style="right: -24px; bottom: 24px; background: #06b6d4; color: white; animation: float-left 5.5s infinite alternate ease-in-out; animation-delay: -2s;">
-                        <i class="fas fa-laptop-code"></i>
-                    </div>
+                    <!-- Loading the beautiful college campus-amico SVG -->
+                    <img src="{{ asset('images/college campus-amico.svg') }}" alt="Kampus Universitas Adhyaksa" class="campus-svg-illustration">
                 </div>
 
                 <div class="promo-text">
