@@ -29,6 +29,7 @@ class ImportService
                 'address' => 'alamat',
                 'alamat' => 'alamat',             // alias untuk address
                 'jenis_kelamin' => 'jenis_kelamin',
+                'username' => 'username',
             ],
             'unique_column' => 'nim',
             'has_user' => true,
@@ -48,6 +49,7 @@ class ImportService
                 'prodi' => 'prodi',
                 'jabatan_fungsional' => 'jabatan_fungsional',
                 'dosen_tetap' => 'dosen_tetap',
+                'username' => 'username',
             ],
             'unique_column' => 'nidn',
             'has_user' => true,
@@ -111,6 +113,7 @@ class ImportService
                 'pekerjaan' => 'pekerjaan',
                 'phone' => 'phone',
                 'address' => 'address',
+                'username' => 'username',
             ],
             'unique_column' => 'nim_mahasiswa',
             'has_user' => true,
@@ -390,6 +393,17 @@ class ImportService
                 }
             }
 
+            // Check for unique username in users table if provided in mapping
+            if (isset($config['column_mapping']['username'])) {
+                $usernameVal = $this->getColumnValue($row, 'username');
+                if (!empty($usernameVal)) {
+                    $sanitizedUsername = strtolower(preg_replace('/[^a-z0-9-_]/', '', $usernameVal));
+                    if (\App\Models\User::where('username', $sanitizedUsername)->exists()) {
+                        $rowErrors[] = "Username '{$usernameVal}' sudah digunakan oleh pengguna lain";
+                    }
+                }
+            }
+
             if (!empty($rowErrors)) {
                 $errors[] = [
                     'row' => $rowNumber,
@@ -598,6 +612,7 @@ class ImportService
         $user = \App\Models\User::create([
             'name' => $name,
             'email' => $emailKampus,
+            'username' => !empty($data['username']) ? strtolower(preg_replace('/[^a-z0-9-_]/', '', $data['username'])) : $data['nim'],
             'password' => \Illuminate\Support\Facades\Hash::make('mahasiswa123'),
             'role' => 'mahasiswa',
         ]);
@@ -636,6 +651,7 @@ class ImportService
         $user = \App\Models\User::create([
             'name' => $name,
             'email' => $email,
+            'username' => !empty($data['username']) ? strtolower(preg_replace('/[^a-z0-9-_]/', '', $data['username'])) : $data['nidn'],
             'password' => \Illuminate\Support\Facades\Hash::make('dosen123'),
             'role' => 'dosen',
         ]);
@@ -863,6 +879,7 @@ class ImportService
         $user = $existingUser ?? \App\Models\User::create([
             'name' => $namaOrtu,
             'email' => $email,
+            'username' => !empty($data['username']) ? strtolower(preg_replace('/[^a-z0-9-_]/', '', $data['username'])) : 'ortu_' . $nimMahasiswa,
             'password' => \Illuminate\Support\Facades\Hash::make('orangtua123'),
             'role' => 'parent',
         ]);

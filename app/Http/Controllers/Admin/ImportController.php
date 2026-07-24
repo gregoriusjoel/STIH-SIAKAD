@@ -31,13 +31,14 @@ class ImportController extends Controller
                 'jenis_kelamin' => 'jenis_kelamin',
                 'telefon' => 'no_hp',
                 'alamat' => 'alamat',
+                'username' => 'username',
             ],
         ],
         'dosen' => [
             'title' => 'Import Data Dosen',
             'description' => 'Import data dosen dari file CSV atau XLSX',
             'icon' => 'fa-chalkboard-teacher',
-            'template_columns' => ['nidn', 'nama', 'email', 'pendidikan', 'universitas', 'prodi', 'phone', 'address', 'jabatan_fungsional', 'dosen_tetap'],
+            'template_columns' => ['nidn', 'nama', 'email', 'pendidikan', 'universitas', 'prodi', 'phone', 'address', 'jabatan_fungsional', 'dosen_tetap', 'username'],
         ],
         'dosen_pa' => [
             'title' => 'Import Data Dosen PA',
@@ -61,7 +62,7 @@ class ImportController extends Controller
             'title' => 'Import Data Orang Tua',
             'description' => 'Import data orang tua/wali mahasiswa dari file CSV atau XLSX',
             'icon' => 'fa-users',
-            'template_columns' => ['nim_mahasiswa', 'nama_ortu', 'email', 'hubungan', 'pekerjaan', 'phone', 'address'],
+            'template_columns' => ['nim_mahasiswa', 'nama_ortu', 'email', 'hubungan', 'pekerjaan', 'phone', 'address', 'username'],
         ],
     ];
 
