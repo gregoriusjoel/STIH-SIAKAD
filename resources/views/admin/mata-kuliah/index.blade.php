@@ -1258,7 +1258,7 @@
                 try {
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
                     const res = await fetch(
-                        `/admin/mata-kuliah-semester/carry-forward/preview?source_semester_id=${source}&target_semester_id=${target}`,
+                        `{{ route('admin.mata-kuliah-semester.carry-forward-preview') }}?source_semester_id=${source}&target_semester_id=${target}`,
                         { 
                             headers: { 
                                 'X-Requested-With': 'XMLHttpRequest', 

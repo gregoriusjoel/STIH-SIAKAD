@@ -311,7 +311,7 @@
         showProgress('Membaca file...');
 
         try {
-            const response = await fetch(`/admin/import/${importType}/preview`, {
+            const response = await fetch(`/akademik/import/${importType}/preview`, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -475,7 +475,7 @@
         document.getElementById('btn-import').disabled = true;
 
         try {
-            const response = await fetch(`/admin/import/${importType}/import`, {
+            const response = await fetch(`/akademik/import/${importType}/import`, {
                 method: 'POST',
                 body: formData,
                 headers: {

@@ -1,14 +1,13 @@
 # Laporan Ringkas Perbaikan Sistem SIAKAD - 23 July 2026
 
-Laporan ini ditulis menggunakan bahasa yang sederhana agar mudah dipahami oleh tim non-teknis / orang awam. Semua pekerjaan di bawah ini telah selesai diterapkan, diuji, dan berjalan dengan baik di server.
+Berikut adalah rangkuman singkat perbaikan hari ini dengan bahasa yang mudah dipahami:
 
----
+• **Pembaruan Desain Halaman Masuk Mahasiswa, Dosen, & Orang Tua:** Mengubah tampilan menjadi model terbelah (split-screen) yang modern menggunakan ilustrasi baru (college campus-amico.svg, Teacher-cuate.svg, Back to school-cuate.svg) lengkap dengan kartu-kartu menu melayang yang interaktif.
 
-## 📅 Rangkuman Perbaikan Hari Ini
+• **Perapian & Penyusutan Ukuran Form Login:** Memperkecil tinggi kolom input, tombol masuk, dan jarak antar tulisan agar formulir login terlihat lebih compact, rapi, dan seimbang.
 
-### 1. Pembaruan Desain Visual Halaman Akses Mahasiswa (Portal Auth)
-*   **Penjelasan:** Kami telah memperbarui ilustrasi di sebelah kanan halaman login, halaman lupa password, dan halaman atur ulang password menggunakan gambar vektor kampus yang baru (`college campus-amico.svg`).
-*   **Sentuhan Modern:**
-    *   Menggunakan efek kartu kaca transparan (*glassmorphism*) yang elegan untuk mempercantik tampilan info portal.
-    *   Menambahkan efek pendaran cahaya (*glow effect*) berwarna merah marun dan pink di latar belakang untuk memberikan nuansa modern dan mewah.
-    *   Memberikan efek animasi mengambang lembut pada gambar kampus agar tampilan terlihat dinamis dan interaktif bagi mahasiswa.
+• **Perbaikan Scrollbar Halaman & Area Kosong:** Mengunci tinggi halaman login agar pas seukuran layar browser (bebas dari scrollbar luar) dan menghilangkan area putih kosong di bawah halaman.
+
+• **Dukungan Login Menggunakan Nama Pengguna (Username):** Pengguna kini bisa masuk menggunakan username sebagai alternatif email. Pengaturan username tersedia di profil masing-masing (Mahasiswa & Dosen) atau diatur oleh Admin (untuk Orang Tua & Staff).
+
+• **Keamanan Kata Sandi:** Memblokir fungsi copy, cut, dan paste pada kolom input kata sandi saat disembunyikan untuk meminimalkan risiko kebocoran sandi.

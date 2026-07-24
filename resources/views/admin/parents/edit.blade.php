@@ -250,7 +250,7 @@
                     btnSync.disabled = true;
 
                     try {
-                        const response = await fetch(`/admin/parents/existing/${mahasiswaId}`);
+                        const response = await fetch(`/akademik/parents/existing/${mahasiswaId}`);
                         const result = await response.json();
 
                         if (result.success && result.data) {

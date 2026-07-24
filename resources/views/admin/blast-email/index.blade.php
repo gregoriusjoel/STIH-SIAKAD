@@ -1003,7 +1003,7 @@ function loadKelasPerProdi(prodiId) {
     kelasSelect.disabled = true;
     kelasSelect.innerHTML = '<option value="">Memuat Kelas...</option>';
     
-    fetch(`/admin/blast-email/kelas/${prodiId}`)
+    fetch(`/akademik/blast-email/kelas/${prodiId}`)
         .then(res => res.json())
         .then(data => {
             kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>';

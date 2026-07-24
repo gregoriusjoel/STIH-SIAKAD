@@ -140,7 +140,7 @@ class KelasMataKuliah extends Model
      */
     public function getNamaKelasAttribute()
     {
-        if ($this->kelas_perkuliahan_id && $this->relationLoaded('kelasPerkuliahan') && $this->kelasPerkuliahan) {
+        if ($this->kelas_perkuliahan_id && $this->kelasPerkuliahan) {
             return $this->kelasPerkuliahan->nama_kelas;
         }
 

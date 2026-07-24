@@ -1528,7 +1528,7 @@
                         return;
                     }
 
-                    fetch(`/admin/kalender-akademik/semester/${semesterId}`, {
+                    fetch(`/akademik/kalender-akademik/semester/${semesterId}`, {
                         method: 'PUT',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -1596,7 +1596,7 @@
                         // Delete logic here
                     });
                     const eventId = document.getElementById('event_id').value;
-                    fetch(`/admin/kalender-akademik/event/${eventId}`, {
+                    fetch(`/akademik/kalender-akademik/event/${eventId}`, {
                         method: 'DELETE',
                         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
                     })
@@ -1637,7 +1637,7 @@
                     async function() {
                         const eventId = info.event.extendedProps.event_id;
                         try {
-                            const res = await fetch(`/admin/kalender-akademik/event/${eventId}/date`, {
+                            const res = await fetch(`/akademik/kalender-akademik/event/${eventId}/date`, {
                                 method: 'PUT',
                                 headers: {
                                     'X-CSRF-TOKEN': '{{ csrf_token() }}',

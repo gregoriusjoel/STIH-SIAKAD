@@ -17,44 +17,23 @@ class KelasMataKuliahController extends Controller
 {
     public function index()
     {
-        // Get active schedules from Jadwal -> Kelas
-        $activeJadwals = \App\Models\Jadwal::where('status', 'active')
-            ->whereNotNull('kelas_id')
-            ->with('kelas')
-            ->get();
-            
-        $activeKelas = $activeJadwals->pluck('kelas')->filter();
-
-        // Build normalized combination keys: mata_kuliah_id + kelas_perkuliahan_id
-        $activeCombinations = $activeKelas->map(function ($k) {
-            return $k->mata_kuliah_id . '-' . $k->kelas_perkuliahan_id;
-        })->unique()->toArray();
-
-        // Show classes that have active jadwal mapping OR own schedule fields.
+        // Show classes that have active schedules.
         // Do not hard-filter by active semester to avoid hiding valid classes.
-        $kelasMatKul = KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester'])
-            ->get()
-            ->map(function ($kmk) use ($activeJadwals, $activeCombinations) {
-                $kmkClassCode = strtolower(trim((string) $kmk->kode_kelas));
-
-                // Check if there is a matching Jadwal for this MK
-                $hasActiveJadwal = in_array($kmk->mata_kuliah_id . '-' . $kmkClassCode, $activeCombinations, true);
-
-                if (!$hasActiveJadwal) {
-                    return null; // Skip if no schedule at all
-                }
-
-                // Find matching Jadwal for this MK and Class code mapping back via Kelas
-                $matchingJadwal = $activeJadwals->first(function ($jadwal) use ($kmk) {
-                    return $jadwal->kelas && 
-                           $jadwal->kelas->mata_kuliah_id == $kmk->mata_kuliah_id && 
-                           $jadwal->kelas->kelas_perkuliahan_id == $kmk->kelas_perkuliahan_id;
-                });
-                
-                $kmk->jadwal = $matchingJadwal;
-                return $kmk;
-            })
-            ->filter(); // Remove nulls
+        $kelasMatKul = KelasMataKuliah::with(['mataKuliah', 'dosen.user', 'semester', 'kelasPerkuliahan', 'jadwals' => function ($q) {
+            $q->where('status', 'active');
+        }])
+        ->get()
+        ->map(function ($kmk) {
+            // Check if there is an active schedule mapped
+            $activeJadwal = $kmk->jadwals->first();
+            if (!$activeJadwal) {
+                return null;
+            }
+            // Set the jadwal property for view backward compatibility
+            $kmk->jadwal = $activeJadwal;
+            return $kmk;
+        })
+        ->filter(); // Remove nulls
             
         // Manually paginate the collection
         $page = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
@@ -569,16 +548,35 @@ class KelasMataKuliahController extends Controller
     public function updateOnlineMeetingLink($id)
     {
         $validated = request()->validate([
-            'pertemuan_id' => 'required|integer',
+            'pertemuan_id' => 'nullable|integer',
+            'tipe' => 'nullable|string|in:kuliah,uts,uas',
+            'nomor' => 'nullable|integer',
+            'tanggal' => 'nullable|date',
             'online_meeting_link' => 'nullable|url',
         ]);
 
-        $pertemuan = \App\Models\Pertemuan::where('id', $validated['pertemuan_id'])
-            ->where('kelas_mata_kuliah_id', $id)
-            ->first();
+        $pertemuan = null;
+        if (!empty($validated['pertemuan_id'])) {
+            $pertemuan = \App\Models\Pertemuan::where('id', $validated['pertemuan_id'])
+                ->where('kelas_mata_kuliah_id', $id)
+                ->first();
+        }
+
+        if (!$pertemuan && !empty($validated['tipe']) && !empty($validated['nomor'])) {
+            $pertemuan = \App\Models\Pertemuan::where('kelas_mata_kuliah_id', $id)
+                ->where('tipe_pertemuan', $validated['tipe'])
+                ->where('nomor_pertemuan', $validated['nomor'])
+                ->first();
+        }
 
         if (!$pertemuan) {
-            return response()->json(['error' => 'Pertemuan tidak ditemukan'], 404);
+            $pertemuan = \App\Models\Pertemuan::create([
+                'kelas_mata_kuliah_id' => $id,
+                'tipe_pertemuan' => $validated['tipe'] ?? 'kuliah',
+                'nomor_pertemuan' => $validated['nomor'] ?? 1,
+                'tanggal' => $validated['tanggal'] ?? now(),
+                'status' => 'scheduled',
+            ]);
         }
 
         $pertemuan->update([
@@ -588,6 +586,7 @@ class KelasMataKuliahController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Link zoom berhasil diperbarui',
+            'pertemuan_id' => $pertemuan->id,
             'online_meeting_link' => $pertemuan->online_meeting_link,
         ]);
     }

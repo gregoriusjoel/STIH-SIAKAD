@@ -37,6 +37,35 @@
                     { value: 'kuliah:14', label: 'Pertemuan 14', tipe: 'kuliah' },
                     { value: 'uas:1', label: '📝 UAS (Ujian Akhir Semester)', tipe: 'uas' },
                 ],
+                showSuccessNotification(message) {
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-white border border-[#7a1621] rounded-xl shadow-2xl p-4 flex items-center gap-3 z-50 transform -translate-y-4 opacity-0 transition-all duration-300 ease-out';
+                    notification.style.minWidth = '320px';
+                    
+                    notification.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center border border-green-200 flex-shrink-0">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-bold text-gray-800">${message}</p>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.classList.remove('-translate-y-4', 'opacity-0');
+                        notification.classList.add('translate-y-0', 'opacity-100');
+                    }, 10);
+                    
+                    setTimeout(() => {
+                        notification.classList.remove('translate-y-0', 'opacity-100');
+                        notification.classList.add('-translate-y-4', 'opacity-0');
+                        setTimeout(() => notification.remove(), 350);
+                    }, 3000);
+                },
                 toggleDetail(id) {
                     if (this.selectedKelasId === id) {
                         this.showDetail = !this.showDetail;
@@ -53,7 +82,7 @@
                 loadAllPertemuanLinks() {
                     if (!this.selectedKelasId) return;
                     this.loadingLinks = true;
-                    fetch(`/admin/kelas-mata-kuliah/${this.selectedKelasId}/all-pertemuan-links`)
+                    fetch(`/akademik/kelas-mata-kuliah/${this.selectedKelasId}/all-pertemuan-links`)
                         .then(res => {
                             if (!res.ok) throw new Error('Server error: ' + res.status);
                             return res.json();
@@ -75,7 +104,7 @@
                     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                     this.savingLink = pertemuanId;
 
-                    fetch(`/admin/kelas-mata-kuliah/${this.selectedKelasId}/update-online-meeting-link`, {
+                    fetch(`/akademik/kelas-mata-kuliah/${this.selectedKelasId}/update-online-meeting-link`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -92,11 +121,7 @@
                         })
                         .then(data => {
                             if (data.success) {
-                                const notification = document.createElement('div');
-                                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-                                notification.textContent = data.message || 'Link zoom berhasil diperbarui';
-                                document.body.appendChild(notification);
-                                setTimeout(() => notification.remove(), 3000);
+                                this.showSuccessNotification(data.message || 'Link zoom berhasil diperbarui');
 
                                 const pertemuan = this.allPertemuanLinks.find(p => p.id === pertemuanId);
                                 if (pertemuan) {
@@ -116,7 +141,7 @@
                     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                     this.savingGeneralLink = true;
 
-                    fetch(`/admin/kelas-mata-kuliah/${this.selectedKelasId}/update-general-meeting-link`, {
+                    fetch(`/akademik/kelas-mata-kuliah/${this.selectedKelasId}/update-general-meeting-link`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -133,11 +158,7 @@
                         .then(data => {
                             this.savingGeneralLink = false;
                             if (data.success) {
-                                const notification = document.createElement('div');
-                                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-                                notification.textContent = data.message || 'Link zoom umum berhasil disimpan';
-                                document.body.appendChild(notification);
-                                setTimeout(() => notification.remove(), 3000);
+                                this.showSuccessNotification(data.message || 'Link zoom umum berhasil disimpan');
                             }
                         })
                         .catch(err => {
@@ -152,7 +173,7 @@
                     this.attendanceData = null;
                     this.onlineMeetingLink = '';
                     const [tipe, nomor] = this.selectedMeeting.split(':');
-                    fetch(`/admin/kelas-mata-kuliah/${this.selectedKelasId}/attendance?tipe=${tipe}&nomor=${nomor}`)
+                    fetch(`/akademik/kelas-mata-kuliah/${this.selectedKelasId}/attendance?tipe=${tipe}&nomor=${nomor}`)
                         .then(res => {
                             if (!res.ok) throw new Error('Server error: ' + res.status);
                             return res.json();
@@ -171,17 +192,20 @@
                         });
                 },
                 saveOnlineMeetingLink() {
-                    if (!this.attendanceData?.pertemuan?.id) return;
+                    if (!this.attendanceData?.pertemuan) return;
                     this.savingLink = true;
 
-                    fetch(`/admin/kelas-mata-kuliah/${this.selectedKelasId}/update-online-meeting-link`, {
+                    fetch(`/akademik/kelas-mata-kuliah/${this.selectedKelasId}/update-online-meeting-link`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         },
                         body: JSON.stringify({
-                            pertemuan_id: this.attendanceData.pertemuan.id,
+                            pertemuan_id: this.attendanceData.pertemuan.id || null,
+                            tipe: this.attendanceData.pertemuan.tipe || 'kuliah',
+                            nomor: this.attendanceData.pertemuan.nomor || 1,
+                            tanggal: this.attendanceData.pertemuan.tanggal || null,
                             online_meeting_link: this.onlineMeetingLink || null,
                         })
                     })
@@ -193,12 +217,9 @@
                             this.savingLink = false;
                             this.editingLinkId = null; // Close edit mode
                             if (data.success) {
+                                this.attendanceData.pertemuan.id = data.pertemuan_id;
                                 this.attendanceData.pertemuan.online_meeting_link = this.onlineMeetingLink; // Update local data
-                                const notification = document.createElement('div');
-                                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-                                notification.textContent = data.message || 'Link zoom berhasil diperbarui';
-                                document.body.appendChild(notification);
-                                setTimeout(() => notification.remove(), 3000);
+                                this.showSuccessNotification(data.message || 'Link zoom berhasil diperbarui');
                             }
                         })
                         .catch(err => {

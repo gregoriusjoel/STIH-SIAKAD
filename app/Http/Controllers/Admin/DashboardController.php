@@ -26,7 +26,9 @@ class DashboardController extends Controller
             'total_dosen' => Dosen::count(),
             'total_mata_kuliah' => MataKuliah::count(),
             'total_parent' => ParentModel::count(),
-            'total_kelas' => KelasMataKuliah::count(),
+            'total_kelas' => KelasMataKuliah::whereHas('jadwals', function ($q) {
+                $q->where('status', 'active');
+            })->count(),
             'total_krs' => Krs::count(),
             'total_jadwal' => Jadwal::count(),
             'krs_pending' => Krs::where('status', 'pending')->count(),

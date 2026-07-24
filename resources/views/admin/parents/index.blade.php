@@ -433,7 +433,7 @@
                 const fd = new FormData(); fd.append('file', impSelectedFile);
                 document.getElementById('imp-progress').classList.remove('hidden');
                 try {
-                    const r = await fetch(`/admin/import/${IMP_TYPE}/preview`, { method:'POST', body:fd, headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content} });
+                    const r = await fetch(`/akademik/import/${IMP_TYPE}/preview`, { method:'POST', body:fd, headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content} });
                     const res = await r.json();
                     document.getElementById('imp-progress').classList.add('hidden');
                     if (res.success) {
@@ -474,7 +474,7 @@
                 const fd=new FormData(); fd.append('file',impSelectedFile); fd.append('skip_duplicates',document.getElementById('imp-skip-duplicates').checked?'1':'0');
                 document.getElementById('imp-progress').classList.remove('hidden'); document.getElementById('imp-btn-import').disabled=true;
                 try {
-                    const r=await fetch(`/admin/import/${IMP_TYPE}/import`,{method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content}});
+                    const r=await fetch(`/akademik/import/${IMP_TYPE}/import`,{method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content}});
                     const res=await r.json(); document.getElementById('imp-progress').classList.add('hidden');
                     impShowResults(res);
                 } catch(e) { document.getElementById('imp-progress').classList.add('hidden'); Swal.fire('Error',e.message,'error'); document.getElementById('imp-btn-import').disabled=false; }

@@ -168,19 +168,14 @@ class DosenPaController extends Controller
         $dosenProdiCodes = $dosen->prodi ?? [];
         if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
 
-        // Resolve prodi codes/names to names
-        $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
-        $dosenProdiNames = [];
-        foreach ($dosenProdiCodes as $code) {
-            if (isset($prodiMap[$code])) {
-                $dosenProdiNames[] = $prodiMap[$code];
-            } elseif (in_array($code, $prodiMap)) {
-                $dosenProdiNames[] = $code;
-            }
-        }
+        // Resolve prodi codes/names to IDs
+        $dosenProdiIds = Prodi::whereIn('kode_prodi', $dosenProdiCodes)
+            ->orWhereIn('nama_prodi', $dosenProdiCodes)
+            ->pluck('id')
+            ->toArray();
 
-        if (!empty($dosenProdiNames)) {
-            $query->whereIn('prodi', $dosenProdiNames);
+        if (!empty($dosenProdiIds)) {
+            $query->whereIn('prodi_id', $dosenProdiIds);
         } else {
             // if dosen has no prodi set, return empty set
             $query->whereRaw('0 = 1');
@@ -290,20 +285,15 @@ class DosenPaController extends Controller
             $dosenProdiCodes = $currentDosen->prodi ?? [];
             if (!is_array($dosenProdiCodes)) $dosenProdiCodes = json_decode($dosenProdiCodes, true) ?: [];
 
-            // Resolve prodi codes/names to names
-            $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
-            $dosenProdiNames = [];
-            foreach ($dosenProdiCodes as $code) {
-                if (isset($prodiMap[$code])) {
-                    $dosenProdiNames[] = $prodiMap[$code];
-                } elseif (in_array($code, $prodiMap)) {
-                    $dosenProdiNames[] = $code;
-                }
-            }
+            // Resolve prodi codes/names to IDs
+            $dosenProdiIds = Prodi::whereIn('kode_prodi', $dosenProdiCodes)
+                ->orWhereIn('nama_prodi', $dosenProdiCodes)
+                ->pluck('id')
+                ->toArray();
 
-            if (!empty($dosenProdiNames)) {
-                // Check if any selected mahasiswa has a prodi NOT in the dosen's prodi names
-                $bad = Mahasiswa::whereIn('id', $toAddIds)->whereNotIn('prodi', $dosenProdiNames)->pluck('id')->first();
+            if (!empty($dosenProdiIds)) {
+                // Check if any selected mahasiswa has a prodi_id NOT in the dosen's prodi IDs
+                $bad = Mahasiswa::whereIn('id', $toAddIds)->whereNotIn('prodi_id', $dosenProdiIds)->pluck('id')->first();
                 if ($bad) {
                     $m = Mahasiswa::find($bad);
                     return back()->with('error', 'Mahasiswa ' . ($m?->user->name ?? $bad) . ' tidak berada di Program Studi yang sama dengan dosen ini.');
@@ -340,21 +330,17 @@ class DosenPaController extends Controller
         $newProdiCodes = $newDosen->prodi ?? [];
         if (!is_array($newProdiCodes)) $newProdiCodes = json_decode($newProdiCodes, true) ?: [];
 
-        // Resolve prodi codes/names to names
-        $prodiMap = Prodi::pluck('nama_prodi', 'kode_prodi')->toArray();
-        $newProdiNames = [];
-        foreach ($newProdiCodes as $code) {
-            if (isset($prodiMap[$code])) {
-                $newProdiNames[] = $prodiMap[$code];
-            } elseif (in_array($code, $prodiMap)) {
-                $newProdiNames[] = $code;
-            }
-        }
+        // Resolve prodi codes/names to IDs
+        $newProdiIds = Prodi::whereIn('kode_prodi', $newProdiCodes)
+            ->orWhereIn('nama_prodi', $newProdiCodes)
+            ->pluck('id')
+            ->toArray();
 
-        if (!empty($newProdiNames)) {
-            $bad = Mahasiswa::whereIn('id', $request->mahasiswa_ids)->whereNotIn('prodi', $newProdiNames)->pluck('id')->first();
+        if (!empty($newProdiIds)) {
+            $bad = Mahasiswa::whereIn('id', $request->mahasiswa_ids)->whereNotIn('prodi_id', $newProdiIds)->pluck('id')->first();
             if ($bad) {
                 $m = Mahasiswa::find($bad);
+                $newProdiNames = Prodi::whereIn('id', $newProdiIds)->pluck('nama_prodi')->toArray();
                 return back()->with('error', 'Mahasiswa ' . ($m?->user->name ?? $bad) . ' tidak berada di Program Studi yang sama dengan dosen tujuan. (Dosen: ' . implode(', ', $newProdiNames) . ')');
             }
         } else {

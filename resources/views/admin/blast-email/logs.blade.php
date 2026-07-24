@@ -196,7 +196,7 @@ function showDetail(batchId, email, success, time) {
 function loadBatchStats(batchId) {
     const container = document.getElementById('statsContainer');
     
-    fetch(`/admin/blast-email/stats?batch_id=${batchId}`)
+    fetch(`/akademik/blast-email/stats?batch_id=${batchId}`)
         .then(res => res.json())
         .then(data => {
             if (data.success) {

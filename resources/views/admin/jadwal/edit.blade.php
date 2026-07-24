@@ -214,7 +214,7 @@ function jadwalEditor() {
             }
 
             this.loading = true;
-            fetch(`/admin/jadwal/get-dosens/${this.mataKuliahId}`)
+            fetch(`/akademik/jadwal/get-dosens/${this.mataKuliahId}`)
                 .then(r => r.json())
                 .then(data => {
                     this.dosens = data.dosens || [];
@@ -242,7 +242,7 @@ function jadwalEditor() {
                 jadwal_id: '{{ $jadwal->id }}'
             });
 
-            fetch(`/admin/jadwal/check-room?${params}`)
+            fetch(`/akademik/jadwal/check-room?${params}`)
                 .then(r => r.json())
                 .then(data => {
                     this.roomStatus = data;

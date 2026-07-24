@@ -527,7 +527,7 @@
                 impShowProgress('Membaca file...');
 
                 try {
-                    const response = await fetch('/admin/import/mahasiswa/preview', {
+                    const response = await fetch('/akademik/import/mahasiswa/preview', {
                         method: 'POST',
                         body: formData,
                         headers: {
@@ -682,7 +682,7 @@
                 document.getElementById('imp-btn-import').disabled = true;
 
                 try {
-                    const response = await fetch('/admin/import/mahasiswa/import', {
+                    const response = await fetch('/akademik/import/mahasiswa/import', {
                         method: 'POST',
                         body: formData,
                         headers: {

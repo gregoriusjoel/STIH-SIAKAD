@@ -868,7 +868,7 @@ document.addEventListener('alpine:init', () => {
         openDrawer(id) {
             this.dosenId = id; this.isOpen = true; this.isLoading = true;
             this.isReady = false; this.searchQuery = ''; this.selectedSemester = ''; this.draftIds = [];
-            fetch(`/admin/dosen/${id}/quick-assign`, {
+            fetch(`/akademik/dosen/${id}/quick-assign`, {
                 headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(res => res.json())
@@ -928,7 +928,7 @@ document.addEventListener('alpine:init', () => {
             formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
             formData.append('semester_id', this.activeSemester.id);
             this.draftIds.forEach(id => formData.append('mata_kuliah_ids[]', id));
-            fetch(`/admin/dosen/${this.dosenId}/assignments`, {
+            fetch(`/akademik/dosen/${this.dosenId}/assignments`, {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
                 body: formData
